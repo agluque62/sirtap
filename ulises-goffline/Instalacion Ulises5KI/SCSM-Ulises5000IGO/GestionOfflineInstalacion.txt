@@ -1,0 +1,23 @@
+1º Descomprimir SCSM-Ulises5000IGO.zip.
+
+2º Ejecutar los script de generación del esquema new_cd40_offline del directorio ..\SCSM-Ulises5000IGO\Actualizacion BD.
+	en el siguiente orden:
+	a) drop_new_cd40_offline.sql
+	b) user_new_cd40_offline.sql
+	c) schema_new_cd40_offline.sql
+	
+3º Ejecutar el script ...\Instalacion Ulises5KI\SCSM-Ulises5000IGO\Ulises5000IInstallGOffLine .bat como Administrador
+	Seleccionar G .
+	N al ser primera instalación.
+	Pulsar intro.
+	Pulsar intro.
+	Recordatorio para dar todos los permisos a usuarios y administradores sobre el directorio : C:\inetpub\wwwroot\UlisesV5000GOffline
+	Pulsar cualquier tecla tecla.
+	Seleccionar S para salir.
+
+4º Adecuar el direccionamiento IP del fichero de configuración C:\inetpub\wwwroot\UlisesV5000GOffline\U5kGO\Web.config 
+	
+5º Añadir C:\Program Files\MySQL\MySQL Server 5.6\bin a la variable de entorno del sistema "path".
+
+6º Añadir un nuevo acceso/marcador  Gestion OFFLINE con la URL: http://uuu.xxx.yyy.zzz/UlisesV5000GOffline/U5kGO/Login.aspx
+ 

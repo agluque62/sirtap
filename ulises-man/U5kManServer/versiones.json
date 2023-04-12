@@ -1,0 +1,128 @@
+{
+	"Server": "SERV01",
+	"Version" : "2.6.2.2",
+	"Fecha": "06-03-2023",
+	"Components": [
+		{
+			"Name": "UV5K-SGM Gestor Cluster",
+			"Files": [
+				{
+					"Path": "..\\UlisesV5000Cluster\\ClusterLib.dll",
+					"Date": "",
+					"Size": "",
+					"MD5": ""
+				},
+				{
+					"Path": "..\\UlisesV5000Cluster\\ClusterSrv.exe",
+					"Date": "",
+					"Size": "",
+					"MD5": ""
+				}
+			]
+		},
+		{
+			"Name": "UV5K-SGM Configuracion",
+			"Files": [
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000\\U5kCfg\\bin\\App_code.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000\\U5kCfg\\Servicios\\bin\\bdcd40.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000\\U5kCfg\\Servicios\\bin\\sectorizaciondll.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000\\U5kCfg\\InterfazSOAPConfiguracion\\bin\\UtilitiesCD40.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000\\U5kCfg\\InterfazSacta\\bin\\sacta.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				}
+			]
+		},
+		{
+			"Name": "UV5K-SGM Gestor Configuraciones OFF-LINE",
+			"Files": [
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000GOffline\\U5kGO\\bin\\App_code.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000GOffline\\U5kGO\\Servicios\\bin\\bdcd40.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				}
+			]
+		},
+		{
+			"Name": "UV5K-SGM Editor Configuraciones OFF-LINE",
+			"Files": [
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000OffLine\\U5kCfg\\bin\\App_code.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000OffLine\\U5kCfg\\Servicios\\bin\\bdcd40.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": "c:\\inetpub\\wwwroot\\UlisesV5000OffLine\\U5kCfg\\Servicios\\bin\\SectorizacionDll.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				}
+			]
+		},
+		{
+			"Name": "UV5K-SGM Mantenimiento",
+			"Files": [
+				{
+					"Path": ".\\U5kManServer.exe",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": ".\\U5kBaseDatos.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": ".\\Utilities.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				},
+				{
+					"Path": ".\\U5kManMibRevC.dll",
+					"MD5": "",
+					"Date": "",
+					"Size": ""
+				}
+			]
+		}
+	]
+}

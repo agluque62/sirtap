@@ -1,0 +1,29 @@
+".\output\usb.obj",
+".\output\audio.obj",
+".\output\int.obj",
+".\output\io.obj",
+".\output\main.obj",
+".\output\request.obj",
+".\output\dscr.obj",
+".\output\STARTUP.obj",
+"..\..\CM65xxB-1\CM65xxB-1.LIB" 
+TO ".\output\cm65xxfw"
+CLASSES
+(		
+	CODE(C:0x8000-C:0xBFFF),
+	CONST(C:0x8000-C:0xBFFF),
+	XDATA_EXTMEM(X:0x0A60-X:0x0BDF)
+)
+
+&
+ 
+SEGMENTS
+(
+	?STACK(D:0xE9),
+	?PR?INT0_ISR?INT(C:0x8000),
+	?PR?TIMER0_ISR?INT(C:0x8003),
+	?PR?INT1_ISR?INT(C:0x8006),
+	?PR?TIMER1_ISR?INT(C:0x8009),
+	?PR?UART_ISR?INT(C:0x800C),
+	?PR?MAIN?MAIN(C:0x8012)
+)

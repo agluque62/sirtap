@@ -1,0 +1,14 @@
+<h3 translate>Configuracion Local</h3>
+<section id="_tabs">
+    <ul class="nav nav-tabs">
+        <li data-ng-class="{'active': ctrl.pagina==6}">
+            <a href="" data-ng-click="ctrl.change_pagina(6)" translate>Fichero de Configuracion</a>
+        </li>
+    </ul>
+</section>
+<section id="_contenido">
+    <div class='cfg-editor' data-ng-show="ctrl.pagina==6">
+        <div id='ace-editor'></div>        
+        <button id="salvar" class="btn btn-primary" data-ng-click="ctrl.SalvarCambios()" translate>Salvar Cambios</button>
+    </div>
+</section>

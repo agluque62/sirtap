@@ -1,0 +1,40 @@
+﻿Compilación iniciada a las 24/07/2014 12:40:32.
+     1>Proyecto "D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\c-media\CM65XX_HIDDemo\CM65XX_HIDDemo\CM65XX_HIDDemo\Demo.vcxproj" en el nodo 2 (Rebuild destinos).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\Demo.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\stdafx.cpp(76): warning C4244: '=' : conversión de 'wchar_t' a 'CHAR'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\stdafx.cpp(82): warning C4244: '=' : conversión de 'wchar_t' a 'CHAR'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\stdafx.cpp(103): warning C4244: '=' : conversión de 'wchar_t' a 'CHAR'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\stdafx.cpp(109): warning C4244: '=' : conversión de 'wchar_t' a 'CHAR'; posible pérdida de datos
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Demo.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Demo.cpp DemoDlg.cpp HidControl.cpp
+         HidControl.cpp
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\hidcontrol.cpp(456): warning C4018: '>' : no coinciden signed/unsigned
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\hidcontrol.cpp(508): warning C4244: '=' : conversión de 'unsigned long' a 'BYTE'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\hidcontrol.cpp(517): warning C4244: '=' : conversión de 'DWORD' a 'BYTE'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\hidcontrol.cpp(560): warning C4244: '=' : conversión de 'unsigned long' a 'BYTE'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\hidcontrol.cpp(569): warning C4244: '=' : conversión de 'DWORD' a 'BYTE'; posible pérdida de datos
+         DemoDlg.cpp
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(187): warning C4018: '<' : no coinciden signed/unsigned
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(270): warning C4244: 'argumento' : conversión de 'DWORD' a 'BYTE'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(270): warning C4244: 'argumento' : conversión de 'DWORD' a 'WORD'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(308): warning C4244: 'argumento' : conversión de 'DWORD' a 'BYTE'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(308): warning C4244: 'argumento' : conversión de 'DWORD' a 'WORD'; posible pérdida de datos
+     1>d:\datos\empresa\work\visual studio 2010\projects\test\usb-tests\c-media\cm65xx_hiddemo\cm65xx_hiddemo\cm65xx_hiddemo\demodlg.cpp(310): warning C4018: '<' : no coinciden signed/unsigned
+         Demo.cpp
+         Generando código...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /l"0x0409" /IDebug\ /nologo /fo"Debug\Demo.res" Demo.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\Debug\Demo.exe" /INCREMENTAL /NOLOGO setupapi.lib hid.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\Debug\Demo.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\Debug\Demo.lib" /MACHINE:X86 /SAFESEH Debug\Demo.res
+         Debug\Demo.obj
+         Debug\DemoDlg.obj
+         Debug\HidControl.obj
+         Debug\stdafx.obj
+     1>Demo.obj : warning LNK4075: se omite '/EDITANDCONTINUE' debido a la especificación '/SAFESEH'
+         Demo.vcxproj -> D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\Debug\Demo.exe
+     1>Compilación del proyecto terminada "D:\Datos\Empresa\work\Visual Studio 2010\Projects\Test\usb-tests\c-media\CM65XX_HIDDemo\CM65XX_HIDDemo\CM65XX_HIDDemo\Demo.vcxproj" (Rebuild destinos).
+
+Compilación correcta.
+
+Tiempo transcurrido 00:00:15.31

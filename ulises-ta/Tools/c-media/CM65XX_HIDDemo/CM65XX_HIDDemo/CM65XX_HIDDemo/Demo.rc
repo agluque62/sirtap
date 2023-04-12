@@ -1,0 +1,218 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)\r\n"
+    "LANGUAGE 4, 1\r\n"
+    "#pragma code_page(950)\r\n"
+    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Demo.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DEMO_DIALOG DIALOGEX 0, 0, 263, 273
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Demo"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_VID,51,15,45,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PID,145,15,45,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Start",IDC_MONITOR,205,15,42,12
+    EDITTEXT        IDC_ADDR,50,133,34,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DSIZE,137,133,34,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Read",IDC_READ,180,133,28,14
+    PUSHBUTTON      "Write",IDC_WRITE,213,133,28,14
+    EDITTEXT        IDC_DATA,14,154,227,47,ES_MULTILINE | WS_VSCROLL
+    CTEXT           "PID ",IDC_STATIC,113,17,29,9
+    CTEXT           "VID ",IDC_STATIC,19,17,29,9
+    GROUPBOX        "",IDC_STATIC,7,7,249,25
+    LISTBOX         IDC_MSG,7,214,249,44,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    GROUPBOX        "EEPROM(HEX)",IDC_STATIC,7,109,249,98
+    CTEXT           "Address:",IDC_STATIC,9,136,38,9
+    CTEXT           "Size(byte):",IDC_STATIC,94,136,41,9
+    CTEXT           "TYPE:",IDC_STATIC,9,121,38,9
+    COMBOBOX        IDC_COMBOTYPE,50,119,79,91,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Register Access(HEX)",IDC_STATIC,7,38,249,64
+    EDITTEXT        IDC_REG_ADDR,50,50,34,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_REG_DSIZE,137,50,34,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Read",IDC_REG_READ,180,49,28,14
+    PUSHBUTTON      "Write",IDC_REG_WRITE,213,49,28,14
+    CTEXT           "Address:",IDC_STATIC,9,52,38,9
+    CTEXT           "Size(byte):",IDC_STATIC,94,52,41,9
+    EDITTEXT        IDC_REG_DATA,14,67,227,29,ES_MULTILINE | WS_VSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "TODO: <Company name>"
+            VALUE "FileDescription", "TODO: <File description>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "Demo.exe"
+            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "OriginalFilename", "Demo.exe"
+            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DEMO_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 256
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 266
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DEMO_DIALOG DLGINIT
+BEGIN
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3230, "\000" 
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3430, "\000" 
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3830, "\000" 
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3631, "\000" 
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3233, "\000" 
+    IDC_COMBOTYPE, 0x403, 7, 0
+0x3253, 0x4334, 0x3436, "\000" 
+    IDC_COMBOTYPE, 0x403, 8, 0
+0x3253, 0x4334, 0x3231, 0x0038, 
+    IDC_COMBOTYPE, 0x403, 8, 0
+0x3253, 0x4334, 0x3532, 0x0036, 
+    IDC_COMBOTYPE, 0x403, 8, 0
+0x3253, 0x4334, 0x3135, 0x0032, 
+    0
+END
+
+#endif    // Chinese (Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+LANGUAGE 4, 1
+#pragma code_page(950)
+#include "res\Demo.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

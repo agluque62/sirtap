@@ -1,0 +1,197 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="CD40.master.cs" Inherits="CD40" %>
+<%@ Register Assembly="Mensajes" Namespace="Mensajes" TagPrefix="cc1" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>CD40</title>
+    <link rel="shortcut icon" href="~/favicon.ico">
+<%--	 <style type="text/css">
+		 .blue
+		 {
+			 width: 100px;
+		 }
+	</style>
+--%>
+    <style type="text/css">
+        .accordion
+        {
+            /*width: 100px;*/
+        }
+
+        .accordionHeader
+        {
+            border: 1px solid #2F4F4F;
+            color: #616365;
+            background-color: #4A7729;
+            font-family: Arial;
+            font-size: 14px;
+            font-weight: normal;
+            padding: 5px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        .accordionHeaderSelected
+        {
+            border: 1px solid #2F4F4F;
+            color: white;
+            /*background-color:  #e5a19e; */
+            
+            background-color:#4e9eea ;
+            font-family: Arial;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        .accordionContent
+        {
+            background-color: transparent;
+            border: 1px dashed #2F4F4F;
+            border-top: none;
+            padding: 5px;
+            padding-top: 10px;
+        }
+        .auto-style1
+        {
+            text-align: left;
+        }
+    </style>  
+</head>
+
+    <script src="../Javascript/jquery-3.3.1.js"></script>
+    <script src="../Javascript/jquery.animate-colors-min.js"></script>
+    <!--<script src="../Javascript/Utils.js" language="javascript" type="text/javascript"></script>-->
+
+    <script src="../Javascript/alertify.min.js"></script>
+    <!-- include the style -->
+    <link rel="stylesheet" href="../css/alertify.min.css" />
+    <!-- include a theme -->
+    <link rel="stylesheet" href="../css/themes/default.min.css" />
+
+    <link rel="stylesheet" href="../css/nucleo.css" />
+
+
+
+
+
+<%--<link href="~/App_Themes/TemaPaginasConfiguracion/StyleSheet.css" rel="stylesheet" type="text/css" />--%>
+<%--<body class="estiloDiv gradwhite red" style="height:842px; width: 1264px;">--%>
+<body class="estiloDiv gradpositivo white" style="height:842px; width: 1264px;">
+    <form id="form1" runat="server" style="height:831px">    
+ 		<ajaxToolKit:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server" 
+			CombineScripts="True" >
+		</ajaxToolKit:ToolkitScriptManager>
+        <div  id="DivCabecera" runat="server" style="z-index: 102; left: 8px; top: 8px;  width: 1264px; position: absolute; height: 105px; overflow: hidden; background-color:transparent" class="auto-style1">
+            
+            <div  id="DivLogo1" runat="server" 
+                style="border-style: solid; border-color:greenyellow; z-index: 102; left: 2px; top: 2px;  width: 230px; position: absolute; height: 100px; overflow: hidden; background-color:transparent;border-style:solid; border-width:1px" class="auto-style1" >
+            <asp:Image runat="server" ImageUrl="~/Images/GRUPO_AMPER_CNF.bmp" Style="z-index: 109; left: 2px; width: 226px; position: absolute; top: 5px; height: 90px; 
+                border-right-color: black; background-image: none; background-color: transparent;" />
+             </div>
+             <div  id="DivTitulo" runat="server" 
+                style="border-style: solid; border-color:greenyellow; z-index: 102; left: 240px; top: 2px;  width: 830px; position: absolute; height: 100px; overflow: hidden; background-color:transparent;border-style:solid; border-width:1px" class="auto-style1" >
+                <asp:Label ID="Label1" runat="server" SkinID="LabelCabeceraCNF" 
+                Font-Strikeout="False" Font-Underline="False" Style="z-index: 100; left: 100px; position: absolute; top: 17px; height: 28px; width: 600px;" 
+                ForeColor="#4A7729"
+                meta:resourcekey="Label1Resource1"></asp:Label>
+
+            <asp:LinkButton ID="BtInicio" runat="server" OnClick="BtInicio_Click"
+                Style="left: 40px; position: absolute; top: 73px; z-index: 103; text-align:center; width:50px"
+                Text="Inicio" CausesValidation="False" SkinID="LinkButtonCabecera"
+                meta:resourcekey="BtInicioResource1" UseSubmitBehavior="false" />
+
+            <asp:LinkButton ID="LinkButton1" runat="server" Style="z-index: 103; left: 292px; position: absolute; top: 73px"
+                OnClick="LinkButton1_Click" SkinID="LinkButtonCabecera" CausesValidation="False"
+                meta:resourcekey="LinkButton1Resource1">Cerrar sesión</asp:LinkButton>
+            &nbsp; &nbsp;
+
+            <asp:Label ID="LabelOffline" runat="server" 
+                Font-Strikeout="False" Font-Underline="False" Style="z-index: 100; left: 568px; position: absolute; top: 53px; height: 28px; width: 130px; "
+                ForeColor="black"
+                Visible="false"
+                meta:resourcekey="LabelOfflineResource1"></asp:Label>
+
+            <asp:Label ID="LblEsquema" runat="server"
+                Font-Strikeout="False" Font-Underline="False" Style="z-index: 100; left: 568px; position: absolute; top: 75px; height: 28px; width: 100px; "
+                ForeColor="black"
+                Visible="false"
+                meta:resourcekey="LabelDescEsquemaResource1"></asp:Label>
+           
+            <asp:Label ID="LbIdEsquema" runat="server"
+                Font-Strikeout="False" Font-Underline="False" Style="z-index: 100; left: 647px; position: absolute; top: 75px; height: 281px; width: 500px; "
+                ForeColor="black"
+                Visible="false"
+                meta:resourcekey="LabelIdEsquemaResource1"></asp:Label>
+            </div>
+
+
+            <div  id="DivDatos" runat="server" 
+                style="border-style: solid; border-color:greenyellow; z-index: 102; left: 1078px; top: 2px;  width: 184px; position: absolute; height: 100px; overflow: hidden; background-color:transparent;border-style:solid; border-width:1px" class="auto-style1" >                                
+                
+                <asp:Label ID="Label2" runat="server" Style="z-index: 110; left: 10px; position: absolute; top: 34px"
+                Text="Usuario:" meta:resourcekey="Label2Resource1"></asp:Label>
+                <asp:Label ID="LabelUsuario" runat="server" Style="z-index: 111; left: 75px; position: absolute; top: 34px"
+                    ForeColor="#4A7729" Font-Bold="True" meta:resourcekey="LabelUsuarioResource1"></asp:Label>
+                <asp:Label ID="Label3" runat="server" Style="z-index: 112; left: 10px; position: absolute; top: 54px"
+                    Text="Perfil:" meta:resourcekey="Label3Resource1"></asp:Label>
+                <asp:Label ID="LabelPerfil" runat="server" Style="z-index: 113; left: 61px; position: absolute; top: 54px"
+                    ForeColor="#4A7729" Font-Bold="True" Width="91px" meta:resourcekey="LabelPerfilResource1"></asp:Label>
+            </div>    
+        </div>
+
+        <div id="DivContenido" style="z-index: 100; left: 243px; width: 1029px; position: absolute; top: 114px;height: 736px; background-color:transparent;" 
+                class="estiloDiv">
+            <asp:contentplaceholder id="ContentPlaceHolder1" runat="server">
+
+				</asp:contentplaceholder>
+        			<asp:UpdatePanel ID="UpdatePanelMessageBox" runat="server" 
+					UpdateMode="Conditional" ChildrenAsTriggers="False">
+						<ContentTemplate>
+							<ajaxToolKit:ModalPopupExtender ID="ModalPopupExtenderMessageBox" runat="server" 
+									TargetControlId="BtnOculto" PopupControlID="PnlMessageBox" 
+									BackgroundCssClass="modalBackground" DropShadow="True" 
+									PopupDragHandleControlID="PnlMessageBoxCaption"
+								Enabled="True">
+							</ajaxToolKit:ModalPopupExtender>
+						
+							<asp:Panel ID="PnlMessageBox" runat="server" CssClass="modalBox" Width="550px" Height="178px" 
+										 Style="cursor: default; display:none" meta:resourcekey="PnlMessageBoxResource1" >
+								<asp:Panel ID="PnlMessageBoxCaption" runat="server" CssClass="caption" 
+									Style="margin-bottom: 5px; cursor: default;" 
+									meta:resourcekey="PnlMessageBoxCaptionResource1">
+											Modificaciones en configuración pendientes</asp:Panel>
+							    </asp:Panel>
+						<asp:Button ID="BtnOculto" runat="server" Text="Button" Style="display:none;" 
+								meta:resourcekey="BtnOcultoResource1" />
+						</ContentTemplate>
+					</asp:UpdatePanel>
+        </div>
+        <div runat="server" id="DivArbol" class="estiloDiv"
+            style="z-index: 101; left: 8px; width: 234px; position: absolute; top: 114px; height: 736px; background-color:transparent">
+            <asp:TreeView ID="TreeView1" runat="server" DataSourceID="SiteMapDataSource1" Style="z-index: 200;
+                left: 4px; position: absolute; top: 44px" Width="215px" Height="442px" 
+					ImageSet="Arrows" ontreenodedatabound="TreeView1_TreeNodeDataBound" meta:resourcekey="TreeView1Resource1" >
+					<ParentNodeStyle Font-Bold="False" />
+					<HoverNodeStyle Font-Underline="True" ForeColor="#4A7729" />
+					<SelectedNodeStyle Font-Underline="True" ForeColor="#4A7729" 
+						HorizontalPadding="0px" VerticalPadding="0px" />
+					<NodeStyle Font-Names="Arial" Font-Size="Small" ForeColor="black" 
+						HorizontalPadding="5px" NodeSpacing="0px" VerticalPadding="0px" />
+            </asp:TreeView>
+			  &nbsp;&nbsp;
+            <asp:SiteMapDataSource ID="SiteMapDataSource1" runat="server"  />
+			  &nbsp; &nbsp;
+           <cc1:msgBox ID="MsgBox1" runat="server" Style="z-index: 180; left: 0px; position: absolute;top: 100px" />
+	    </div>
+        <div style="z-index: 301; left: 8px; width: 1264px; position: absolute; top: 855px; height: 37px; text-align:center; color: black; font-family:Arial; font-size:small" >
+            <br\ />
+            &#169 Grupo Amper. Copyright @ 2021-2022. Versión 2.6.2 Todos los Derechos Reservados
+        </div>
+    </form>
+</body>
+</html>

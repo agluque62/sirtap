@@ -1,0 +1,55 @@
+10-01-23 Sprint23-01
+04-10-2022 Nueva entrega con la grabación probada.
+01-09-2022 Sprint 12
+Falos vistos
+El proyecto se baja en version debug
+La primera vez que se compila en version release genera fallos, que se arreglan en la segunda compilación
+Sale con el atavoz hf puesto
+Salen con los jacks insertados (simlador de audio)
+
+14-6-2022 Spring 8
+01-6-2022 Version preliminar de 2.6.2.spring8
+23-5-2022 Fin Spring#7 c2.6.2
+03-5-2022 Fin Spring#6 v2.6.2
+27-1-2022 Fin Spring#2.6.2
+16-12-2021 Fin Spring#1
+
+Notas Envio 18-11-2014
+
+	Define:
+		_AUDIOGENERIC_: Modificaciones en Gestión Dispositivos de Audio...
+
+			Nuevos Parámetros:
+				'TipoAudioUsb'...
+				'RdSpkAsioId'
+				'LcSpkAsioId'
+				'MicAsioId'
+				'CasAsioId'
+				
+			Modificado HwManager, para incluir las diferentes opciones.
+			Modificado MixedManager, para incluir las dos opciones.
+			Modificado RecorderManager para nueva interfaz de señalizacion de grabacion.
+			Añadidos:
+				Source/Engine/CD40/CD40.Module/BusinessEntities/CMediaHwManager.cs
+				Source/Engine/CD40/CD40.Module/BusinessEntities/GenericHwManager.cs
+				Source/Engine/CD40/CD40.Module/BusinessEntities/Hid.cs
+
+			Añadido:
+				Source/Infrastructure/BlueWave.Interop.Asio: Nueva DLL, para detectar los canales de audio.
+				
+			Supervision de Errores en Tarjetas de AUDIO. 
+				!!! Sin Terminar ¡¡¡¡
+		
+		_NEWSTART_: Modificado nuevo arranque del modulo 'Top', para detectar errores...
+		
+			Modificado INIT y START de TOP
+			
+		_HF_GLOBAL_STATUS_: Código Correspondiente al estado global HF.
+		
+			Gestion del estado global del subsistema HF.
+
+	
+	Actualizacion NLOG a version 3.
+
+
+	

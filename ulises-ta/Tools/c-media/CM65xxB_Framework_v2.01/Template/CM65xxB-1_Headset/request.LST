@@ -1,0 +1,719 @@
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE REQUEST
+OBJECT MODULE PLACED IN .\output\request.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE request.c OMF2 OPTIMIZE(9,SIZE) BROWSE INCDIR(..\..\CM65xxB-1\inc;.\inc) DE
+                    -BUG OBJECT(.\output\request.obj)
+
+line level    source
+
+   1          #include <intrins.h>
+   2          #include "types.h"
+   3          #include "registers.h"
+   4          #include "cm65xx.h"
+   5          #include "audio.h"
+   6          #include "usb.h"
+   7          #include "config.h"
+   8          
+   9          /*********************************************************************
+  10          * External library variable declaration
+  11          *********************************************************************/
+  12          extern BYTE idata g_bHidI2CSInfo[2];
+  13          
+  14          /*********************************************************************
+  15          * External library function
+  16          *********************************************************************/
+  17          extern void M2MCopy(BYTE *dest, BYTE *src, BYTE size);
+  18          extern void C2MCopy(BYTE *dest, BYTE code *src, BYTE size);
+  19          
+  20          /*********************************************************************
+  21          * Global/External variable definition
+  22          *********************************************************************/
+  23          BYTE *g_pbDataBuffer;
+  24          
+  25          BYTE idata g_bHidInRegsInfo;
+  26          BYTE idata g_bInputReport[MAX_HID_REPORT_SIZE];
+  27          BYTE idata g_bOutputReport[MAX_HID_REPORT_SIZE];
+  28          BYTE idata g_bAlternateSetting[4];
+  29          BYTE idata s_bEpStatus;
+  30          
+  31          BYTE code *s_pStringDscrTmp;
+  32          
+  33          extern BOOL g_bmRemoteWakeupEn, g_bmSelfPower;
+  34          
+  35          extern BYTE     g_bTemp;
+  36          extern BYTE     g_bIndex;
+  37          extern BYTE     g_bConfiguration;
+  38          extern BYTE     g_bDataBuffer[MAX_BUFFER_SIZE];
+  39          
+  40          extern BYTE code *g_pbConfigDscr;
+  41          extern BYTE code *g_pHidDscr;
+  42          extern BYTE code *g_pHidReportDscr;
+  43          extern BYTE code *g_pProductStringDscr;
+  44          extern BYTE code DeviceDscr;
+  45          extern BYTE code LangIdStringDscr;
+  46          extern BYTE code ManufactureStringDscr;
+  47          extern BYTE code VersionStringDscr;
+  48          
+  49          extern volatile BYTE xdata *g_pbXdataStart;
+  50          
+  51          extern WORD     g_wDataLength, g_wDataOffset;
+  52          
+  53          extern CONVERTIBLE_CONTROL_TABLE_STRUCT code *g_pControlTable;
+  54          extern USB_CONTROL_COMMAND_STRUCT g_UsbCtrlCmnd;
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 2   
+
+  55          
+  56          /*********************************************************************
+  57          * Global/External function definition
+  58          *********************************************************************/
+  59          extern BOOL TackleAudioControl(BOOL dataStage);
+  60          extern BOOL TackleSetAudioInterface();
+  61          extern BOOL TackleAudioStream(BOOL dataStage);
+  62          
+  63          /*********************************************************************
+  64          * code area
+  65          *********************************************************************/
+  66          void acquireDeviceDscrData()
+  67          {       
+  68   1              if(g_wDataOffset == 0)
+  69   1              {
+  70   2                      C2MCopy((BYTE *)g_bDataBuffer, (BYTE code *)(&DeviceDscr), MAX_BUFFER_SIZE);
+  71   2                      g_bDataBuffer[8] = LSB(VENDOR_ID);
+  72   2                      g_bDataBuffer[9] = MSB(VENDOR_ID);
+  73   2                      g_bDataBuffer[10] = LSB(PRODUCT_ID); 
+  74   2                      g_bDataBuffer[11] = MSB(PRODUCT_ID);
+  75   2                      g_bDataBuffer[12] = LSB(VERSION_ID); // Product version ID
+  76   2                      g_bDataBuffer[13] = MSB(VERSION_ID); // Product version ID
+  77   2              }
+  78   1              else
+  79   1              {
+  80   2                      g_bDataBuffer[0] = 0;           // if the serial number is defined, this should be 3.
+  81   2                      g_bDataBuffer[1] = 1;
+  82   2              }                       
+  83   1      
+  84   1              g_pbDataBuffer = g_bDataBuffer;
+  85   1      }       
+  86          
+  87          void acquireConfigDscrData()
+  88          {
+  89   1              if(g_wDataOffset == 0)
+  90   1              {
+  91   2                      C2MCopy(g_bDataBuffer, g_pbConfigDscr, MAX_BUFFER_SIZE);
+  92   2                      g_pbDataBuffer = g_bDataBuffer;
+  93   2              }       
+  94   1              else
+  95   1              {                       
+  96   2                      g_pbDataBuffer = g_pbConfigDscr;
+  97   2                      g_pbDataBuffer += g_wDataOffset;                                
+  98   2              }
+  99   1              
+ 100   1              if(g_wDataOffset == 0)
+ 101   1              {
+ 102   2                      g_bDataBuffer[7] = bmBIT7 | (((BYTE)g_bmSelfPower) << 6) | (((BYTE)g_bmRemoteWakeupEn) << 5);
+ 103   2              }
+ 104   1      }
+ 105          
+ 106          void acquireStringDscrData()
+ 107          {
+ 108   1              g_pbDataBuffer = (BYTE *)s_pStringDscrTmp;
+ 109   1              g_pbDataBuffer += g_wDataOffset;
+ 110   1      }
+ 111          
+ 112          void acquireHidReportDscrData()
+ 113          {
+ 114   1              g_pbDataBuffer = g_pHidReportDscr;
+ 115   1              g_pbDataBuffer += g_wDataOffset;
+ 116   1      }
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 3   
+
+ 117          
+ 118          void acquireHidDscrData()
+ 119          {
+ 120   1              C2MCopy((BYTE *)g_bDataBuffer, g_pHidDscr, DSCR_HID_LEN);
+ 121   1              g_pbDataBuffer = g_bDataBuffer;
+ 122   1      }       
+ 123          
+ 124          BOOL tackleGetDescriptor(BOOL dataStage)
+ 125          {
+ 126   1              switch(MSB(g_UsbCtrlCmnd.wValue))               
+ 127   1              {
+ 128   2                      case GD_DEVICE:
+ 129   2                              if(dataStage == FALSE)
+ 130   2                              {
+ 131   3                                      g_wDataLength = DSCR_DEVICE_LEN;                        
+ 132   3                              }
+ 133   2                              acquireDeviceDscrData();
+ 134   2                        break;
+ 135   2                      
+ 136   2                      case GD_CONFIGURATION:
+ 137   2                              if(dataStage == FALSE)
+ 138   2                              {
+ 139   3                                      g_wDataLength = (g_pbConfigDscr[3] << 8) | (g_pbConfigDscr[2]);                                         
+ 140   3                              }
+ 141   2                              acquireConfigDscrData();
+ 142   2                        break;        
+ 143   2                        
+ 144   2                      case GD_STRING:  
+ 145   2                              if(dataStage == FALSE)
+ 146   2                              {
+ 147   3                                      switch(LSB(g_UsbCtrlCmnd.wValue))
+ 148   3                                      {
+ 149   4                                              case LANGID_S:
+ 150   4                                                      s_pStringDscrTmp = (BYTE *)&LangIdStringDscr;   
+ 151   4                                                      g_wDataLength = 4;
+ 152   4                                                      break;
+ 153   4                                                      
+ 154   4                                              case MANUFACTURE_S:
+ 155   4                                                      s_pStringDscrTmp =      (BYTE *)&ManufactureStringDscr;
+ 156   4                                                      g_wDataLength = s_pStringDscrTmp[0];
+ 157   4                                                      break;
+ 158   4                                                      
+ 159   4                                              case PRODUCT_S:
+ 160   4                                                      s_pStringDscrTmp =      g_pProductStringDscr;
+ 161   4                                                      g_wDataLength = s_pStringDscrTmp[0]; 
+ 162   4                                                      break;
+ 163   4      
+ 164   4                                              case SERIAL_S:
+ 165   4                                                      return FALSE;
+ 166   4                                                      break;
+ 167   4                                                      
+ 168   4                                              case VERSION1_S:
+ 169   4                                              case VERSION2_S:
+ 170   4                                                      s_pStringDscrTmp =      (BYTE *)&VersionStringDscr;
+ 171   4                                                      g_wDataLength = s_pStringDscrTmp[0];
+ 172   4                                                      break;
+ 173   4                                                      
+ 174   4                                              default:
+ 175   4                                                      return FALSE;
+ 176   4                                                      break;
+ 177   4                                      }
+ 178   3                              }       
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 4   
+
+ 179   2                              acquireStringDscrData();
+ 180   2                        break;                
+ 181   2      
+ 182   2                      case GD_HID:
+ 183   2                              if(dataStage == FALSE)
+ 184   2                              {
+ 185   3                                      g_wDataLength = DSCR_HID_LEN;                   
+ 186   3                              }
+ 187   2                              acquireHidDscrData();                   
+ 188   2                        break;                          
+ 189   2                        
+ 190   2                      case GD_HID_REPORT:
+ 191   2                              if(dataStage == FALSE)
+ 192   2                              {
+ 193   3                                      g_wDataLength = ((WORD)(g_pHidDscr[8]) << 8) | (WORD)(g_pHidDscr[7]);
+ 194   3                              }
+ 195   2                              acquireHidReportDscrData();     
+ 196   2                        break;                                                        
+ 197   2                        
+ 198   2                      default:
+ 199   2                              return FALSE;
+ 200   2              }
+ 201   1      
+ 202   1              return TRUE;
+ 203   1      }
+ 204          
+ 205          BOOL tackleSetAddress()
+ 206          {
+ 207   1              UsbSetAddress(LSB(g_UsbCtrlCmnd.wValue));
+ 208   1              
+ 209   1              UsbResetEpCtrl();
+ 210   1              UsbSetAddrEn();
+ 211   1              
+ 212   1              return TRUE;
+ 213   1      }       
+ 214          
+ 215          void epIntClearHalt()
+ 216          {
+ 217   1              UsbSelectEp(ENDPOINT_INT);
+ 218   1              UsbClrStall();
+ 219   1              UsbResetEpInt();
+ 220   1              UsbSelectEp(ENDPOINT_CTRL);
+ 221   1              s_bEpStatus = 0;        
+ 222   1      }       
+ 223          
+ 224          BOOL tackleSetConfiguration()
+ 225          {
+ 226   1              g_bConfiguration = LSB(g_UsbCtrlCmnd.wValue);
+ 227   1              
+ 228   1              if(g_bConfiguration)
+ 229   1              {
+ 230   2                      UsbSetConfig();         
+ 231   2                      
+ 232   2                      g_pControlTable->configure();           
+ 233   2              }
+ 234   1              else
+ 235   1              {
+ 236   2                      UsbClrConfig();
+ 237   2              }
+ 238   1                      
+ 239   1              if(s_bEpStatus & bmBIT7)
+ 240   1              {
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 5   
+
+ 241   2                      epIntClearHalt();
+ 242   2              }
+ 243   1              
+ 244   1              return TRUE;
+ 245   1      }       
+ 246          
+ 247          BOOL tackleSetInterface()
+ 248          {       
+ 249   1              if(UsbGetConfig() == 0)
+ 250   1              {
+ 251   2                      return FALSE;
+ 252   2              }
+ 253   1      
+ 254   1              if(s_bEpStatus & bmBIT7)
+ 255   1              {
+ 256   2                      epIntClearHalt();
+ 257   2              }
+ 258   1      
+ 259   1              g_bTemp = g_pControlTable->pDeviceControl->bHidInterface;
+ 260   1                      
+ 261   1              if(LSB(g_UsbCtrlCmnd.wIndex) && (LSB(g_UsbCtrlCmnd.wIndex) < g_bTemp))
+ 262   1              {
+ 263   2                      if(TackleSetAudioInterface() == FALSE)
+ 264   2                      {
+ 265   3                              return FALSE;
+ 266   3                      }                               
+ 267   2              }                       
+ 268   1                      
+ 269   1              g_bAlternateSetting[LSB(g_UsbCtrlCmnd.wIndex)] = LSB(g_UsbCtrlCmnd.wValue);     
+ 270   1      
+ 271   1              return TRUE;
+ 272   1      }
+ 273          
+ 274          BOOL tackleGetConfiguration()
+ 275          {       
+ 276   1              g_wDataLength = 1;
+ 277   1              g_pbDataBuffer = &g_bConfiguration;
+ 278   1      
+ 279   1              return TRUE;    
+ 280   1      }       
+ 281          
+ 282          BOOL tackleGetInterface()
+ 283          {
+ 284   1              if(UsbGetConfig() == 0)
+ 285   1              {
+ 286   2                      return FALSE;   
+ 287   2              }
+ 288   1      
+ 289   1              g_wDataLength = 1;
+ 290   1      
+ 291   1              g_pbDataBuffer = &(g_bAlternateSetting[LSB(g_UsbCtrlCmnd.wIndex)]);             
+ 292   1              
+ 293   1              return TRUE;    
+ 294   1      }
+ 295          
+ 296          BOOL tackleSetFeature()
+ 297          {
+ 298   1              g_bTemp = g_UsbCtrlCmnd.bmRequestType & RECIPIENT_MASK; 
+ 299   1              if(g_bTemp == RECIPIENT_DEVICE)
+ 300   1              {
+ 301   2                      if((LSB(g_UsbCtrlCmnd.wValue)) == FEATURE_REMOTE_WAKEUP) 
+ 302   2                      {
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 6   
+
+ 303   3                              if(g_bmRemoteWakeupEn == TRUE)
+ 304   3                              {
+ 305   4                                      UsbSetRemoteWakeup();   
+ 306   4                              }
+ 307   3                                                      
+ 308   3                              return TRUE;                    
+ 309   3                      }       
+ 310   2              }
+ 311   1              else if(g_bTemp == RECIPIENT_ENDPOINT)
+ 312   1              {
+ 313   2                      if(LSB(g_UsbCtrlCmnd.wValue) == FEATURE_EP_HALT) 
+ 314   2                      {
+ 315   3                              g_bIndex = (LSB(g_UsbCtrlCmnd.wIndex)) & 0x7F;
+ 316   3                              if(g_bIndex == 7)
+ 317   3                              {
+ 318   4                                      UsbSelectEp(ENDPOINT_INT);
+ 319   4                                      UsbSetStall();
+ 320   4                                      UsbSelectEp(ENDPOINT_CTRL);
+ 321   4                                      s_bEpStatus = s_bEpStatus | bmBIT7;
+ 322   4                                      
+ 323   4                                      return TRUE;            
+ 324   4                              }
+ 325   3                              else if(g_bIndex == 0)
+ 326   3                              {
+ 327   4                                      return TRUE;            
+ 328   4                              }
+ 329   3                      }
+ 330   2              }       
+ 331   1      
+ 332   1              return FALSE;
+ 333   1      }       
+ 334          
+ 335          BOOL tackleClearFeature()
+ 336          {
+ 337   1              g_bTemp = g_UsbCtrlCmnd.bmRequestType & RECIPIENT_MASK; 
+ 338   1              if(g_bTemp == RECIPIENT_DEVICE)
+ 339   1              {
+ 340   2                      if((LSB(g_UsbCtrlCmnd.wValue)) == FEATURE_REMOTE_WAKEUP) 
+ 341   2                      {
+ 342   3                              if(g_bmRemoteWakeupEn)
+ 343   3                              {
+ 344   4                                      UsbClrRemoteWakeup();
+ 345   4                              }
+ 346   3                              
+ 347   3                              return TRUE;                            
+ 348   3                      }       
+ 349   2              }
+ 350   1              else if(g_bTemp == RECIPIENT_ENDPOINT)
+ 351   1              {
+ 352   2                      if((LSB(g_UsbCtrlCmnd.wValue)) == FEATURE_EP_HALT) 
+ 353   2                      {
+ 354   3                              g_bIndex = (LSB(g_UsbCtrlCmnd.wIndex)) & 0x7F;
+ 355   3                              if(g_bIndex == 7)
+ 356   3                              {
+ 357   4                                      epIntClearHalt();
+ 358   4                                      
+ 359   4                                      return TRUE;            
+ 360   4                              }
+ 361   3                              else if(g_bIndex == 0)
+ 362   3                              {
+ 363   4                                      return TRUE;            
+ 364   4                              }
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 7   
+
+ 365   3                      }
+ 366   2              }       
+ 367   1      
+ 368   1              return FALSE;
+ 369   1      }       
+ 370          
+ 371          BOOL tackleGetStatus()
+ 372          {
+ 373   1              switch(g_UsbCtrlCmnd.bmRequestType & RECIPIENT_MASK)
+ 374   1              {
+ 375   2                      case RECIPIENT_DEVICE:
+ 376   2                        g_bDataBuffer[0] = g_bmSelfPower;
+ 377   2                        if(UsbGetRemoteWakeup())
+ 378   2                        {
+ 379   3                              g_bDataBuffer[0] |= bmBIT1;
+ 380   3                        }                     
+ 381   2                        break;
+ 382   2                        
+ 383   2                      case RECIPIENT_INTERFACE:
+ 384   2                              g_bDataBuffer[0] = 0x00;
+ 385   2                        break;
+ 386   2                        
+ 387   2                      case RECIPIENT_ENDPOINT:
+ 388   2                              g_bTemp = bmBIT0 << ((LSB(g_UsbCtrlCmnd.wIndex)) & 0x7F);
+ 389   2                        g_bDataBuffer[0] = (s_bEpStatus & g_bTemp) ? 1 : 0;
+ 390   2                        break;
+ 391   2                        
+ 392   2                      default:
+ 393   2                        return FALSE;  
+ 394   2              }               
+ 395   1              
+ 396   1              g_bDataBuffer[1] = 0x00;        
+ 397   1              g_wDataLength = 2;
+ 398   1              g_pbDataBuffer = g_bDataBuffer; 
+ 399   1              
+ 400   1              return TRUE;            
+ 401   1      }       
+ 402          
+ 403          
+ 404          BOOL tackleHidGetReport()
+ 405          {
+ 406   1              switch(MSB(g_UsbCtrlCmnd.wValue))
+ 407   1              {
+ 408   2                      case REPORT_TYPE_INPUT:
+ 409   2                              if(LSB(g_UsbCtrlCmnd.wValue) == HID_REPORT_ID_GENEGRIC)
+ 410   2                              {
+ 411   3                                      g_bInputReport[0] = HID_REPORT_ID_GENEGRIC;
+ 412   3                                      g_bInputReport[3] = CTRL_REG_H_ADDR;
+ 413   3                                      g_bInputReport[4] = CTRL_REG_L_ADDR;
+ 414   3                                      
+ 415   3                                      g_pbXdataStart = (BYTE xdata *)((WORD)((CTRL_REG_H_ADDR << 8) | CTRL_REG_L_ADDR));
+ 416   3                                      for(g_bIndex = 0; g_bIndex < MIN(g_bHidInRegsInfo, (MAX_HID_REPORT_SIZE - 6)); g_bIndex++)
+ 417   3                                      {
+ 418   4                                              g_bInputReport[6 + g_bIndex] = g_pbXdataStart[g_bIndex];        
+ 419   4                                      }
+ 420   3                                      
+ 421   3                                      M2MCopy(g_bDataBuffer, g_bInputReport, MAX_HID_REPORT_SIZE);    
+ 422   3                              }                                       
+ 423   2                              else
+ 424   2                              {
+ 425   3                                      return FALSE;     
+ 426   3                              }
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 8   
+
+ 427   2                        break;
+ 428   2              
+ 429   2                      case REPORT_TYPE_OUTPUT:
+ 430   2                              M2MCopy(g_bDataBuffer, g_bOutputReport, MAX_HID_REPORT_SIZE);
+ 431   2                        break;
+ 432   2                        
+ 433   2                      default:
+ 434   2                        return FALSE;  
+ 435   2              }
+ 436   1      
+ 437   1              g_wDataLength = MAX_HID_REPORT_SIZE;
+ 438   1              g_pbDataBuffer = g_bDataBuffer; 
+ 439   1              
+ 440   1              return TRUE;
+ 441   1      }
+ 442          
+ 443          BOOL tackleHidSetReport()
+ 444          {       
+ 445   1              switch(MSB(g_UsbCtrlCmnd.wValue))
+ 446   1              {
+ 447   2                      case REPORT_TYPE_INPUT:
+ 448   2                        break;
+ 449   2              
+ 450   2                      case REPORT_TYPE_OUTPUT:                
+ 451   2                        break;
+ 452   2                      
+ 453   2                      default:
+ 454   2                        return FALSE;  
+ 455   2              }
+ 456   1              
+ 457   1              g_wDataLength = MAX_HID_REPORT_SIZE;
+ 458   1              g_pbDataBuffer = g_bDataBuffer; 
+ 459   1              
+ 460   1              return TRUE;
+ 461   1      }
+ 462          
+ 463          BOOL tackleHidSetReportData()
+ 464          {
+ 465   1              switch(MSB(g_UsbCtrlCmnd.wValue))
+ 466   1              {
+ 467   2                      case REPORT_TYPE_INPUT:
+ 468   2                              M2MCopy(g_bInputReport, (BYTE code *)g_bDataBuffer, MAX_HID_REPORT_SIZE);
+ 469   2                              break;
+ 470   2              
+ 471   2                      case REPORT_TYPE_OUTPUT:
+ 472   2                              if(g_bDataBuffer[0] == HID_REPORT_ID_GENEGRIC)
+ 473   2                              {
+ 474   3                                      if((g_bDataBuffer[1] == 0x00) && (g_bDataBuffer[2] == 0xFE))
+ 475   3                                      {
+ 476   4                                              g_bHidInRegsInfo = MIN(g_bDataBuffer[3], (MAX_HID_REPORT_SIZE - 6));
+ 477   4                                              CTRL_REG_H_ADDR = g_bDataBuffer[4];
+ 478   4                                              CTRL_REG_L_ADDR = g_bDataBuffer[5];
+ 479   4                                      }       
+ 480   3                                      else
+ 481   3                                      {
+ 482   4                                              g_pbXdataStart = (BYTE xdata *)((WORD)((g_bDataBuffer[1] << 8) | g_bDataBuffer[2]));
+ 483   4                                              g_bTemp = MIN(g_bDataBuffer[3], (MAX_HID_REPORT_SIZE - 4));     
+ 484   4                                              for(g_bIndex = 0; g_bIndex < g_bTemp; g_bIndex++)
+ 485   4                                              {
+ 486   5                                                      g_pbXdataStart[g_bIndex] = g_bDataBuffer[4 + g_bIndex];
+ 487   5                                              }
+ 488   4                                      }
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 9   
+
+ 489   3      
+ 490   3                                      M2MCopy(g_bOutputReport, (BYTE code *)g_bDataBuffer, MAX_HID_REPORT_SIZE);
+ 491   3                              }
+ 492   2                              else
+ 493   2                              {
+ 494   3                                      return FALSE;                           
+ 495   3                              }
+ 496   2                              break;
+ 497   2              
+ 498   2                      default:
+ 499   2                              return FALSE;  
+ 500   2              }
+ 501   1              
+ 502   1              return TRUE;
+ 503   1      }
+ 504          
+ 505          BOOL tackleClassCommand(BOOL dataStage)
+ 506          {       
+ 507   1              g_bTemp = g_UsbCtrlCmnd.bmRequestType & RECIPIENT_MASK;
+ 508   1              
+ 509   1              if(g_bTemp == RECIPIENT_INTERFACE)
+ 510   1              {
+ 511   2                      g_bTemp = LSB(g_UsbCtrlCmnd.wIndex);
+ 512   2              
+ 513   2                      if(g_bTemp == 0)
+ 514   2                      {
+ 515   3                              return TackleAudioControl(dataStage);                   
+ 516   3                      }
+ 517   2                      else if(g_bTemp == (g_pControlTable->pDeviceControl->bHidInterface))
+ 518   2                      {
+ 519   3                              if(dataStage == FALSE)
+ 520   3                              {
+ 521   4                                      switch(g_UsbCtrlCmnd.bRequest)
+ 522   4                                      {
+ 523   5                                              case HID_GET_REPORT:                                            
+ 524   5                                                return tackleHidGetReport();
+ 525   5                      
+ 526   5                                              case HID_SET_REPORT:                                            
+ 527   5                                                return tackleHidSetReport();
+ 528   5                      
+ 529   5                                              case HID_SET_IDLE:
+ 530   5                                                      g_wDataLength = 0;
+ 531   5                                                return TRUE;
+ 532   5                                      }       
+ 533   4                              }
+ 534   3                              else
+ 535   3                              {
+ 536   4                                      switch(g_UsbCtrlCmnd.bRequest)
+ 537   4                                      {
+ 538   5                                              case HID_SET_REPORT:
+ 539   5                                                return tackleHidSetReportData();
+ 540   5                                      }
+ 541   4                              }                                                       
+ 542   3                      }               
+ 543   2                      else
+ 544   2                      {
+ 545   3                              return FALSE;
+ 546   3                      }
+ 547   2              }       
+ 548   1              else if(g_bTemp == RECIPIENT_ENDPOINT)
+ 549   1              {
+ 550   2                      return TackleAudioStream(dataStage);    
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 10  
+
+ 551   2              }       
+ 552   1              
+ 553   1              return FALSE;   
+ 554   1      }       
+ 555          
+ 556          BOOL tackleVendorCommand(BOOL dataStage)
+ 557          {                       
+ 558   1              if(dataStage == FALSE)
+ 559   1              {
+ 560   2                      g_pbDataBuffer = g_bDataBuffer; 
+ 561   2                      if(g_UsbCtrlCmnd.wLength <= MAX_BUFFER_SIZE)
+ 562   2                      {
+ 563   3                              g_wDataLength = g_UsbCtrlCmnd.wLength;
+ 564   3                      }
+ 565   2                      else 
+ 566   2                      {
+ 567   3                              return FALSE;
+ 568   3                      }
+ 569   2                      
+ 570   2                      if(g_UsbCtrlCmnd.bmRequestType & USB_SETUP_DIR_MASK)
+ 571   2                      {
+ 572   3                              if(g_UsbCtrlCmnd.bRequest == 0x02)                      // Register read
+ 573   3                              {                                                               
+ 574   4                                      g_pbXdataStart = (BYTE xdata *)(LSB(g_UsbCtrlCmnd.wValue));     
+ 575   4                                      for(g_bIndex = 0; g_bIndex < g_wDataLength; g_bIndex++)
+ 576   4                                      {
+ 577   5                                              g_bDataBuffer[g_bIndex] = g_pbXdataStart[g_bIndex];
+ 578   5                                      }
+ 579   4                                      
+ 580   4                                      return TRUE;
+ 581   4                              }               
+ 582   3                      }
+ 583   2                      else
+ 584   2                      {       
+ 585   3                              if(g_UsbCtrlCmnd.bRequest == 0x01)                      // Register write                                               
+ 586   3                              {
+ 587   4                                      return TRUE;                            
+ 588   4                              }
+ 589   3                      }
+ 590   2              }
+ 591   1              else
+ 592   1              {                                               
+ 593   2                      if(g_UsbCtrlCmnd.bRequest == 0x01)                      // Register write
+ 594   2                      {
+ 595   3                              g_pbXdataStart = (BYTE xdata *)(LSB(g_UsbCtrlCmnd.wValue));
+ 596   3                              for(g_bIndex = 0; g_bIndex < g_wDataLength; g_bIndex++)
+ 597   3                              {
+ 598   4                                      g_pbXdataStart[g_bIndex] = g_bDataBuffer[g_bIndex];                                                     
+ 599   4                              }
+ 600   3                                      
+ 601   3                              return TRUE;    
+ 602   3                      }                                                       
+ 603   2              }               
+ 604   1              
+ 605   1              return FALSE;
+ 606   1      }       
+ 607          
+ 608          BOOL TackleControlRequest(BOOL dataStage)
+ 609          {       
+ 610   1              g_bTemp = g_UsbCtrlCmnd.bmRequestType & USB_SETUP_TYPE_MASK;
+ 611   1              
+ 612   1              if(g_bTemp == USB_SETUP_TYPE_STANDARD)
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 11  
+
+ 613   1              {                               
+ 614   2                      if(dataStage == FALSE)
+ 615   2                      {
+ 616   3                              g_wDataOffset = 0;                                              
+ 617   3                              switch(g_UsbCtrlCmnd.bRequest)
+ 618   3                              {
+ 619   4                                      case SC_GET_DESCRIPTOR:                                                 
+ 620   4                                        return tackleGetDescriptor(FALSE);                            
+ 621   4                                      
+ 622   4                                      case SC_SET_ADDRESS:
+ 623   4                                        return tackleSetAddress();
+ 624   4                                      
+ 625   4                                      case SC_SET_INTERFACE:
+ 626   4                                        return tackleSetInterface();
+ 627   4                                                                      
+ 628   4                                      case SC_SET_CONFIGURATION:
+ 629   4                                        return tackleSetConfiguration();
+ 630   4                              
+ 631   4                                      case SC_GET_INTERFACE:
+ 632   4                                        return tackleGetInterface();
+ 633   4                              
+ 634   4                                      case SC_GET_CONFIGURATION:
+ 635   4                                        return tackleGetConfiguration();
+ 636   4                              
+ 637   4                                      case SC_SET_FEATURE:
+ 638   4                                        return tackleSetFeature();
+ 639   4                                        
+ 640   4                                      case SC_CLEAR_FEATURE:
+ 641   4                                        return tackleClearFeature();
+ 642   4                                        
+ 643   4                                      case SC_GET_STATUS:
+ 644   4                                        return tackleGetStatus();  
+ 645   4                              }
+ 646   3                      }
+ 647   2                      else
+ 648   2                      {       
+ 649   3                              switch(g_UsbCtrlCmnd.bRequest)
+ 650   3                              {                               
+ 651   4                                      case SC_GET_DESCRIPTOR:
+ 652   4                                        return tackleGetDescriptor(TRUE);
+ 653   4                              }                       
+ 654   3                      }       
+ 655   2              }       
+ 656   1              else if(g_bTemp == USB_SETUP_TYPE_CLASS)
+ 657   1              {
+ 658   2                      if(dataStage == FALSE)
+ 659   2                              g_wDataOffset = 0;
+ 660   2                                              
+ 661   2                      return tackleClassCommand(dataStage);
+ 662   2              }
+ 663   1              else if(g_bTemp == USB_SETUP_TYPE_VENDOR)
+ 664   1              {
+ 665   2                      return tackleVendorCommand(dataStage);
+ 666   2              }       
+ 667   1              
+ 668   1              return FALSE;
+ 669   1      }       
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1459    ----
+   CONSTANT SIZE    =   ----    ----
+C51 COMPILER V9.02   REQUEST                                                               03/27/2015 10:38:53 PAGE 12  
+
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5    ----
+   IDATA SIZE       =     38    ----
+   BIT SIZE         =   ----       4
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

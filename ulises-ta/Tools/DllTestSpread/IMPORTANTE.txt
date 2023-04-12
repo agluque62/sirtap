@@ -1,0 +1,207 @@
+DllTestSpread
+---------------
+
+Este proyecto genera la dll DllTestSpread.dll. Sirve para obtener los estados de los diferentes elementos del Spread (tambien llamados procs).
+
+Para compilar
+--------------
+
+-Cargar en Visual Studio 2019 la solucion spread.sln, que está en el directorio (raiz repositorio)\win32
+-Compilar Proyecto libspread.util.
+-Compilar proyecto DllTestSpread.
+
+La Dll obtenida queda en:
+(raiz repositorio)\win32\Debug
+(raiz repositorio)\win32\Release
+
+La versión Release es la que se copia en Sources/Cd40/Lib para que la use el MCAST. La Release funciona en cualquier instalación 
+pero la Debug sólo funciona donde está instalado el Visual
+
+Funcionamiento
+--------------
+
+int Init_Spread_Status(char* sp_config_file, char* proc_name, Report_Spread_Status_Cb report_Spread_Status_Cb, char* error, int size_error);
+
+Esta función se debe llamar para inicializar la librería.
+
+Parámetros:
+sp_config_file. Esta función inicializa la librería con el fichero de configuración del spread. que es spread.conf. Ese fichero suele estar donde está instalado el mcast. Y en el caso de que se llame desde el servicio del MCAST, sólo es necesario que el string sea "spread.conf".
+
+proc_name. Es el nombre del proc. En el caso de Ulises es "PICT01" , "PICT02", etc. El que está en el parámetro Settings.Default.IdHost del servicio MCAST.
+
+report_Spread_Status_Cb. La callback que se llama cuando se reciben los estados.
+
+Si la función retorna error (un entero negativo), en char* error, int size_error retorna un string con la descripción del error.
+
+
+__declspec(dllexport) int End_Spread_Status(void);
+
+Se debe llamar antes de salir de la aplicación.
+
+
+__declspec(dllexport) int Get_Spread_Status(char* error, int size_error);
+Se llama cada vez que se quiere recibir los estados. Es necesario que pase un tiempo de unos 10 segundos mínimo entre llamadas a esta función para que dé tiempo a recibir los estados.
+
+Los estados se reciben en un array con la siguiente estructura.
+
+typedef struct TestSP_report_proc
+{
+	char name[TestSP_MAX_NAME_SIZE];
+	int	state;
+	int	gstate;
+	int	packet_sent;
+	int	packet_recv;
+	int	packet_delivered;
+	int	retrans;
+	char my_ip[TestSP_MAX_IP_SIZE];
+	char leader_ip[TestSP_MAX_IP_SIZE];
+	char leader_name[TestSP_MAX_NAME_SIZE];
+	int	membership_changes;
+	int	num_procs;
+	int	num_segments;
+	int	window;
+	int	personal_window;
+	int	accelerated_ring;
+	int	accelerated_window;
+	int	num_sessions;
+	int	num_groups;
+	int	major_version;
+	int	minor_version;
+	int	patch_version;
+
+} TestSP_report_proc;
+
+Análisis de los estados recibidos
+-----------------------------------
+
+Se ha visto que todos los puestos tienen que recibir estados de los mismos procs. En una instalación donde había dos puestos con la misma MAC, se vió que eso no era así en esos dos puestos.
+
+state vale 1 ó 4 cuando funciona bien, y en el caso de los dos puestos con la misma MAC, ese estado vale 3 en todos los puestos.
+
+Si retrans crece mucho entonces hay algún problema. Pero no hay un umbral documentado ni detectado.
+
+leader_name debería ser igual en todos los puestos.
+
+Estos parámetros deberían ser iguales para todos los puestos.
+	int	num_procs;
+	int	num_segments;
+	int	window;
+	int	personal_window;
+	int	accelerated_ring;
+	int	accelerated_window;
+	int	num_sessions;
+	int	num_groups;
+	int	major_version;
+	int	minor_version;
+	int	patch_version;
+
+Ejemplo de implementación en el MCAST:
+
+		public const int TestSP_MAX_PROCS = 128;
+		public const int TestSP_MAX_NAME_SIZE = 256;
+		public const int TestSP_MAX_IP_SIZE = 22;
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+		public struct TestSP_report_proc
+		{
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = TestSP_MAX_NAME_SIZE)]
+			public string name;
+			public int state;
+			public int gstate;
+			public int packet_sent;
+			public int packet_recv;
+			public int packet_delivered;
+			public int retrans;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = TestSP_MAX_IP_SIZE)]
+			public string my_ip;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = TestSP_MAX_IP_SIZE)]
+			public string leader_ip;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = TestSP_MAX_NAME_SIZE)]
+			public string leader_name;
+			public int membership_changes;
+			public int num_procs;
+			public int num_segments;
+			public int window;
+			public int personal_window;
+			public int accelerated_ring;
+			public int accelerated_window;
+			public int num_sessions;
+			public int num_groups;
+			public int major_version;
+			public int minor_version;
+			public int patch_version;
+		}		
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		delegate void Report_Spread_Status(int numprocs, [In, MarshalAs(UnmanagedType.LPArray)] TestSP_report_proc[] value);
+
+		[DllImport("DllTestSpread.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+		static extern int Init_Spread_Status(StringBuilder sp_config_file, StringBuilder proc_name,
+			[MarshalAs(UnmanagedType.FunctionPtr)] Report_Spread_Status callbackPointer, StringBuilder error, int size_error);
+
+		[DllImport("DllTestSpread.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+		static extern int End_Spread_Status();
+
+		[DllImport("DllTestSpread.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+		static extern int Get_Spread_Status(StringBuilder error, int size_error);		
+
+		Report_Spread_Status report_Spread_callback =
+		(numprocs, value) =>
+		{
+			_Logger.Info("---- report_Spread_callback ----");
+
+			for (int i = 0; i < numprocs; i++)
+			{
+				var type = value[i].GetType();
+				foreach (var prop in type.GetFields())
+				{
+					_Logger.Info(prop.Name + ":" + prop.GetValue(value[i]).ToString());
+				}
+			}
+			_Logger.Info("---------------------");
+		};
+
+
+		StringBuilder sp_config_file = new StringBuilder("spread.conf");
+			StringBuilder error = new StringBuilder(256);
+			StringBuilder proc_name = new StringBuilder(_HostId);
+			if (Init_Spread_Status(sp_config_file, proc_name, report_Spread_callback, error, error.Capacity) < 0)
+            {
+				_Logger.Info("MCAST: " + "ERROR: Init_Spread_Status: " + error);
+			}
+
+			int count_get_spread_status = 58;
+
+			while (!_EndEvent.WaitOne(2000, false))
+			{
+				if ((_Process != null) && _Process.HasExited)
+				{
+					_Process.Close();
+					_Process = null;
+				}
+
+                if (_Process == null)
+                {
+                    StartMcast();
+                }
+                else
+                {
+                }
+
+				if (++count_get_spread_status >= 60)
+				{
+					Get_Spread_Status(error, error.Length); //Get_Spread_Status se ejecuta cada 2 minutos
+					count_get_spread_status = 0;
+				}
+			}
+
+			End_Spread_Status();
+			
+			
+
+
+
+
+
+
+

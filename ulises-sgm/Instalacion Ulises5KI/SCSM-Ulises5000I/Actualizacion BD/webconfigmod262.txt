@@ -1,0 +1,4 @@
+	<!-- //20211130 #2851 Gestión BackupRestore Datos de conexión y directorio de trabajo -->
+	<add key="DBAccesU" value="root"/>
+	<add key="DBAccesP" value="cd40"/>
+	<add key="PathBckRst" value="c:\UlisesV5000BR"/>	

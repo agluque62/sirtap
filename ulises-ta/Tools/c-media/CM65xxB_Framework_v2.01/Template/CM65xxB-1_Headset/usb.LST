@@ -1,0 +1,309 @@
+C51 COMPILER V9.02   USB                                                                   03/27/2015 10:38:51 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE USB
+OBJECT MODULE PLACED IN .\output\usb.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE usb.c OMF2 OPTIMIZE(9,SIZE) BROWSE INCDIR(..\..\CM65xxB-1\inc;.\inc) DEBUG 
+                    -OBJECT(.\output\usb.obj)
+
+line level    source
+
+   1          #include <intrins.h>
+   2          #include "types.h"
+   3          #include "registers.h"
+   4          #include "cm65xx.h"
+   5          #include "audio.h"
+   6          #include "usb.h"
+   7          
+   8          /*********************************************************************
+   9          * External library variable declaration
+  10          *********************************************************************/
+  11          
+  12          /*********************************************************************
+  13          * Global/External variable definition
+  14          *********************************************************************/
+  15          WORD g_wDataLength, g_wDataOffset;
+  16          
+  17          USB_CONTROL_STATE g_UsbCtrlState;
+  18          USB_CONTROL_COMMAND_STRUCT g_UsbCtrlCmnd;
+  19          
+  20          extern BYTE g_bIndex;
+  21          extern BYTE *g_pbDataBuffer;
+  22          
+  23          extern BYTE idata g_bInputReport[MAX_HID_REPORT_SIZE];
+  24          
+  25          /*********************************************************************
+  26          * code area
+  27          *********************************************************************/
+  28          BOOL TackleControlRequest(BOOL dataStage);
+  29          
+  30          void HandleUsbCtrlTransfer()
+  31          {
+  32   1              BYTE len;       
+  33   1                      
+  34   1              // Setup Stage  
+  35   1              UsbSelectEp(ENDPOINT_CTRL);
+  36   1              if(UsbRcvSetupPkt())
+  37   1              {
+  38   2                      UsbResetEpCtrl();
+  39   2                      
+  40   2                      g_UsbCtrlState = SETUP_STAGE;
+  41   2                      
+  42   2                      g_UsbCtrlCmnd.bmRequestType = USB_EP_DATA_X;    
+  43   2                      g_UsbCtrlCmnd.bRequest = USB_EP_DATA_X;
+  44   2                      g_UsbCtrlCmnd.wValue = USB_EP_DATA_X;
+  45   2                      g_UsbCtrlCmnd.wValue |= ((WORD)USB_EP_DATA_X << 8);
+  46   2                      g_UsbCtrlCmnd.wIndex = USB_EP_DATA_X;
+  47   2                      g_UsbCtrlCmnd.wIndex |= ((WORD)USB_EP_DATA_X << 8);
+  48   2                      g_UsbCtrlCmnd.wLength = USB_EP_DATA_X;
+  49   2                      g_UsbCtrlCmnd.wLength |= ((WORD)USB_EP_DATA_X << 8);    
+  50   2              
+  51   2                      if(TackleControlRequest(FALSE) == TRUE)
+  52   2                      {
+  53   3                              g_wDataLength = MIN(g_UsbCtrlCmnd.wLength, g_wDataLength);
+  54   3                              
+C51 COMPILER V9.02   USB                                                                   03/27/2015 10:38:51 PAGE 2   
+
+  55   3                              if(!g_wDataLength)
+  56   3                                      g_UsbCtrlState = STATUS_STAGE;
+  57   3                              else 
+  58   3                              {                               
+  59   4                                      if(g_UsbCtrlCmnd.bmRequestType & USB_SETUP_DIR_MASK)    // Device to Host
+  60   4                                              g_UsbCtrlState = DATA_IN_STAGE;                                                 
+  61   4                                      else
+  62   4                                              g_UsbCtrlState = DATA_OUT_STAGE;
+  63   4                              
+  64   4                                      UsbSetDir();    
+  65   4                              }                                                                                       
+  66   3                      }
+  67   2                      else                    
+  68   2                      {               
+  69   3                              g_UsbCtrlState = STALL_STAGE;
+  70   3                              UsbSetStall();                          
+  71   3                      }       
+  72   2                      
+  73   2                      UsbClrRxSetup();        
+  74   2                      UsbClrEventEpCtrl();
+  75   2              }
+  76   1      
+  77   1              // DataOut Stage
+  78   1              UsbSelectEp(ENDPOINT_CTRL);
+  79   1              if((g_UsbCtrlState == DATA_OUT_STAGE) && UsbRcvOutData())
+  80   1              {
+  81   2                      if(g_wDataLength > 16)
+  82   2                              len = 16;
+  83   2                      else
+  84   2                              len = g_wDataLength;    
+  85   2                              
+  86   2                      UsbResetEpCtrl();
+  87   2                              
+  88   2                      for(g_bIndex = 0; g_bIndex < len; ++g_bIndex)
+  89   2                      {
+  90   3                              g_pbDataBuffer[g_bIndex] = USB_EP_DATA_X;
+  91   3                      }                                               
+  92   2                      
+  93   2                      UsbClrDir();                    
+  94   2                      UsbClrRxOutB0();        
+  95   2                      UsbClrEventEpCtrl();
+  96   2                      
+  97   2                      if(TackleControlRequest(TRUE) == TRUE)
+  98   2                      {
+  99   3                              g_wDataLength -= len;
+ 100   3                              g_wDataOffset += len;                           
+ 101   3                                                      
+ 102   3                              if(g_wDataLength == 0)
+ 103   3                                      g_UsbCtrlState = STATUS_STAGE;
+ 104   3                      }
+ 105   2                      else
+ 106   2                      {               
+ 107   3                              g_UsbCtrlState = STALL_STAGE;
+ 108   3                              UsbSetStall();                          
+ 109   3                      }       
+ 110   2              }       
+ 111   1      
+ 112   1              // DataIn Stage
+ 113   1              UsbSelectEp(ENDPOINT_CTRL);
+ 114   1              if(g_UsbCtrlState == DATA_IN_STAGE)
+ 115   1              {
+ 116   2                      if(g_wDataLength > 16)
+C51 COMPILER V9.02   USB                                                                   03/27/2015 10:38:51 PAGE 3   
+
+ 117   2                      {
+ 118   3                              len = 16;
+ 119   3                      }
+ 120   2                      else
+ 121   2                      {
+ 122   3                              len = g_wDataLength;    
+ 123   3                      }
+ 124   2                              
+ 125   2                      for(g_bIndex = 0; g_bIndex < len; ++g_bIndex)
+ 126   2                      {       
+ 127   3                              USB_EP_DATA_X = g_pbDataBuffer[g_bIndex];
+ 128   3                      }
+ 129   2                                      
+ 130   2                      UsbSetTxReady();
+ 131   2                      
+ 132   2                      g_wDataLength -= len;
+ 133   2                      g_wDataOffset += len;
+ 134   2                      
+ 135   2                      if(!g_wDataLength)
+ 136   2                      {
+ 137   3                              while(1)
+ 138   3                              {
+ 139   4                                      if(UsbSendDataComplete())
+ 140   4                                      {
+ 141   5                                              UsbClrTxCmpl();
+ 142   5                                              UsbClrEventEpCtrl();
+ 143   5                                              
+ 144   5                                              if(len == 16)
+ 145   5                                              {                               
+ 146   6                                                       // send zero length packet                             
+ 147   6                                                      UsbResetEpCtrl();
+ 148   6                                                      UsbSetTxReady();
+ 149   6                                                                  
+ 150   6                                                      while(1)
+ 151   6                                                      {
+ 152   7                                                              if(UsbSendDataComplete())
+ 153   7                                                              {
+ 154   8                                                                      UsbClrTxCmpl();
+ 155   8                                                                      UsbClrEventEpCtrl();
+ 156   8                                                                      g_UsbCtrlState = STATUS_STAGE;
+ 157   8                                                                      break;
+ 158   8                                                              }
+ 159   7                                                                                          
+ 160   7                                                              if(UsbRcvSetupPkt())
+ 161   7                                                                      break;
+ 162   7                                                                                                  
+ 163   7                                                              if(UsbRcvOutData())
+ 164   7                                                              {
+ 165   8                                                                      UsbClrDir();
+ 166   8                                                                      UsbClrRxOutB0();
+ 167   8                                                                      UsbClrEventEpCtrl();
+ 168   8                                                                      g_UsbCtrlState = NONE_STAGE;  
+ 169   8                                                                      break;
+ 170   8                                                              }       
+ 171   7                                                      }
+ 172   6                                              }
+ 173   5                                              else
+ 174   5                                              {
+ 175   6                                                      g_UsbCtrlState = STATUS_STAGE;
+ 176   6                                              }
+ 177   5                                              
+ 178   5                                              break;  
+C51 COMPILER V9.02   USB                                                                   03/27/2015 10:38:51 PAGE 4   
+
+ 179   5                                      }
+ 180   4                                      
+ 181   4                                      if(UsbRcvOutData())
+ 182   4                                      {
+ 183   5                                      UsbClrDir();
+ 184   5                                      UsbClrRxOutB0();
+ 185   5                                              UsbClrEventEpCtrl();
+ 186   5                                      g_UsbCtrlState = NONE_STAGE;  
+ 187   5                                              break;
+ 188   5                                      }       
+ 189   4                                      
+ 190   4                                      if(UsbRcvSetupPkt())
+ 191   4                                              break;
+ 192   4                              }
+ 193   3                      }
+ 194   2                      else
+ 195   2                      {                                               
+ 196   3                              TackleControlRequest(TRUE);                             
+ 197   3                              
+ 198   3                              while(!(UsbSendDataComplete()))
+ 199   3                              {
+ 200   4                                      if(UsbRcvSetupPkt())
+ 201   4                                              break;                                  
+ 202   4                              }               
+ 203   3                              UsbClrTxCmpl();
+ 204   3                      }
+ 205   2              }       
+ 206   1              
+ 207   1              // Status Stage
+ 208   1              UsbSelectEp(ENDPOINT_CTRL);
+ 209   1              if(g_UsbCtrlState == STATUS_STAGE)
+ 210   1              {               
+ 211   2                      if(g_UsbCtrlCmnd.bmRequestType & USB_SETUP_DIR_MASK)
+ 212   2                      {
+ 213   3                              while(!(UsbRcvOutData()))
+ 214   3                              {
+ 215   4                                      if(UsbRcvSetupPkt())
+ 216   4                                              break;  
+ 217   4                              }
+ 218   3                              UsbClrDir();
+ 219   3                              UsbClrRxOutB0();        
+ 220   3                              UsbClrEventEpCtrl();
+ 221   3                      }
+ 222   2                      else
+ 223   2                      {               
+ 224   3                              UsbSetTxReady();
+ 225   3                              while(!(UsbSendDataComplete()))
+ 226   3                              {
+ 227   4                                      if(UsbRcvSetupPkt())
+ 228   4                                              break;                                  
+ 229   4                              }       
+ 230   3                              UsbClrTxCmpl();
+ 231   3                              UsbClrEventEpCtrl();
+ 232   3                      }
+ 233   2                      
+ 234   2                      g_UsbCtrlState = NONE_STAGE;
+ 235   2              }
+ 236   1              
+ 237   1              // STALL
+ 238   1              UsbSelectEp(ENDPOINT_CTRL);
+ 239   1              if(g_UsbCtrlState == STALL_STAGE)
+ 240   1              {
+C51 COMPILER V9.02   USB                                                                   03/27/2015 10:38:51 PAGE 5   
+
+ 241   2                      while(!(UsbSendStallComplete()))
+ 242   2                      {
+ 243   3                              if(UsbRcvSetupPkt())
+ 244   3                                      break;                  
+ 245   3                      }               
+ 246   2                      UsbClrStall();          
+ 247   2                      g_UsbCtrlState = NONE_STAGE;
+ 248   2              }       
+ 249   1      }
+ 250          
+ 251          void SubmitUsbIntTransfer()
+ 252          {       
+ 253   1              UsbSelectEp(ENDPOINT_INT);              
+ 254   1      
+ 255   1              UsbResetEpInt();
+ 256   1              
+ 257   1              for(g_bIndex = 0; g_bIndex < MAX_HID_REPORT_SIZE; ++g_bIndex)
+ 258   1              {       
+ 259   2                      USB_EP_DATA_X = g_bInputReport[g_bIndex];
+ 260   2              }
+ 261   1                      
+ 262   1              UsbSetTxReady();                
+ 263   1      }       
+ 264          
+ 265          void HandleUsbIntTransfer()
+ 266          {       
+ 267   1              UsbSelectEp(ENDPOINT_INT);      
+ 268   1      
+ 269   1              if(UsbSendDataComplete())
+ 270   1              {
+ 271   2                      UsbClrTxCmpl();
+ 272   2              }                       
+ 273   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    655    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

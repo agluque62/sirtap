@@ -1,0 +1,20 @@
+﻿Compilación iniciada a las 24/06/2014 11:40:19.
+     1>Proyecto "D:\Datos\Empresa\work\_SharedPrj\Ulises5000i-asecna\ulises-ta\Tools\pjproject\pjsip-apps\build\samples.vcxproj" en el nodo 5 (Rebuild destinos).
+     1>Rebuild:
+         nmake /NOLOGO /S /f Samples-vc.mak BUILD_MODE=debug-static VC_VER=8 /a
+         auddemo.c
+         aectest.c
+         confsample.c
+         confbench.c
+         encdec.c
+     1>..\src\samples\encdec.c(198): warning C4047: 'función' : 'pj_bool_t' es distinto en los niveles de direccionamiento indirecto de 'pjmedia_frame *'
+     1>..\src\samples\encdec.c(198): warning C4024: 'función mediante puntero' : tipos distintos para el parámetro formal y el parámetro real 4
+     1>..\src\samples\encdec.c(198): error C2198: 'función mediante puntero' : no hay suficientes argumentos para la llamada
+     1>NMAKE : fatal error U1077: '"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\cl.EXE"' : c¾digo devuelto '0x2'
+         Stop.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.MakeFile.Targets(43,5): error MSB3073: El comando "nmake /NOLOGO /S /f Samples-vc.mak BUILD_MODE=debug-static VC_VER=8 /a" salió con el código 2.
+     1>Compilación del proyecto terminada "D:\Datos\Empresa\work\_SharedPrj\Ulises5000i-asecna\ulises-ta\Tools\pjproject\pjsip-apps\build\samples.vcxproj" (Rebuild destinos) -- ERROR.
+
+ERROR al compilar.
+
+Tiempo transcurrido 00:00:05.35

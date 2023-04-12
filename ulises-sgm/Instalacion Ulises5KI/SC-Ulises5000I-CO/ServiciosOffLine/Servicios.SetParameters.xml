@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <setParameter name="IIS Web Application Name" value="Default Web Site/UlisesV5000OffLine/U5kCfg/Servicios" />
+  <setParameter name="ConexionBaseDatosCD40-Web.config Connection String" value="Server=localhost;Database=new_cd40_TPD;Uid=root;Pwd=cd40" />
+  <setParameter name="ConexionBaseDatosCD40_Trans-Web.config Connection String" value="Server=localhost;Database=new_cd40_trans_TPD;Uid=root;Pwd=cd40;" />
+</parameters>

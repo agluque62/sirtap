@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="extlib/commons-logging-1.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/commons-net-3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/log4j-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/log4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/jackson-annotations-2.9.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/jackson-core-2.9.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/jackson-databind-2.9.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/json_simple-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="extlib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.websocket-client-api-1.1.jar"/>
+	<classpathentry kind="lib" path="extlib/tyrus-standalone-client-1.9.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

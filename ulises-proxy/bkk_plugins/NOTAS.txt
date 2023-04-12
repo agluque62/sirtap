@@ -1,0 +1,118 @@
+------------------------------------------------------------------------------------------------------------
+LEER DE LA BASE DE DATOS POR SOAP EN ECLIPSE JAVA
+------------------------------------------------------------------------------------------------------------
+
+-Utilizo Eclipse IDE for Java EE Developers
+
+-Se crea un proyecto nuevo de java con el main.
+
+-De la web http://127.0.0.1/NucleoDF/U5kCfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx, pincho en 'descripción de servicios' y me bajo el fichero wsdl (InterfazSOAPConfiguracion.wsdl).
+
+-Se podria crear el cliente soap directamente de la web, pero me daba error porque la palabra HfRangoFrecuencias se utiliza en dos sitios pero cambiando una letra de mayúsculas a minúsculas. Eso hacía que se intentaran crar dos clases java con el mismo nombre ya que windows no disintgue mayúsculas y minúsculas. Como esa clase no la voy a necesitar cambio de nombre HfRangoFrecuencias en el fichero.
+
+-El fichero InterfazSOAPConfiguracion.wsdl lo pongo en la carpeta src del proyecto de java. Hacemos un refres en eclipse y aparece eel fichero en el proyecto.
+
+---------------------------------------------------------------------------------------------------------------
+Creando las funciones de Cliente Soap de Java con Apache CXF
+---------------------------------------------------------------------------------------------------------------
+
+De http://cxf.apache.org/download.html nos bajamos apache-cxf-3.2.7.zip.
+Lo descomprimimos y ejecutamos la siguiente linea de comandos:
+
+D:\users\d223843\Downloads\apache-cxf-3.2.7\bin>wsdl2java -client InterfazSOAPConfiguracion.wsdl
+
+Dentro del directorio es/cd40/ se generan todos los ficheros de Java necesarios para poder acceder a nuestra base de datos.
+Dentro del proyecto de Eclipse creamos el Package "es.cd40" y dentro copiamos todos los ficheros java.
+
+Uno de los ficheros es este:
+InterfazSOAPConfiguracionSoap_InterfazSOAPConfiguracionSoap_Client.java
+
+Este fichero sería una referencia de como se implementa un cliente.
+
+---------------------------------------------------------------------------------------------------------------
+Otra forma que no funcionaba muy bien.
+Creando las funciones de Cliente Soap de Java con el IDE Java EE Developers
+---------------------------------------------------------------------------------------------------------------
+
+
+-File/New/Other/Web Service Client. En Service Definition pinchamos en Browse. En la ventana que aparece pinchamos otra vez en Browse. Buscamos el fichero InterfazSOAPConfiguracion.wsdl en nuestro proyecto y lo seleccionamos. Y pinchamos OK y volvemos a la ventana 'Web service client'. Pinchamos en Next y Finish. Con lo cual se crea un package en el proyecto que se llama es.CD40. Dentro tiene todas las clases.
+
+-Dentro de ese package están las clases que empiezan por 'InterfazSOAPConfiguracion'.  
+
+InterfazSOAPConfiguracion.java
+InterfazSOAPConfiguracionLocator.java (es el locator)
+InterfazSOAPConfiguracionSoap.java (es el servicio)
+...
+
+
+Este es el código básico para acceder a la base de datos.
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		/**********SE crea el locator ****************************/
+		InterfazSOAPConfiguracionLocator Locator = new InterfazSOAPConfiguracionLocator();
+	
+		
+		try {
+		
+			/***La url a la que se conectará *****/
+			URL url = new URL("http://127.0.0.1/NucleoDF/U5kCfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx");
+			
+			
+			/**** Crea el servicio *******/
+			/*En esta clase aparecen todas las operaciones que se pueden ver en
+			http://127.0.0.1/NucleoDF/U5kCfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx
+			*/
+			InterfazSOAPConfiguracionSoap service = Locator.getInterfazSOAPConfiguracionSoap(url);
+			
+			/*Si queremos optener los parametros multicast*/
+			ParametrosMulticast mult = service.getParametrosMulticast("departamento");			
+			System.out.println(mult.getGrupoMulticastConfiguracion() + ":" + mult.getPuertoMulticastConfiguracion());
+			
+			ListaRedes[] planredes = service.getPlanRedes("departamento");
+			System.out.println(planredes.toString());
+			
+			NumeracionATS[] numeracionATS = null;
+			numeracionATS = service.getPlanNumeracionATS("departamento");
+			if (numeracionATS != null) System.out.println(numeracionATS.toString());
+			
+			DireccionamientoIP[] direccionamientoIP = service.getPlanDireccionamientoIP("departamento");
+			if (direccionamientoIP != null) System.out.println(direccionamientoIP.toString());
+			
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+}
+
+
+------------------------------------------------------------------------------------------------------------
+Crear el jar del Plugin
+------------------------------------------------------------------------------------------------------------
+Para hacerlo y que contenga todas las librerias Java. Al final me ha funcionado de la siguiente forma.
+
+-Creamos un jar con el proyecto de Java. Mediante Export. Este jar no contiene todas las librerias.
+-Creamos un projecto nuevo: New/Other/Plug-in from existing jar archives.
+-En la ventana que aparece hay un boton  Add External, que añadimos el jar que habiamos creado desde el proyecto de java normal.
+-En la ventana que nos aparece, en boton Add, añadimos los jar de las librerias del proyecto Java que queramos.
+
+
+
+
+
+
+
+
+
+

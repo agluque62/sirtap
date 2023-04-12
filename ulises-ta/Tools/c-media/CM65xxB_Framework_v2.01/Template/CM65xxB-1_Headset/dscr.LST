@@ -1,0 +1,645 @@
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN .\output\dscr.obj
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE dscr.a51 INCDIR(..\CM65xxB-1\inc;.\inc) SET(SMALL) DEBUG OBJECT(.\output\d
+                      scr.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;#include "config.h"
+                +1     2     
+                +1     3     
+                +1     4     
+                +1     5     
+                +1     6     
+                +1     7     
+                +1           
+                +1           
+                +1    10     
+                +1    11     
+                +1    12     
+                +1    13     
+                +1    14     
+                +1    15     
+                +1    16     
+                +1    17     
+                +1    18     
+                      19     
+                      20     
+  0001                21     DSCR_DEVICE             equ    1   ;; Descriptor type: Device
+  0002                22     DSCR_CONFIG             equ    2   ;; Descriptor type: Configuration
+  0003                23     DSCR_STRING             equ    3   ;; Descriptor type: String
+  0004                24     DSCR_INTRFC             equ    4   ;; Descriptor type: Interface
+  0005                25     DSCR_ENDPNT             equ    5   ;; Descriptor type: Endpoint
+                      26     
+  0024                27     DSCR_CS_INTERFACE       equ    24H
+  0025                28     DSCR_CS_ENDPOINT        equ    25H
+                      29     
+  0001                30     AC_SUBTYPE_HEADER                               equ     1
+  0002                31     AC_SUBTYPE_IT                                           equ     2
+  0003                32     AC_SUBTYPE_OT                                           equ     3
+  0004                33     AC_SUBTYPE_MIXER                                equ     4
+  0005                34     AC_SUBTYPE_SELECTOR                     equ     5
+  0006                35     AC_SUBTYPE_FEATURE                      equ     6
+                      36     
+  0001                37     AS_SUBTYPE_GENERAL    equ    1
+  0002                38     AS_SUBTYPE_FORMAT     equ    2
+  0001                39     EP_SUBTYPE_GENERAL    equ    1
+                      40     
+  0012                41     DSCR_DEVICE_LEN       equ               18
+  0009                42     DSCR_CONFIG_LEN       equ               9
+  0009                43     DSCR_INTRFC_LEN       equ               9
+  0007                44     DSCR_ENDPNT_LEN       equ               7
+  0009                45     DSCR_HID_LEN                                    equ             9
+                      46     
+  000C                47     DSCR_AC_IT_LEN                  equ    12
+  0009                48     DSCR_AC_OT_LEN                  equ     9
+  0007                49     DSCR_AS_GENERAL_LEN     equ     7
+  0007                50     DSCR_EP_GENERAL_LEN     equ     7
+                      51     
+  0000                52     ET_CONTROL            equ    0   ;; Endpoint type: Control
+  0001                53     ET_ISO                equ    1   ;; Endpoint type: Isochronous
+  0002                54     ET_BULK               equ    2   ;; Endpoint type: Bulk
+  0003                55     ET_INT                equ    3   ;; Endpoint type: Interrupt
+                      56     
+                      57     public DeviceDscr
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     2
+
+                      58     public T1_ConfigDscr, T1_HidDscr, Tx_HidReportDscr
+                      59     public ProductStringDscr, LangIdStringDscr, ManufactureStringDscr, VersionStringDscr
+                      60      
+----                  61     CSEG AT 0A290H
+                      62     
+A290                  63     DeviceDscr:   
+A290 12               64             db      DSCR_DEVICE_LEN         ;; Descriptor length
+A291 01               65             db  DSCR_DEVICE         ;; Decriptor type
+A292 1001             66             dw  1001H               ;; Specification Version (BCD)
+A294 00               67             db  00H                 ;; Device class
+A295 00               68             db  00H                 ;; Device sub-class
+A296 00               69             db  00H                 ;; Device sub-sub-class
+A297 10               70             db  16                  ;; Maximum packet size
+A298 8C0D             71             dw  8C0DH               ;; Vendor ID
+A29A 7001             72             dw  7001H               ;; Product ID
+A29C 0000             73             dw  0000H               ;; Product version ID
+A29E 01               74             db  1                   ;; Manufacturer string index
+A29F 02               75             db  2                   ;; Product string index
+A2A0 00               76             db  0                   ;; Serial number string index
+A2A1 01               77             db  1                   ;; Number of configurations
+                      78     
+A2A4                  79     org (($ / 2) +1) * 2
+                      80     
+                      81     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             ;
+                      82     ;; T1 ==> Headset Topology
+A2A4                  83     T1_ConfigDscr:
+A2A4 09               84             db      DSCR_CONFIG_LEN         ;; Descriptor length
+A2A5 02               85             db      DSCR_CONFIG                             ;; Descriptor type
+A2A6 06               86             db      (T1_ConfigDscrEnd - T1_ConfigDscr) mod 256      ;; Total Length (LSB)
+A2A7 01               87             db      (T1_ConfigDscrEnd - T1_ConfigDscr)  /  256      ;; Total Length (MSB)
+A2A8 04               88             db      4                                       ;; Number of interfaces
+A2A9 01               89             db      1                                       ;; Configuration number
+A2AA 00               90             db      0                                       ;; Configuration string
+A2AB 80               91             db      10000000b                       ;; Attributes (b7 - reserved, b6 - selfpwr,
+                              b5 - rwu)
+A2AC 32               92             db      50                                              ;; Power requirement (div 2
+                              mA)
+                      93     
+                      94     ;; Audio Control Interface 0 Descriptor 
+A2AD 09               95             db  DSCR_INTRFC_LEN     ;; Descriptor length
+A2AE 04               96             db  DSCR_INTRFC         ;; Descriptor type
+A2AF 00               97             db  0                   ;; Zero-based index of this interface
+A2B0 00               98             db  0                   ;; Alternate setting
+A2B1 00               99             db  0                   ;; Number of end points 
+A2B2 01              100             db  01H                 ;; Interface class
+A2B3 01              101             db  01H                 ;; Interface sub class
+A2B4 00              102             db  00H                 ;; Interface sub sub class
+A2B5 00              103             db  0                   ;; Interface descriptor string index    
+                     104     
+A2B6                 105     T1_ACIntrfcDscrHeader:
+A2B6 0A              106             db  (T1_ACIntrfcDscrHeaderEnd - T1_ACIntrfcDscrHeader)  ;; Descriptor length
+A2B7 24              107             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2B8 01              108             db  AC_SUBTYPE_HEADER   ;; AC Descriptor subtype
+A2B9 0001            109             dw  0001H               ;; Audio class release number
+A2BB 4F              110             db  (T1_ACInterfaceDscrEnd - T1_ACIntrfcDscrHeader) mod 256     ;; Total Length (LS
+                             B)
+A2BC 00              111             db  (T1_ACInterfaceDscrEnd - T1_ACIntrfcDscrHeader)  /  256     ;; Total Length (MS
+                             B)
+A2BD 02              112             db  02H                 ;; Number of AS interfaces
+A2BE 01              113             db  01H                 ;; AS interface number 1
+A2BF 02              114             db  02H                 ;; AS interface number 2
+A2C0                 115     T1_ACIntrfcDscrHeaderEnd:
+                     116     
+                     117     ;; USB Audio10 Input Terimal 1 Descriptor
+A2C0 0C              118             db  DSCR_AC_IT_LEN      ;; Descriptor length
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     3
+
+A2C1 24              119             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2C2 02              120             db  AC_SUBTYPE_IT       ;; AC Descriptor subtype
+A2C3 01              121             db  01H                 ;; ID
+A2C4 0101            122             dw  0101H               ;; Terimal type: USB streaming
+A2C6 00              123             db  0                   ;; Associate terminal
+A2C7 02              124             db  02H                 ;; Number of channels
+A2C8 0300            125             dw  0300H               ;; Config of logical channels
+A2CA 00              126             db  0                   ;; String index of first logical channel
+A2CB 00              127             db  0                   ;; String index of IT           
+                     128                     
+                     129     ;; USB Audio10 Input Terimal 2 Descriptor
+A2CC 0C              130             db  DSCR_AC_IT_LEN      ;; Descriptor length
+A2CD 24              131             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2CE 02              132             db  AC_SUBTYPE_IT       ;; AC Descriptor subtype
+A2CF 02              133             db  02H                 ;; ID
+A2D0 0102            134             dw  0102H               ;; Terimal type: Microphone
+A2D2 00              135             db  0                   ;; Associate terminal
+A2D3 02              136             db  02H                 ;; Number of channels
+A2D4 0300            137             dw  0300H               ;; Config of logical channels
+A2D6 00              138             db  0                   ;; String index of first logical channel
+A2D7 00              139             db  0                   ;; String index of IT           
+                     140             
+                     141     ;; USB Audio10 Output Terimal 3 Descriptor
+A2D8 09              142             db  DSCR_AC_OT_LEN      ;; Descriptor length
+A2D9 24              143             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2DA 03              144             db  AC_SUBTYPE_OT       ;; AC Descriptor subtype
+A2DB 03              145             db  03H                 ;; ID
+A2DC 0203            146             dw  0203H               ;; Terimal type: Headphone
+A2DE 00              147             db  0                   ;; Associate terminal
+A2DF 05              148             db  05H                 ;; Source ID
+A2E0 00              149             db  0                           ;; String index of OT   
+                     150             
+                     151     ;; USB Audio10 Output Terimal 4 Descriptor
+A2E1 09              152             db  DSCR_AC_OT_LEN      ;; Descriptor length
+A2E2 24              153             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2E3 03              154             db  AC_SUBTYPE_OT       ;; AC Descriptor subtype
+A2E4 04              155             db  04H                 ;; ID
+A2E5 0101            156             dw  0101H               ;; Terimal type: USB streaming
+A2E7 00              157             db  0                   ;; Associate terminal
+A2E8 08              158             db  08H                 ;; Source ID
+A2E9 00              159             db  0                           ;; String index of OT
+                     160     
+                     161     ;; USB Audio10 Feature Unit 5 Descriptor        
+A2EA                 162     T1_FeatureUnit5Dscr:
+A2EA 0A              163             db  T1_FeatureUnit5DscrEnd - T1_FeatureUnit5Dscr ;; Descriptor length
+A2EB 24              164             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2EC 06              165             db  AC_SUBTYPE_FEATURE  ;; AC Descriptor subtype
+A2ED 05              166             db  05H                 ;; ID
+A2EE 01              167             db  01H                 ;; Source ID
+A2EF 01              168             db  01H                 ;; Size of control byte
+A2F0 01              169             db  01H                 ;; Control byte of channel 0
+A2F1 02              170             db  02H                 ;; Control byte of channel 1
+A2F2 02              171             db  02H                 ;; Control byte of channel 2
+A2F3 00              172             db  0                   ;; String index of Feature
+A2F4                 173     T1_FeatureUnit5DscrEnd:
+                     174             
+                     175     ;; USB Audio10 Feature Unit 6 Descriptor        
+A2F4                 176     T1_FeatureUnit6Dscr:
+A2F4 0A              177             db  T1_FeatureUnit6DscrEnd - T1_FeatureUnit6Dscr ;; Descriptor length
+A2F5 24              178             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A2F6 06              179             db  AC_SUBTYPE_FEATURE  ;; AC Descriptor subtype
+A2F7 06              180             db  06H                 ;; ID
+A2F8 02              181             db  02H                 ;; Source ID
+A2F9 01              182             db  01H                 ;; Size of control byte
+A2FA 01              183             db  01H                 ;; Control byte of channel 0
+A2FB 02              184             db  02H                 ;; Control byte of channel 1
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     4
+
+A2FC 02              185             db  02H                 ;; Control byte of channel 2
+A2FD 00              186             db  0                   ;; String index of Feature
+A2FE                 187     T1_FeatureUnit6DscrEnd:
+                     188             
+                     189     ;; USB Audio10 Selector Unit 8 Descriptor       
+A2FE                 190     T1_SelectorUnit8Dscr:
+A2FE 07              191             db      T1_SelectorUnit8DscrEnd - T1_SelectorUnit8Dscr     ;; Descriptor length
+A2FF 24              192             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A300 05              193             db  AC_SUBTYPE_SELECTOR ;; AC Descriptor subtype
+A301 08              194             db  08H                         ;; ID
+A302 01              195             db  01H                         ;; Number of input pins
+A303 06              196             db  06H                         ;; ID of source 0
+A304 00              197             db  0                           ;; String index of Selector
+A305                 198     T1_SelectorUnit8DscrEnd:
+                     199     
+A305                 200     T1_ACInterfaceDscrEnd:
+                     201     
+                     202     ;; USB Audio10 Audio Stream Interface 1 (IT 1) alternate 0 Descriptor
+A305 09              203             db      DSCR_INTRFC_LEN         ;; Descriptor length
+A306 04              204             db      DSCR_INTRFC             ;; Descriptor type
+A307 01              205             db  1                   ;; Zero-based index of this interface
+A308 00              206             db  0                   ;; Alternate setting
+A309 00              207             db  0                   ;; Number of end points 
+A30A 01              208             db  01H                 ;; Interface class
+A30B 02              209             db  02H                 ;; Interface sub class
+A30C 00              210             db  00H                 ;; Interface sub sub class
+A30D 00              211             db  0                   ;; Interface descriptor string index
+                     212           
+                     213     ;; USB Audio10 Audio Stream Interface 1 (IT 1) alternate 1 Descriptor
+A30E 09              214             db  DSCR_INTRFC_LEN     ;; Descriptor length
+A30F 04              215             db  DSCR_INTRFC         ;; Descriptor type
+A310 01              216             db  1                   ;; Zero-based index of this interface
+A311 01              217             db  1                   ;; Alternate setting
+A312 01              218             db  1                   ;; Number of end points 
+A313 01              219             db  01H                 ;; Interface class
+A314 02              220             db  02H                 ;; Interface sub class
+A315 00              221             db  00H                 ;; Interface sub sub class
+A316 00              222             db  0                   ;; Interface descriptor string index
+                     223           
+                     224     ;; USB Audio10 AS General Interface Descriptor
+A317 07              225             db  DSCR_AS_GENERAL_LEN ;; Descriptor length
+A318 24              226             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A319 01              227             db  AS_SUBTYPE_GENERAL  ;; AS Descriptor subtype
+A31A 01              228             db  01H                 ;; Terminal ID link to
+A31B 01              229             db  01H                 ;; Sync delay
+A31C 0100            230             dw  0100H               ;; Format type: 16bit PCM
+                     231           
+A31E                 232     T1_AS1FormatDscr:
+A31E 1D              233             db  (T1_AS1FormatDscrEnd - T1_AS1FormatDscr) ;; Descriptor length
+A31F 24              234             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A320 02              235             db  AS_SUBTYPE_FORMAT   ;; AS Descriptor subtype
+A321 01              236             db  01H                 ;; Format type
+A322 02              237             db  02H                 ;; Number of channels
+A323 02              238             db  02H                 ;; Byte per sample
+A324 10              239             db  10H                 ;; Bit per sample
+A325 07              240             db  07H                 ;; Number of sampling rate
+A326 40              241             db      40H                                                                     ;; 
+                             sampling rate 8K     
+A327 1F              242             db      1FH                                                                     ;;
+A328 00              243             db      00H                                                                     ;;
+A329 11              244             db      11H                                                                     ;; 
+                             sampling rate 11.025K
+A32A 2B              245             db      2BH                                                                     ;;
+A32B 00              246             db      00H                                                                     ;;
+A32C 80              247             db      80H                                                                     ;; 
+                             sampling rate 16K
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     5
+
+A32D 3E              248             db      3EH                                                                     ;;
+A32E 00              249             db      00H                                                                     ;;
+A32F 22              250             db      22H                                                                     ;; 
+                             sampling rate 22.05K
+A330 56              251             db      56H                                                                     ;;
+A331 00              252             db      00H                                                                     ;;
+A332 00              253             db      00H                                                                     ;; 
+                             sampling rate 32K
+A333 7D              254             db      7DH                                                                     ;;
+A334 00              255             db      00H                                                                     ;;
+A335 44              256             db  44H                                                                 ;; sampling
+                              rate 44.1K
+A336 AC              257             db  0ACH                                                                ;;
+A337 00              258             db  00H                                                                 ;;
+A338 80              259             db  80H                                                                 ;; sampling
+                              rate 48K
+A339 BB              260             db  0BBH                                                                ;;
+A33A 00              261             db  00H                                                                 ;;
+A33B                 262     T1_AS1FormatDscrEnd:
+                     263     
+                     264     ;; USB Audio10 Endpoint Descriptor
+A33B 09              265             db  DSCR_ENDPNT_LEN+2   ;; Descriptor length
+A33C 05              266             db  DSCR_ENDPNT         ;; Descriptor type
+A33D 01              267             db  01H                 ;; Endpoint number, and direction
+A33E 0D              268             db  0DH                 ;; Endpoint type: ISO & Synchronous
+A33F C4              269             db  2*2*(48+1) mod 256  ;; Maximun packet size (LSB)
+A340 00              270             db  2*2*(48+1)  /  256  ;; Maximun packet size (MSB)
+A341 01              271             db  01H                 ;; Polling interval
+A342 00              272             db  00H                 ;; Must be 0
+A343 00              273             db  00H                 ;; No sync pipe
+                     274             
+                     275     ;; USB Audio10 AS General Endpoint Descriptor
+A344 07              276             db  DSCR_EP_GENERAL_LEN ;; Descriptor length
+A345 25              277             db  DSCR_CS_ENDPOINT    ;; Descriptor type
+A346 01              278             db  EP_SUBTYPE_GENERAL  ;; EP Descriptor subtype
+A347 01              279             db  01H                 ;; Attribute
+A348 00              280             db  00H                 ;; 
+A349 0000            281             dw  0                   ;; Format type: 16bit PCM
+                     282     
+                     283     ;; USB Audio10 Audio Stream Interface 2 (OT 4) alternate 0 Descriptor
+A34B 09              284             db      DSCR_INTRFC_LEN         ;; Descriptor length
+A34C 04              285             db      DSCR_INTRFC             ;; Descriptor type
+A34D 02              286             db  2                   ;; Zero-based index of this interface
+A34E 00              287             db  0                   ;; Alternate setting
+A34F 00              288             db  0                   ;; Number of end points 
+A350 01              289             db  01H                 ;; Interface class
+A351 02              290             db  02H                 ;; Interface sub class
+A352 00              291             db  00H                 ;; Interface sub sub class
+A353 00              292             db  0                   ;; Interface descriptor string index
+                     293           
+                     294     ;; USB Audio10 Audio Stream Interface 2 (OT 4) alternate 1 Descriptor
+A354 09              295             db  DSCR_INTRFC_LEN     ;; Descriptor length
+A355 04              296             db  DSCR_INTRFC         ;; Descriptor type
+A356 02              297             db  2                   ;; Zero-based index of this interface
+A357 01              298             db  1                   ;; Alternate setting
+A358 01              299             db  1                   ;; Number of end points 
+A359 01              300             db  01H                 ;; Interface class
+A35A 02              301             db  02H                 ;; Interface sub class
+A35B 00              302             db  00H                 ;; Interface sub sub class
+A35C 00              303             db  0                   ;; Interface descriptor string index    
+                     304           
+                     305     ;; USB Audio10 AS General Interface Descriptor
+A35D 07              306             db  DSCR_AS_GENERAL_LEN ;; Descriptor length
+A35E 24              307             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A35F 01              308             db  AS_SUBTYPE_GENERAL  ;; AS Descriptor subtype
+A360 04              309             db  04H                 ;; Terminal ID link to
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     6
+
+A361 01              310             db  01H                 ;; Sync delay
+A362 0100            311             dw  0100H               ;; Format type: 16bit PCM        
+                     312           
+A364                 313     T1_AS2FormatDscr:
+A364 1D              314             db  (T1_AS2FormatDscrEnd - T1_AS2FormatDscr) ;; Descriptor length
+A365 24              315             db  DSCR_CS_INTERFACE   ;; Descriptor type
+A366 02              316             db  AS_SUBTYPE_FORMAT   ;; AS Descriptor subtype
+A367 01              317             db  01H                 ;; Format type
+A368 02              318             db  02H                 ;; Number of channels
+A369 02              319             db  02H                 ;; Byte per sample
+A36A 10              320             db  10H                 ;; Bit per sample
+A36B 07              321             db  07H                 ;; Number of sampling rate
+A36C 40              322             db      40H                                                                     ;; 
+                             sampling rate 8K     
+A36D 1F              323             db      1FH                                                                     ;;
+A36E 00              324             db      00H                                                                     ;;
+A36F 11              325             db      11H                                                                     ;; 
+                             sampling rate 11.025K
+A370 2B              326             db      2BH                                                                     ;;
+A371 00              327             db      00H                                                                     ;;
+A372 80              328             db      80H                                                                     ;; 
+                             sampling rate 16K
+A373 3E              329             db      3EH                                                                     ;;
+A374 00              330             db      00H                                                                     ;;
+A375 22              331             db      22H                                                                     ;; 
+                             sampling rate 22.05K
+A376 56              332             db      56H                                                                     ;;
+A377 00              333             db      00H                                                                     ;;
+A378 00              334             db      00H                                                                     ;; 
+                             sampling rate 32K
+A379 7D              335             db      7DH                                                                     ;;
+A37A 00              336             db      00H                                                                     ;;
+A37B 44              337             db  44H                                                                 ;; sampling
+                              rate 44.1K
+A37C AC              338             db  0ACH                                                                ;;
+A37D 00              339             db  00H                                                                 ;;
+A37E 80              340             db  80H                                                                 ;; sampling
+                              rate 48K
+A37F BB              341             db  0BBH                                                                ;;
+A380 00              342             db  00H                                                                 ;;
+A381                 343     T1_AS2FormatDscrEnd:    
+                     344     
+                     345     ;; USB Audio10 Endpoint Descriptor
+A381 09              346             db  DSCR_ENDPNT_LEN+2   ;; Descriptor length
+A382 05              347             db  DSCR_ENDPNT         ;; Descriptor type
+A383 82              348             db  82H                 ;; Endpoint number, and direction
+A384 0D              349             db  0DH                 ;; Endpoint type: ISO & Synchronous
+A385 C4              350             db  2*2*(48+1) mod 256  ;; Maximun packet size (LSB)
+A386 00              351             db  2*2*(48+1)  /  256  ;; Maximun packet size (MSB)
+A387 01              352             db  01H                 ;; Polling interval
+A388 00              353             db  00H                 ;; Must be 0
+A389 00              354             db  00H                 ;; No sync pipe
+                     355     
+                     356     ;; USB Audio10 AS General Endpoint Descriptor
+A38A 07              357             db  DSCR_EP_GENERAL_LEN ;; Descriptor length
+A38B 25              358             db  DSCR_CS_ENDPOINT    ;; Descriptor type
+A38C 01              359             db  EP_SUBTYPE_GENERAL  ;; EP Descriptor subtype
+A38D 01              360             db  01H                 ;; Attribute
+A38E 00              361             db  00H                 ;; 
+A38F 0000            362             dw  0                   ;; Format type: 16bit PCM
+                     363     
+                     364     ;; Full Speed HID Interface 3 Descriptor
+A391 09              365             db      DSCR_INTRFC_LEN     ;; Descriptor length
+A392 04              366             db  DSCR_INTRFC         ;; Descriptor type
+A393 03              367             db  3                                                                           ;; 
+                             Zero-based index of this interface
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     7
+
+A394 00              368             db  0                   ;; Alternate setting
+A395 01              369             db  1                   ;; Number of end points 
+A396 03              370             db  03H                 ;; Interface class
+A397 00              371             db  00H                 ;; Interface sub class
+A398 00              372             db  00H                 ;; Interface sub sub class
+A399 00              373             db  0                   ;; Interface descriptor string index.
+                     374     
+                     375     ;; Full Speed HID Descriptor
+A39A                 376     T1_HidDscr:
+A39A 09              377             db      DSCR_HID_LEN        ;; Descriptor length
+A39B 21              378             db  21H                 ;; Descriptor type
+A39C 0001            379             dw  0001                ;; HID version
+A39E 00              380             db  0                   ;; Country code
+A39F 01              381             db  1                   ;; Number of descriptors
+A3A0 22              382             db  22H                 ;; Descriptor type: Report
+A3A1 45              383             db  (Tx_HidReportDscrEnd-Tx_HidReportDscr) mod 256 ;; Length of descriptor (LSB)
+A3A2 00              384             db  (Tx_HidReportDscrEnd-Tx_HidReportDscr)  /  256 ;; Length of descriptor (MSB)
+                     385     
+                     386     ;; Full Speed Endpoint Descriptor
+A3A3 07              387             db      DSCR_ENDPNT_LEN         ;; Descriptor length
+A3A4 05              388             db  DSCR_ENDPNT         ;; Descriptor type
+A3A5 87              389             db  87H                 ;; Endpoint number, and direction
+A3A6 03              390             db  ET_INT              ;; Endpoint type
+A3A7 10              391             db  10H                 ;; Maximun packet size (LSB) 
+A3A8 00              392             db  00H                 ;; Maximun packet size (MSB)
+A3A9 01              393             db  01H                 ;; Polling interval
+                     394     
+A3AA                 395     T1_ConfigDscrEnd:
+                     396     
+A3AC                 397     org (($ / 2) +1) * 2
+                     398     
+A3AC                 399     LangIdStringDscr:
+A3AC 04              400             db  LangIdStringDscrEnd-LangIdStringDscr ;; String descriptor length
+A3AD 03              401             db  DSCR_STRING
+A3AE 09              402             db      09H
+A3AF 04              403             db      04H
+A3B0                 404     LangIdStringDscrEnd:
+                     405     
+A3B0                 406     ManufactureStringDscr:
+A3B0 32              407             db  ManufactureStringDscrEnd-ManufactureStringDscr ;; String descriptor length
+A3B1 03              408             db  DSCR_STRING
+A3B2 4300            409             db  'C',00
+A3B4 2D00            410             db      '-',00
+A3B6 4D00            411             db  'M',00
+A3B8 6500            412             db  'e',00
+A3BA 6400            413             db  'd',00
+A3BC 6900            414             db  'i',00
+A3BE 6100            415             db  'a',00      
+A3C0 2000            416             db      ' ',00
+A3C2 4500            417             db      'E',00
+A3C4 6C00            418             db      'l',00
+A3C6 6500            419             db      'e',00
+A3C8 6300            420             db      'c',00
+A3CA 7400            421             db      't',00
+A3CC 7200            422             db      'r',00
+A3CE 6F00            423             db      'o',00
+A3D0 6E00            424             db      'n',00
+A3D2 6900            425             db      'i',00
+A3D4 6300            426             db      'c',00
+A3D6 7300            427             db      's',00 
+A3D8 2000            428             db  ' ',00
+A3DA 4900            429             db      'I',00
+A3DC 6E00            430             db      'n',00
+A3DE 6300            431             db      'c',00
+A3E0 2E00            432             db      '.',00
+A3E2                 433     ManufactureStringDscrEnd:
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     8
+
+                     434     
+A3E2                 435     ProductStringDscr:
+A3E2 34              436             db  ProductStringDscrEnd-ProductStringDscr ;; String descriptor length
+A3E3 03              437             db  DSCR_STRING
+A3E4 5500            438             db  'U',00
+A3E6 5300            439             db      'S',00
+A3E8 4200            440             db  'B',00
+A3EA 2000            441             db  ' ',00
+A3EC 4100            442             db  'A',00
+A3EE 6400            443             db  'd',00
+A3F0 7600            444             db  'v',00
+A3F2 6100            445             db  'a',00
+A3F4 6E00            446             db  'n',00
+A3F6 6300            447             db  'c',00
+A3F8 6500            448             db  'e',00
+A3FA 6400            449             db  'd',00
+A3FC 2000            450             db      ' ',00
+A3FE 4100            451             db      'A',00
+A400 7500            452             db      'u',00
+A402 6400            453             db      'd',00
+A404 6900            454             db      'i',00
+A406 6F00            455             db      'o',00
+A408 2000            456             db      ' ',00
+A40A 4400            457             db      'D',00
+A40C 6500            458             db      'e',00
+A40E 7600            459             db      'v',00
+A410 6900            460             db      'i',00
+A412 6300            461             db      'c',00
+A414 6500            462             db      'e',00  
+A416                 463     ProductStringDscrEnd:
+                     464     
+A416                 465     VersionStringDscr:
+A416 0C              466             db      VersionStringDscrEnd-VersionStringDscr
+A417 03              467             db      DSCR_STRING
+A418 3500            468             db      '5', 00
+A41A 3000            469             db      '0', 00
+A41C 3200            470             db      '2', 00
+A41E 3300            471             db      '3', 00
+A420 4300            472             db      'C', 00
+A422                 473     VersionStringDscrEnd:
+                     474     
+A424                 475     org (($ / 2) +1) * 2
+                     476     
+A424                 477     Tx_HidReportDscr:
+A424 050C            478           db   05H, 0CH                                             ;;Usage Page(Consumer)
+A426 0901            479           db   09H, 01H                                             ;;Usage(Consumer Control)
+A428 A101            480           db   0A1H, 01H                                    ;;Collection(Application)
+A42A 8501            481           db   85H, 01H                                             ;;Report ID(1)
+A42C 1500            482           db   15H, 00H                                             ;;Logical Min.(0)
+A42E 2501            483           db   25H, 01H                                             ;;Logical Max.(1)
+A430 09E9            484           db   09H, 0E9H                                    ;;Usage(Vol. Increment)
+A432 09EA            485           db   09H, 0EAH                                    ;;Usage(Vol. Decrement)
+A434 7501            486           db   75H, 01H                                             ;;Report Size(1)
+A436 9502            487           db   95H, 02H                                             ;;Report Count(2)
+A438 8142            488           db   81H, 42H                                             ;;Input(Data, Variable, Abs
+                             olute, Null state)
+A43A 09E2            489                             db   09H, 0E2H                                  ;;Usage(Mute)
+A43C 9501            490           db   95H, 01H                                             ;;Report Count(1)
+A43E 8106            491           db   81H, 06H                                             ;;Input(Data, Variable, Rel
+                             ative)      
+A440 0601FF          492           db   06H, 01H, 0FFH                       ;;Usage Page(Vendor Defined)
+A443 0901            493           db   09H, 01H                                             ;;Usage(Vendor1 ??)
+A445 9509            494           db   95H, 09H                                             ;;Report Count (9)
+A447 8106            495           db   81H, 06H                                             ;;Input(Data, Variable, Rel
+                             ative)
+A449 050C            496           db   05H, 0CH                                             ;;Usage Page(Consumer)
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE     9
+
+A44B 09CD            497           db   09H, 0CDH                                    ;;Usage(Play/Pause)
+A44D 09B7            498           db   09H, 0B7H                                    ;;Usage(Stop)
+A44F 09B5            499           db   09H, 0B5H                                    ;;Usage(Scan Next Track)
+A451 09B6            500           db   09H, 0B6H                                    ;;Usage(Scan Previous Track)
+A453 9504            501           db   95H, 04H                                             ;;Report Count(4)
+A455 8106            502           db   81H, 06H                                             ;;Input(Data, Variable, Rel
+                             ative)
+A457 0607FF          503           db   06H, 07H, 0FFH                       ;;Usage Page(Vendor Defined)
+A45A 0901            504           db   09H, 01H                                             ;;Usage(Vendor1 ??)
+A45C 7508            505           db   75H, 08H                                             ;;Report Size(8)
+A45E 950D            506                             db   95H, 0DH                                           ;;Report Co
+                             unt(13)
+A460 8106            507           db   81H, 06H                                             ;;Input(Data, Variable, Rel
+                             ative)
+A462 0900            508           db   09H, 00H                                             ;;Usage(Undefined)
+A464 950F            509           db   95H, 0FH                                             ;;Report Count(15)
+A466 9102            510           db   91H, 02H                                             ;;Output(Data, Variable, Ab
+                             solute)
+A468 C0              511           db   0C0H                                                         ;;End Collection
+A469                 512     Tx_HidReportDscrEnd:
+                     513     
+A46A                 514     org (($ / 2) +1) * 2
+A46A 6502            515             dw 0x6502                                                       ;; Chip ID
+A46C 0D8C            516             dw 0x0D8C                                               ;; Vendor ID
+A46E 01C1            517             dw 0x01C1                                               ;; Product ID
+A470 0001            518             dw 0x0001                                       ;; Chip version ID
+A472 0101            519             dw 0x0101                                               ;; Firmware version ID
+A474 0000            520             dw 0x0000
+                     521             
+                     522     end
+A51 MACRO ASSEMBLER  DSCR                                                                 03/27/2015 10:38:54 PAGE    10
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                   T Y P E  V A L U E   ATTRIBUTES
+
+AC_SUBTYPE_FEATURE . . .  N NUMB   0006H   A   
+AC_SUBTYPE_HEADER. . . .  N NUMB   0001H   A   
+AC_SUBTYPE_IT. . . . . .  N NUMB   0002H   A   
+AC_SUBTYPE_MIXER . . . .  N NUMB   0004H   A   
+AC_SUBTYPE_OT. . . . . .  N NUMB   0003H   A   
+AC_SUBTYPE_SELECTOR. . .  N NUMB   0005H   A   
+AS_SUBTYPE_FORMAT. . . .  N NUMB   0002H   A   
+AS_SUBTYPE_GENERAL . . .  N NUMB   0001H   A   
+DEVICEDSCR . . . . . . .  C ADDR   A290H   A   
+DSCR_AC_IT_LEN . . . . .  N NUMB   000CH   A   
+DSCR_AC_OT_LEN . . . . .  N NUMB   0009H   A   
+DSCR_AS_GENERAL_LEN. . .  N NUMB   0007H   A   
+DSCR_CONFIG. . . . . . .  N NUMB   0002H   A   
+DSCR_CONFIG_LEN. . . . .  N NUMB   0009H   A   
+DSCR_CS_ENDPOINT . . . .  N NUMB   0025H   A   
+DSCR_CS_INTERFACE. . . .  N NUMB   0024H   A   
+DSCR_DEVICE. . . . . . .  N NUMB   0001H   A   
+DSCR_DEVICE_LEN. . . . .  N NUMB   0012H   A   
+DSCR_ENDPNT. . . . . . .  N NUMB   0005H   A   
+DSCR_ENDPNT_LEN. . . . .  N NUMB   0007H   A   
+DSCR_EP_GENERAL_LEN. . .  N NUMB   0007H   A   
+DSCR_HID_LEN . . . . . .  N NUMB   0009H   A   
+DSCR_INTRFC. . . . . . .  N NUMB   0004H   A   
+DSCR_INTRFC_LEN. . . . .  N NUMB   0009H   A   
+DSCR_STRING. . . . . . .  N NUMB   0003H   A   
+EP_SUBTYPE_GENERAL . . .  N NUMB   0001H   A   
+ET_BULK. . . . . . . . .  N NUMB   0002H   A   
+ET_CONTROL . . . . . . .  N NUMB   0000H   A   
+ET_INT . . . . . . . . .  N NUMB   0003H   A   
+ET_ISO . . . . . . . . .  N NUMB   0001H   A   
+LANGIDSTRINGDSCR . . . .  C ADDR   A3ACH   A   
+LANGIDSTRINGDSCREND. . .  C ADDR   A3B0H   A   
+MANUFACTURESTRINGDSCR. .  C ADDR   A3B0H   A   
+MANUFACTURESTRINGDSCREND  C ADDR   A3E2H   A   
+PRODUCTSTRINGDSCR. . . .  C ADDR   A3E2H   A   
+PRODUCTSTRINGDSCREND . .  C ADDR   A416H   A   
+T1_ACINTERFACEDSCREND. .  C ADDR   A305H   A   
+T1_ACINTRFCDSCRHEADER. .  C ADDR   A2B6H   A   
+T1_ACINTRFCDSCRHEADEREND  C ADDR   A2C0H   A   
+T1_AS1FORMATDSCR . . . .  C ADDR   A31EH   A   
+T1_AS1FORMATDSCREND. . .  C ADDR   A33BH   A   
+T1_AS2FORMATDSCR . . . .  C ADDR   A364H   A   
+T1_AS2FORMATDSCREND. . .  C ADDR   A381H   A   
+T1_CONFIGDSCR. . . . . .  C ADDR   A2A4H   A   
+T1_CONFIGDSCREND . . . .  C ADDR   A3AAH   A   
+T1_FEATUREUNIT5DSCR. . .  C ADDR   A2EAH   A   
+T1_FEATUREUNIT5DSCREND .  C ADDR   A2F4H   A   
+T1_FEATUREUNIT6DSCR. . .  C ADDR   A2F4H   A   
+T1_FEATUREUNIT6DSCREND .  C ADDR   A2FEH   A   
+T1_HIDDSCR . . . . . . .  C ADDR   A39AH   A   
+T1_SELECTORUNIT8DSCR . .  C ADDR   A2FEH   A   
+T1_SELECTORUNIT8DSCREND.  C ADDR   A305H   A   
+TX_HIDREPORTDSCR . . . .  C ADDR   A424H   A   
+TX_HIDREPORTDSCREND. . .  C ADDR   A469H   A   
+VERSIONSTRINGDSCR. . . .  C ADDR   A416H   A   
+VERSIONSTRINGDSCREND . .  C ADDR   A422H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

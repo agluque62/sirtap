@@ -1,0 +1,18 @@
+USE `new_cd40_trans`;
+UPDATE `destinosradio` SET `DescDestino` = `IdDestino`;
+UPDATE `destinosradiosector` SET `DescDestino` = `IdDestino`;
+UPDATE `estadorecursos` SET `DescDestino` = `IdDestino`;
+UPDATE `estadorecursos` SET `DestinoId` = `IdDestino`;
+UPDATE `estadosrecursos` SET `DescDestino` = `IdDestino`;
+UPDATE `radio` SET `DescDestino` = `IdDestino`;
+UPDATE `radio` SET `DestinoId` = `IdDestino`;
+UPDATE `recursosradio` SET `DescDestino` = `IdDestino`;
+USE `new_cd40`;
+UPDATE `destinosradio` SET `DescDestino` = `IdDestino`;
+UPDATE `destinosradiosector` SET `DescDestino` = `IdDestino`;
+UPDATE `estadorecursos` SET `DescDestino` = `IdDestino`;
+UPDATE `estadorecursos` SET `DestinoId` = `IdDestino`;
+UPDATE `estadosrecursos` SET `DescDestino` = `IdDestino`;
+UPDATE `radio` SET `DescDestino` = `IdDestino`;
+UPDATE `radio` SET `DestinoId` = `IdDestino`;
+UPDATE `recursosradio` SET `DescDestino` = `IdDestino`;

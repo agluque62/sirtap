@@ -1,0 +1,87 @@
+{
+	"encamina_abonados": {  /*Reglas de encaminamiento de abonados*/
+		"usuarios_scv": [
+			{
+				/*Lista de numeros ATS de un sector que soporta la lista_blanca y lista_negra*/
+				"sector": ["314001", "314006"],
+				
+				/*Una lista blanca de abonados o rango de abonados (en cada red), a los cuales podrá efectuar llamadas.*/
+				/*Si todo está permitido se pone un asterisco*/
+				/*Si nada está permitido se quedaría vacío*/
+				"lista_blanca_salientes": [
+					["04111111111","04111111115"],
+					["04222222222"],
+					["05333333333","05333333336"]
+				],					
+				
+				/*Una lista blanca de abonados o rango de abonados (en cada res) de los cuales podrá recibir llamadas.*/
+				/*Si todo está permitido se pone un asterisco*/
+				/*Si nada está permitido se quedaría vacío*/
+				"lista_blanca_entrantes": [
+					["04111111111","04111111115"],
+					["04222222222"],
+					["05333333333","05333333336"]
+				],
+				
+				/*Una interfaz predeterminada FXO en cada Red PSTN para encaminar sus llamadas salientes 
+				y dirigir hacia el las entrantes en ella.*/
+				"redes": [
+					{"idred":"04", "idrec":"rec1", "GwId":"TIFX1", "ip":"192.168.1.30"},
+					{"idred":"05", "idrec":"rec2", "GwId":"TIFX2", "ip":"192.168.1.31"},
+					{"idred":"06", "idrec":"rec3", "GwId":"TIFX3", "ip":"192.168.1.33"}
+				]							
+			},
+			
+			{
+				/*Lista de numeros ATS de un sector que soporta la lista_blanca y lista_negra*/
+				"sector": ["314030"],
+				
+				/*Una lista blanca de abonados o rango de abonados (en cada red), a los cuales podrá efectuar llamadas.*/
+				/*Si todo está permitido se pone un asterisco*/
+				/*Si nada está permitido se quedaría vacío*/
+				"lista_blanca_salientes": [
+					["04111111111","04111111115"],
+					["04222222222"],
+					["05333333333","05333333336"]
+				],					
+				
+				/*Una lista blanca de abonados o rango de abonados (en cada res) de los cuales podrá recibir llamadas.*/
+				/*Si todo está permitido se pone un asterisco*/
+				/*Si nada está permitido se quedaría vacío*/
+				"lista_blanca_entrantes": [
+					["04111111111","04111111115"],
+					["04222222222"],
+					["05333333333","05333333336"]
+				],
+				
+				/*Una interfaz predeterminada FXO en cada Red PSTN para encaminar sus llamadas salientes 
+				y dirigir hacia el las entrantes en ella.*/
+				"redes": [
+					{"idred":"04", "idrec":"rec1", "GwId":"TIFX1", "ip":"192.168.1.30"},
+					{"idred":"05", "idrec":"rec2", "GwId":"TIFX2", "ip":"192.168.1.31"},
+					{"idred":"06", "idrec":"rec3", "GwId":"TIFX3", "ip":"192.168.1.33"}
+				]
+			}		
+		],
+		
+		/*Recursos alternativos disponibles para cada uno de los prefijos*/
+		"redes_alternativas": [
+			{
+				"prefijo": "07",
+				"recursos": [
+					{"idrec":"recA", "GwId":"TIFX1", "ip":"192.168.1.30"},
+					{"idrec":"recB", "GwId":"TIFX2", "ip":"192.168.1.31"},
+					{"idrec":"recC", "GwId":"TIFX3", "ip":"192.168.1.33"}
+				]
+			}
+		]	
+	},
+	
+	/*Telefonos VoIP internos que se podría intruir, los cuales se enrutarían por la centralita interna*/
+	"telefonos_seguridad": [
+		["315001","315003"],
+		["315006"],
+		["315010","315020"]
+	]
+	
+}

@@ -1,0 +1,73 @@
+C51 COMPILER V9.02   IO                                                                    03/27/2015 10:38:52 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE IO
+OBJECT MODULE PLACED IN .\output\io.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE io.c OMF2 OPTIMIZE(9,SIZE) BROWSE INCDIR(..\..\CM65xxB-1\inc;.\inc) DEBUG O
+                    -BJECT(.\output\io.obj)
+
+line level    source
+
+   1          #include "types.h"
+   2          #include "registers.h"
+   3          
+   4          /*********************************************************************
+   5          * External library variable declaration
+   6          *********************************************************************/
+   7          
+   8          /*********************************************************************
+   9          * Global/External variable definition
+  10          *********************************************************************/
+  11          
+  12          /*********************************************************************
+  13          * Global/External function definition
+  14          *********************************************************************/
+  15          
+  16          /*********************************************************************
+  17          * code area
+  18          *********************************************************************/
+  19          void PeriIntInit()
+  20          {
+  21   1              // these peripheral int. are connected to MCU ext. int. 1
+  22   1              PERI_INT_STAT = 0xFF;           // clear flags
+  23   1              PERI_INT_EN = bmBIT5;
+  24   1              /* bit0:IR int. enable
+  25   1                 bit1:i2c master int. enable
+  26   1                 bit2:i2c slave int. enable
+  27   1                 bit3:spi master int. enable
+  28   1                 bit4:spi slave int. enable
+  29   1                 bit5:gpi int. enable
+  30   1                 bit6:VR int. enable
+  31   1              */
+  32   1              
+  33   1              PERI2_INT_STAT = 0xFF;  // clear flags
+  34   1              PERI2_INT_EN = 0;
+  35   1              /* bit0:spdif sense int. enable
+  36   1                 bit1:spdif lock int. enable
+  37   1                 bit2:spdif rate int. enable
+  38   1                 bit3:internal spi int. enable
+  39   1                 bit4:baudrate int. enable
+  40   1                 bit5:UART Tx int. enable
+  41   1                 bit6:SE1 int. enable
+  42   1              */
+  43   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     24    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+C51 COMPILER V9.02   IO                                                                    03/27/2015 10:38:52 PAGE 2   
+
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

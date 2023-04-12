@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+  <siteMapNode url="" title="Sistema ULISES V 5000 I"  description="Sistema CD40">
+    <siteMapNode url="" title="Informes"  description="Gestión de Informes">
+      <siteMapNode url="javascript:window.open('../Informes/InformeOperadores.aspx');" title="Operators"  description="Operators Report" identificador="InfOperadores"/>
+    </siteMapNode>
+    <siteMapNode url="~/Configuracion/ConfiguracionesOffline.aspx" title="Configuraciones Offline"  description="Gestión de Configuraciones Offline" identificador="ConfiguracionesOffline"/>
+    <siteMapNode url="" title="Operativa OffLine"  description="Operativa OffLine">
+      <siteMapNode url="~/Configuracion/Configuraciones.aspx" title="Configuraciones OffLine"  description="Gestión de Configuraciones OFFLINE"/>
+      <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Gestion Backup Restore"  description="Gestión de Backup Restore"/>
+    </siteMapNode>
+  </siteMapNode>
+</siteMap>

@@ -1,0 +1,180 @@
+C51 COMPILER V9.02   INT                                                                   03/27/2015 10:38:52 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE INT
+OBJECT MODULE PLACED IN .\output\int.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE int.c OMF2 OPTIMIZE(9,SIZE) BROWSE INCDIR(..\..\CM65xxB-1\inc;.\inc) DEBUG 
+                    -OBJECT(.\output\int.obj)
+
+line level    source
+
+   1          #include <intrins.h>
+   2          #include "types.h"
+   3          #include "registers.h"
+   4          #include "usb.h"
+   5          #include "audio.h"
+   6          #include "cm65xx.h"
+   7          
+   8          /*********************************************************************
+   9          * External library variable declaration
+  10          *********************************************************************/
+  11          extern BOOL g_bmUsbPuReset;
+  12          
+  13          /*********************************************************************
+  14          * Global/External variable definition
+  15          *********************************************************************/
+  16          BYTE i_bTemp, i_timercount;
+  17          
+  18          extern volatile BOOL g_bmGpiRequest;
+  19          extern volatile BOOL g_bmUsbResume;
+  20          
+  21          extern BYTE g_bCurrentMute, g_bTimer1Count;
+  22          
+  23          extern volatile WORD g_wGpiData;
+  24          
+  25          /*********************************************************************
+  26          * Global/External function definition
+  27          *********************************************************************/
+  28          extern void Timer1Config();
+  29          
+  30          /*********************************************************************
+  31          * code area
+  32          *********************************************************************/
+  33          static BYTE intSpiRead(BYTE reg)
+  34          {
+  35   1              IN_SPI_DATA[0] = bmBIT7 | reg;
+  36   1              IN_SPI_CTRL |= (bmBIT7 | 0x06);
+  37   1              while(IN_SPI_CTRL & bmBIT7)
+  38   1                      ;
+  39   1              return IN_SPI_DATA[1];
+  40   1      }
+  41          
+  42          static void intSpiWrite(BYTE reg, BYTE temp)
+  43          {
+  44   1              IN_SPI_DATA[0] = reg;
+  45   1              IN_SPI_DATA[1] = temp;
+  46   1              IN_SPI_CTRL |= (bmBIT7 | 0x06);
+  47   1              while(IN_SPI_CTRL & bmBIT7)
+  48   1                      ;
+  49   1      }
+  50          
+  51          void HandleInt0Isr() using 1
+  52          {
+  53   1      }
+  54          
+C51 COMPILER V9.02   INT                                                                   03/27/2015 10:38:52 PAGE 2   
+
+  55          void HandleTimer0Isr() using 1
+  56          {
+  57   1              ++i_timercount;
+  58   1              
+  59   1              if((i_timercount == (2 * pop_noise_1s)) && (g_bmUsbResume == TRUE))
+  60   1              {
+  61   2                      TR0 = 0;
+  62   2                      g_bmUsbResume = FALSE;
+  63   2      
+  64   2                      // upadte VMICM/VLNIM mute status
+  65   2                      i_bTemp = intSpiRead(ANALOG_CODEC_CTRL_1);              
+  66   2                      i_bTemp = (g_bCurrentMute & (BYTE)(bmBIT0 << FEATURE_MONITOR_MIC)) ? (i_bTemp | bmBIT3) : (i_bTemp & ~bm
+             -BIT3);
+  67   2                      i_bTemp = (g_bCurrentMute & (BYTE)(bmBIT0 << FEATURE_MONITOR_LINE)) ? (i_bTemp | bmBIT2) : (i_bTemp & ~b
+             -mBIT2);
+  68   2                      intSpiWrite(ANALOG_CODEC_CTRL_1, i_bTemp);
+  69   2              }
+  70   1              else if((i_timercount == (3 * pop_noise_1s)) && (g_bmUsbPuReset == FALSE))
+  71   1              {
+  72   2                      TR0 = 0;
+  73   2                      g_bmUsbPuReset = TRUE; 
+  74   2                      
+  75   2                      UsbEnableUsb();
+  76   2                      USB_PHY_POW &= ~bmBIT1;
+  77   2              }
+  78   1              else if((i_timercount == (3 * pop_noise_1s)) && (g_bmUsbPuReset == TRUE))
+  79   1              {
+  80   2                      TR0 = 0; 
+  81   2                      
+  82   2                      // EN_VBG, EN_DA, EN_AA, EN_AD
+  83   2                      i_bTemp = intSpiRead(ANALOG_CODEC_CTRL_9) & ~(bmBIT5 | bmBIT4 | bmBIT2 | bmBIT1);
+  84   2                      intSpiWrite(ANALOG_CODEC_CTRL_9, i_bTemp);
+  85   2              
+  86   2                      EXTERN_I2S_AND_DSP = 0;
+  87   2                      // power down peripheral component
+  88   2                      GAIN_TEST_PASS |= bmBIT1;
+  89   2                      // power down PLL for USB and codec
+  90   2                      PLL_PD_DAC_DIS |= (bmBIT3 | bmBIT2);
+  91   2              
+  92   2                      _nop_();
+  93   2                      _nop_();
+  94   2                      _nop_();
+  95   2                      _nop_();
+  96   2      
+  97   2                      PLL_PD_DAC_DIS &= ~(bmBIT3 | bmBIT2);
+  98   2                      GAIN_TEST_PASS &= ~bmBIT1;
+  99   2              } 
+ 100   1      }
+ 101          
+ 102          void HandleInt1Isr() using 1
+ 103          {
+ 104   1              // GPI interrupt request
+ 105   1              if(PERI_INT_STAT & bmBIT5)
+ 106   1              {
+ 107   2                      g_bmGpiRequest = TRUE;          
+ 108   2                      g_wGpiData = (((WORD)(GPI_DATA[1])) << 8) | GPI_DATA[0];                
+ 109   2                      PERI_INT_STAT = bmBIT5;                 
+ 110   2              }
+ 111   1      }
+ 112          
+ 113          void HandleTimer1Isr() using 1
+ 114          {
+C51 COMPILER V9.02   INT                                                                   03/27/2015 10:38:52 PAGE 3   
+
+ 115   1              Timer1Config();
+ 116   1              ++g_bTimer1Count;
+ 117   1      }
+ 118          
+ 119          void HandleUartIsr() using 1
+ 120          {
+ 121   1      }
+ 122          
+ 123          void INT0_ISR()
+ 124          {
+ 125   1              HandleInt0Isr();
+ 126   1      }
+ 127          
+ 128          void TIMER0_ISR()
+ 129          {
+ 130   1              HandleTimer0Isr();
+ 131   1      }
+ 132          
+ 133          void INT1_ISR()
+ 134          {   
+ 135   1              HandleInt1Isr();
+ 136   1      }
+ 137          
+ 138          void TIMER1_ISR()
+ 139          {
+ 140   1              HandleTimer1Isr();
+ 141   1      }
+ 142          
+ 143          void UART_ISR()
+ 144          {
+ 145   1              HandleUartIsr();
+ 146   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    366    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+"C:\Program Files\MySQL\MySQL Server 5.6\bin\mysqldump.exe" -u%1 -p%2 --databases new_cd40 new_cd40_trans --log-error=%3.error -r%3

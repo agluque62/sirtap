@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+  <siteMapNode url="" title="Sistema ULISES V 5000 I"  description="Sistema CD40">
+    <siteMapNode url="~/Configuracion/ConfiguracionesOffline.aspx" title="Configuraciones Offline"  description="Gestión de Configuraciones Offline" identificador="ConfiguracionesOffline"/>
+  </siteMapNode>
+</siteMap>
