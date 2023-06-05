@@ -4282,7 +4282,7 @@ void SipCall::OnStreamDestroyed(pjsua_call_id call_id, pjmedia_session* sess, un
 pj_status_t SipCall::OnSendACK(pjsua_call_id call_id, pjsip_inv_session* inv, pjsip_rx_data* rdata, pjsip_event* e)
 {
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
-	if (sipcall && pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
+	if (sipcall && sipcall->_Dlg != NULL && pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
 	{
 		char WG67_version_value_buf[64];
 		char negED137RadVer, negED137PhoneVer;

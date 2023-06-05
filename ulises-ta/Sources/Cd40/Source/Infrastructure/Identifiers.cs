@@ -122,6 +122,19 @@ namespace U5ki.Infrastructure
         public const short IM_MASTER_MSG = 99;
 
         /// <summary>
+        /// Codigos de retorno para el mensaje de cambio de frecuencia FrChangeRsp, asociado a FR_RXTX_CHANGE_RESPONSE_MSG
+        /// </summary>
+        public const uint FR_CHANGE_OK = 500;       //Cambio de frecuencia OK
+        public const uint FR_IS_IN_USE = 501;       //La frecuencia esta seleccionada en algun puesto
+        public const uint FR_IN_PROGRESS = 502;     //Otro cambio de frecuencia esta en proceso
+        public const uint FR_EQ_NO_RESPOND = 503;   //El equipo radio no responde
+        public const uint FR_CH_REJECTED = 504;     //El cambio de frecuencia es rechazado por el equipo radio
+        public const uint FR_INCORRECT_FREQ = 505;  //La frecuancia resultante no es la correcta
+        public const uint FR_GENERIC_ERROR = 506;   //Otros errores
+        public const uint FR_TIMEOUT_ERROR = 507;   //No se ha recibido respuesta
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="t"></param>

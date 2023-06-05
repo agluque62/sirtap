@@ -513,8 +513,12 @@ namespace U5ki.CfgService
             cfg.CldSupervisionTime = soapCfg.CldSupervisionTime;
             cfg.MetodosBssOfrecidos = soapCfg.MetodosBssOfrecidos;
 			cfg.PasivoRetransmision = soapCfg.PasivoRetransmision;
-			//cfg.NombreZonaTxDefecto = soapCfg.NombreZonaTxDefecto;
-			/*
+			if (soapCfg.SelectableFrequencies != null)
+			{
+				cfg.SelectableFrequencies.AddRange(soapCfg.SelectableFrequencies);
+			}
+            //cfg.NombreZonaTxDefecto = soapCfg.NombreZonaTxDefecto;
+            /*
             if (soapCfg.MetodosBss != null)
             {
                 foreach (SoapCfg.MetodosBssDelRecurso m in soapCfg.MetodosBss)
@@ -525,7 +529,7 @@ namespace U5ki.CfgService
                 }
             }
             */
-			if (soapCfg.ListaRecursos != null)
+            if (soapCfg.ListaRecursos != null)
 			{
 				foreach (SoapCfg.CfgRecursoEnlaceExterno soapi in soapCfg.ListaRecursos)
 				{

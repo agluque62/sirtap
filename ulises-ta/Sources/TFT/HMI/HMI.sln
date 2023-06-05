@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.4.33403.182
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{38E02DAE-3828-4255-8D0E-2BD859D560D8}"
 	ProjectSection(SolutionItems) = preProject
@@ -120,6 +120,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notas", "Notas", "{731D530C
 	ProjectSection(SolutionItems) = preProject
 		Configuracion.proto.txt = Configuracion.proto.txt
 		notas.txt = notas.txt
+		notas1.txt = notas1.txt
 	EndProjectSection
 EndProject
 Global

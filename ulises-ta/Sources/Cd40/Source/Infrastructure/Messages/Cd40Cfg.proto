@@ -370,6 +370,8 @@ message CfgEnlaceExterno
 	optional int32 TiempoVueltaADefecto = 25;
 	optional uint32 PorcentajeRSSI = 26;
 	optional bool PasivoRetransmision = 27;
+	repeated string SelectableFrequencies = 28;
+	optional string DefaultFrequency = 29;
 }
 
 message CfgRecursoEnlaceInterno

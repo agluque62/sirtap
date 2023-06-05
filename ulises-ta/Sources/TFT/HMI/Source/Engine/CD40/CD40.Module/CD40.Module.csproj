@@ -162,6 +162,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\CmdManagerService.cs" />
+    <Compile Include="Services\FrChangeMsg.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Snmp\SnmpAgent.cs" />
     <Compile Include="Snmp\SnmpIntObject.cs" />

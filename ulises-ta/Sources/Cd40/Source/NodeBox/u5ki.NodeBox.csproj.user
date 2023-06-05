@@ -4,7 +4,7 @@
     <StartArguments>-console</StartArguments>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
-    <RemoteDebugMachine>DF1680:4024</RemoteDebugMachine>
+    <RemoteDebugMachine>DF1680:4026</RemoteDebugMachine>
     <StartAction>Project</StartAction>
     <StartProgram>C:\EDUARDO\Debug\U5ki.NodeBox.exe</StartProgram>
   </PropertyGroup>

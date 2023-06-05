@@ -10210,7 +10210,10 @@ namespace U5ki.CfgService.SoapCfg {
         private string estadoAsignacionField;
         
         private string[] destinoAudioField;
-        
+
+        private string[] SelectableFrequenciesField;
+        private string SelectedFrequencyField;
+
         private uint prioridadField;
         
         private bool supervisionPortadoraField;
@@ -10336,7 +10339,31 @@ namespace U5ki.CfgService.SoapCfg {
                 this.destinoAudioField = value;
             }
         }
-        
+
+        public string[] SelectableFrequencies
+        {
+            get
+            {
+                return this.SelectableFrequenciesField;
+            }
+            set
+            {
+                this.SelectableFrequenciesField = value;
+            }
+        }
+
+        public string SelectedFrequency
+        {
+            get
+            {
+                return this.SelectedFrequencyField;
+            }
+            set
+            {
+                this.SelectedFrequencyField = value;
+            }
+        }
+
         /// <remarks/>
         public uint Prioridad {
             get {

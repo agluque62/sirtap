@@ -1633,6 +1633,22 @@ namespace U5ki.Infrastructure
       get { return _PasivoRetransmision; }
       set { _PasivoRetransmision = value; }
     }
+    private readonly global::System.Collections.Generic.List<string> _SelectableFrequencies = new global::System.Collections.Generic.List<string>();
+    [global::ProtoBuf.ProtoMember(28, Name=@"SelectableFrequencies", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<string> SelectableFrequencies
+    {
+      get { return _SelectableFrequencies; }
+    }
+  
+
+    private string _DefaultFrequency = "";
+    [global::ProtoBuf.ProtoMember(29, IsRequired = false, Name=@"DefaultFrequency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string DefaultFrequency
+    {
+      get { return _DefaultFrequency; }
+      set { _DefaultFrequency = value; }
+    }
     private global::ProtoBuf.IExtension extensionObject;
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }

@@ -168,6 +168,15 @@ namespace U5ki.Infrastructure
       get { return _ErrorCode; }
       set { _ErrorCode = value; }
     }
+
+    private string _SelectedFrequency = "";
+    [global::ProtoBuf.ProtoMember(11, IsRequired = false, Name=@"SelectedFrequency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string SelectedFrequency
+    {
+      get { return _SelectedFrequency; }
+      set { _SelectedFrequency = value; }
+    }
     [global::ProtoBuf.ProtoContract(Name=@"SquelchType")]
     public enum SquelchType
     {

@@ -606,7 +606,7 @@ namespace U5ki.RdService
                 string rsId = SipUri.ToUpper() + RdRsType.Tx;
 
                 if (_frToCheck == null)
-                    _frToCheck = new RdFrecuency(IdEquipo, IdEquipo);
+                    _frToCheck = new RdFrecuency(IdEquipo, IdEquipo, IdEquipo);
 
                 if (_frToCheck.RdRs.Count == 0 || !_frToCheck.RdRs.ContainsKey(rsId))
                 {

@@ -218,7 +218,9 @@
     <EmbeddedResource Include="Resources\Messages.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ServiceNames.resx" />
+    <EmbeddedResource Include="Resources\ServiceNames.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\Lib\coresip-voter.dll">

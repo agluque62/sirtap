@@ -13,7 +13,7 @@ namespace U5ki.RdService
     /// <summary>
     /// 
     /// </summary>
-    public class RdFrecuency : BaseCode, IDisposable
+    public partial class RdFrecuency : BaseCode, IDisposable
     {
         private readonly int TIME_DELAY_TO_RTX = U5ki.RdService.Properties.Settings.Default.RtxDelay;
         private readonly int TIME_DELAY_TO_DISABLE_FREQUENCY = U5ki.RdService.Properties.Settings.Default.FrequencyDisabled * 1000;
@@ -196,21 +196,32 @@ namespace U5ki.RdService
         ///Guarda el ultimo emplazamiento seleccionado bien por SQ, bien por selección del de defecto. 
         ///Se usa para elegir el _TxRsSelected en la funcion de evaluacion
         private String _LastSelectedSite = "";
+
         /// <summary>
-        /// 
+        /// Corresponde al identificador numerico y unico del destino en la configuracion, llamado tambien Literal.
         /// </summary>
         public string IdDestino
         {
             get { return _IdDestino; }
         }
         /// <summary>
-        /// 
+        /// Corresponde a DescDestino de la configuracion. Es decir el string que describe el destino
         /// </summary>
         public string Frecuency
         {
             get { return _Frecuency; }
             set { _Frecuency = value; }
         }
+
+        /// <summary>
+        /// Corresponde a la frecuencia seleccionada desde el puesto
+        /// </summary>
+        public string SelectedFrequency
+        {
+            get { return _SelectedFrequency; }
+            set { _SelectedFrequency = value; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -248,11 +259,12 @@ namespace U5ki.RdService
         /// 
         /// </summary>
         /// <param name="fr"></param>
-        public RdFrecuency(string idDestino, string fr)
+        public RdFrecuency(string idDestino, string fr, string defaultFrequency)
         {
             NoFirstCheck = false;
             _IdDestino = idDestino;
             _Frecuency = fr;
+            _SelectedFrequency = defaultFrequency;
             PasivoRetransmision = false;
 
             _RtxSquelchTimer = new Timer(TIME_DELAY_TO_RTX)
@@ -2285,11 +2297,17 @@ namespace U5ki.RdService
         /// <summary>
         /// 
         /// </summary>
-        private string _IdDestino = null;       //Es el identificador del destino radio.
+        private string _IdDestino = null;       //Corresponde al identificador numerico y unico del destino en la configuracion, llamado tambien Literal.
         /// <summary>
         /// 
         /// </summary>
-        private string _Frecuency = null;       //Corresponde al literal del destino, tradicionalmente es la frecuencia
+        private string _Frecuency = null;       //Corresponde a DescDestino de la configuracion. Es decir el string que describe el destino
+
+        /// <summary>
+        /// Corresponde a la frecuencia seleccionada desde el puesto
+        /// </summary>
+        public string _SelectedFrequency = null; //Corresponde a la frecuencia seleccionada desde el puesto
+
         /// <summary>
         /// 
         /// </summary>
@@ -2568,6 +2586,7 @@ namespace U5ki.RdService
                     _FrRs.Squelch = RdSrvFrRs.SquelchType.SquelchOnlyPort;
                     _FrRs.SqSite = rdRs.Site;
                 }
+                _FrRs.SelectedFrequency = SelectedFrequency;
                 publish = true;
             }
 

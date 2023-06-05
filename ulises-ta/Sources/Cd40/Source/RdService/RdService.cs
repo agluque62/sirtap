@@ -1380,6 +1380,15 @@ namespace U5ki.RdService
                     });
                     break;
 
+                case Identifiers.FR_RXTX_CHANGE_ASK_MSG:
+                    _EventQueue.Enqueue("ChangingFrequency", delegate ()
+                    {
+                        FrChangeAsk ask = Serializer.Deserialize<FrChangeAsk>(ms);
+                        ProcessChangingFreq(msg.From, ask);
+                    });
+                    break;
+
+
                 ///** 20180316. MNDISABEDNODES */
                 //case Identifiers.MNDISABLED_NODES:
                 //    _EventQueue.Enqueue("MNDISABLEDNODES", delegate()
@@ -1681,7 +1690,7 @@ namespace U5ki.RdService
                                 rdFrToRemove.Remove(rdLinkId);
                             else
                             {
-                                rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino);
+                                rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino, rdLink.DefaultFrequency);
                                 rdFr.TimerElapsed += OnRdFrecuencyTimerElapsed;
                                 rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;                                
                             }
@@ -1766,7 +1775,7 @@ namespace U5ki.RdService
                 if (!_UsrFreq.ContainsKey(clave))
                 {
                     RdFrecuency rdFr;
-                    rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino);
+                    rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino, rdLink.DefaultFrequency);
                     rdFr.TimerElapsed += OnRdFrecuencyTimerElapsed;
                     rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;
                     _UsrFreq[clave] = rdFr;
@@ -2125,6 +2134,26 @@ namespace U5ki.RdService
                 }
 
                 RdRegistry.RespondToChangingSite(from, msg.Frequency, msg.Alias, numFrecuencias);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="msg"></param>
+        private void ProcessChangingFreq(string from, FrChangeAsk msg)
+        {
+            if (_Master)
+            {
+                LogInfo<RdService>(String.Format("ProcessChangingFreq {0}: iddestino {1}: New Frequency {2}", msg.HostId, msg.IdFrecuency, msg.NewFrecuency));
+                foreach (RdFrecuency rdFr in Frecuencies.Values)
+                {
+                    if (rdFr.IdDestino == msg.IdFrecuency && rdFr.FindHost(msg.HostId))
+                    {                       
+                        rdFr.ProcessChangingFreq(from, msg);
+                    }
+                }                
             }
         }
 

@@ -357,6 +357,28 @@ namespace U5ki.RdService
             }
         }
 
+        public static void RespondToChangingFreq(string to, bool result, string idFrecuency, string assignedFrecuency, string cause)
+        {
+            if (!_Master)
+                return;
+
+            if (_Registry != null)
+            {
+                FrChangeRsp response = new FrChangeRsp();
+                response.resultado = result;
+                response.IdFrecuency = idFrecuency;
+                response.AssignedFrecuency = assignedFrecuency;
+                response.Cause = cause;
+
+                MemoryStream ms = new MemoryStream();
+                Serializer.Serialize(ms, response);
+                byte[] data = ms.ToArray();
+
+                _Registry.Channel.Send(Identifiers.FR_RXTX_CHANGE_RESPONSE_MSG, data, to != null ? to : Identifiers.TopTopic);
+                //_Registry.Channel.Send(Identifiers.SITE_CHANGING_RSP, data, Identifiers.TopTopic);
+            }
+        }
+
 #if _HF_GLOBAL_STATUS_
         public static void SendHFStatus(HFStatus std)
         {
