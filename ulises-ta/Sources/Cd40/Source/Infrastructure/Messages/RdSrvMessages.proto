@@ -11,6 +11,29 @@ message RdSrvRxRs
 	required uint32 RdRxPort = 6;
 }
 
+message FrRxChangeAsk
+{
+	required string HostId = 1;
+	required string Frecuency = 2;
+	required bool Rx = 3;
+}
+
+message FrTxChangeAsk
+{
+	required string HostId = 1;
+	required string Frecuency = 2;
+	required bool Tx = 3;
+	optional uint32 PttType = 4;
+	optional bool CheckAlreadyAssigned = 5;
+}
+
+message FrTxAssigned
+{
+	required string Frecuency = 1;
+	required string UserId = 2;
+}
+
+
 message RdSrvTxRs
 {
 }

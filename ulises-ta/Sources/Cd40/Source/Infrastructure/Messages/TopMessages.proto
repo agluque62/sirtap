@@ -94,3 +94,16 @@ message FrChangeRsp
 	required uint32 Code = 4;
 }
 
+message ConferenceStatus
+{
+	enum ConfStatus
+	{
+		Ok = 0;
+		Error = 1;
+	}
+
+	required string RoomName = 1;
+	required ConfStatus Status = 2;  
+	repeated string ActiveParticipants = 3;
+}
+

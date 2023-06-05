@@ -705,6 +705,8 @@ namespace HMI.Model.Module.Services
                 {   
                     //Aparco las conversaciones establecidas y las salientes (en diferido)
                     _EngineCmdManager.SetHold(id, msg.State, true);
+					// 230529 mostrar botones de ad y quitar los de conferencia
+                    //_EngineCmdManager.ShowAdButtons();
                 }
             }
             else

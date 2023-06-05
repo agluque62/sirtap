@@ -17,7 +17,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<short> SelCalMsg;
         public event GenericEventHandler<short> SiteChanged;
         public event GenericEventHandler<short> FrChanged;//lalm 230301
-
+        GenericEventHandler<short> CambioConferenciaPreprogramada;//230512
         public string Id
 		{
 			get { return _Id; }
@@ -94,6 +94,12 @@ namespace HMI.CD40.Module.BusinessEntities
         public void NotifFrChanged(short type, object resultado)//lalm 230301
         {
             General.SafeLaunchEvent(FrChanged, resultado, type);
+        }
+
+        //230512
+        public void NotifCambioParticipantes(short type, object resultado)
+        {
+            General.SafeLaunchEvent(CambioConferenciaPreprogramada, resultado, type);
         }
 
         #region Protected Members

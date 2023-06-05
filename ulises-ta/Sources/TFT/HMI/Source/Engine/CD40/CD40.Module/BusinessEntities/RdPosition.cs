@@ -275,6 +275,7 @@ namespace HMI.CD40.Module.BusinessEntities
             _AssociateFrRs.SiteChanged += OnSiteChanged;
             _AssociateFrRs.FrChanged += OnFrTxRxChanged;//LALM 230301
 
+
             _Literal = cfg.Literal;
             //220329
             DescDestino = cfg.DescDestino;
