@@ -26,7 +26,7 @@ namespace Sacta.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:49692/Servicios/Service.asmx")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:50468/Servicios/Service.asmx")]
         public string Sacta_Ref_Service_ServiciosCD40 {
             get {
                 return ((string)(this["Sacta_Ref_Service_ServiciosCD40"]));

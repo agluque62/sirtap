@@ -253,7 +253,7 @@ public class Utilidades
 			System.IO.StreamWriter sw = new System.IO.StreamWriter(HttpContext.Current.Server.MapPath("~/") + sPathName, true);
 
             System.Text.StringBuilder sLogFormat = new System.Text.StringBuilder();
-                
+
             sLogFormat.AppendFormat("[{0} {1}] ",DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),sErrMsg) ;
 
 			sw.WriteLine(sLogFormat.ToString());

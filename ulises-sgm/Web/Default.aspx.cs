@@ -89,7 +89,9 @@ public partial class _Default : System.Web.UI.Page
         Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
         string urlMantto = config.AppSettings.Settings["UrlMantto"].Value;
         string urlRtn = config.AppSettings.Settings["UrlRetorno"].Value;
-        Response.Redirect(urlMantto + "?RetUrl=" + urlRtn + "&user=" + Context.User.Identity.Name);
+
+        string _open = "window.open('" + urlMantto + "', '_newtab');";
+        ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString(), _open, true);
     }
 
 	protected void LBWizard_Click(object sender, EventArgs e)

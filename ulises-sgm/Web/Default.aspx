@@ -45,7 +45,7 @@
                         </asp:LinkButton>
         <div style="z-index: 301; left: 15px; width: 1260px; position: absolute; top: 875px; height: 37px; text-align:center; color: black; font-family:Arial; font-size:small" >
             <br\ />
-            &#169  Grupo Amper. Copyright @ 2021-2022. Versión 2.6.2 Todos los Derechos Reservados
+            &#169  Grupo Amper. Copyright @ 2021-2023. Versión 3.0.0 Todos los Derechos Reservados
         </div>
     </form>
 
@@ -62,7 +62,7 @@
         }
     </script>
     <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
+        setInterval("PingSessionSrv()", 15000);
     </script>
 <%--Control actividad de sesión FIN    --%>
 

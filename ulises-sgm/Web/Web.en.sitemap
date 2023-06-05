@@ -25,8 +25,9 @@
           <siteMapNode url="~/Configuracion/Encaminamientos.aspx" title="Routing" description="Routing management" identificador="Encaminamientos"/>
           <siteMapNode url="" title="Destinations"  description="Destinations management">
               <siteMapNode url="~/Configuracion/DestinosTelefonia.aspx" title="Telephony"  description="Telephone destination management" />
+              <siteMapNode url="~/Configuracion/Conferencias.aspx" title="Conference"  description="Pre-scheduled conference management" identificador="Conferencias"/>
               <!--<siteMapNode url="~/Configuracion/DestinosRadio.aspx" title="Radio"  description="Radio destinations management" />-->
-              <siteMapNode url="~/Configuracion/GrupoFD.aspx" title="Radio"  description="Gestion des destinations de radio" />
+              <siteMapNode url="~/Configuracion/GrupoFD.aspx" title="Radio"  description="Management of radio destinations" />
               <siteMapNode url="~/Configuracion/Grupos.aspx" title="Groups"  description="Telephony's groups management" />
               <!--<siteMapNode url="~/Configuracion/MultiDestino.aspx" title="Multi Destination"  description="Telephony's multi destination management" />-->
           </siteMapNode>
@@ -47,7 +48,6 @@
         <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Sectorizations"  description="Sectorizations management">
           <siteMapNode url="~/Configuracion/Sector.aspx" title="Sectors"  description="Sectors management" />
           <siteMapNode url="~/Configuracion/Agrupacion.aspx" title="Sectors' Groupings"  description="Management of sectors grouping" />
-          <siteMapNode url="~/Configuracion/DependenciasATS.aspx" title="ATS Site"  description="Air Traffic Service Site" identificador="DependenciasATS"/>
         </siteMapNode>
           <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Database Backup Restore" identificador="BackupRestore"/>
 

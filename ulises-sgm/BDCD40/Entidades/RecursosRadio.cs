@@ -167,7 +167,20 @@ namespace CD40.BD.Entidades
             get { return _DescDestino; }
             set { _DescDestino = value; }
         }
+        // RQF 8422
+        private int _Telemando;
+        public int Telemando
+        {
+            get { return _Telemando; }
+            set { _Telemando = value; }
+        }  
+
+
         #endregion
+
+
+
+
 
         public RecursosRadio()
             : base()
@@ -388,6 +401,10 @@ namespace CD40.BD.Entidades
                     if (null != dr["DescDestino"] && dr["DescDestino"] != System.DBNull.Value)
                         pr.DescDestino = (string)dr["DescDestino"];
 
+                    // RQF 8422
+                    if (dr["Telemando"] != System.DBNull.Value)
+                        pr.Telemando = (int)dr["Telemando"];
+
                     ListaResultado.Add(pr);
                 }
             }
@@ -412,10 +429,10 @@ namespace CD40.BD.Entidades
              strConsulta.Append("IdDestino,IdEmplazamiento,tabla_bss_idtabla_bss,EM,SQ,PTT,FrqTonoE,UmbralTonoE,");
              strConsulta.Append("FrqTonoM,UmbralTonoM,FrqTonoSQ,UmbralTonoSQ,FrqTonoPTT,UmbralTonoPTT,BSS,NTZ,TipoNTZ,Cifrado," );
              strConsulta.Append("SupervPortadoraTX,SupervModuladoraTX,ModoConfPTT,RepSQyBSS," );
-             strConsulta.Append("DesactivacionSQ,TimeoutPTT,UmbralVAD,TiempoPTT,NumFlujosAudio,KeepAlivePeriod,KeepAliveMultiplier,RedundanciaRol,RedundanciaIdPareja, DescDestino)");
+             strConsulta.Append("DesactivacionSQ,TimeoutPTT,UmbralVAD,TiempoPTT,NumFlujosAudio,KeepAlivePeriod,KeepAliveMultiplier,RedundanciaRol,RedundanciaIdPareja, DescDestino, Telemando)");
              strFormatoValues.Append("VALUES ('{0}','{1}',{2},{3},{4},<LastInsertedValue>,");
              strFormatoValues.Append("{5},'{6}',{7},{8},'{9}','{10}',{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},");
-             strFormatoValues.Append("{23},{24},{25},{26},{27},{28},{29},{30},{31},{32},{33},{34},{35},'{36}')");
+             strFormatoValues.Append("{23},{24},{25},{26},{27},{28},{29},{30},{31},{32},{33},{34},{35},'{36}', {37})");
 
              strConsulta.AppendFormat(strFormatoValues.ToString(),IdSistema,IdRecurso,TipoRecurso,TipoDestino,Zonas_IdZonas,
                                         ((IdDestino == null) ? "null" : ("'" + IdDestino + "'")),
@@ -449,7 +466,8 @@ namespace CD40.BD.Entidades
                                         KeepAliveMultiplier, //33
                                         ((string.IsNullOrEmpty(RedundanciaRol)) ? "null" : ("'" + RedundanciaRol + "'")) ,
                                         ((string.IsNullOrEmpty(RedundanciaIdPareja)) ? "null" : ("'" + RedundanciaIdPareja + "'")),
-                                        DescDestino);
+                                        DescDestino,
+                                        Telemando);
 
             consulta[3] = strConsulta.ToString();
             consulta[4] = ReplaceSQL(IdSistema, "RecursosRadio");
@@ -506,8 +524,9 @@ namespace CD40.BD.Entidades
                                             "NumFlujosAudio=" + NumFlujosAudio + "," +
                                             "KeepAlivePeriod=" + KeepAlivePeriod + "," +
                                             "KeepAliveMultiplier=" + KeepAliveMultiplier + "," +
-                                            "DescDestino='" + DescDestino + "' " +
-                                            "WHERE IdRecurso='" + IdRecurso + "' AND " + "IdSistema='" + IdSistema + "'"
+                                            "DescDestino='" + DescDestino + "'," +
+                                            "Telemando=" + Telemando +
+                                            " WHERE IdRecurso='" + IdRecurso + "' AND " + "IdSistema='" + IdSistema + "'"
                                             );
 
             consulta[3] = strConsulta.ToString();
@@ -705,7 +724,6 @@ namespace CD40.BD.Entidades
                                 pr.ValuesTablaBss[(int)dr["valor_prop"]] = (int)dr["valor_rssi"];
                             }
                         }
-
                         if (dr["EM"] != System.DBNull.Value)
                             pr.EM = (bool)dr["GrabacionEd137"]; // Provisionalmente, en EM se deja el estado de la grabación del recurso
                         // Para no tener que cambiar la interfaz SOAP en la pasarela (bool)dr["EM"]; 
@@ -785,20 +803,17 @@ namespace CD40.BD.Entidades
                             pr.OffSetFrequency = (int)dr["OffSetFrequency"];
                         if (dr["EnableEventPttSq"] != System.DBNull.Value)
                             pr.EnableEventPttSq = (bool)dr["EnableEventPttSq"];
-
                         if (dr["RedundanciaRol"] != System.DBNull.Value)
                             pr.RedundanciaRol = (string)dr["RedundanciaRol"];
-
                         if (dr["RedundanciaIdPareja"] != System.DBNull.Value)
                             pr.RedundanciaIdPareja = (string)dr["RedundanciaIdPareja"];
-
-
                         if (dr["UmbralAGCTXdBm"] != System.DBNull.Value)
                             pr.UmbralAGCTXdBm = (float)dr["UmbralAGCTXdBm"];
-
                         if (dr["UmbralAGCRXdBm"] != System.DBNull.Value)
                             pr.UmbralAGCRXdBm = (float)dr["UmbralAGCRXdBm"];
-
+                        // RQF 8422
+                        if (dr["Telemando"] != System.DBNull.Value)
+                            pr.Telemando = (int)dr["Telemando"];
                         ListaResultado.Add(pr);
                     }
                     else

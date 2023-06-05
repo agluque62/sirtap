@@ -370,7 +370,13 @@ public partial class DestinosRadio : PageBaseCD40.PageCD40	// System.Web.UI.Page
     {
         try
         {
+
 			bool destinoAnadido = false;
+            // RQF 8422
+            string sFrecuenciaDefecto = String.Empty;
+            string[] sFrecuencias = new string[1];
+            sFrecuencias[0] = String.Empty;
+
             ServiciosCD40.DestinosRadio n = new ServiciosCD40.DestinosRadio();
             n.IdSistema = (string)Session["idsistema"];
             if (TxtIdEnlace.Enabled) //Nuevo Enlace 
@@ -414,7 +420,7 @@ public partial class DestinosRadio : PageBaseCD40.PageCD40	// System.Web.UI.Page
 			if (TxtIdEnlace.Enabled) //Nuevo Enlace
 			{
 //				ServicioCD40.AsignaEnlaceARecurso(ltf);
-				destinoAnadido = ServicioCD40.AnadeDestinoRadio(n, r, ltf);
+                destinoAnadido = ServicioCD40.AnadeDestinoRadio(n, r, ltf, sFrecuenciaDefecto, sFrecuencias);
 				//				if (ServicioCD40.InsertSQL(n) < 0)
 				//                    logDebugView.Warn("(DestinosRadio-GuardarCambios): No se han podido insertar los datos (InsertSQL).");
 				//                else
@@ -452,7 +458,7 @@ public partial class DestinosRadio : PageBaseCD40.PageCD40	// System.Web.UI.Page
                 
                 //if (ServicioCD40.UpdateSQL(n) < 0)
 				//    logDebugView.Warn("(DestinosRadio-GuardarCambios): No se han podido actualizar los datos (UpdateSQL).");
-				destinoAnadido = ServicioCD40.ModificaDestinoRadio(n, r, ltf);
+				destinoAnadido = ServicioCD40.ModificaDestinoRadio(n, r, ltf, sFrecuenciaDefecto, sFrecuencias);
 				//				if (ServicioCD40.InsertSQL(n) < 0)
 				//                    logDebugView.Warn("(DestinosRadio-GuardarCambios): No se han podido insertar los datos (InsertSQL).");
 				//                else

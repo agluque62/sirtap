@@ -184,8 +184,7 @@ namespace CD40.BD.Entidades
                                          SlotPasarela + "," +
                                          NumDispositivoSlot + "," +
                                          ((ServidorSIP == null) ? "null," : ("'" + ServidorSIP + "',")) +
-                                         Diffserv + 
-                                         ")");
+                                         Diffserv + ")" );
 
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "Recursos");
@@ -207,10 +206,10 @@ namespace CD40.BD.Entidades
                                             "SlotPasarela=" + SlotPasarela + "," +
                                             "NumDispositivoSlot=" + NumDispositivoSlot + "," +
                                             "ServidorSIP=" + ((ServidorSIP == null) ? "null, " : ("'" + ServidorSIP + "',")) +
-                                            "Diffserv=" + Diffserv +
+                                            "Diffserv=" + Diffserv + 
                                             // Quitamos TipoRecurso del WHERE porque puede que haya cambiado el tipo de interfaz
                                             // en un recurso de telefonía de LCEN a otro de telefonía o vv. en cuyo caso, el update no lo encontraría
-                                            " WHERE IdRecurso='" + IdRecurso + "' AND IdSistema='" + IdSistema + "'"    
+                                            " WHERE IdRecurso='" + IdRecurso + "' AND IdSistema='" + IdSistema + "'"
                                             );
 
 			consulta[0] = Consulta.ToString();

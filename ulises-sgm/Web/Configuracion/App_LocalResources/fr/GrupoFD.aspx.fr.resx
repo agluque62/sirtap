@@ -463,7 +463,7 @@
     <value>La Fréquence syntonisée n'est pas correcte.</value>
   </data>
   <data name="RFV_TBTunedFrequencyResource1.ErrorMessage" xml:space="preserve">
-    <value> Le champ de fréquence syntonisée ne peut pas être vide.</value>
+    <value>Le champ de fréquence syntonisée ne peut pas être vide.</value>
   </data>
   <data name="DListModoTransmisionRes.ToolTip" xml:space="preserve">
     <value>Climax, Dernière Réception</value>
@@ -546,5 +546,53 @@
   </data>
   <data name="CheckPasivoRetransmisionResource1.Text" xml:space="preserve">
     <value>Retransmission passive</value>
+  </data>
+  <data name="CheckedMultiFrecuencia.ToolTip" xml:space="preserve">
+    <value>Destination avec MultiFrequency activé.</value>
+  </data>
+  <data name="CheckedMultiFrecuenciaResource1.Text" xml:space="preserve">
+    <value>MultiFreq.</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.Text" xml:space="preserve">
+    <value>F. Défaut</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.ToolTip" xml:space="preserve">
+    <value>Fréquence sélectionnée par défaut pour la configuration de votre équipement.</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.Text" xml:space="preserve">
+    <value>F. (MHz)</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.ToolTip" xml:space="preserve">
+    <value>Champ de saisie de fréquence.</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.Text" xml:space="preserve">
+    <value>Fréquences</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.ToolTip" xml:space="preserve">
+    <value>Liste des fréquences attribuées à la destination radio.</value>
+  </data>
+  <data name="LbMFGestionMFResource1.Text" xml:space="preserve">
+    <value>Gestion Multi-Fréquence</value>
+  </data>
+  <data name="LbMFGestionMFResource1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TXTFrecuenciaDuplicada" xml:space="preserve">
+    <value>Fréquence déjà incluse.</value>
+  </data>
+  <data name="TXTFrecuenciasDestinoIncompatibles" xml:space="preserve">
+    <value>Fréquences non compatibles avec le type de gamme sélectionné.</value>
+  </data>
+  <data name="TXTMaximoFrecuenciasDestino" xml:space="preserve">
+    <value>Dépasse les fréquences maximales par destination.</value>
+  </data>
+  <data name="TXTMFOpcionNoCompatible" xml:space="preserve">
+    <value>La multifréquence ne peut pas être activée sans fréquences attribuées.</value>
+  </data>
+  <data name="TXTRecursosDestinoIncompatibles" xml:space="preserve">
+    <value>Les ressources sélectionnées sont incompatibles avec Multifréquence.</value>
+  </data>
+  <data name="TBMFrecuenciaResource1.Tooltip" xml:space="preserve">
+    <value>Valeur de fréquence en MHz (NNN.NNN)</value>
   </data>
 </root>

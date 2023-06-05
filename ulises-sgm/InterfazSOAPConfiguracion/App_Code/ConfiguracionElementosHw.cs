@@ -32,7 +32,6 @@ namespace ConfiguracionElementosHw
     //    }
     //}
 
-
     #region Parametros Multicast
     public class ParametrosMulticast
     {
@@ -290,10 +289,12 @@ namespace ConfiguracionElementosHw
         public int OffSetFrequency;
         // Parametro EnableEventPttSq
         public bool EnableEventPttSq;
-        //public string id del recursoPar de redundancia, vacio si no hay redundancia
+        // public string id del recursoPar de redundancia, vacio si no hay redundancia
         public string RedundanciaIdPareja;
-        //Rol en 1+1, principal=P, reserva=R, vacio si ho hay redundancia
+        // Rol en 1+1, principal=P, reserva=R, vacio si ho hay redundancia
         public string RedundanciaRol;
+        // Indica si el equipo puede ser telemandado
+        public int Telemando;
     }
 
     public class CfgEnlaceExterno
@@ -356,8 +357,11 @@ namespace ConfiguracionElementosHw
 
         //Porcentaje que no es RSSI
         public string PorcentajeRSSI;
-
+        // RQF 2823
         public bool PasivoRetransmision;
+        // RQF 8422
+        public List<string> SelectableFrequencies; 
+        public string DefaultFrequency;
     }
     #endregion
 
@@ -507,5 +511,27 @@ namespace ConfiguracionElementosHw
         public string IdEmplazamiento;
     }
 
+    #endregion
+
+    #region Conferencias Preprogramadas
+    public class Participantes
+    {
+        public string SipUri;
+        public string Descripcion;
+    }
+    public class Conferencia
+    {
+        public string IdSalaBkk;
+        public int TipoConferencia;
+        public string Alias;
+        public int PosHMI;
+        // Lista de participantes
+        public Participantes[] ParticipantesConferencia;
+    }
+    public class ConferenciasPreprogramadas
+    {
+        // Lista de conferencias
+        public Conferencia[] ConferenciaProgramada;
+    }
     #endregion
 }

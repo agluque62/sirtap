@@ -129,6 +129,9 @@
   <data name="EmptySectError" xml:space="preserve">
     <value>Sectorización vacía</value>
   </data>
+  <data name="GroupingCoreSectorsTopError" xml:space="preserve">
+    <value>Sectores de distintos núcleos asociados a la misma UCS</value>
+  </data>
   <data name="LoadActiveCfgError" xml:space="preserve">
     <value>Error obteniendo la configuración activa de la base de datos</value>
   </data>

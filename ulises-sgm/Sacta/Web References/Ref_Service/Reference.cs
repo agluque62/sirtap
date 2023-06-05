@@ -92,6 +92,14 @@ namespace Sacta.Ref_Service {
         
         private System.Threading.SendOrPostCallback GetIdEsquemaOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GestionSesionOperadorOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback GetEstadoOperadoresEnSesionOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback GetSectoresDuplicadosSectorizacionOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ActualizaOperadoresOfflineOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ControladoresRecuperaSectorizacionesOperationCompleted;
         
         private System.Threading.SendOrPostCallback ControladoresRecuperaIdSectorizacionActivaOperationCompleted;
@@ -408,6 +416,18 @@ namespace Sacta.Ref_Service {
         
         /// <remarks/>
         public event GetIdEsquemaCompletedEventHandler GetIdEsquemaCompleted;
+        
+        /// <remarks/>
+        public event GestionSesionOperadorCompletedEventHandler GestionSesionOperadorCompleted;
+        
+        /// <remarks/>
+        public event GetEstadoOperadoresEnSesionCompletedEventHandler GetEstadoOperadoresEnSesionCompleted;
+        
+        /// <remarks/>
+        public event GetSectoresDuplicadosSectorizacionCompletedEventHandler GetSectoresDuplicadosSectorizacionCompleted;
+        
+        /// <remarks/>
+        public event ActualizaOperadoresOfflineCompletedEventHandler ActualizaOperadoresOfflineCompleted;
         
         /// <remarks/>
         public event ControladoresRecuperaSectorizacionesCompletedEventHandler ControladoresRecuperaSectorizacionesCompleted;
@@ -1680,6 +1700,131 @@ namespace Sacta.Ref_Service {
             if ((this.GetIdEsquemaCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetIdEsquemaCompleted(this, new GetIdEsquemaCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GestionSesionOperador", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void GestionSesionOperador(string id_sistema, string id_operador, int sesionactiva, int sesionestado) {
+            this.Invoke("GestionSesionOperador", new object[] {
+                        id_sistema,
+                        id_operador,
+                        sesionactiva,
+                        sesionestado});
+        }
+        
+        /// <remarks/>
+        public void GestionSesionOperadorAsync(string id_sistema, string id_operador, int sesionactiva, int sesionestado) {
+            this.GestionSesionOperadorAsync(id_sistema, id_operador, sesionactiva, sesionestado, null);
+        }
+        
+        /// <remarks/>
+        public void GestionSesionOperadorAsync(string id_sistema, string id_operador, int sesionactiva, int sesionestado, object userState) {
+            if ((this.GestionSesionOperadorOperationCompleted == null)) {
+                this.GestionSesionOperadorOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGestionSesionOperadorOperationCompleted);
+            }
+            this.InvokeAsync("GestionSesionOperador", new object[] {
+                        id_sistema,
+                        id_operador,
+                        sesionactiva,
+                        sesionestado}, this.GestionSesionOperadorOperationCompleted, userState);
+        }
+        
+        private void OnGestionSesionOperadorOperationCompleted(object arg) {
+            if ((this.GestionSesionOperadorCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GestionSesionOperadorCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetEstadoOperadoresEnSesion", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public System.Data.DataSet GetEstadoOperadoresEnSesion(string id_sistema, int sesion_activa) {
+            object[] results = this.Invoke("GetEstadoOperadoresEnSesion", new object[] {
+                        id_sistema,
+                        sesion_activa});
+            return ((System.Data.DataSet)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetEstadoOperadoresEnSesionAsync(string id_sistema, int sesion_activa) {
+            this.GetEstadoOperadoresEnSesionAsync(id_sistema, sesion_activa, null);
+        }
+        
+        /// <remarks/>
+        public void GetEstadoOperadoresEnSesionAsync(string id_sistema, int sesion_activa, object userState) {
+            if ((this.GetEstadoOperadoresEnSesionOperationCompleted == null)) {
+                this.GetEstadoOperadoresEnSesionOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetEstadoOperadoresEnSesionOperationCompleted);
+            }
+            this.InvokeAsync("GetEstadoOperadoresEnSesion", new object[] {
+                        id_sistema,
+                        sesion_activa}, this.GetEstadoOperadoresEnSesionOperationCompleted, userState);
+        }
+        
+        private void OnGetEstadoOperadoresEnSesionOperationCompleted(object arg) {
+            if ((this.GetEstadoOperadoresEnSesionCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetEstadoOperadoresEnSesionCompleted(this, new GetEstadoOperadoresEnSesionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetSectoresDuplicadosSectorizacion", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GetSectoresDuplicadosSectorizacion(string id_Sistema, string id_Sectorizacion, bool estadoSacta) {
+            object[] results = this.Invoke("GetSectoresDuplicadosSectorizacion", new object[] {
+                        id_Sistema,
+                        id_Sectorizacion,
+                        estadoSacta});
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetSectoresDuplicadosSectorizacionAsync(string id_Sistema, string id_Sectorizacion, bool estadoSacta) {
+            this.GetSectoresDuplicadosSectorizacionAsync(id_Sistema, id_Sectorizacion, estadoSacta, null);
+        }
+        
+        /// <remarks/>
+        public void GetSectoresDuplicadosSectorizacionAsync(string id_Sistema, string id_Sectorizacion, bool estadoSacta, object userState) {
+            if ((this.GetSectoresDuplicadosSectorizacionOperationCompleted == null)) {
+                this.GetSectoresDuplicadosSectorizacionOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetSectoresDuplicadosSectorizacionOperationCompleted);
+            }
+            this.InvokeAsync("GetSectoresDuplicadosSectorizacion", new object[] {
+                        id_Sistema,
+                        id_Sectorizacion,
+                        estadoSacta}, this.GetSectoresDuplicadosSectorizacionOperationCompleted, userState);
+        }
+        
+        private void OnGetSectoresDuplicadosSectorizacionOperationCompleted(object arg) {
+            if ((this.GetSectoresDuplicadosSectorizacionCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetSectoresDuplicadosSectorizacionCompleted(this, new GetSectoresDuplicadosSectorizacionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/ActualizaOperadoresOffline", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public bool ActualizaOperadoresOffline() {
+            object[] results = this.Invoke("ActualizaOperadoresOffline", new object[0]);
+            return ((bool)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ActualizaOperadoresOfflineAsync() {
+            this.ActualizaOperadoresOfflineAsync(null);
+        }
+        
+        /// <remarks/>
+        public void ActualizaOperadoresOfflineAsync(object userState) {
+            if ((this.ActualizaOperadoresOfflineOperationCompleted == null)) {
+                this.ActualizaOperadoresOfflineOperationCompleted = new System.Threading.SendOrPostCallback(this.OnActualizaOperadoresOfflineOperationCompleted);
+            }
+            this.InvokeAsync("ActualizaOperadoresOffline", new object[0], this.ActualizaOperadoresOfflineOperationCompleted, userState);
+        }
+        
+        private void OnActualizaOperadoresOfflineOperationCompleted(object arg) {
+            if ((this.ActualizaOperadoresOfflineCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ActualizaOperadoresOfflineCompleted(this, new ActualizaOperadoresOfflineCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -4703,8 +4848,7 @@ namespace Sacta.Ref_Service {
     }
     
     /// <comentarios/>
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ValoresTabla))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Tabla_bss_recurso))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TifX))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Top))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Sistema))]
@@ -4750,9 +4894,9 @@ namespace Sacta.Ref_Service {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Radio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NivelesSCV))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Niveles))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Altavoces))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresSector))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresAgrupacion))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TroncalesRuta))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TeclasSectorSCV))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TeclasSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSectorSCV))]
@@ -4762,8 +4906,8 @@ namespace Sacta.Ref_Service {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DependenciasATS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PermisosOpeDepATS))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Zonas))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ValoresTabla))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Tabla_bss))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Tabla_bss_recurso))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RadioParam))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MetodosBss))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(MetodosbssDestinosradio))]
@@ -4774,9 +4918,10 @@ namespace Sacta.Ref_Service {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Incidencias))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HistoricoIncidencias))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EquiposEU))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TroncalesRuta))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Altavoces))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Agrupaciones))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Alarmas))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresAgrupacion))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Destinos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosTelefonia))]
@@ -4943,23 +5088,19 @@ namespace Sacta.Ref_Service {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class ValoresTabla : Tablas {
+    public partial class Tabla_bss_recurso : Tablas {
         
-        private int idValores_TablaField;
+        private int id_Tabla_bss_recursoField;
         
         private int tabla_bss_idtabla_bssField;
         
-        private int valor_PropField;
-        
-        private int valor_rssiField;
-        
         /// <comentarios/>
-        public int IdValores_Tabla {
+        public int Id_Tabla_bss_recurso {
             get {
-                return this.idValores_TablaField;
+                return this.id_Tabla_bss_recursoField;
             }
             set {
-                this.idValores_TablaField = value;
+                this.id_Tabla_bss_recursoField = value;
             }
         }
         
@@ -4970,59 +5111,6 @@ namespace Sacta.Ref_Service {
             }
             set {
                 this.tabla_bss_idtabla_bssField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public int Valor_Prop {
-            get {
-                return this.valor_PropField;
-            }
-            set {
-                this.valor_PropField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public int Valor_rssi {
-            get {
-                return this.valor_rssiField;
-            }
-            set {
-                this.valor_rssiField = value;
-            }
-        }
-    }
-    
-    /// <comentarios/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34209")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class GruposTelefonia : Tablas {
-        
-        private string idSistemaField;
-        
-        private string idGrupoField;
-        
-        /// <comentarios/>
-        public string IdSistema {
-            get {
-                return this.idSistemaField;
-            }
-            set {
-                this.idSistemaField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public string IdGrupo {
-            get {
-                return this.idGrupoField;
-            }
-            set {
-                this.idGrupoField = value;
             }
         }
     }
@@ -5826,6 +5914,10 @@ namespace Sacta.Ref_Service {
         
         private int timeoutSesionField;
         
+        private int sesionActivaField;
+        
+        private int sesionEstadoField;
+        
         /// <comentarios/>
         public string IdOperador {
             get {
@@ -5923,6 +6015,26 @@ namespace Sacta.Ref_Service {
             }
             set {
                 this.timeoutSesionField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public int SesionActiva {
+            get {
+                return this.sesionActivaField;
+            }
+            set {
+                this.sesionActivaField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public int SesionEstado {
+            get {
+                return this.sesionEstadoField;
+            }
+            set {
+                this.sesionEstadoField = value;
             }
         }
     }
@@ -10214,23 +10326,11 @@ namespace Sacta.Ref_Service {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Altavoces : Tablas {
+    public partial class GruposTelefonia : Tablas {
         
         private string idSistemaField;
         
-        private string idDestinoField;
-        
-        private uint tipoDestinoField;
-        
-        private string idNucleoField;
-        
-        private string idSectorField;
-        
-        private uint posHMIField;
-        
-        private uint numAltavozField;
-        
-        private string estadoField;
+        private string idGrupoField;
         
         /// <comentarios/>
         public string IdSistema {
@@ -10243,72 +10343,12 @@ namespace Sacta.Ref_Service {
         }
         
         /// <comentarios/>
-        public string IdDestino {
+        public string IdGrupo {
             get {
-                return this.idDestinoField;
+                return this.idGrupoField;
             }
             set {
-                this.idDestinoField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public uint TipoDestino {
-            get {
-                return this.tipoDestinoField;
-            }
-            set {
-                this.tipoDestinoField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public string IdNucleo {
-            get {
-                return this.idNucleoField;
-            }
-            set {
-                this.idNucleoField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public string IdSector {
-            get {
-                return this.idSectorField;
-            }
-            set {
-                this.idSectorField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public uint PosHMI {
-            get {
-                return this.posHMIField;
-            }
-            set {
-                this.posHMIField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public uint NumAltavoz {
-            get {
-                return this.numAltavozField;
-            }
-            set {
-                this.numAltavozField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public string Estado {
-            get {
-                return this.estadoField;
-            }
-            set {
-                this.estadoField = value;
+                this.idGrupoField = value;
             }
         }
     }
@@ -10388,25 +10428,15 @@ namespace Sacta.Ref_Service {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class SectoresAgrupacion : Tablas {
-        
-        private string idAgrupacionField;
+    public partial class TroncalesRuta : Tablas {
         
         private string idSistemaField;
         
-        private string idSectorField;
+        private string idTroncalField;
         
-        private string idNucleoField;
+        private string centralField;
         
-        /// <comentarios/>
-        public string IdAgrupacion {
-            get {
-                return this.idAgrupacionField;
-            }
-            set {
-                this.idAgrupacionField = value;
-            }
-        }
+        private string idRutaField;
         
         /// <comentarios/>
         public string IdSistema {
@@ -10419,22 +10449,32 @@ namespace Sacta.Ref_Service {
         }
         
         /// <comentarios/>
-        public string IdSector {
+        public string IdTroncal {
             get {
-                return this.idSectorField;
+                return this.idTroncalField;
             }
             set {
-                this.idSectorField = value;
+                this.idTroncalField = value;
             }
         }
         
         /// <comentarios/>
-        public string IdNucleo {
+        public string Central {
             get {
-                return this.idNucleoField;
+                return this.centralField;
             }
             set {
-                this.idNucleoField = value;
+                this.centralField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string IdRuta {
+            get {
+                return this.idRutaField;
+            }
+            set {
+                this.idRutaField = value;
             }
         }
     }
@@ -11157,6 +11197,63 @@ namespace Sacta.Ref_Service {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class ValoresTabla : Tablas {
+        
+        private int idValores_TablaField;
+        
+        private int tabla_bss_idtabla_bssField;
+        
+        private int valor_PropField;
+        
+        private int valor_rssiField;
+        
+        /// <comentarios/>
+        public int IdValores_Tabla {
+            get {
+                return this.idValores_TablaField;
+            }
+            set {
+                this.idValores_TablaField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public int Tabla_bss_idtabla_bss {
+            get {
+                return this.tabla_bss_idtabla_bssField;
+            }
+            set {
+                this.tabla_bss_idtabla_bssField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public int Valor_Prop {
+            get {
+                return this.valor_PropField;
+            }
+            set {
+                this.valor_PropField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public int Valor_rssi {
+            get {
+                return this.valor_rssiField;
+            }
+            set {
+                this.valor_rssiField = value;
+            }
+        }
+    }
+    
+    /// <comentarios/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34209")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public partial class Tabla_bss : Tablas {
         
         private int idTabla_bssField;
@@ -11192,39 +11289,6 @@ namespace Sacta.Ref_Service {
             }
             set {
                 this.descriptionField = value;
-            }
-        }
-    }
-    
-    /// <comentarios/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34209")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Tabla_bss_recurso : Tablas {
-        
-        private int id_Tabla_bss_recursoField;
-        
-        private int tabla_bss_idtabla_bssField;
-        
-        /// <comentarios/>
-        public int Id_Tabla_bss_recurso {
-            get {
-                return this.id_Tabla_bss_recursoField;
-            }
-            set {
-                this.id_Tabla_bss_recursoField = value;
-            }
-        }
-        
-        /// <comentarios/>
-        public int Tabla_bss_idtabla_bss {
-            get {
-                return this.tabla_bss_idtabla_bssField;
-            }
-            set {
-                this.tabla_bss_idtabla_bssField = value;
             }
         }
     }
@@ -12190,15 +12254,23 @@ namespace Sacta.Ref_Service {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class TroncalesRuta : Tablas {
+    public partial class Altavoces : Tablas {
         
         private string idSistemaField;
         
-        private string idTroncalField;
+        private string idDestinoField;
         
-        private string centralField;
+        private uint tipoDestinoField;
         
-        private string idRutaField;
+        private string idNucleoField;
+        
+        private string idSectorField;
+        
+        private uint posHMIField;
+        
+        private uint numAltavozField;
+        
+        private string estadoField;
         
         /// <comentarios/>
         public string IdSistema {
@@ -12211,32 +12283,72 @@ namespace Sacta.Ref_Service {
         }
         
         /// <comentarios/>
-        public string IdTroncal {
+        public string IdDestino {
             get {
-                return this.idTroncalField;
+                return this.idDestinoField;
             }
             set {
-                this.idTroncalField = value;
+                this.idDestinoField = value;
             }
         }
         
         /// <comentarios/>
-        public string Central {
+        public uint TipoDestino {
             get {
-                return this.centralField;
+                return this.tipoDestinoField;
             }
             set {
-                this.centralField = value;
+                this.tipoDestinoField = value;
             }
         }
         
         /// <comentarios/>
-        public string IdRuta {
+        public string IdNucleo {
             get {
-                return this.idRutaField;
+                return this.idNucleoField;
             }
             set {
-                this.idRutaField = value;
+                this.idNucleoField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string IdSector {
+            get {
+                return this.idSectorField;
+            }
+            set {
+                this.idSectorField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public uint PosHMI {
+            get {
+                return this.posHMIField;
+            }
+            set {
+                this.posHMIField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public uint NumAltavoz {
+            get {
+                return this.numAltavozField;
+            }
+            set {
+                this.numAltavozField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string Estado {
+            get {
+                return this.estadoField;
+            }
+            set {
+                this.estadoField = value;
             }
         }
     }
@@ -12327,6 +12439,63 @@ namespace Sacta.Ref_Service {
             }
             set {
                 this.alarmaField = value;
+            }
+        }
+    }
+    
+    /// <comentarios/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34209")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class SectoresAgrupacion : Tablas {
+        
+        private string idAgrupacionField;
+        
+        private string idSistemaField;
+        
+        private string idSectorField;
+        
+        private string idNucleoField;
+        
+        /// <comentarios/>
+        public string IdAgrupacion {
+            get {
+                return this.idAgrupacionField;
+            }
+            set {
+                this.idAgrupacionField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string IdSistema {
+            get {
+                return this.idSistemaField;
+            }
+            set {
+                this.idSistemaField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string IdSector {
+            get {
+                return this.idSectorField;
+            }
+            set {
+                this.idSectorField = value;
+            }
+        }
+        
+        /// <comentarios/>
+        public string IdNucleo {
+            get {
+                return this.idNucleoField;
+            }
+            set {
+                this.idNucleoField = value;
             }
         }
     }
@@ -13404,6 +13573,88 @@ namespace Sacta.Ref_Service {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    public delegate void GestionSesionOperadorCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    public delegate void GetEstadoOperadoresEnSesionCompletedEventHandler(object sender, GetEstadoOperadoresEnSesionCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetEstadoOperadoresEnSesionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetEstadoOperadoresEnSesionCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public System.Data.DataSet Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((System.Data.DataSet)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    public delegate void GetSectoresDuplicadosSectorizacionCompletedEventHandler(object sender, GetSectoresDuplicadosSectorizacionCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetSectoresDuplicadosSectorizacionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetSectoresDuplicadosSectorizacionCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    public delegate void ActualizaOperadoresOfflineCompletedEventHandler(object sender, ActualizaOperadoresOfflineCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ActualizaOperadoresOfflineCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ActualizaOperadoresOfflineCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public bool Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((bool)(this.results[0]));
             }
         }
     }

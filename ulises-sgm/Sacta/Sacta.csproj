@@ -178,10 +178,10 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://localhost:49692/Servicios/Service.asmx">
+    <WebReferenceUrl Include="http://localhost:50468/Servicios/Service.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\Ref_Service\</RelPath>
-      <UpdateFromURL>http://localhost:49692/Servicios/Service.asmx</UpdateFromURL>
+      <UpdateFromURL>http://localhost:50468/Servicios/Service.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

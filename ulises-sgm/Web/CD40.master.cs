@@ -44,12 +44,7 @@ public partial class CD40 : System.Web.UI.MasterPage
     static private bool bSistemaEnConfiguracionOffline = false;
     static private string sistema = string.Empty;
     static private string operador = string.Empty;
-
-    public enum Sesion_Activa { NO_INICIADA = 0, INICIADA };
-    public enum Sesion_Estado { FINALIZADA = 0, ACTIVA, SUPERVISADA, CADUCADA };
-    
-    static System.Timers.Timer _PeriodicTasksSession;
-    static int iTiempoControlSession = 5000; 
+    static private bool bAccesoConferenciasPreprogramadas = false;
 
 	protected void Page_Load(object sender, EventArgs e)
 	{
@@ -105,6 +100,7 @@ public partial class CD40 : System.Web.UI.MasterPage
 
             if (false == IsPostBack)
             {
+                bAccesoConferenciasPreprogramadas = MostrarConferenciasPreprogramadas(); 
                 // 20210317 #4749
                 // Acceso a configuración dependenciasATS
                 //bAccesoDependenciasATS = SistemaConDependenciasATS();
@@ -113,8 +109,8 @@ public partial class CD40 : System.Web.UI.MasterPage
                 {
                     bSistemaEnConfiguracionOffline = true;
                     LbIdEsquema.Text = serviceServiciosCD40.GetIdEsquema();
+                    bAccesoBackupRestore = false;
                 }
-
                 if (TreeView1.Visible || DivWizard.Visible)
                 {
                     //Se lee del fichero de configuración si hay que eliminar del árbol de menú las opciones
@@ -139,7 +135,6 @@ public partial class CD40 : System.Web.UI.MasterPage
 
                     // 20210317 #4749
                     // Acceso a configuración dependenciasATS en Wizard siempre desactivado
-                     BtnDependenciasATS.Visible = false;
                      bAccesoDependenciasATS = false;
                      //20211130 #2851
                      // Acceso a Backup/Restore en Wizard siempre desactivado
@@ -168,7 +163,7 @@ public partial class CD40 : System.Web.UI.MasterPage
                 {
                     //Solo el perfil 3 tiene acceso al informe de operadores
                     //20211130 #2851
-                    if (string.Compare(strPerfil, "3") == 0)
+                    if (string.Compare(strPerfil, "3") == 0 && !SistemaEnConfiguracionOffline())
                     {
                         bAccesoInfOperadores = true;
                         bAccesoBackupRestore = true;
@@ -199,12 +194,6 @@ public partial class CD40 : System.Web.UI.MasterPage
                     LbIdEsquema.Visible = true;
                 }
 
-                /*
-                _PeriodicTasksSession = new System.Timers.Timer(10000);
-                _PeriodicTasksSession.AutoReset = false;
-                _PeriodicTasksSession.Elapsed += PeriodicTasksSession;
-                _PeriodicTasksSession.Enabled = true;
-                */
             }
 
         }
@@ -338,7 +327,7 @@ public partial class CD40 : System.Web.UI.MasterPage
             {
             }
         }
-        else if (!bAccesoInfOperadores)
+        if (!bAccesoInfOperadores)
         {
             try
             {
@@ -361,6 +350,29 @@ public partial class CD40 : System.Web.UI.MasterPage
             catch (Exception)
             {
             }
+        }
+        if (!bAccesoConferenciasPreprogramadas)
+            {
+                try
+                {
+                    SiteMapNode mapNode = (SiteMapNode)e.Node.DataItem;
+
+                    if (null != mapNode && null != mapNode["identificador"])
+                    {
+                        string strId = mapNode["identificador"];
+                        if (string.Compare(strId, "Conferencias", true) == 0)
+                        {
+                            System.Web.UI.WebControls.TreeNode parent = e.Node.Parent;
+                            if (parent != null)
+                            {
+                                parent.ChildNodes.Remove(e.Node);
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
         }
         // 20210317 #4749
         if ((!bAccesoDependenciasATS) || (bAccesoDependenciasATS == true && ((FormsIdentity)Context.User.Identity).Ticket.Name != "*CD40*"))
@@ -411,6 +423,7 @@ public partial class CD40 : System.Web.UI.MasterPage
             {
             }
         }
+
         NLogLogger.Trace<CD40>(String.Format("TreeView1_TreeNodeDataBound => {0}", e.Node.ValuePath));
         MenuPersistence.RestoreExpandedStatus(Session, TreeView1);
     }
@@ -430,12 +443,9 @@ public partial class CD40 : System.Web.UI.MasterPage
         System.Configuration.Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
         string urlMantto = config.AppSettings.Settings["UrlMantto"].Value;
         string urlRtn = config.AppSettings.Settings["UrlRetorno"].Value;
-        Response.Write("<script> window.open('" + urlMantto + "','_blank'); </script>");
 
-        //Response.Redirect(urlMantto + "?RetUrl=" + urlRtn + "&user=" + Context.User.Identity.Name);
-        /*
-         * string pageurl = "WebForm2.aspx";
-        */
+        string _open = "window.open('" + urlMantto + "', '_newtab');";
+        ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString(), _open, true);
     }
 
 	private bool GestionarUltimasModificaciones()
@@ -551,48 +561,29 @@ public partial class CD40 : System.Web.UI.MasterPage
         return bConfiguracionOffline;
     }
 
+    public bool MostrarConferenciasPreprogramadas()
+    {
+        const string CONF_KEY_MOSTRAR_CONFERENCIAS_PREPROGRAMADAS = "MostrarConferenciasPreprogramadas";
+        bool bMostrarConferenciasPreprogramadas = false;
+
+        Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+        KeyValueConfigurationElement objConf = null;
+
+        //Se obtiene el parametro que indica si se debe o no visualizar la gestion de conferencias preprogramadas
+        objConf = config.AppSettings.Settings[CONF_KEY_MOSTRAR_CONFERENCIAS_PREPROGRAMADAS];
+
+        if ((objConf != null) && (!string.IsNullOrEmpty(objConf.Value) && string.Compare(objConf.Value, "SI", true) == 0))
+        {
+            //El sistema está configurado para gestionar conferencias preprogramadas
+            bMostrarConferenciasPreprogramadas = true;
+        }
+        return bMostrarConferenciasPreprogramadas;
+    }
+
     public void FinsesionOperador()
     {
 
     }
-
-    private void PeriodicTasksSession(object sender, ElapsedEventArgs e)
-    {
-        
-        try
-        {
-            System.Collections.Generic.List<string> d = Application["UsersLoggedIn"]
-                as System.Collections.Generic.List<string>;
-                        if (d != null)
-                        {
-                           
-                            lock (d)
-                            {
-                                if (d.Count == 0)
-                                {
-                                    Response.Redirect("~/Login.aspx", false);
-                                }
-
-                                if (d.Contains(operador))
-                                    serviceServiciosCD40.GestionSesionOperador(sistema, operador, (int)Sesion_Activa.INICIADA, (int)Sesion_Estado.ACTIVA);
-                            }
-                        }
-
-            logDebugView.Info("(Global.asax-Session_User):    ---- CONTROL SESION ----\n");
-            //serviceServiciosCD40.GestionSesionOperador(sistema, operador, (int)Sesion_Activa.INICIADA, (int)Sesion_Estado.ACTIVA);
-        }
-        catch (Exception ex)
-        {
-            logDebugView.Error("(CD40Master-PeriodicTasks) Error en la funcion PeriodicTasksSession:", ex);
-        }
-        finally
-        {
-            _PeriodicTasksSession.Interval = iTiempoControlSession;
-            _PeriodicTasksSession.Enabled = true;
-
-        }
-    }
-
     protected void OnExpanded(object sender, TreeNodeEventArgs e)
     {
         MenuPersistence.SaveExpandedStatus(Session, e.Node, true);

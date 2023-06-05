@@ -547,4 +547,55 @@
   <data name="CheckPasivoRetransmisionResource1.Text" xml:space="preserve">
     <value>Pasivo Retrans.</value>
   </data>
+  <data name="CheckedMultiFrecuencia.ToolTip" xml:space="preserve">
+    <value>Destino con MultiFrecuencia habilitada.</value>
+  </data>
+  <data name="CheckedMultiFrecuenciaResource1" xml:space="preserve">
+    <value>MultiFrec.</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.Text" xml:space="preserve">
+    <value>F. Defecto</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.ToolTip" xml:space="preserve">
+    <value>Frecuencia seleccionada por defecto para su configuración en equipo.</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.Text" xml:space="preserve">
+    <value>F. (MHz)</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.ToolTip" xml:space="preserve">
+    <value>Campo para introducción de frecuencia.</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.Text" xml:space="preserve">
+    <value>Frecuencias</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.ToolTip" xml:space="preserve">
+    <value>Lista de frecuencias asignadas al destino radio.</value>
+  </data>
+  <data name="LbMFGestionMFResource1.Text" xml:space="preserve">
+    <value>Gestión de Multifrecuencias</value>
+  </data>
+  <data name="LbMFGestionMFResource1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TXTFrecuenciaDuplicada" xml:space="preserve">
+    <value>Frecuencia ya incluida.</value>
+  </data>
+  <data name="TXTFrecuenciasDestinoIncompatibles" xml:space="preserve">
+    <value>Frecuencias no compatibles con el tipo de rango seleccionado.</value>
+  </data>
+  <data name="TXTMaximoFrecuenciasDestino" xml:space="preserve">
+    <value>Sobrepasado máximo de frecuencias por destino.</value>
+  </data>
+  <data name="TXTMFOpcionNoCompatible" xml:space="preserve">
+    <value>No puede activarse multifrecuencia sin frecuencias asignadas.</value>
+  </data>
+  <data name="TXTRecursosDestinoIncompatibles" xml:space="preserve">
+    <value>Los recursos seleccionados son incompatibles con Multifrecuencia.</value>
+  </data>
+  <data name="TBMFrecuenciaResource1.Tooltip" xml:space="preserve">
+    <value>Valor de Frecuencia en MHz. (NNN.NNN)</value>
+  </data>
+  <data name="TBMFrecuenciaResource1.Tooltip1" xml:space="preserve">
+    <value>Frequency value in MHz. (NNN.NNN)</value>
+  </data>
 </root>

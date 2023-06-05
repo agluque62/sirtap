@@ -92,23 +92,6 @@
         left: 630px; position: absolute; top: 158px;font-family: Courier New;font-size:13px" Visible="False" Width="271px" 
 		  SelectionMode="Multiple" meta:resourcekey="ListSectoresLibresResource1"></asp:ListBox>
 
-<%--Control actividad de sesión    --%>
-    <script type="text/javascript">
-    function PingSessionSrv()
-        {
-            var CONTROLADOR = "PingSrv.aspx";
-            var head = document.getElementsByTagName("head").item(0);
-            script = document.createElement("script");
-            script.src = CONTROLADOR;
-            script.setAttribute("type", "text/javascript");
-            script.defer = true;
-            head.appendChild(script);
-        }
-    </script>
-    <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
-    </script>
-<%--Control actividad de sesión FIN    --%>
 
 </asp:Content>
 

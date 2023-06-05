@@ -44,7 +44,7 @@ if %opcion% neq 1 goto menu
 
 :importar
 @echo Importando datos de tablas afectadas
-@mysql -uroot -pcd40  < ".\ActualizaDatos-261.sql" >> crear.log
+@mysql -uroot -pcd40  < ".\BDCD40_Incidencias.sql" >> crear.log
 pause
 if %opcion% neq 1 goto menu
 

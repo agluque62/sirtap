@@ -25,18 +25,13 @@ namespace CD40.BD.Entidades
 
         #endregion
 
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
-
         public DestinosTelefonia()
             : base()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
         {
-            //            base.DataSetSelectSQL();
 
             Consulta.Remove(0, Consulta.Length);
 			if (IdSistema != null && IdGrupo != null)
@@ -55,11 +50,7 @@ namespace CD40.BD.Entidades
 
         public override System.Collections.Generic.List<Tablas> ListSelectSQL(DataSet ds)
         {
-            //           base.ListSelectSQL();
-
             ListaResultado.Clear();
-
-			//DataSetResultado = this.DataSetSelectSQL();
             if (ds != null && ds.Tables.Count > 0)
             {
                 foreach (System.Data.DataRow dr in ds.Tables[0].Rows)
@@ -132,13 +123,5 @@ namespace CD40.BD.Entidades
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosTelefonia");
 			return consulta;
 		}
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM DestinosTelefonia WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

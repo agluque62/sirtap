@@ -138,10 +138,15 @@ namespace CD40.BD.Entidades
         public override string[] DeleteSQL()
         {
             string[] consulta = new string[2];
-
+            bool bReplace = true;
             StringBuilder strConsulta = new StringBuilder();
 
-            if (IdSistema != null && IdSector != null && IdNucleo != null)
+            if (IdSistema != null && IdSectorOriginal != null && IdNucleo != null)
+            {
+                strConsulta.Append("DELETE FROM SectoresSector WHERE IdSistema='" + IdSistema + "' AND IdSectorOriginal='" + IdSectorOriginal + "' AND IdNucleo='" + IdNucleo + "'");
+                bReplace = false; // Se actualiza en sectorization...
+            }
+            else if (IdSistema != null && IdSector != null && IdNucleo != null)
                 strConsulta.Append("DELETE FROM SectoresSector WHERE IdSistema='" + IdSistema + "' AND IdSector='" + IdSector + "' AND IdNucleo='" + IdNucleo + "'");
             else if (IdSistema != null && IdNucleo != null)
                 strConsulta.Append("DELETE FROM SectoresSector WHERE IdSistema='" + IdSistema + "' AND IdNucleo='" + IdNucleo + "'");
@@ -151,7 +156,9 @@ namespace CD40.BD.Entidades
                 strConsulta.Append("DELETE FROM SectoresSector");
 
             consulta[0] = strConsulta.ToString();
-            consulta[1] = ReplaceSQL(IdSistema, "SectoresSector");
+            if (bReplace)
+                consulta[1] = ReplaceSQL(IdSistema, "SectoresSector");
+
             strConsulta.Clear();
 
             return consulta;

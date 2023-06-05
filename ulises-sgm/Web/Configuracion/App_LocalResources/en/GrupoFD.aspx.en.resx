@@ -547,4 +547,49 @@
   <data name="CheckPasivoRetransmisionResource1.Text" xml:space="preserve">
     <value>Passive Retrans.</value>
   </data>
+  <data name="CheckedMultiFrecuencia.ToolTip" xml:space="preserve">
+    <value>Destination with MultiFrequency enabled.</value>
+  </data>
+  <data name="CheckedMultiFrecuenciaResource1.Text" xml:space="preserve">
+    <value>MultiFreq.</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.Text" xml:space="preserve">
+    <value>F. Default</value>
+  </data>
+  <data name="LbMFrecuenciaDefectoResource1.ToolTip" xml:space="preserve">
+    <value>Frequency selected by default for your equipment configuration.</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.Text" xml:space="preserve">
+    <value>F. (MHz)</value>
+  </data>
+  <data name="LbMFrecuenciaResource1.ToolTip" xml:space="preserve">
+    <value>Campo para introducción de frecuencia.</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.Text" xml:space="preserve">
+    <value>Frequencies</value>
+  </data>
+  <data name="LbMFrecuenciasResource1.ToolTip" xml:space="preserve">
+    <value>List of frequencies assigned to the radio destination.</value>
+  </data>
+  <data name="LbMFGestionMFResource1.Text" xml:space="preserve">
+    <value>Multi-Frequency Management</value>
+  </data>
+  <data name="LbMFGestionMFResource1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TXTFrecuenciaDuplicada" xml:space="preserve">
+    <value>Frequency already included.</value>
+  </data>
+  <data name="TXTFrecuenciasDestinoIncompatibles" xml:space="preserve">
+    <value>Frequencies not compatible with the selected range type.</value>
+  </data>
+  <data name="TXTMaximoFrecuenciasDestino" xml:space="preserve">
+    <value>Exceeded maximum frequencies per destination.</value>
+  </data>
+  <data name="TXTMFOpcionNoCompatible" xml:space="preserve">
+    <value>Multi-frequency cannot be activated without assigned frequencies.</value>
+  </data>
+  <data name="TXTRecursosDestinoIncompatibles" xml:space="preserve">
+    <value>The selected resources are incompatible with Multifrequency</value>
+  </data>
 </root>

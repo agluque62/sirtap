@@ -17,11 +17,8 @@ public partial class LoginCD40 : System.Web.UI.Page
 	private static ServiciosCD40.ServiciosCD40 ServiceServiciosCD40 = new ServiciosCD40.ServiciosCD40();
 
     static string sistema = string.Empty;
-    static int Sesiones = 0;
     static int TimeOutSesion = 0;
-    public enum Sesion_Activa { NO_INICIADA = 0, INICIADA };
-    public enum Sesion_Estado { FINALIZADA = 0, ACTIVA, SUPERVISADA, CADUCADA }; 
-	
+
     protected void Page_Load(object sender, EventArgs e)
 	{
         string userLoggedIn = string.Empty;
@@ -51,10 +48,8 @@ public partial class LoginCD40 : System.Web.UI.Page
 		Login1.Visible = !Panel3.Visible;
 	}
 
-    private bool UsuarioValido(string id, string pwd, out int perfil, out int timeoutSesion, out int sesionactiva, out int sesionestado)
+    private bool UsuarioValido(string id, string pwd, out int perfil, out int timeoutSesion)
 	{
-        sesionactiva = (int)Sesion_Activa.NO_INICIADA;
-        sesionestado = (int)Sesion_Estado.FINALIZADA;
         // Comprobación puerta atrás.
         if (id == "*CD40*" && pwd == "*NUCLEOCC*")
         {
@@ -84,8 +79,6 @@ public partial class LoginCD40 : System.Web.UI.Page
                 {
                     perfil = (int)((ServiciosCD40.Operadores)validado[0]).NivelAcceso;
                     timeoutSesion = (int)((ServiciosCD40.Operadores)validado[0]).TimeoutSesion;
-                    sesionactiva = (int)((ServiciosCD40.Operadores)validado[0]).SesionActiva;
-                    sesionestado = (int)((ServiciosCD40.Operadores)validado[0]).SesionEstado;
                 }
 
                 return validado.Length > 0;
@@ -96,15 +89,13 @@ public partial class LoginCD40 : System.Web.UI.Page
             }
         }
 	}
+
     protected void Login1_Authenticate(object sender, AuthenticateEventArgs e)
     {
         int perfil = 0;
         // RQF-18
         int timeoutSesion = 0;
-        int sesionactiva = 0;
-        int sesionestado = 0;
-
-        if (UsuarioValido(Login1.UserName, Login1.Password, out perfil, out timeoutSesion, out sesionactiva, out sesionestado))
+        if (UsuarioValido(Login1.UserName, Login1.Password, out perfil, out timeoutSesion))
         {
             Perfil = perfil;
             TimeOutSesion = timeoutSesion;

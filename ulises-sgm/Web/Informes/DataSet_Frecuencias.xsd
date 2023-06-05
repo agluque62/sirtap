@@ -11,9 +11,10 @@
             <MainSource>
               <DbSource ConnectionRef="new_cd40_transConnectionString (Web.config)" DbObjectType="Unknown" GenerateMethods="Get" GenerateShortCommands="false" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData">
                 <SelectCommand>
-                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
                     <CommandText>SELECT        DR.IdDestino, DR.CnfModoDestino, DR.CnfTipoFrecuencia, DR.PrioridadSesionSip, DR.MetodoCalculoClimax, DR.CldSupervisionTime, DR.VentanaSeleccionBss, 
-                         DR.ModoTransmision, mb.name AS NameBss, DR.IdSistema, DR.TipoDestino, DR.EmplazamientoDefecto, DR.TiempoVueltaADefecto,DR.ConRedundancia
+                         DR.ModoTransmision, mb.name AS NameBss, DR.IdSistema, DR.TipoDestino, DR.EmplazamientoDefecto, DR.TiempoVueltaADefecto, DR.ConRedundancia, 
+                         DR.DescDestino, DR.MultiFrecuencia
 FROM            destinosradio DR LEFT OUTER JOIN
                          metodos_bss mb ON mb.idmetodos_bss = DR.MetodosBssOfrecidos
 ORDER BY DR.CnfTipoFrecuencia, DR.IdDestino</CommandText>
@@ -37,6 +38,8 @@ ORDER BY DR.CnfTipoFrecuencia, DR.IdDestino</CommandText>
               <Mapping SourceColumn="EmplazamientoDefecto" DataSetColumn="EmplazamientoDefecto" />
               <Mapping SourceColumn="TiempoVueltaADefecto" DataSetColumn="TiempoVueltaADefecto" />
               <Mapping SourceColumn="ConRedundancia" DataSetColumn="ConRedundancia" />
+              <Mapping SourceColumn="DescDestino" DataSetColumn="DescDestino" />
+              <Mapping SourceColumn="MultiFrecuencia" DataSetColumn="MultiFrecuencia" />
             </Mappings>
             <Sources />
           </TableAdapter>
@@ -123,7 +126,6 @@ ORDER BY DR.CnfTipoFrecuencia, DR.IdDestino</CommandText>
               <Mapping SourceColumn="hfp_ModeloEquipo" DataSetColumn="hfp_ModeloEquipo" />
               <Mapping SourceColumn="RedundanciaRol" DataSetColumn="RedundanciaRol" />
               <Mapping SourceColumn="RedundanciaIdPareja" DataSetColumn="RedundanciaIdPareja" />
-
             </Mappings>
             <Sources />
           </TableAdapter>
@@ -203,10 +205,10 @@ FROM            tabla_bss</CommandText>
       </DataSource>
     </xs:appinfo>
   </xs:annotation>
-  <xs:element name="DataSet_Frecuencias" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="DataSet_Frecuencias" msprop:Generator_DataSetName="DataSet_Frecuencias">
+  <xs:element name="DataSet_Frecuencias" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="DataSet_Frecuencias" msprop:Generator_UserDSName="DataSet_Frecuencias">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="DestinosRadio" msprop:Generator_TableClassName="DestinosRadioDataTable" msprop:Generator_TableVarName="tableDestinosRadio" msprop:Generator_RowChangedName="DestinosRadioRowChanged" msprop:Generator_TablePropName="DestinosRadio" msprop:Generator_RowDeletingName="DestinosRadioRowDeleting" msprop:Generator_RowChangingName="DestinosRadioRowChanging" msprop:Generator_RowEvHandlerName="DestinosRadioRowChangeEventHandler" msprop:Generator_RowDeletedName="DestinosRadioRowDeleted" msprop:Generator_RowClassName="DestinosRadioRow" msprop:Generator_UserTableName="DestinosRadio" msprop:Generator_RowEvArgName="DestinosRadioRowChangeEvent">
+        <xs:element name="DestinosRadio" msprop:Generator_TableClassName="DestinosRadioDataTable" msprop:Generator_TableVarName="tableDestinosRadio" msprop:Generator_TablePropName="DestinosRadio" msprop:Generator_RowDeletingName="DestinosRadioRowDeleting" msprop:Generator_RowChangingName="DestinosRadioRowChanging" msprop:Generator_RowEvHandlerName="DestinosRadioRowChangeEventHandler" msprop:Generator_RowDeletedName="DestinosRadioRowDeleted" msprop:Generator_UserTableName="DestinosRadio" msprop:Generator_RowChangedName="DestinosRadioRowChanged" msprop:Generator_RowEvArgName="DestinosRadioRowChangeEvent" msprop:Generator_RowClassName="DestinosRadioRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="IdDestino" msprop:Generator_ColumnVarNameInTable="columnIdDestino" msprop:Generator_ColumnPropNameInRow="IdDestino" msprop:Generator_ColumnPropNameInTable="IdDestinoColumn" msprop:Generator_UserColumnName="IdDestino">
@@ -271,10 +273,18 @@ FROM            tabla_bss</CommandText>
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
+              <xs:element name="DescDestino">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="32" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MultiFrecuencia" type="xs:boolean" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="RecursosRadio" msprop:Generator_TableClassName="RecursosRadioDataTable" msprop:Generator_TableVarName="tableRecursosRadio" msprop:Generator_RowChangedName="RecursosRadioRowChanged" msprop:Generator_TablePropName="RecursosRadio" msprop:Generator_RowDeletingName="RecursosRadioRowDeleting" msprop:Generator_RowChangingName="RecursosRadioRowChanging" msprop:Generator_RowEvHandlerName="RecursosRadioRowChangeEventHandler" msprop:Generator_RowDeletedName="RecursosRadioRowDeleted" msprop:Generator_RowClassName="RecursosRadioRow" msprop:Generator_UserTableName="RecursosRadio" msprop:Generator_RowEvArgName="RecursosRadioRowChangeEvent">
+        <xs:element name="RecursosRadio" msprop:Generator_TableClassName="RecursosRadioDataTable" msprop:Generator_TableVarName="tableRecursosRadio" msprop:Generator_TablePropName="RecursosRadio" msprop:Generator_RowDeletingName="RecursosRadioRowDeleting" msprop:Generator_RowChangingName="RecursosRadioRowChanging" msprop:Generator_RowEvHandlerName="RecursosRadioRowChangeEventHandler" msprop:Generator_RowDeletedName="RecursosRadioRowDeleted" msprop:Generator_UserTableName="RecursosRadio" msprop:Generator_RowChangedName="RecursosRadioRowChanged" msprop:Generator_RowEvArgName="RecursosRadioRowChangeEvent" msprop:Generator_RowClassName="RecursosRadioRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="IdRecurso" msprop:Generator_ColumnVarNameInTable="columnIdRecurso" msprop:Generator_ColumnPropNameInRow="IdRecurso" msprop:Generator_ColumnPropNameInTable="IdRecursoColumn" msprop:Generator_UserColumnName="IdRecurso">
@@ -430,7 +440,7 @@ FROM            tabla_bss</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="valores_tabla_bss" msprop:Generator_TableClassName="tabla_bssDataTable" msprop:Generator_TableVarName="tabletabla_bss" msprop:Generator_RowChangedName="tabla_bssRowChanged" msprop:Generator_TablePropName="tabla_bss" msprop:Generator_RowDeletingName="tabla_bssRowDeleting" msprop:Generator_RowChangingName="tabla_bssRowChanging" msprop:Generator_RowEvHandlerName="tabla_bssRowChangeEventHandler" msprop:Generator_RowDeletedName="tabla_bssRowDeleted" msprop:Generator_RowClassName="tabla_bssRow" msprop:Generator_UserTableName="tabla_bss" msprop:Generator_RowEvArgName="tabla_bssRowChangeEvent">
+        <xs:element name="valores_tabla_bss" msprop:Generator_TableClassName="tabla_bssDataTable" msprop:Generator_TableVarName="tabletabla_bss" msprop:Generator_TablePropName="tabla_bss" msprop:Generator_RowDeletingName="tabla_bssRowDeleting" msprop:Generator_RowChangingName="tabla_bssRowChanging" msprop:Generator_RowEvHandlerName="tabla_bssRowChangeEventHandler" msprop:Generator_RowDeletedName="tabla_bssRowDeleted" msprop:Generator_UserTableName="tabla_bss" msprop:Generator_RowChangedName="tabla_bssRowChanged" msprop:Generator_RowEvArgName="tabla_bssRowChangeEvent" msprop:Generator_RowClassName="tabla_bssRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="nombre" msprop:Generator_ColumnVarNameInTable="columnnombre" msprop:Generator_ColumnPropNameInRow="nombre" msprop:Generator_ColumnPropNameInTable="nombreColumn" msprop:Generator_UserColumnName="nombre" minOccurs="0">
@@ -447,7 +457,7 @@ FROM            tabla_bss</CommandText>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="RecursosRadioTablaBSS" msprop:Generator_TableClassName="RecursosRadioTablaBSSDataTable" msprop:Generator_TableVarName="tableRecursosRadioTablaBSS" msprop:Generator_RowChangedName="RecursosRadioTablaBSSRowChanged" msprop:Generator_TablePropName="RecursosRadioTablaBSS" msprop:Generator_RowDeletingName="RecursosRadioTablaBSSRowDeleting" msprop:Generator_RowChangingName="RecursosRadioTablaBSSRowChanging" msprop:Generator_RowEvHandlerName="RecursosRadioTablaBSSRowChangeEventHandler" msprop:Generator_RowDeletedName="RecursosRadioTablaBSSRowDeleted" msprop:Generator_RowClassName="RecursosRadioTablaBSSRow" msprop:Generator_UserTableName="RecursosRadioTablaBSS" msprop:Generator_RowEvArgName="RecursosRadioTablaBSSRowChangeEvent">
+        <xs:element name="RecursosRadioTablaBSS" msprop:Generator_TableClassName="RecursosRadioTablaBSSDataTable" msprop:Generator_TableVarName="tableRecursosRadioTablaBSS" msprop:Generator_TablePropName="RecursosRadioTablaBSS" msprop:Generator_RowDeletingName="RecursosRadioTablaBSSRowDeleting" msprop:Generator_RowChangingName="RecursosRadioTablaBSSRowChanging" msprop:Generator_RowEvHandlerName="RecursosRadioTablaBSSRowChangeEventHandler" msprop:Generator_RowDeletedName="RecursosRadioTablaBSSRowDeleted" msprop:Generator_UserTableName="RecursosRadioTablaBSS" msprop:Generator_RowChangedName="RecursosRadioTablaBSSRowChanged" msprop:Generator_RowEvArgName="RecursosRadioTablaBSSRowChangeEvent" msprop:Generator_RowClassName="RecursosRadioTablaBSSRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="IdSistema" msprop:Generator_ColumnVarNameInTable="columnIdSistema" msprop:Generator_ColumnPropNameInRow="IdSistema" msprop:Generator_ColumnPropNameInTable="IdSistemaColumn" msprop:Generator_UserColumnName="IdSistema">
@@ -537,7 +547,7 @@ FROM            tabla_bss</CommandText>
   </xs:element>
   <xs:annotation>
     <xs:appinfo>
-      <msdata:Relationship name="DestinosRadio_RecursosRadio" msdata:parent="DestinosRadio" msdata:child="RecursosRadio" msdata:parentkey="IdDestino IdSistema TipoDestino" msdata:childkey="IdDestino IdSistema TipoDestino" msprop:Generator_UserChildTable="RecursosRadio" msprop:Generator_ChildPropName="GetRecursosRadioRows" msprop:Generator_UserRelationName="DestinosRadio_RecursosRadio" msprop:Generator_RelationVarName="relationDestinosRadio_RecursosRadio" msprop:Generator_UserParentTable="DestinosRadio" msprop:Generator_ParentPropName="DestinosRadioRowParent" />
+      <msdata:Relationship name="DestinosRadio_RecursosRadio" msdata:parent="DestinosRadio" msdata:child="RecursosRadio" msdata:parentkey="IdDestino IdSistema TipoDestino" msdata:childkey="IdDestino IdSistema TipoDestino" msprop:Generator_UserChildTable="RecursosRadio" msprop:Generator_ChildPropName="GetRecursosRadioRows" msprop:Generator_UserRelationName="DestinosRadio_RecursosRadio" msprop:Generator_ParentPropName="DestinosRadioRowParent" msprop:Generator_RelationVarName="relationDestinosRadio_RecursosRadio" msprop:Generator_UserParentTable="DestinosRadio" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

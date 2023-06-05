@@ -14,7 +14,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.Configuration;
 using log4net;
 using log4net.Config;
-using SincronizaCD30;
 
 // Clase para ordenar un ListBox
 internal class myListItemComparer : IComparer
@@ -30,7 +29,6 @@ internal class myListItemComparer : IComparer
 
 public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
 {
-    //private Mensajes.msgBox cMsg;
     private static ServiciosCD40.Tablas[] datos;
     private static ILog _logDebugView;
     public static ILog logDebugView
@@ -232,15 +230,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
     {
 		RequiredFieldIdentificador.Visible = edicion;
 		ListBox1.Enabled = !edicion;
-        /**
-         * AGL ID.83/84. Al entrar en modo 'edicion' si solo hay una agrupacion, la lista aparece vacía.
-         * Quito el selector de la lista.
-         * */
-        //if (edicion)
-         //   ListBox1.SelectedIndex = -1;
-        /**
-         * Fin de la Modificacion */
-
 		TxtIdAgrupacion.ReadOnly = !edicion;
 		TxtIdAgrupacion.Enabled = edicion;
 		ListSectores.Enabled = edicion;
@@ -271,7 +260,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
     {
         try
         {
-            // ServiciosCD40.ServiciosCD40 g = new ServiciosCD40.ServiciosCD40();
             ServiciosCD40.Agrupaciones t = new ServiciosCD40.Agrupaciones();
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
             KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
@@ -582,7 +570,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
 
 	private void GeneraSectoresSector(string nomSector, string lista, string strNucleo)
 	{
-		//ServiciosCD40.ServiciosCD40 g = new ServiciosCD40.ServiciosCD40();
 		ServiciosCD40.SectoresSector s = new ServiciosCD40.SectoresSector();
 
 		string[] sectores = lista.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -616,7 +603,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
 	{
 		try
 		{
-			//ServiciosCD40.ServiciosCD40 g = new ServiciosCD40.ServiciosCD40();
 			ServiciosCD40.Sectores s = new ServiciosCD40.Sectores();
 
 			s.IdSistema = (string)Session["IdSistema"];
@@ -652,7 +638,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
     protected void BtCancelar_Click(object sender, EventArgs e)
     {
         CancelarCambios();
-        //cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "CancelarCambios"), "cancelparam");
     }
 
     protected void BtAceptar_Click(object sender, EventArgs e)
@@ -662,7 +647,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
         {
             cMsg.alert((string)GetGlobalResourceObject("Espaniol", "AgrupacionNumMinSectores"));
         }
-            //JAVIER
         else if (CBAgrupacionEspecial.Checked == true)
         {
             cMsg.alert((string)GetGlobalResourceObject("Espaniol", "AvisoSectoresDistintoNucleo"));
@@ -684,11 +668,9 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
     {
         if (ListBox1.SelectedValue != "")
         {
-			//string texto = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarAgrupacion"), ListBox1.SelectedValue);
             IndexListBox1 = ListBox1.SelectedIndex;
             Session["elemento"] = ListBox1.SelectedValue;
             EliminarElemento();
-            //cMsg.confirm(texto, "eliminaelemento");
         }
     }
 
@@ -699,7 +681,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
             ServiciosCD40.Agrupaciones n = new ServiciosCD40.Agrupaciones();
             n.IdSistema = (string)Session["idsistema"];
             n.IdAgrupacion = ListBox1.SelectedValue;
-			//ServiciosCD40.ServiciosCD40 g = new ServiciosCD40.ServiciosCD40();
 
 			if (servicioParaSectorizacion.DeleteSQL(n) < 0)
 			{
@@ -708,28 +689,6 @@ public partial class Agrupacion : PageBaseCD40.PageCD40	//System.Web.UI.Page
 			}
 			else
 			{
-				Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-				KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-				if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-				{
-					SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-					switch (sincro.BajaAgrupacion(n.IdAgrupacion))
-					{
-						case 112:
-							string s = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-								+ String.Format((string)GetGlobalResourceObject("Espaniol", "Cod112"), n.IdAgrupacion);
-							cMsg.alert(s);
-							break;
-						case 113:
-							string s1 = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-								+ String.Format((string)GetGlobalResourceObject("Espaniol", "Cod113"), n.IdAgrupacion);
-							cMsg.alert(s1);
-							break;
-						default:
-							break;
-					}
-				}
-
                 cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
 
                 System.Text.StringBuilder strbListaSectores = new System.Text.StringBuilder();

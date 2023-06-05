@@ -229,7 +229,7 @@
     <value>Sectorización rechazada. En la sectorización seleccionada, no están todos los sectores reales.</value>
   </data>
   <data name="NucleoConSectores" xml:space="preserve">
-    <value>No se puede eliminar un núcleo con sectores.</value>
+    <value>No se puede eliminar un núcleo con sectores asignados.</value>
   </data>
   <data name="NumRutasDirectas" xml:space="preserve">
     <value>No se permiten más de una ruta directa por encaminamiento.</value>
@@ -709,7 +709,7 @@
     <value>No se puede eliminar el recurso {3}. El destino de línea caliente externa {0} está configurado en el destino ATS '{1}' del panel de línea caliente del sector {2}.\nPor favor, libere el destino del sector antes de eliminar el recurso.</value>
   </data>
   <data name="LB_VERSION" xml:space="preserve">
-    <value>© Grupo Amper. Copyright @ 2021-2022. Versión 2.6.2 Todos los Derechos Reservados</value>
+    <value>© Grupo Amper. Copyright @ 2021-2023. Versión 3.0.0 Todos los Derechos Reservados</value>
   </data>
   <data name="ErrorAsignacionFrecuenciaHFConRedundancia" xml:space="preserve">
     <value>En el Modo destino "Normal" y tipo frecuencia HF no está disponible la opción 1+1</value>
@@ -1005,5 +1005,17 @@
   </data>
   <data name="ErrorOperadorOffline" xml:space="preserve">
     <value>El operador afectado no fue actualizado en Base de Datos Gestion OffLine</value>
+  </data>
+  <data name="NucleoConOperadores" xml:space="preserve">
+    <value>No se puede eliminar un núcleo con operadores asignados.</value>
+  </data>
+  <data name="TXTFrecuenciaDuplicada" xml:space="preserve">
+    <value>Frecuencia duplicada.</value>
+  </data>
+  <data name="ErrorEliminarConferencia" xml:space="preserve">
+    <value>Ha ocurrido un error: La conferencia "{0}" no ha sido borrada.</value>
+  </data>
+  <data name="TXTEliminarElemento" xml:space="preserve">
+    <value>¿Esta usted seguro de eliminar la conferencia:?</value>
   </data>
 </root>

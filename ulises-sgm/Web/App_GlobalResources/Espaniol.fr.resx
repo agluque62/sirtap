@@ -229,7 +229,7 @@
     <value>Sectorisation refusée. La sectorisation sélectionnée ne comprend pas tous les secteurs réels.</value>
   </data>
   <data name="NucleoConSectores" xml:space="preserve">
-    <value>Impossible de supprimer un core avec des secteurs.</value>
+    <value>Impossible de supprimer un noyau avec des secteurs alloués.</value>
   </data>
   <data name="NumRutasDirectas" xml:space="preserve">
     <value>Il n'est pas permis d'avoir plus d'un itinéraire direct par routage.</value>
@@ -709,7 +709,7 @@
     <value>No se puede eliminar el recurso {3}. El destino de línea caliente externa {0} está configurado en el destino ATS '{1}' del panel de línea caliente del sector {2}.\nPor favor, libere el destino del sector antes de eliminar el recurso.</value>
   </data>
   <data name="LB_VERSION" xml:space="preserve">
-    <value>©  Grupo Amper. Copyright @ 2021-2022. Version 2.6.2 Tous droits réservés.</value>
+    <value>©  Grupo Amper. Copyright @ 2021-2023. Version 3.0.0 Tous droits réservés.</value>
   </data>
   <data name="ErrorAsignacionFrecuenciaHFConRedundancia" xml:space="preserve">
     <value>En mode de destination "Normal" et en type de fréquence HF, l'option 1 + 1 n'est pas disponible</value>
@@ -1004,5 +1004,11 @@
   </data>
   <data name="ErrorOperadorOffline" xml:space="preserve">
     <value>L'opérateur concerné n'a pas été mis à jour dans la base de données de gestion hors ligne</value>
+  </data>
+  <data name="NucleoConOperadores" xml:space="preserve">
+    <value>Vous ne pouvez pas supprimer un noyau avec des opérateurs affectés.</value>
+  </data>
+  <data name="ErrorEliminarConferencia" xml:space="preserve">
+    <value>Une erreur s'est produite : la conférence "{0}" n'a pas été supprimée.</value>
   </data>
 </root>

@@ -80,7 +80,7 @@
         }
     </script>
     <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
+        setInterval("PingSessionSrv()", 15000);
     </script>
 <%--Control actividad de sesión FIN    --%>
 
@@ -104,21 +104,21 @@
                 meta:resourcekey="Label1Resource1"></asp:Label>
 
             <asp:LinkButton ID="BtInicio" runat="server" OnClick="BtInicio_Click"
-                Style="left: 40px; position: absolute; top: 73px; z-index: 103; text-align:center; width:50px"
+                Style="left: 53px; position: absolute; top: 73px; z-index: 103; text-align:center; width:50px"
                 Text="Inicio" CausesValidation="False" SkinID="LinkButtonCabecera"
                 meta:resourcekey="BtInicioResource1" UseSubmitBehavior="false" />
 
                 <asp:LinkButton ID="BtMantenimiento" runat="server" OnClick="BtMantenimiento_Click"
-                Style="left: 130px; position: absolute; top: 73px; z-index: 103; height: 25px; text-align:center; width:50px"
+                Style="left: 128px; position: absolute; top: 73px; z-index: 103; height: 25px; text-align:center; width:50px"
                 Text="Mantenimiento" CausesValidation="False" SkinID="LinkButtonCabecera"
                 meta:resourcekey="BtMantenimientoResource1" UseSubmitBehavior="false" />
 
             <asp:LinkButton ID="BtCluster" runat="server" OnClick="BtCluster_Click"
-                Style="position: absolute; top: 73px; z-index: 103; left: 269px; height: 25px; text-align:center; width:50px"
+                Style="position: absolute; top: 73px; z-index: 103; left: 243px; height: 25px; text-align:center; width:50px"
                 Text="Cluster" CausesValidation="False" SkinID="LinkButtonCabecera"
                 meta:resourcekey="BtClusterResource1" UseSubmitBehavior="false" />
 
-            <asp:LinkButton ID="LinkButton1" runat="server" Style="z-index: 103; left: 355px; position: absolute; top: 73px"
+            <asp:LinkButton ID="LinkButton1" runat="server" Style="z-index: 103; left: 331px; position: absolute; top: 73px"
                 OnClick="LinkButton1_Click" SkinID="LinkButtonCabecera" CausesValidation="False"
                 meta:resourcekey="LinkButton1Resource1">Cerrar sesión</asp:LinkButton>
             &nbsp; &nbsp;
@@ -359,14 +359,6 @@
                   </asp:TableRow>
                   <asp:TableRow >
                     <asp:TableCell >
-                      <asp:label ID="BtnDependenciasATS" runat="server" BorderStyle="Inset"  Visible="false"
-                        BackColor="Transparent" Text="DependenciasATS" ForeColor="black"
-                        Style="left: 5px; width:200px;text-align:center" height="20px"
-                        meta:resourcekey="BtnDependenciasATSResource1"/>
-                    </asp:TableCell>
-                  </asp:TableRow>
-                  <asp:TableRow >
-                    <asp:TableCell >
                       <asp:label ID="BtnBackupRestore" runat="server" BorderStyle="Inset"  Visible="false"
                         BackColor="Transparent" Text="Backup/Restore" ForeColor="black"
                         Style="left: 5px; width:200px;text-align:center" height="20px"
@@ -417,7 +409,7 @@
 
         <div style="z-index: 301; left: 8px; width: 1264px; position: absolute; top: 855px; height: 37px; text-align:center; color: black; font-family:Arial; font-size:small" >
             <br\ />
-            &#169 Grupo Amper. Copyright @ 2021-2022. Versión 2.6.2 Todos los Derechos Reservados
+            &#169 Grupo Amper. Copyright @ 2021-2023. Versión 3.0.0 Todos los Derechos Reservados
         </div>
     </form>
 </body>

@@ -70,6 +70,7 @@ DROP TABLE IF EXISTS `agrupaciones`;
 CREATE TABLE `agrupaciones` (
   `IdSistema` varchar(32) NOT NULL,
   `IdAgrupacion` varchar(32) NOT NULL,
+  `AgrupacionEspecial` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdAgrupacion`),
   KEY `Agrupaciones_FKIndex1` (`IdSistema`),
   CONSTRAINT `agrupaciones_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -115,6 +116,42 @@ CREATE TABLE `altavoces` (
   KEY `Altavoces_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
   CONSTRAINT `altavoces_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`, `IdNucleo`, `IdSector`, `PosHMI`) REFERENCES `destinosradiosector` (`IdSistema`, `IdDestino`, `TipoDestino`, `IdNucleo`, `IdSector`, `PosHMI`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `conferencias`
+--
+
+DROP TABLE IF EXISTS `conferencias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `conferencias` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdConferencia` varchar(32) NOT NULL,
+  `IdSalaBkk` varchar(18) NOT NULL,
+  `TipoConferencia` int(1) NOT NULL,
+  `PosHMI` int(2) NOT NULL,
+  `Descripcion` varchar(80) NOT NULL,
+  `Alias` varchar(16) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdConferencia`,`IdSalaBkk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `conferenciasparticipantes`
+--
+
+DROP TABLE IF EXISTS `conferenciasparticipantes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `conferenciasparticipantes` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdConferencia` varchar(32) NOT NULL,
+  `SipUri` varchar(255) NOT NULL,
+  `Descripcion` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`IdSistema`,`IdConferencia`,`SipUri`),
+  CONSTRAINT `conferenciaspart_ibfk_1` FOREIGN KEY (`IdSistema`, `IdConferencia`) REFERENCES `conferencias` (`IdSistema`, `IdConferencia`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -282,7 +319,7 @@ DROP TABLE IF EXISTS `destinosinternossector`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `destinosinternossector` (
   `IdSistema` varchar(32) NOT NULL,
-  `IdDestino` varchar(32) NOT NULL,
+  `IdDestino` varchar(700) NOT NULL,
   `TipoDestino` int(10) unsigned NOT NULL,
   `IdNucleo` varchar(32) NOT NULL,
   `IdSector` varchar(700) NOT NULL,
@@ -299,6 +336,22 @@ CREATE TABLE `destinosinternossector` (
   CONSTRAINT `destinosinternossector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`, `IdPrefijo`) REFERENCES `destinosinternos` (`IdSistema`, `IdDestino`, `TipoDestino`, `IdPrefijo`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `destinosinternossector_ibfk_2` FOREIGN KEY (`IdSistema`, `IdNucleo`, `IdSector`) REFERENCES `sectores` (`IdSistema`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `destinosmultifrecuencia`
+--
+
+DROP TABLE IF EXISTS `destinosmultifrecuencia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `destinosmultifrecuencia` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdDestino` varchar(32) NOT NULL,
+  `FrecuenciaDefecto` tinyint(1) NOT NULL DEFAULT '0',
+  `Frecuencia` varchar(32) NOT NULL,
+  KEY `destinosmultifrecuencia_FKIndex1` (`IdSistema`,`IdDestino`,`FrecuenciaDefecto`,`Frecuencia`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,6 +386,9 @@ CREATE TABLE `destinosradio` (
   `TiempoVueltaADefecto` int(11) DEFAULT NULL COMMENT 'Tiempo en segundos en el que el que la frecuencia vuelve al emplazamiento por defecto. Si es cero la frecuencia nunca vuelve al emplazamiento por defecto.',
   `PorcentajeRSSI` int(1) DEFAULT NULL COMMENT 'Porcentaje de cálculo para el método BSS RSSI. \n0: No aplica\n1-9 indica el porcentaje',
   `ConRedundancia` enum('0','1') DEFAULT '0' COMMENT 'Indicador de si el destino es 1+1: 1 (si), 0 (No)',
+  `DescDestino` varchar(32) NOT NULL,
+  `PasivoRetransmision` tinyint(1) DEFAULT '0',
+  `MultiFrecuencia` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`fk_metodosbss`,`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `DestinosRadio_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `fk_destinosradio_zonas1_idx` (`zonas_idZonas`),
@@ -340,7 +396,20 @@ CREATE TABLE `destinosradio` (
   CONSTRAINT `destinoRadio_emplazamiento_fk` FOREIGN KEY (`IdSistema`, `EmplazamientoDefecto`) REFERENCES `emplazamientos` (`IdSistema`, `IdEmplazamiento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `destinosradio_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`) REFERENCES `destinos` (`IdSistema`, `IdDestino`, `TipoDestino`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_destinosradio_zonas1` FOREIGN KEY (`zonas_idZonas`) REFERENCES `zonas` (`idZonas`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=latin1 COMMENT='Destinos Radio';
+) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=latin1 COMMENT='Destinos Radio';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `destinosradiokey`
+--
+
+DROP TABLE IF EXISTS `destinosradiokey`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `destinosradiokey` (
+  `iddestinosradiokey` int(11) unsigned NOT NULL,
+  UNIQUE KEY `iddestinosradiokey_UNIQUE` (`iddestinosradiokey`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -363,7 +432,8 @@ CREATE TABLE `destinosradiosector` (
   `Cascos` varchar(1) DEFAULT NULL,
   `Literal` varchar(32) DEFAULT NULL,
   `SupervisionPortadora` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
+  `DescDestino` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`,`DescDestino`),
   KEY `DestinosRadioSector_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `DestinosRadioSector_FKIndex2` (`IdSistema`,`IdNucleo`,`IdSector`),
   CONSTRAINT `destinosradiosector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`) REFERENCES `destinosradio` (`IdSistema`, `IdDestino`, `TipoDestino`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -492,7 +562,9 @@ CREATE TABLE `estadoaltavoces` (
   `IdSistema` varchar(32) NOT NULL,
   `NumAltavoz` int(10) unsigned NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`NumAltavoz`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`NumAltavoz`,`DestinoId`),
   KEY `Altavoz_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
   CONSTRAINT `estadoaltavoces_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) REFERENCES `radio` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -529,7 +601,9 @@ CREATE TABLE `estadorecursos` (
   `IdSistema` varchar(32) NOT NULL,
   `IdRecurso` varchar(32) NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`IdRecurso`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`IdRecurso`,`DescDestino`,`DestinoId`),
   KEY `Recurso_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
   CONSTRAINT `estadorecursos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) REFERENCES `radio` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -552,7 +626,8 @@ CREATE TABLE `estadosrecursos` (
   `IdDestino` varchar(700) NOT NULL,
   `TipoDestino` int(10) unsigned NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdSistema`,`IdSector`,`IdNucleo`,`PosHMI`,`IdRecurso`,`TipoRecurso`,`IdDestino`,`TipoDestino`),
+  `DescDestino` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSector`,`IdNucleo`,`PosHMI`,`IdRecurso`,`TipoRecurso`,`IdDestino`,`TipoDestino`,`DescDestino`),
   KEY `Table_44_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `Table_44_FKIndex2` (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
   CONSTRAINT `estadosrecursos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdRecurso`, `TipoRecurso`) REFERENCES `recursosradio` (`IdSistema`, `IdRecurso`, `TipoRecurso`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -579,7 +654,7 @@ CREATE TABLE `externos` (
   `Prioridad` int(10) unsigned DEFAULT NULL,
   `OrigenR2` varchar(32) DEFAULT NULL,
   `PrioridadSIP` int(10) unsigned DEFAULT NULL,
-  `Literal` varchar(32) DEFAULT NULL,
+  `Literal` varchar(700) DEFAULT NULL,
   `Grupo` varchar(80) DEFAULT '""',
   PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`IdDestino`,`IdPrefijo`,`TipoAcceso`),
   KEY `Table_41_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
@@ -808,8 +883,8 @@ CREATE TABLE `internos` (
   `Prioridad` int(10) unsigned DEFAULT NULL,
   `OrigenR2` varchar(32) DEFAULT NULL,
   `PrioridadSIP` int(10) unsigned DEFAULT NULL,
-  `Literal` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdDestino`,`IdPrefijo`,`TipoAcceso`,`IdSector`),
+  `Literal` varchar(700) DEFAULT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`IdDestino`,`IdPrefijo`,`TipoAcceso`),
   KEY `Table_40_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
   CONSTRAINT `internos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) REFERENCES `sectoressectorizacion` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -980,13 +1055,16 @@ DROP TABLE IF EXISTS `operadores`;
 CREATE TABLE `operadores` (
   `IdOperador` varchar(32) NOT NULL,
   `IdSistema` varchar(32) NOT NULL,
-  `Clave` varchar(10) DEFAULT NULL,
+  `Clave` varchar(32) DEFAULT NULL,
   `NivelAcceso` int(1) unsigned DEFAULT NULL,
   `Nombre` varchar(32) DEFAULT NULL,
   `Apellidos` varchar(32) DEFAULT NULL,
   `Telefono` varchar(32) DEFAULT NULL,
   `FechaUltAcceso` date DEFAULT NULL,
   `Comentarios` varchar(100) DEFAULT NULL,
+  `TimeoutSesion` int(11) DEFAULT '30',
+  `SesionActiva` int(1) DEFAULT '0',
+  `SesionEstado` int(1) DEFAULT '0',
   PRIMARY KEY (`IdOperador`,`IdSistema`),
   KEY `Operadores_FKIndex1` (`IdSistema`),
   CONSTRAINT `operadores_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1022,6 +1100,8 @@ CREATE TABLE `parametrosrecurso` (
   `iPeriodoSpvRing` int(2) DEFAULT '200' COMMENT 'Periodo para supervisar señal ring en llamadas entrantes (en ms). 50<=valor<=400. Aplica a líneas AB y BL.',
   `iFiltroSpvRing` int(1) DEFAULT '2' COMMENT 'número de veces que hay que supervisar para dar por válido un valor. 0<valor<=6. Aplica a líneas AB y BL.',
   `iDetDtmf` tinyint(1) DEFAULT '0' COMMENT 'Deteccion dtmf para líneas BC. 0: no detecta 1: detecta. Aplica a líneas BC.\n',
+  `UmbralAGCTXdBm` float DEFAULT '0',
+  `UmbralAGCRXdBm` float DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `ParametrosRecurso_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   CONSTRAINT `parametrosrecurso_ibfk_1` FOREIGN KEY (`IdSistema`, `IdRecurso`, `TipoRecurso`) REFERENCES `recursos` (`IdSistema`, `IdRecurso`, `TipoRecurso`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1050,7 +1130,6 @@ CREATE TABLE `parametrossector` (
   `KeepAlivePeriod` int(10) unsigned DEFAULT '200',
   `KeepAliveMultiplier` int(10) unsigned DEFAULT '10',
   `NumEnlacesAI` int(10) unsigned DEFAULT '18',
-  `GrabacionEd137` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`IdSistema`,`IdNucleo`,`IdSector`),
   KEY `ParametrosSector_FKIndex1` (`IdSistema`,`IdNucleo`,`IdSector`),
   CONSTRAINT `parametrossector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdNucleo`, `IdSector`) REFERENCES `sectores` (`IdSistema`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1134,7 +1213,9 @@ CREATE TABLE `radio` (
   `Cascos` varchar(1) DEFAULT NULL,
   `Literal` varchar(32) DEFAULT NULL,
   `SupervisionPortadora` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`,`DescDestino`,`DestinoId`),
   KEY `Table_42_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
   CONSTRAINT `radio_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) REFERENCES `sectoressectorizacion` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1156,7 +1237,7 @@ CREATE TABLE `radio_param` (
   PRIMARY KEY (`idradio_param`),
   KEY `fk_radio_param_metodos_bss1_idx` (`metodos_bss_idmetodos_bss`),
   CONSTRAINT `fk_radio_param_metodos_bss1` FOREIGN KEY (`metodos_bss_idmetodos_bss`) REFERENCES `metodos_bss` (`idmetodos_bss`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=599 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1304,7 +1385,9 @@ CREATE TABLE `recursosradio` (
   `KeepAlivePeriod` int(10) unsigned DEFAULT '200',
   `KeepAliveMultiplier` int(10) unsigned DEFAULT '10',
   `RedundanciaRol` enum('P','R') DEFAULT NULL COMMENT 'Rol del recurso si está asociado a un destino Radio con redundancia (1+1): P (Principal), R (Reserva). En otro caso, tomará el valor null.',
-  `RedundanciaIdPareja` varchar(70) DEFAULT NULL COMMENT '''Identificador único del grupo de redundancia. Se compone como IdRecursoPrincipal#idRecursoRerva''',
+  `RedundanciaIdPareja` varchar(70) DEFAULT NULL COMMENT 'Identificador único del grupo de redundancia. Se compone como IdRecursoPrincipal#idRecursoRerva',
+  `DescDestino` varchar(32) DEFAULT NULL,
+  `Telemando` int(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `RecursosRadio_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `RecursosRadio_FKIndex2` (`IdSistema`,`IdEmplazamiento`),
@@ -1452,7 +1535,7 @@ DROP TABLE IF EXISTS `sectoresagrupacion`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sectoresagrupacion` (
   `IdSistema` varchar(32) NOT NULL,
-  `IdAgrupacion` varchar(32) NOT NULL,
+  `IdAgrupacion` varchar(700) NOT NULL,
   `IdSector` varchar(700) NOT NULL,
   `IdNucleo` varchar(32) NOT NULL,
   PRIMARY KEY (`IdSistema`,`IdAgrupacion`,`IdSector`,`IdNucleo`),
@@ -1542,6 +1625,23 @@ CREATE TABLE `sectorizaciones` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sectorizacionesagpesp`
+--
+
+DROP TABLE IF EXISTS `sectorizacionesagpesp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sectorizacionesagpesp` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdSectorizacion` varchar(32) NOT NULL,
+  `IdAgrupacion` varchar(32) NOT NULL,
+  `IdTOP` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdAgrupacion`,`IdTOP`),
+  KEY `sectorizacionesagpesp_kp_1` (`IdSistema`,`IdSectorizacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `sistema`
 --
 
@@ -1585,8 +1685,8 @@ CREATE TABLE `sistema` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40`.`AltaSistema`
-AFTER INSERT ON `new_cd40`.`sistema`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaSistema`
+AFTER INSERT ON `sistema`
 FOR EACH ROW
 BEGIN
     INSERT INTO Prefijos VALUES (new.IdSistema,0);
@@ -1651,8 +1751,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40`.`sistema_AUPD`
-AFTER UPDATE ON `new_cd40`.`sistema`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `sistema_AUPD`
+AFTER UPDATE ON `sistema`
 FOR EACH ROW
 UPDATE ParametrosSector SET NumLlamadasEntrantesIDA=new.NumLlamadasEntrantesIDA,
                                 NumLlamadasEnIDA=new.NumLlamadasEnIda,
@@ -1686,7 +1786,7 @@ CREATE TABLE `tabla_bss` (
   `UsuarioModificacion` varchar(32) DEFAULT NULL,
   `FechaModificacion` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idtabla_bss`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1734,6 +1834,8 @@ CREATE TABLE `teclassector` (
   `SayAgain` tinyint(1) DEFAULT '1',
   `InhabilitacionRedirec` tinyint(1) DEFAULT '0',
   `Glp` tinyint(1) DEFAULT '0',
+  `PermisoRTXSQ` tinyint(1) DEFAULT '0',
+  `PermisoRTXSect` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdNucleo`,`IdSector`),
   KEY `TeclasSector_FKIndex1` (`IdSistema`,`IdNucleo`,`IdSector`),
   CONSTRAINT `teclassector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdNucleo`, `IdSector`) REFERENCES `sectores` (`IdSistema`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1764,6 +1866,9 @@ CREATE TABLE `tifx` (
   `Grabador2` varchar(45) DEFAULT NULL,
   `iSupervLanGW` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Incorpora a la supervision ethernet de la pasarela la conexión a la Puerta de enlace. 0: no supervisa conexion GW; 1: supervisa GW.',
   `itmmaxSupervLanGW` int(1) NOT NULL DEFAULT '1' COMMENT 'Si supervisionLanGW=1,  tiempo maximo (en sg) de espera conexion GW. Si vence es que no hay ping a la puerta de enlace. Este tiempo tiene que ser menor de 5 sg.\n',
+  `GrabacionED137` int(1) NOT NULL DEFAULT '0',
+  `RtspGrabador1` int(6) DEFAULT '0',
+  `RtspGrabador2` int(6) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdTIFX`),
   KEY `TIFX_FKIndex1` (`IdSistema`),
   CONSTRAINT `tifx_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1790,6 +1895,11 @@ CREATE TABLE `top` (
   `Grabador1` varchar(45) DEFAULT NULL,
   `Grabador2` varchar(45) DEFAULT NULL,
   `IdDependenciaATS` varchar(32) DEFAULT NULL,
+  `GrabacionAnalogica` int(1) NOT NULL DEFAULT '0' COMMENT 'Habilitada grabación Analógica en TOP.',
+  `GrabacionED137` int(1) NOT NULL DEFAULT '0',
+  `TipoGrabacionAnalogica` int(1) NOT NULL DEFAULT '0',
+  `RtspGrabador1` int(6) DEFAULT NULL,
+  `RtspGrabador2` int(6) DEFAULT NULL,
   PRIMARY KEY (`IdSistema`,`IdTOP`),
   KEY `TOP_FKIndex1` (`IdSistema`),
   CONSTRAINT `top_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1889,7 +1999,7 @@ CREATE TABLE `valores_tabla` (
   PRIMARY KEY (`idvalores_tabla`,`tabla_bss_idtabla_bss`),
   KEY `fk_valores_tabla_tabla_bss1_idx` (`tabla_bss_idtabla_bss`),
   CONSTRAINT `fk_valores_tabla_tabla_bss1` FOREIGN KEY (`tabla_bss_idtabla_bss`) REFERENCES `tabla_bss` (`idtabla_bss`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2107,6 +2217,31 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AgrupacionesSinAsignarASectorizacion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AgrupacionesSinAsignarASectorizacion`(in id_sistema char(32),in id_sectorizacion char(32))
+BEGIN
+		SELECT a.IdAgrupacion FROM agrupaciones a
+		WHERE  a.IdSistema=id_sistema AND
+					a.AgrupacionEspecial = true AND
+					a.IdAgrupacion NOT IN (SELECT sae.IdAgrupacion FROM sectorizacionesagpesp sae
+																			WHERE sae.IdSistema=id_sistema AND
+																						sae.IdSectorizacion=id_sectorizacion)
+	     ORDER BY a.IdAgrupacion;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `AsignacionRecursosDeUnaRed` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -2169,7 +2304,11 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AsignacionUsuariosATops`(in id_Sistema char(32))
 BEGIN
 SELECT c.IdSectorOriginal AS IdSector,a.IdTop,t.Grabador1,e1.IpRed1 as IpGrabador1, 
-			t.Grabador2,e2.IpRed1 as IpGrabador2, e1.SipPort as RtspPort 
+			t.Grabador2,e2.IpRed1 as IpGrabador2, t.RtspGrabador1 as RtspPort, 
+            t.GrabacionAnalogica as EnableGrabacionAnalogica, 
+            t.GrabacionED137 as EnableGrabacionED137,
+            t.TipoGrabacionAnalogica as TipoGrabacionAnalogica,
+            t.RtspGrabador2 as RtspPort1
 		FROM SectoresSector c
 		INNER JOIN sectorizaciones b ON b.IdSistema = c.IdSistema AND b.Activa=true
 		INNER JOIN sectoressectorizacion a ON a.IdSistema=b.IdSistema AND a.IdSectorizacion=b.IdSectorizacion
@@ -2178,7 +2317,7 @@ SELECT c.IdSectorOriginal AS IdSector,a.IdTop,t.Grabador1,e1.IpRed1 as IpGrabado
 		LEFT JOIN equiposeu e2 ON e2.idEquipos=t.grabador2
 		WHERE 	c.IdSistema=id_Sistema AND
 				c.IdNucleo=a.IdNucleo AND
-				c.IdSector=a.IdSector;     
+				c.IdSector=a.IdSector;    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2284,7 +2423,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CreaPosicionesActiva`(in id_sistema char(32), in id_sectorizacion char(32), in id_activa char(32))
 BEGIN
 		INSERT into radio
-			SELECT IdSistema,id_activa as IdSectorizacion,IdNucleo,IdSector,PosHMI,IdDestino,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora FROM Radio
+			SELECT IdSistema,id_activa as IdSectorizacion,IdNucleo,IdSector,PosHMI,IdDestino,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora, DescDestino, DestinoId  FROM Radio
 				WHERE IdSectorizacion=id_sectorizacion AND
 							IdSistema=id_sistema;
 		REPLACE INTO TablasModificadas (IdTabla)
@@ -2442,6 +2581,34 @@ BEGIN
         ) B;          
 
   SET cuantas=iNumTeclasPrioridad;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DestinoLCENASector` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DestinoLCENASector`(in id_Sistema char(32), in id_DestinoLCEN char(32))
+BEGIN
+ SELECT  DE.idSector AS IdSector, A.IdDestino AS IdDestino, B.IdAbonado AS IdAbonado
+ FROM destinostelefonia A 
+ INNER JOIN destinosexternos B ON A.IdSistema=B.IdSistema AND A.IdDestino=B.IdDestino AND A.TipoDestino=B.TipoDestino 
+ INNER JOIN destinosexternossector DE ON DE.IdSistema=A.IdSistema AND DE.IdDestino=A.IdDestino  AND DE.TipoDestino=A.TipoDestino AND DE.idPrefijo=A.idPrefijo AND DE.IdDestinoLCEN IS NOT NULL 
+ AND   DE.IdPrefijoDestinoLCEN IS NOT NULL 
+ LEFT OUTER JOIN redes C ON C.IdSistema = A.IdSistema AND C.IdPrefijo = A.IdPrefijo 
+ LEFT OUTER JOIN recursoslcen L ON L.IdSistema=DE.IdSistema AND L.IdDestino=DE.IdDestinoLCEN AND L.TipoDestino=A.TipoDestino AND L.TipoRecurso=2 
+  LEFT OUTER JOIN recursos R ON R.IdSistema=L.IdSistema AND R.IdRecurso=L.IdRecurso AND R.TipoRecurso=L.TipoRecurso AND R.TipoRecurso<>0 
+  LEFT OUTER JOIN parametrosrecurso PR ON PR.IdSistema=R.IdSistema AND PR.IdRecurso=R.IdRecurso AND PR.TipoRecurso=R.TipoRecurso 
+ WHERE A.IdSistema=id_Sistema AND A.idprefijo=3 AND DE.IdDestinoLCEN = id_DestinoLCEN;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2779,6 +2946,31 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DestinosRadioSinAsignarALaPaginaDelSectorDC` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DestinosRadioSinAsignarALaPaginaDelSectorDC`(in id_sistema char(32), in id_usuario varchar(700), in pagina int, in frecPorPagina int)
+BEGIN
+	SELECT * FROM DestinosRadio DR
+	WHERE idSistema=id_sistema AND
+				0 < (SELECT COUNT(*) FROM RecursosRadio RR WHERE RR.IdDestino=DR.IdDestino) AND
+				IdDestino not in (select IdDestino from DestinosRadioSector
+														where Idsistema=id_sistema AND
+																	IdSector=id_usuario AND
+																	(((PosHMI-1) div frecPorPagina) = pagina));
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `DestinosTelefoniaMultiDestino` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -3069,7 +3261,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionaFS`(in id_sistema char(32), in id_nucleo char(32), in id_sector char(32), in SeleccionadoFS bool)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionaFS`(in id_sistema char(32), in id_nucleo char(32), in id_sector varchar(700), in SeleccionadoFS bool)
 BEGIN
 IF(SeleccionadoFS = true) THEN
 	UPDATE Sectores 
@@ -3077,6 +3269,32 @@ IF(SeleccionadoFS = true) THEN
 		REPLACE INTO TablasModificadas (IdTabla)
 				VALUES ('Sectores');
                 END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GestionSesionOperador` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionSesionOperador`(
+  IN   `id_sistema`  varchar(32),
+  IN   `id_operador`  varchar(32),
+  IN   `sesionactiva`  int, 
+  IN   `sesionestado`  int
+)
+BEGIN
+	UPDATE operadores set SesionActiva = sesionactiva , SesionEstado = sesionestado
+			WHERE IdSistema= id_sistema AND
+						IdOperador = id_operador;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3096,6 +3314,29 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetEstadoCluster`()
 BEGIN
 	SELECT * FROM estadocluster;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetEstadoOperadoresEnSesion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetEstadoOperadoresEnSesion`(
+  IN   `id_sistema`  varchar(32),
+  IN   `sesiona_activa`  int 
+)
+BEGIN
+	SELECT IdOperador, SesionEstado from operadores 
+			WHERE IdSistema = id_sistema AND SesionActiva = sesion_activa;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3810,7 +4051,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginTop`(in id_Sistema char(32),in id_Hw char(32), out id_Usuario char(32), out modo_arranque char(1))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginTop`(in id_Sistema char(32),in id_Hw char(32), out id_Usuario varchar(700), out modo_arranque char(1))
 BEGIN
 	SELECT b.idsector,c.ModoArranque  INTO id_Usuario, modo_arranque
 	FROM sectorizaciones a, SectoresSectorizacion b, top c
@@ -3843,6 +4084,52 @@ BEGIN
 	WHERE IdSistema=id_sistema AND
 			IdSector=id_sector AND
 			PosHMI<>0;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `MultiDestinosSinAsignarAlSector` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `MultiDestinosSinAsignarAlSector`(in id_sistema char(32), in id_usuario varchar(700), in id_nucleo char(32))
+BEGIN
+	SELECT *
+	FROM multidestinos
+	WHERE IdSistema LIKE id_sistema
+    AND IdNucleo LIKE id_nucleo
+	AND IdKey NOT IN
+		(SELECT IdMultiDestino
+		FROM multidestinos_elementos
+		WHERE IdDestino LIKE id_usuario)
+	AND IdKey NOT IN
+		(SELECT md.IdKey
+		FROM multidestinos md, destinosexternossector des
+		WHERE md.IdSistema = des.IdSistema AND
+		md.IdNucleo = des.IdNucleo AND
+		md.IdMultiDestino = IdDestino AND 
+		des.IdSector LIKE id_usuario)
+	
+UNION 
+SELECT *
+FROM multidestinos
+WHERE IdSistema LIKE id_sistema
+AND IdNucleo LIKE id_nucleo
+AND IdMultiDestino NOT IN
+	(SELECT IdDestino
+	FROM destinosexternossector
+	WHERE IdSistema = id_sistema
+	AND IdNucleo = id_nucleo
+	AND IdSector = id_usuario)
+ORDER BY IdMultiDestino;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3918,7 +4205,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoExternos`(in idSistema char(32), in idUsuario char(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoExternos`(in idSistema char(32), in idUsuario varchar(700))
 BEGIN
 	SELECT a.*
 		FROM UsuariosAbonados a, Sectorizaciones b
@@ -3944,7 +4231,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoInternos`(in id_Sistema char(32),in id_Usuario char (32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoInternos`(in id_Sistema char(32),in id_Usuario varchar (700))
 BEGIN
 	SELECT *
 		FROM UsuariosAbonados
@@ -4012,7 +4299,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ParametrosSectorAgrupado`(in id_sistema char(32), in id_sector_agrupado char(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ParametrosSectorAgrupado`(in id_sistema char(32), in id_sector_agrupado varchar(700))
 BEGIN
 		SELECT ps.* FROM SectoresAgrupacion ss, ParametrosSector ps
 		WHERE ss.IdSistema=id_sistema AND
@@ -4663,11 +4950,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SectorConNumeroAbonado`(in id_siste
 BEGIN
 	SELECT s.IdSector FROM UsuariosAbonados ua, Sectores s
 		WHERE ua.IdSistema=id_sistema AND
-					ua.IdNucleo=id_nucleo AND
 					ua.IdPrefijo=id_prefijo AND
 					ua.IdAbonado=id_abonado AND
 					s.IdSistema=ua.IdSistema AND
-					s.IdNucleo=ua.IdNucleo AND
 					s.SectorSimple AND
 					ua.IdSector=s.IdSector;
 END ;;
@@ -4711,15 +4996,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SectoresFueraDeAgrupacion`(in id_sistema varchar(32), in id_agrupacion varchar(32))
 BEGIN
-	IF id_agrupacion IS NOT NULL THEN
-		SELECT s.IdSector FROM Sectores s
+IF id_agrupacion IS NOT NULL THEN
+		SELECT s.IdSector, s.IdNucleo FROM Sectores s
 			WHERE s.IdSistema=id_sistema AND
 						s.SectorSimple=true AND
 						s.IdSector NOT IN (SELECT IdSector FROM	SectoresAgrupacion	
 																	WHERE IdSistema=id_sistema AND
 																				IdAgrupacion=id_agrupacion);
 	ELSE
-		SELECT s.IdSector FROM Sectores s
+		SELECT s.IdSector, s.IdNucleo FROM Sectores s
 			WHERE s.IdSistema=id_sistema AND
 						s.SectorSimple=true;
 	END IF;
@@ -4834,6 +5119,33 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `SectoresRealesNucleos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SectoresRealesNucleos`(in id_sistema char(32), in id_sectorizacion char(32), out cuantos int)
+BEGIN
+	SELECT count(*) into cuantos FROM Sectores 
+	WHERE IdSistema=id_sistema AND
+				SectorSimple AND
+				Tipo='R' AND 
+				IdSector NOT IN (SELECT IdSectorOriginal FROM SectoresSector ss,SectoresSectorizacion sz
+													WHERE sz.IdSectorizacion=id_sectorizacion AND
+																sz.IdSistema=id_sistema AND
+																ss.IdSistema=sz.IdSistema AND
+																ss.IdSector=sz.IdSector);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `SectoresSinAsignarASectorizacion` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -4849,28 +5161,74 @@ BEGIN
   IF id_sectorizacion!='SACTA' THEN
 		select a.IdSector, a.Tipo from Sectores a
 		where a.IdSistema=id_sistema AND
-					a.IdNucleo=id_nucleo AND
 					a.SectorSimple=true AND
 					a.IdSector not in (select ss.IdSectorOriginal FROM sectoresSectorizacion ssz, sectoresSector ss
 																			WHERE ssz.IdSistema=id_sistema AND
-																						ssz.IdNucleo=id_nucleo AND
 																						ssz.IdSectorizacion=id_sectorizacion AND
-																						ss.IdSistema=ssz.IdSistema AND ss.IdNucleo=ssz.IdNucleo AND 
+																						ss.IdSistema=ssz.IdSistema AND
 																						ss.IdSector=ssz.IdSector)
 	     ORDER BY A.IdSector,A.Tipo;
     ELSE
 	   select a.IdSector, a.Tipo from Sectores a
 		where a.IdSistema=id_sistema AND
-					a.IdNucleo=id_nucleo AND
 					a.SectorSimple=true AND
 					a.IdSector not in (select ss.IdSectorOriginal FROM sectoresSectorizacion ssz, sectoresSector ss
-																			WHERE ssz.IdSistema=id_sistema AND
-																						ssz.IdNucleo=id_nucleo AND
+																			WHERE ssz.IdSistema=id_sistema AND																						
 																						ssz.IdSectorizacion=id_sectorizacion AND
-																						ss.IdSistema=ssz.IdSistema AND ss.IdNucleo=ssz.IdNucleo AND 
+																						ss.IdSistema=ssz.IdSistema AND
 																						ss.IdSector=ssz.IdSector) AND A.Tipo='M'
 	     ORDER BY A.IdSector,A.Tipo;
     END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `SectorizacionSectoresAgpEspEnTop` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SectorizacionSectoresAgpEspEnTop`(in id_sistema char(32),in id_sectorizacion char(32),in id_agrupacion char(32))
+BEGIN
+SELECT count(`a`.`IdSector`) FROM `new_cd40_trans`.`sectoresagrupacion` `a`
+WHERE  `a`.`IdSistema` = id_sistema AND
+			 `a`.`IdAgrupacion` = id_agrupacion AND
+			 `a`.`IdSector` IN 
+(SELECT 
+        `c`.`IdSectorOriginal` AS `IdSectorOriginal`
+    FROM
+        (`new_cd40_trans`.`sectoressectorizacion` `a`
+        JOIN `new_cd40_trans`.`sectoressector` `c`)
+    WHERE
+        ((`a`.`IdSistema` = `c`.`IdSistema`)
+            AND (`c`.`IdNucleo` = `a`.`IdNucleo`)
+            AND (`c`.`IdSector` = `a`.`IdSector`)
+            AND (`c`.`IdSectorOriginal` NOT LIKE '**FS**')
+            AND (`a`.`IdSistema` = id_sistema)
+            AND (`a`.`IdSectorizacion` = id_sectorizacion))
+    ORDER BY `c`.`IdSectorOriginal`) 
+    UNION (SELECT 
+        NULL AS `NULL`
+    FROM
+        (`new_cd40_trans`.`top` `a`
+        JOIN `new_cd40_trans`.`sectorizaciones` `b`)
+    WHERE
+        ((`a`.`IdSistema` = `b`.`IdSistema`)
+         AND (`b`.`IdSistema` = id_sistema)
+         AND (`b`.`IdSectorizacion` = id_sectorizacion)
+            AND (NOT ((`a`.`IdSistema` , `b`.`IdSectorizacion`, `a`.`IdTOP`) IN (SELECT 
+                `new_cd40_trans`.`sectoressectorizacion`.`IdSistema` AS `IdSistema`,
+                    `new_cd40_trans`.`sectoressectorizacion`.`IdSectorizacion` AS `idsectorizacion`,
+                    `new_cd40_trans`.`sectoressectorizacion`.`IdTOP` AS `IdTOP`
+            FROM
+                `new_cd40_trans`.`sectoressectorizacion`)))));
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -5082,22 +5440,24 @@ BEGIN
 
 			SELECT *
 			FROM Troncales
-			WHERE IdSistema=id_Sistema AND
-							IdTroncal NOT IN (SELECT IdTroncal
-											  FROM TroncalesRuta Tr,Rutas r
-                                              WHERE tr.IdSistema=id_Sistema AND
-												    r.IdSistema=Tr.IdSistema AND
-                                                    r.Central=Tr.Central AND
-                                                    r.IdRuta=Tr.IdRuta AND
-                                                    (r.Tipo='D' OR (r.Tipo='A' AND tr.Central=id_Central)));
+			WHERE IdSistema=id_Sistema
+            AND IdTroncal IN (select distinct idtroncal from recursostf where idtroncal is not null)
+            AND	IdTroncal NOT IN (SELECT IdTroncal
+								  FROM TroncalesRuta Tr,Rutas r
+								  WHERE tr.IdSistema=id_Sistema AND
+										r.IdSistema=Tr.IdSistema AND
+										r.Central=Tr.Central AND
+										r.IdRuta=Tr.IdRuta AND
+										(r.Tipo='D' OR (r.Tipo='A' AND tr.Central=id_Central)));
 	ELSE
 			
 			SELECT * 
 			FROM Troncales 
-			WHERE IdSistema=id_Sistema AND 
-							IdTroncal NOT IN (SELECT IdTroncal 
-											  FROM TroncalesRuta
-											  WHERE IdSistema=id_Sistema AND Central=id_Central);
+			WHERE IdSistema=id_Sistema 
+            AND IdTroncal IN (select distinct idtroncal from recursostf where idtroncal is not null)
+            AND IdTroncal NOT IN (SELECT IdTroncal 
+								  FROM TroncalesRuta
+								  WHERE IdSistema=id_Sistema AND Central=id_Central);
 	END IF;
 END ;;
 DELIMITER ;
@@ -5261,6 +5621,7 @@ DROP TABLE IF EXISTS `agrupaciones`;
 CREATE TABLE `agrupaciones` (
   `IdSistema` varchar(32) NOT NULL,
   `IdAgrupacion` varchar(32) NOT NULL,
+  `AgrupacionEspecial` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdAgrupacion`),
   KEY `Agrupaciones_FKIndex1` (`IdSistema`),
   CONSTRAINT `agrupaciones_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5306,6 +5667,42 @@ CREATE TABLE `altavoces` (
   KEY `Altavoces_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
   CONSTRAINT `altavoces_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`, `IdNucleo`, `IdSector`, `PosHMI`) REFERENCES `destinosradiosector` (`IdSistema`, `IdDestino`, `TipoDestino`, `IdNucleo`, `IdSector`, `PosHMI`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `conferencias`
+--
+
+DROP TABLE IF EXISTS `conferencias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `conferencias` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdConferencia` varchar(32) NOT NULL,
+  `IdSalaBkk` varchar(18) NOT NULL,
+  `TipoConferencia` int(1) NOT NULL,
+  `PosHMI` int(2) NOT NULL,
+  `Descripcion` varchar(80) NOT NULL,
+  `Alias` varchar(16) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdConferencia`,`IdSalaBkk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `conferenciasparticipantes`
+--
+
+DROP TABLE IF EXISTS `conferenciasparticipantes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `conferenciasparticipantes` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdConferencia` varchar(32) NOT NULL,
+  `SipUri` varchar(255) NOT NULL,
+  `Descripcion` varchar(80) DEFAULT NULL,
+  PRIMARY KEY (`IdSistema`,`IdConferencia`,`SipUri`),
+  CONSTRAINT `conferenciaspart_ibfk_1` FOREIGN KEY (`IdSistema`, `IdConferencia`) REFERENCES `conferencias` (`IdSistema`, `IdConferencia`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5363,8 +5760,8 @@ CREATE TABLE `destinos` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`InsertDestino`
-AFTER INSERT ON `new_cd40_trans`.`destinos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `InsertDestino`
+AFTER INSERT ON `destinos`
 FOR EACH ROW
 BEGIN
     REPLACE INTO TablasModificadas (IdTabla) VALUES ('Destinos');
@@ -5383,8 +5780,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`UpdateDestino`
-AFTER UPDATE ON `new_cd40_trans`.`destinos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `UpdateDestino`
+AFTER UPDATE ON `destinos`
 FOR EACH ROW
 BEGIN
     REPLACE INTO TablasModificadas (IdTabla) VALUES ('Destinos');
@@ -5505,8 +5902,8 @@ CREATE TABLE `destinosexternos` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinosExternos`
-BEFORE INSERT ON `new_cd40_trans`.`destinosexternos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinosExternos`
+BEFORE INSERT ON `destinosexternos`
 FOR EACH ROW
 BEGIN
   DECLARE numAbonados INT(1);
@@ -5569,8 +5966,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinosExternos`
-BEFORE DELETE ON `new_cd40_trans`.`destinosexternos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinosExternos`
+BEFORE DELETE ON `destinosexternos`
 FOR EACH ROW
 BEGIN
 	IF old.IdPrefijo=1 THEN
@@ -5632,8 +6029,8 @@ CREATE TABLE `destinosexternossector` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinoExternoSector`
-AFTER INSERT ON `new_cd40_trans`.`destinosexternossector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinoExternoSector`
+AFTER INSERT ON `destinosexternossector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosExternosSector');
@@ -5672,8 +6069,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinoExternoSector`
-BEFORE DELETE ON `new_cd40_trans`.`destinosexternossector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinoExternoSector`
+BEFORE DELETE ON `destinosexternossector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosExternosSector');
@@ -5714,8 +6111,8 @@ CREATE TABLE `destinosinternos` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinoInterno`
-BEFORE INSERT ON `new_cd40_trans`.`destinosinternos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinoInterno`
+BEFORE INSERT ON `destinosinternos`
 FOR EACH ROW
 BEGIN
     REPLACE INTO DestinosTelefonia SET IdSistema=new.IdSistema,
@@ -5758,8 +6155,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinoInterno`
-BEFORE DELETE ON `new_cd40_trans`.`destinosinternos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinoInterno`
+BEFORE DELETE ON `destinosinternos`
 FOR EACH ROW
 BEGIN
     REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosInternos');
@@ -5780,7 +6177,7 @@ DROP TABLE IF EXISTS `destinosinternossector`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `destinosinternossector` (
   `IdSistema` varchar(32) NOT NULL,
-  `IdDestino` varchar(32) NOT NULL,
+  `IdDestino` varchar(700) NOT NULL,
   `TipoDestino` int(10) unsigned NOT NULL,
   `IdNucleo` varchar(32) NOT NULL,
   `IdSector` varchar(700) NOT NULL,
@@ -5807,8 +6204,8 @@ CREATE TABLE `destinosinternossector` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinoInternoSector`
-AFTER INSERT ON `new_cd40_trans`.`destinosinternossector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinoInternoSector`
+AFTER INSERT ON `destinosinternossector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosInternosSector');
@@ -5847,8 +6244,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinosInternosSector`
-BEFORE DELETE ON `new_cd40_trans`.`destinosinternossector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinosInternosSector`
+BEFORE DELETE ON `destinosinternossector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosInternosSector');
@@ -5858,6 +6255,22 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `destinosmultifrecuencia`
+--
+
+DROP TABLE IF EXISTS `destinosmultifrecuencia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `destinosmultifrecuencia` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdDestino` varchar(32) NOT NULL,
+  `FrecuenciaDefecto` tinyint(1) NOT NULL DEFAULT '0',
+  `Frecuencia` varchar(32) NOT NULL,
+  KEY `destinosmultifrecuencia_FKIndex1` (`IdSistema`,`IdDestino`,`FrecuenciaDefecto`,`Frecuencia`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `destinosradio`
@@ -5891,6 +6304,9 @@ CREATE TABLE `destinosradio` (
   `TiempoVueltaADefecto` int(11) DEFAULT NULL COMMENT 'Tiempo en segundos en el que el que la frecuencia vuelve al emplazamiento por defecto. Si es cero la frecuencia nunca vuelve al emplazamiento por defecto.',
   `PorcentajeRSSI` int(1) DEFAULT NULL COMMENT 'Porcentaje de cálculo para el método BSS RSSI. \n0: No aplica\n1-9 indica el porcentaje',
   `ConRedundancia` enum('0','1') DEFAULT '0' COMMENT 'Indicador de si el destino es 1+1: 1 (si), 0 (No)',
+  `DescDestino` varchar(32) NOT NULL,
+  `PasivoRetransmision` tinyint(1) DEFAULT '0',
+  `MultiFrecuencia` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`fk_metodosbss`,`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `DestinosRadio_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `fk_destinosradio_zonas1_idx` (`zonas_idZonas`),
@@ -5898,7 +6314,7 @@ CREATE TABLE `destinosradio` (
   CONSTRAINT `destinoRadio_emplazamiento_fk` FOREIGN KEY (`IdSistema`, `EmplazamientoDefecto`) REFERENCES `emplazamientos` (`IdSistema`, `IdEmplazamiento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `destinosradio_ibfk_1` FOREIGN KEY (`IdSistema`, `IdDestino`, `TipoDestino`) REFERENCES `destinos` (`IdSistema`, `IdDestino`, `TipoDestino`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_destinosradio_zonas1` FOREIGN KEY (`zonas_idZonas`) REFERENCES `zonas` (`idZonas`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=latin1 COMMENT='Destinos Radio';
+) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=latin1 COMMENT='Destinos Radio';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -5909,8 +6325,8 @@ CREATE TABLE `destinosradio` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinoRadio`
-BEFORE INSERT ON `new_cd40_trans`.`destinosradio`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinoRadio`
+BEFORE INSERT ON `destinosradio`
 FOR EACH ROW
 BEGIN
   		DECLARE numDestinos INT(1);
@@ -5960,8 +6376,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DESTRADIODELETE`
-BEFORE DELETE ON `new_cd40_trans`.`destinosradio`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DESTRADIODELETE`
+BEFORE DELETE ON `destinosradio`
 FOR EACH ROW
 BEGIN
 IF old.TipoDestino=0 THEN
@@ -5976,6 +6392,19 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `destinosradiokey`
+--
+
+DROP TABLE IF EXISTS `destinosradiokey`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `destinosradiokey` (
+  `iddestinosradiokey` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  UNIQUE KEY `iddestinosradiokey_UNIQUE` (`iddestinosradiokey`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `destinosradiosector`
@@ -5997,6 +6426,7 @@ CREATE TABLE `destinosradiosector` (
   `Cascos` varchar(1) DEFAULT NULL,
   `Literal` varchar(32) DEFAULT NULL,
   `SupervisionPortadora` tinyint(1) NOT NULL DEFAULT '0',
+  `DescDestino` varchar(32) NOT NULL,
   PRIMARY KEY (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
   KEY `DestinosRadioSector_FKIndex1` (`IdSistema`,`IdDestino`,`TipoDestino`),
   KEY `DestinosRadioSector_FKIndex2` (`IdSistema`,`IdNucleo`,`IdSector`),
@@ -6013,8 +6443,8 @@ CREATE TABLE `destinosradiosector` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinoRadioSector`
-AFTER INSERT ON `new_cd40_trans`.`destinosradiosector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinoRadioSector`
+AFTER INSERT ON `destinosradiosector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosRadioSector');
@@ -6053,8 +6483,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinoRadioSector`
-BEFORE DELETE ON `new_cd40_trans`.`destinosradiosector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinoRadioSector`
+BEFORE DELETE ON `destinosradiosector`
 FOR EACH ROW
 BEGIN
   REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosRadioSector');
@@ -6096,8 +6526,8 @@ CREATE TABLE `destinostelefonia` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaDestinosTelefonia`
-BEFORE INSERT ON `new_cd40_trans`.`destinostelefonia`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaDestinosTelefonia`
+BEFORE INSERT ON `destinostelefonia`
 FOR EACH ROW
 BEGIN
  			DECLARE numDestinos INT(1);
@@ -6147,8 +6577,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteDestinoTelefonia`
-BEFORE DELETE ON `new_cd40_trans`.`destinostelefonia`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteDestinoTelefonia`
+BEFORE DELETE ON `destinostelefonia`
 FOR EACH ROW
 BEGIN
     REPLACE INTO TablasModificadas (IdTabla) VALUES ('DestinosTelefonia') ;
@@ -6187,8 +6617,8 @@ CREATE TABLE `emplazamientos` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`PRDELETE`
-BEFORE DELETE ON `new_cd40_trans`.`emplazamientos`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `PRDELETE`
+BEFORE DELETE ON `emplazamientos`
 FOR EACH ROW
 UPDATE RECURSOSRADIO SET IdEmplazamiento=NULL
 			WHERE IdSistema = old.IdSistema AND IdEmplazamiento=old.IdEmplazamiento */;;
@@ -6261,7 +6691,9 @@ CREATE TABLE `estadoaltavoces` (
   `IdSistema` varchar(32) NOT NULL,
   `NumAltavoz` int(10) unsigned NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`NumAltavoz`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`NumAltavoz`,`DestinoId`),
   KEY `Altavoz_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
   CONSTRAINT `estadoaltavoces_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) REFERENCES `radio` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -6298,7 +6730,9 @@ CREATE TABLE `estadorecursos` (
   `IdSistema` varchar(32) NOT NULL,
   `IdRecurso` varchar(32) NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`IdRecurso`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdDestino`,`PosHMI`,`IdSector`,`IdNucleo`,`IdSectorizacion`,`IdSistema`,`IdRecurso`,`DescDestino`,`DestinoId`),
   KEY `Recurso_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
   CONSTRAINT `estadorecursos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) REFERENCES `radio` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`, `PosHMI`, `IdDestino`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -6321,7 +6755,8 @@ CREATE TABLE `estadosrecursos` (
   `IdDestino` varchar(700) NOT NULL,
   `TipoDestino` int(10) unsigned NOT NULL,
   `Estado` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`IdSistema`,`IdSector`,`IdNucleo`,`PosHMI`,`IdRecurso`,`TipoRecurso`,`IdDestino`,`TipoDestino`),
+  `DescDestino` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSector`,`IdNucleo`,`PosHMI`,`IdRecurso`,`TipoRecurso`,`IdDestino`,`TipoDestino`,`DescDestino`),
   KEY `Table_44_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `Table_44_FKIndex2` (`IdSistema`,`IdDestino`,`TipoDestino`,`IdNucleo`,`IdSector`,`PosHMI`),
   CONSTRAINT `estadosrecursos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdRecurso`, `TipoRecurso`) REFERENCES `recursosradio` (`IdSistema`, `IdRecurso`, `TipoRecurso`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -6348,7 +6783,7 @@ CREATE TABLE `externos` (
   `Prioridad` int(10) unsigned DEFAULT NULL,
   `OrigenR2` varchar(32) DEFAULT NULL,
   `PrioridadSIP` int(10) unsigned DEFAULT NULL,
-  `Literal` varchar(32) DEFAULT NULL,
+  `Literal` varchar(700) DEFAULT NULL,
   `Grupo` varchar(80) DEFAULT '""',
   PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`IdDestino`,`IdPrefijo`,`TipoAcceso`),
   KEY `Table_41_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
@@ -6397,8 +6832,8 @@ CREATE TABLE `grupostelefonia` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`DeleteGrupoTelefonia`
-BEFORE DELETE ON `new_cd40_trans`.`grupostelefonia`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `DeleteGrupoTelefonia`
+BEFORE DELETE ON `grupostelefonia`
 FOR EACH ROW
 BEGIN
   UPDATE DestinosTelefonia 
@@ -6577,7 +7012,7 @@ CREATE TABLE `internos` (
   `Prioridad` int(10) unsigned DEFAULT NULL,
   `OrigenR2` varchar(32) DEFAULT NULL,
   `PrioridadSIP` int(10) unsigned DEFAULT NULL,
-  `Literal` varchar(32) DEFAULT NULL,
+  `Literal` varchar(700) DEFAULT NULL,
   PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`IdDestino`,`IdPrefijo`,`TipoAcceso`),
   KEY `Table_40_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
   CONSTRAINT `internos_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) REFERENCES `sectoressectorizacion` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6616,8 +7051,8 @@ CREATE TABLE `llamadas_entrantes_sector` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`llamadas_entrantes_sector_AF_INSERT`
-AFTER INSERT ON `new_cd40_trans`.`llamadas_entrantes_sector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `llamadas_entrantes_sector_AF_INSERT`
+AFTER INSERT ON `llamadas_entrantes_sector`
 FOR EACH ROW
 BEGIN
   
@@ -6653,8 +7088,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`llamadas_entrantes_sector_AF_UPDATE`
-AFTER UPDATE ON `new_cd40_trans`.`llamadas_entrantes_sector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `llamadas_entrantes_sector_AF_UPDATE`
+AFTER UPDATE ON `llamadas_entrantes_sector`
 FOR EACH ROW
 BEGIN
    
@@ -6716,8 +7151,8 @@ CREATE TABLE `llamadas_salientes_sector` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`llamadas_salientes_sector_AF_INSERT`
-AFTER INSERT ON `new_cd40_trans`.`llamadas_salientes_sector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `llamadas_salientes_sector_AF_INSERT`
+AFTER INSERT ON `llamadas_salientes_sector`
 FOR EACH ROW
 BEGIN
   
@@ -6753,8 +7188,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`llamadas_salientes_sector_AF_UPDATE`
-AFTER UPDATE ON `new_cd40_trans`.`llamadas_salientes_sector`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `llamadas_salientes_sector_AF_UPDATE`
+AFTER UPDATE ON `llamadas_salientes_sector`
 FOR EACH ROW
 BEGIN
    
@@ -6795,7 +7230,7 @@ CREATE TABLE `metodos_bss` (
   `idmetodos_bss` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idmetodos_bss`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6901,13 +7336,16 @@ DROP TABLE IF EXISTS `operadores`;
 CREATE TABLE `operadores` (
   `IdOperador` varchar(32) NOT NULL,
   `IdSistema` varchar(32) NOT NULL,
-  `Clave` varchar(10) DEFAULT NULL,
+  `Clave` varchar(32) DEFAULT NULL,
   `NivelAcceso` int(1) unsigned DEFAULT NULL,
   `Nombre` varchar(32) DEFAULT NULL,
   `Apellidos` varchar(32) DEFAULT NULL,
   `Telefono` varchar(32) DEFAULT NULL,
   `FechaUltAcceso` date DEFAULT NULL,
   `Comentarios` varchar(100) DEFAULT NULL,
+  `TimeoutSesion` int(11) DEFAULT '30',
+  `SesionActiva` int(1) DEFAULT '0',
+  `SesionEstado` int(1) DEFAULT '0',
   PRIMARY KEY (`IdOperador`,`IdSistema`),
   KEY `Operadores_FKIndex1` (`IdSistema`),
   CONSTRAINT `operadores_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6943,6 +7381,8 @@ CREATE TABLE `parametrosrecurso` (
   `iPeriodoSpvRing` int(2) DEFAULT '200' COMMENT 'Periodo para supervisar señal ring en llamadas entrantes (en ms). 50<=valor<=400. Aplica a líneas AB y BL.',
   `iFiltroSpvRing` int(1) DEFAULT '2' COMMENT 'número de veces que hay que supervisar para dar por válido un valor. 0<valor<=6. Aplica a líneas AB y BL.',
   `iDetDtmf` tinyint(1) DEFAULT '0' COMMENT 'Deteccion dtmf para líneas BC. 0: no detecta 1: detecta. Aplica a líneas BC.\n',
+  `UmbralAGCTXdBm` float DEFAULT '0',
+  `UmbralAGCRXdBm` float DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `ParametrosRecurso_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   CONSTRAINT `parametrosrecurso_ibfk_1` FOREIGN KEY (`IdSistema`, `IdRecurso`, `TipoRecurso`) REFERENCES `recursos` (`IdSistema`, `IdRecurso`, `TipoRecurso`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6971,7 +7411,6 @@ CREATE TABLE `parametrossector` (
   `KeepAlivePeriod` int(10) unsigned DEFAULT '200',
   `KeepAliveMultiplier` int(10) unsigned DEFAULT '10',
   `NumEnlacesAI` int(10) unsigned DEFAULT '18',
-  `GrabacionEd137` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`IdSistema`,`IdNucleo`,`IdSector`),
   KEY `ParametrosSector_FKIndex1` (`IdSistema`,`IdNucleo`,`IdSector`),
   CONSTRAINT `parametrossector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdNucleo`, `IdSector`) REFERENCES `sectores` (`IdSistema`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7055,7 +7494,9 @@ CREATE TABLE `radio` (
   `Cascos` varchar(1) DEFAULT NULL,
   `Literal` varchar(32) DEFAULT NULL,
   `SupervisionPortadora` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`),
+  `DescDestino` varchar(32) NOT NULL,
+  `DestinoId` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`,`PosHMI`,`IdDestino`,`DescDestino`,`DestinoId`),
   KEY `Table_42_FKIndex1` (`IdSistema`,`IdSectorizacion`,`IdNucleo`,`IdSector`),
   CONSTRAINT `radio_ibfk_1` FOREIGN KEY (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) REFERENCES `sectoressectorizacion` (`IdSistema`, `IdSectorizacion`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -7077,7 +7518,7 @@ CREATE TABLE `radio_param` (
   PRIMARY KEY (`idradio_param`),
   KEY `fk_radio_param_metodos_bss1_idx` (`metodos_bss_idmetodos_bss`),
   CONSTRAINT `fk_radio_param_metodos_bss1` FOREIGN KEY (`metodos_bss_idmetodos_bss`) REFERENCES `metodos_bss` (`idmetodos_bss`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=599 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7129,6 +7570,22 @@ CREATE TABLE `recursos` (
   CONSTRAINT `recursos_ibfk_2` FOREIGN KEY (`IdSistema`, `IdTIFX`) REFERENCES `tifx` (`IdSistema`, `IdTIFX`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `recursos_ibfk_3` FOREIGN KEY (`IdSistema`, `idEquipos`) REFERENCES `equiposeu` (`IdSistema`, `idEquipos`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `recursos_externos`
+--
+
+DROP TABLE IF EXISTS `recursos_externos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recursos_externos` (
+  `idrecursos_externos` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la tabla',
+  `uri` varchar(45) COLLATE latin1_spanish_ci NOT NULL COMMENT 'Uri introducida por el usuario para ser seleccionada',
+  `tipo` varchar(45) COLLATE latin1_spanish_ci NOT NULL COMMENT '1 para Radio y 2 para telefon�a',
+  `alias` varchar(45) COLLATE latin1_spanish_ci NOT NULL COMMENT 'Alias de la uri',
+  PRIMARY KEY (`idrecursos_externos`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7226,6 +7683,8 @@ CREATE TABLE `recursosradio` (
   `KeepAliveMultiplier` int(10) unsigned DEFAULT '10',
   `RedundanciaRol` enum('P','R') DEFAULT NULL COMMENT 'Rol del recurso si está asociado a un destino Radio con redundancia (1+1): P (Principal), R (Reserva). En otro caso, tomará el valor null.',
   `RedundanciaIdPareja` varchar(70) DEFAULT NULL COMMENT 'Identificador único del grupo de redundancia. Se compone como IdRecursoPrincipal#idRecursoRerva',
+  `DescDestino` varchar(32) DEFAULT NULL,
+  `Telemando` int(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `RecursosRadio_FKIndex1` (`IdSistema`,`IdRecurso`,`TipoRecurso`),
   KEY `RecursosRadio_FKIndex2` (`IdSistema`,`IdEmplazamiento`),
@@ -7298,8 +7757,8 @@ CREATE TABLE `redes` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`REDDELETE`
-BEFORE DELETE ON `new_cd40_trans`.`redes`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `REDDELETE`
+BEFORE DELETE ON `redes`
 FOR EACH ROW
 BEGIN
 UPDATE RECURSOSTF SET IdRed=NULL 
@@ -7403,8 +7862,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`ActualizaSector`
-AFTER UPDATE ON `new_cd40_trans`.`sectores`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `ActualizaSector`
+AFTER UPDATE ON `sectores`
 FOR EACH ROW
 BEGIN
     UPDATE Destinos 
@@ -7427,8 +7886,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`BajaSector`
-BEFORE DELETE ON `new_cd40_trans`.`sectores`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `BajaSector`
+BEFORE DELETE ON `sectores`
 FOR EACH ROW
 BEGIN
     DELETE FROM Destinos WHERE IdSistema=old.IdSistema AND
@@ -7450,7 +7909,7 @@ DROP TABLE IF EXISTS `sectoresagrupacion`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sectoresagrupacion` (
   `IdSistema` varchar(32) NOT NULL,
-  `IdAgrupacion` varchar(32) NOT NULL,
+  `IdAgrupacion` varchar(700) NOT NULL,
   `IdSector` varchar(700) NOT NULL,
   `IdNucleo` varchar(32) NOT NULL,
   PRIMARY KEY (`IdSistema`,`IdAgrupacion`,`IdSector`,`IdNucleo`),
@@ -7540,6 +7999,23 @@ CREATE TABLE `sectorizaciones` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sectorizacionesagpesp`
+--
+
+DROP TABLE IF EXISTS `sectorizacionesagpesp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sectorizacionesagpesp` (
+  `IdSistema` varchar(32) NOT NULL,
+  `IdSectorizacion` varchar(32) NOT NULL,
+  `IdAgrupacion` varchar(32) NOT NULL,
+  `IdTOP` varchar(32) NOT NULL,
+  PRIMARY KEY (`IdSistema`,`IdSectorizacion`,`IdAgrupacion`,`IdTOP`),
+  KEY `Sectorizacionesae_FKIndex1` (`IdSistema`,`IdSectorizacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `sistema`
 --
 
@@ -7583,8 +8059,8 @@ CREATE TABLE `sistema` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`AltaSistema`
-AFTER INSERT ON `new_cd40_trans`.`sistema`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `AltaSistema`
+AFTER INSERT ON `sistema`
 FOR EACH ROW
 BEGIN
     INSERT INTO Prefijos VALUES (new.IdSistema,0);
@@ -7649,8 +8125,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`sistema_AUPD`
-AFTER UPDATE ON `new_cd40_trans`.`sistema`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `sistema_AUPD`
+AFTER UPDATE ON `sistema`
 FOR EACH ROW
 UPDATE ParametrosSector SET NumLlamadasEntrantesIDA=new.NumLlamadasEntrantesIDA,
                                 NumLlamadasEnIDA=new.NumLlamadasEnIda,
@@ -7684,7 +8160,7 @@ CREATE TABLE `tabla_bss` (
   `UsuarioModificacion` varchar(32) DEFAULT NULL,
   `FechaModificacion` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idtabla_bss`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7732,6 +8208,8 @@ CREATE TABLE `teclassector` (
   `SayAgain` tinyint(1) DEFAULT '1',
   `InhabilitacionRedirec` tinyint(1) DEFAULT '0',
   `Glp` tinyint(1) DEFAULT '0',
+  `PermisoRTXSQ` tinyint(1) DEFAULT '0',
+  `PermisoRTXSect` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdNucleo`,`IdSector`),
   KEY `TeclasSector_FKIndex1` (`IdSistema`,`IdNucleo`,`IdSector`),
   CONSTRAINT `teclassector_ibfk_1` FOREIGN KEY (`IdSistema`, `IdNucleo`, `IdSector`) REFERENCES `sectores` (`IdSistema`, `IdNucleo`, `IdSector`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7762,6 +8240,9 @@ CREATE TABLE `tifx` (
   `Grabador2` varchar(45) DEFAULT NULL,
   `iSupervLanGW` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Incorpora a la supervision ethernet de la pasarela la conexión a la Puerta de enlace. 0: no supervisa conexion GW; 1: supervisa GW.',
   `itmmaxSupervLanGW` int(1) NOT NULL DEFAULT '1' COMMENT 'Si supervisionLanGW=1,  tiempo maximo (en sg) de espera conexion GW. Si vence es que no hay ping a la puerta de enlace. Este tiempo tiene que ser menor de 5 sg.\n',
+  `GrabacionED137` int(1) NOT NULL DEFAULT '0',
+  `RtspGrabador1` int(6) DEFAULT '0',
+  `RtspGrabador2` int(6) DEFAULT '0',
   PRIMARY KEY (`IdSistema`,`IdTIFX`),
   KEY `TIFX_FKIndex1` (`IdSistema`),
   CONSTRAINT `tifx_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7776,8 +8257,8 @@ CREATE TABLE `tifx` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`TIFXDELETE`
-BEFORE DELETE ON `new_cd40_trans`.`tifx`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `TIFXDELETE`
+BEFORE DELETE ON `tifx`
 FOR EACH ROW
 UPDATE RECURSOS SET IdTIFX=NULL 
 		WHERE IdSistema = old.IdSistema AND IdTIFX= old.IdTIFX */;;
@@ -7807,6 +8288,11 @@ CREATE TABLE `top` (
   `Grabador1` varchar(45) DEFAULT NULL,
   `Grabador2` varchar(45) DEFAULT NULL,
   `IdDependenciaATS` varchar(32) DEFAULT NULL,
+  `GrabacionAnalogica` int(1) NOT NULL DEFAULT '0' COMMENT 'Habilitada grabación Analógica en TOP.',
+  `GrabacionED137` int(1) NOT NULL DEFAULT '0',
+  `TipoGrabacionAnalogica` int(1) NOT NULL DEFAULT '0',
+  `RtspGrabador1` int(6) DEFAULT NULL,
+  `RtspGrabador2` int(6) DEFAULT NULL,
   PRIMARY KEY (`IdSistema`,`IdTOP`),
   KEY `TOP_FKIndex1` (`IdSistema`),
   CONSTRAINT `top_ibfk_1` FOREIGN KEY (`IdSistema`) REFERENCES `sistema` (`IdSistema`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7838,8 +8324,8 @@ CREATE TABLE `troncales` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `new_cd40_trans`.`TRONCALDELETE`
-BEFORE DELETE ON `new_cd40_trans`.`troncales`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `TRONCALDELETE`
+BEFORE DELETE ON `troncales`
 FOR EACH ROW
 UPDATE RECURSOSTF SET IdTroncal=NULL 
 		WHERE IdTroncal=old.IdTroncal AND IdSistema=old.IdSistema */;;
@@ -7906,7 +8392,7 @@ CREATE TABLE `valores_tabla` (
   PRIMARY KEY (`idvalores_tabla`,`tabla_bss_idtabla_bss`),
   KEY `fk_valores_tabla_tabla_bss1_idx` (`tabla_bss_idtabla_bss`),
   CONSTRAINT `fk_valores_tabla_tabla_bss1` FOREIGN KEY (`tabla_bss_idtabla_bss`) REFERENCES `tabla_bss` (`idtabla_bss`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8124,6 +8610,31 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AgrupacionesSinAsignarASectorizacion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AgrupacionesSinAsignarASectorizacion`(in id_sistema char(32),in id_sectorizacion char(32))
+BEGIN
+		SELECT a.IdAgrupacion FROM agrupaciones a
+		WHERE  a.IdSistema=id_sistema AND
+					a.AgrupacionEspecial = true AND
+					a.IdAgrupacion NOT IN (SELECT sae.IdAgrupacion FROM sectorizacionesagpesp sae
+																			WHERE sae.IdSistema=id_sistema AND
+																						sae.IdSectorizacion=id_sectorizacion)
+	     ORDER BY a.IdAgrupacion;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `AsignacionRecursosDeUnaRed` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -8186,7 +8697,11 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AsignacionUsuariosATops`(in id_Sistema char(32))
 BEGIN
 SELECT c.IdSectorOriginal AS IdSector,a.IdTop,t.Grabador1,e1.IpRed1 as IpGrabador1, 
-			t.Grabador2,e2.IpRed1 as IpGrabador2, e1.SipPort as RtspPort 
+			t.Grabador2,e2.IpRed1 as IpGrabador2, t.RtspGrabador1 as RtspPort, 
+            t.GrabacionAnalogica as EnableGrabacionAnalogica, 
+            t.GrabacionED137 as EnableGrabacionED137,
+            t.TipoGrabacionAnalogica as TipoGrabacionAnalogica,
+            t.RtspGrabador2 as RtspPort1
 		FROM SectoresSector c
 		INNER JOIN sectorizaciones b ON b.IdSistema = c.IdSistema AND b.Activa=true
 		INNER JOIN sectoressectorizacion a ON a.IdSistema=b.IdSistema AND a.IdSectorizacion=b.IdSectorizacion
@@ -8195,7 +8710,7 @@ SELECT c.IdSectorOriginal AS IdSector,a.IdTop,t.Grabador1,e1.IpRed1 as IpGrabado
 		LEFT JOIN equiposeu e2 ON e2.idEquipos=t.grabador2
 		WHERE 	c.IdSistema=id_Sistema AND
 				c.IdNucleo=a.IdNucleo AND
-				c.IdSector=a.IdSector;     
+				c.IdSector=a.IdSector;    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -8301,7 +8816,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CreaPosicionesActiva`(in id_sistema char(32), in id_sectorizacion char(32), in id_activa char(32))
 BEGIN
 		INSERT into radio
-			SELECT IdSistema,id_activa as IdSectorizacion,IdNucleo,IdSector,PosHMI,IdDestino,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora FROM Radio
+			SELECT IdSistema,id_activa as IdSectorizacion,IdNucleo,IdSector,PosHMI,IdDestino,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora, DescDestino, DestinoId  FROM Radio
 				WHERE IdSectorizacion=id_sectorizacion AND
 							IdSistema=id_sistema;
 		REPLACE INTO TablasModificadas (IdTabla)
@@ -8459,6 +8974,34 @@ BEGIN
         ) B;          
 
   SET cuantas=iNumTeclasPrioridad;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DestinoLCENASector` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DestinoLCENASector`(in id_Sistema char(32), in id_DestinoLCEN char(32))
+BEGIN
+ SELECT  DE.idSector AS IdSector, A.IdDestino AS IdDestino, B.IdAbonado AS IdAbonado
+ FROM destinostelefonia A 
+ INNER JOIN destinosexternos B ON A.IdSistema=B.IdSistema AND A.IdDestino=B.IdDestino AND A.TipoDestino=B.TipoDestino 
+ INNER JOIN destinosexternossector DE ON DE.IdSistema=A.IdSistema AND DE.IdDestino=A.IdDestino  AND DE.TipoDestino=A.TipoDestino AND DE.idPrefijo=A.idPrefijo AND DE.IdDestinoLCEN IS NOT NULL 
+ AND   DE.IdPrefijoDestinoLCEN IS NOT NULL 
+ LEFT OUTER JOIN redes C ON C.IdSistema = A.IdSistema AND C.IdPrefijo = A.IdPrefijo 
+ LEFT OUTER JOIN recursoslcen L ON L.IdSistema=DE.IdSistema AND L.IdDestino=DE.IdDestinoLCEN AND L.TipoDestino=A.TipoDestino AND L.TipoRecurso=2 
+  LEFT OUTER JOIN recursos R ON R.IdSistema=L.IdSistema AND R.IdRecurso=L.IdRecurso AND R.TipoRecurso=L.TipoRecurso AND R.TipoRecurso<>0 
+  LEFT OUTER JOIN parametrosrecurso PR ON PR.IdSistema=R.IdSistema AND PR.IdRecurso=R.IdRecurso AND PR.TipoRecurso=R.TipoRecurso 
+ WHERE A.IdSistema=id_Sistema AND A.idprefijo=3 AND DE.IdDestinoLCEN = id_DestinoLCEN;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -8784,6 +9327,31 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DestinosRadioSinAsignarALaPaginaDelSector`(in id_sistema char(32), in id_usuario varchar(700), in pagina int, in frecPorPagina int)
 BEGIN
 	SELECT IdDestino FROM DestinosRadio DR
+	WHERE idSistema=id_sistema AND
+				0 < (SELECT COUNT(*) FROM RecursosRadio RR WHERE RR.IdDestino=DR.IdDestino) AND
+				IdDestino not in (select IdDestino from DestinosRadioSector
+														where Idsistema=id_sistema AND
+																	IdSector=id_usuario AND
+																	(((PosHMI-1) div frecPorPagina) = pagina));
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `DestinosRadioSinAsignarALaPaginaDelSectorDC` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DestinosRadioSinAsignarALaPaginaDelSectorDC`(in id_sistema char(32), in id_usuario varchar(700), in pagina int, in frecPorPagina int)
+BEGIN
+	SELECT * FROM DestinosRadio DR
 	WHERE idSistema=id_sistema AND
 				0 < (SELECT COUNT(*) FROM RecursosRadio RR WHERE RR.IdDestino=DR.IdDestino) AND
 				IdDestino not in (select IdDestino from DestinosRadioSector
@@ -9132,7 +9700,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionaFS`(in id_sistema char(32), in id_nucleo char(32), in id_sector char(32), in SeleccionadoFS bool)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionaFS`(in id_sistema char(32), in id_nucleo char(32), in id_sector varchar(700), in SeleccionadoFS bool)
 BEGIN
 IF(SeleccionadoFS = true) THEN
 	UPDATE Sectores 
@@ -9140,6 +9708,32 @@ IF(SeleccionadoFS = true) THEN
 		REPLACE INTO TablasModificadas (IdTabla)
 				VALUES ('Sectores');
                 END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GestionSesionOperador` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GestionSesionOperador`(
+  IN   `id_sistema`  varchar(32),
+  IN   `id_operador`  varchar(32),
+  IN   `sesionactiva`  int, 
+  IN   `sesionestado`  int
+)
+BEGIN
+	UPDATE operadores set SesionActiva = sesionactiva , SesionEstado = sesionestado
+			WHERE IdSistema= id_sistema AND
+						IdOperador = id_operador;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -9159,6 +9753,29 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetEstadoCluster`()
 BEGIN
 	SELECT * FROM estadocluster;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetEstadoOperadoresEnSesion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetEstadoOperadoresEnSesion`(
+  IN   `id_sistema`  varchar(32),
+  IN   `sesion_activa`  int 
+)
+BEGIN
+	SELECT IdOperador, SesionEstado from operadores 
+			WHERE IdSistema = id_sistema AND SesionActiva = sesion_activa;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -9364,6 +9981,26 @@ BEGIN
 	END IF;
 		
 	DROP TABLE t;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetIdDestinosRadioKey` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetIdDestinosRadioKey`(in id_sistema varchar(32))
+BEGIN
+	INSERT INTO destinosradiokey VALUES (iddestinosradiokey);
+	SELECT MAX(iddestinosradiokey) FROM destinosradiokey;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -9873,7 +10510,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginTop`(in id_Sistema char(32),in id_Hw char(32), out id_Usuario char(32), out modo_arranque char(1))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `LoginTop`(in id_Sistema char(32),in id_Hw char(32), out id_Usuario varchar(700), out modo_arranque char(1))
 BEGIN
 	SELECT b.idsector,c.ModoArranque  INTO id_Usuario, modo_arranque
 	FROM sectorizaciones a, SectoresSectorizacion b, top c
@@ -9923,7 +10560,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `MultiDestinosSinAsignarAlSector`(in id_sistema char(32), in id_usuario char(32), in id_nucleo char(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `MultiDestinosSinAsignarAlSector`(in id_sistema char(32), in id_usuario varchar(700), in id_nucleo char(32))
 BEGIN
 	SELECT *
 	FROM multidestinos
@@ -10028,7 +10665,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoExternos`(in idSistema char(32), in idUsuario char(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoExternos`(in idSistema char(32), in idUsuario varchar(700))
 BEGIN
 	SELECT a.*
 		FROM UsuariosAbonados a, Sectorizaciones b
@@ -10054,7 +10691,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoInternos`(in id_Sistema char(32),in id_Usuario char (32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NumerosAbonadoInternos`(in id_Sistema char(32),in id_Usuario varchar (700))
 BEGIN
 	SELECT *
 		FROM UsuariosAbonados
@@ -10122,7 +10759,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ParametrosSectorAgrupado`(in id_sistema char(32), in id_sector_agrupado char(32))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ParametrosSectorAgrupado`(in id_sistema char(32), in id_sector_agrupado varchar(700))
 BEGIN
 		SELECT ps.* FROM SectoresAgrupacion ss, ParametrosSector ps
 		WHERE ss.IdSistema=id_sistema AND
@@ -10773,11 +11410,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SectorConNumeroAbonado`(in id_siste
 BEGIN
 	SELECT s.IdSector FROM UsuariosAbonados ua, Sectores s
 		WHERE ua.IdSistema=id_sistema AND
-					ua.IdNucleo=id_nucleo AND
 					ua.IdPrefijo=id_prefijo AND
 					ua.IdAbonado=id_abonado AND
 					s.IdSistema=ua.IdSistema AND
-					s.IdNucleo=ua.IdNucleo AND
 					s.SectorSimple AND
 					ua.IdSector=s.IdSector;
 END ;;
@@ -10821,15 +11456,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SectoresFueraDeAgrupacion`(in id_sistema varchar(32), in id_agrupacion varchar(32))
 BEGIN
-	IF id_agrupacion IS NOT NULL THEN
-		SELECT s.IdSector FROM Sectores s
+IF id_agrupacion IS NOT NULL THEN
+		SELECT s.IdSector, s.IdNucleo FROM Sectores s
 			WHERE s.IdSistema=id_sistema AND
 						s.SectorSimple=true AND
 						s.IdSector NOT IN (SELECT IdSector FROM	SectoresAgrupacion	
 																	WHERE IdSistema=id_sistema AND
 																				IdAgrupacion=id_agrupacion);
 	ELSE
-		SELECT s.IdSector FROM Sectores s
+		SELECT s.IdSector, s.IdNucleo FROM Sectores s
 			WHERE s.IdSistema=id_sistema AND
 						s.SectorSimple=true;
 	END IF;
@@ -10944,6 +11579,33 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `SectoresRealesNucleos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SectoresRealesNucleos`(in id_sistema char(32), in id_sectorizacion char(32), out cuantos int)
+BEGIN
+	SELECT count(*) into cuantos FROM Sectores 
+	WHERE IdSistema=id_sistema AND
+				SectorSimple AND
+				Tipo='R' AND 
+				IdSector NOT IN (SELECT IdSectorOriginal FROM SectoresSector ss,SectoresSectorizacion sz
+													WHERE sz.IdSectorizacion=id_sectorizacion AND
+																sz.IdSistema=id_sistema AND
+																ss.IdSistema=sz.IdSistema AND
+																ss.IdSector=sz.IdSector);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `SectoresSinAsignarASectorizacion` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -10959,28 +11621,74 @@ BEGIN
   IF id_sectorizacion!='SACTA' THEN
 		select a.IdSector, a.Tipo from Sectores a
 		where a.IdSistema=id_sistema AND
-					a.IdNucleo=id_nucleo AND
 					a.SectorSimple=true AND
 					a.IdSector not in (select ss.IdSectorOriginal FROM sectoresSectorizacion ssz, sectoresSector ss
-																			WHERE ssz.IdSistema=id_sistema AND
-																						ssz.IdNucleo=id_nucleo AND
+																			WHERE ssz.IdSistema=id_sistema AND																			
 																						ssz.IdSectorizacion=id_sectorizacion AND
-																						ss.IdSistema=ssz.IdSistema AND ss.IdNucleo=ssz.IdNucleo AND 
+																						ss.IdSistema=ssz.IdSistema AND
 																						ss.IdSector=ssz.IdSector)
 	     ORDER BY A.IdSector,A.Tipo;
     ELSE
 	   select a.IdSector, a.Tipo from Sectores a
 		where a.IdSistema=id_sistema AND
-					a.IdNucleo=id_nucleo AND
 					a.SectorSimple=true AND
 					a.IdSector not in (select ss.IdSectorOriginal FROM sectoresSectorizacion ssz, sectoresSector ss
 																			WHERE ssz.IdSistema=id_sistema AND
-																						ssz.IdNucleo=id_nucleo AND
 																						ssz.IdSectorizacion=id_sectorizacion AND
-																						ss.IdSistema=ssz.IdSistema AND ss.IdNucleo=ssz.IdNucleo AND 
+																						ss.IdSistema=ssz.IdSistema AND 
 																						ss.IdSector=ssz.IdSector) AND A.Tipo='M'
 	     ORDER BY A.IdSector,A.Tipo;
     END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `SectorizacionSectoresAgpEspEnTop` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SectorizacionSectoresAgpEspEnTop`(in id_sistema char(32),in id_sectorizacion char(32),in id_agrupacion char(32))
+BEGIN
+SELECT count(`a`.`IdSector`) FROM `new_cd40_trans`.`sectoresagrupacion` `a`
+WHERE  `a`.`IdSistema` = id_sistema AND
+			 `a`.`IdAgrupacion` = id_agrupacion AND
+			 `a`.`IdSector` IN 
+(SELECT 
+        `c`.`IdSectorOriginal` AS `IdSectorOriginal`
+    FROM
+        (`new_cd40_trans`.`sectoressectorizacion` `a`
+        JOIN `new_cd40_trans`.`sectoressector` `c`)
+    WHERE
+        ((`a`.`IdSistema` = `c`.`IdSistema`)
+            AND (`c`.`IdNucleo` = `a`.`IdNucleo`)
+            AND (`c`.`IdSector` = `a`.`IdSector`)
+            AND (`c`.`IdSectorOriginal` NOT LIKE '**FS**')
+            AND (`a`.`IdSistema` = id_sistema)
+            AND (`a`.`IdSectorizacion` = id_sectorizacion))
+    ORDER BY `c`.`IdSectorOriginal`) 
+    UNION (SELECT 
+        NULL AS `NULL`
+    FROM
+        (`new_cd40_trans`.`top` `a`
+        JOIN `new_cd40_trans`.`sectorizaciones` `b`)
+    WHERE
+        ((`a`.`IdSistema` = `b`.`IdSistema`)
+         AND (`b`.`IdSistema` = id_sistema)
+         AND (`b`.`IdSectorizacion` = id_sectorizacion)
+            AND (NOT ((`a`.`IdSistema` , `b`.`IdSectorizacion`, `a`.`IdTOP`) IN (SELECT 
+                `new_cd40_trans`.`sectoressectorizacion`.`IdSistema` AS `IdSistema`,
+                    `new_cd40_trans`.`sectoressectorizacion`.`IdSectorizacion` AS `idsectorizacion`,
+                    `new_cd40_trans`.`sectoressectorizacion`.`IdTOP` AS `IdTOP`
+            FROM
+                `new_cd40_trans`.`sectoressectorizacion`)))));
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -11216,22 +11924,24 @@ BEGIN
 
 			SELECT *
 			FROM Troncales
-			WHERE IdSistema=id_Sistema AND
-							IdTroncal NOT IN (SELECT IdTroncal
-											  FROM TroncalesRuta Tr,Rutas r
-                                              WHERE tr.IdSistema=id_Sistema AND
-												    r.IdSistema=Tr.IdSistema AND
-                                                    r.Central=Tr.Central AND
-                                                    r.IdRuta=Tr.IdRuta AND
-                                                    (r.Tipo='D' OR (r.Tipo='A' AND tr.Central=id_Central)));
+			WHERE IdSistema=id_Sistema 
+			AND IdTroncal IN (select distinct idtroncal from recursostf where idtroncal is not null)
+            AND	IdTroncal NOT IN (SELECT IdTroncal
+								  FROM TroncalesRuta Tr,Rutas r
+								  WHERE tr.IdSistema=id_Sistema AND
+										r.IdSistema=Tr.IdSistema AND
+										r.Central=Tr.Central AND
+										r.IdRuta=Tr.IdRuta AND
+										(r.Tipo='D' OR (r.Tipo='A' AND tr.Central=id_Central)));
 	ELSE
 			
 			SELECT * 
 			FROM Troncales 
-			WHERE IdSistema=id_Sistema AND 
-							IdTroncal NOT IN (SELECT IdTroncal 
-											  FROM TroncalesRuta
-											  WHERE IdSistema=id_Sistema AND Central=id_Central);
+			WHERE IdSistema=id_Sistema 
+            AND IdTroncal IN (select distinct idtroncal from recursostf where idtroncal is not null)
+            AND IdTroncal NOT IN (SELECT IdTroncal 
+								  FROM TroncalesRuta
+								  WHERE IdSistema=id_Sistema AND Central=id_Central);
 	END IF;
 END ;;
 DELIMITER ;
@@ -11721,4 +12431,4 @@ USE `new_cd40_trans`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-12 11:06:50
+-- Dump completed on 2023-05-24 14:06:33

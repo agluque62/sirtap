@@ -1217,7 +1217,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
                         Application["Sectorizando"] = true;
                         //Session.Add("Sectorizando", true);
                         BtActivar.Enabled = false;
-                        serviceServiciosCD40.BeginGenerarSectorizacion((string)Session["IdSistema"], (string)Session["elemento"], false, CallbackCompletado, null);
+                         serviceServiciosCD40.BeginGenerarSectorizacion((string)Session["IdSistema"], (string)Session["elemento"], false, CallbackCompletado, null);
                         //VMG 04/03/2019
                         Page.ClientScript.RegisterStartupScript(this.GetType(), "displayNloader", "displayNloader();", true);
                     }
@@ -2467,11 +2467,15 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
     /// <param name="e"></param>
     protected void BtCancelPanel_Click(object sender, EventArgs e)
     {
-		Panel1.Visible = false;
-        // 20210802 #4854
-        if (bOnclikUCS)
-            UCS_DesBloquea_Opciones();
-        HabilitarElementos();
+        // 20230516 #8950
+        Panel1.Visible = false;
+        if (!bVerActiva)
+        {
+            // 20210802 #4854
+            if (bOnclikUCS)
+                UCS_DesBloquea_Opciones();
+            HabilitarElementos();
+        }
     }
 
     /// <summary>
@@ -2539,6 +2543,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
                 }
 
                 // Los sectores de mantenimiento no se pueden agrupar con ningun otro sector
+                // 20230321 
+                /*
 				if ((DataSetSectoresLibres.Tables[0].Rows[LBoxSectores.SelectedIndex][1].ToString() == "M" && ListaUsuariosEnTop[NumTopSeleccionada - 1].Count > 0))
 				{
 					TopIntercambio = 0;
@@ -2549,6 +2555,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 					cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "SectoresManttoSolos"), "SectoresManttoSolos");
 					return;
 				}
+                */
+
                 // Si se pretende asignar un sector en una top que tiene asignado un sector de mantenimiento, este debe eliminarse de la top
                 if (serviceServiciosCD40.SectoresManttoEnTop((string)Session["IdSistema"], (string)Session["elemento"], (string)ViewState["IdTop"]) &&
                     (DataSetSectoresLibres.Tables[0].Rows[LBoxSectores.SelectedIndex][1].ToString() != "M"))
@@ -2826,7 +2834,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 
             s.IdParejaUCS = s.IdNucleoParejaUCS = s.IdSistemaParejaUCS = null;
             s.SectorSimple = false;
-            s.Tipo = "R";
+            // 20230321
+            // s.Tipo = "R";
             s.TipoPosicion = "C";
 
             // Obtener literales de los usuarios
@@ -3909,7 +3918,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 
             s.IdParejaUCS = s.IdNucleoParejaUCS = s.IdSistemaParejaUCS = null;
             s.SectorSimple = false;
-            s.Tipo = "R";
+            // 20230321
+            // s.Tipo = "R";
             s.TipoPosicion = "C";
 
             // Obtener literales de los usuarios

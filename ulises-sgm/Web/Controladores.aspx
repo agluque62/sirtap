@@ -18,12 +18,14 @@
 
     <script type="text/javascript">
         setInterval("OnTimer()", 1000);
+        setInterval("OnNloader()", 3000);
 
         function OnTimer() {
             CallServer("State", "");
-            
-            <%--// 20211104 #4942--%>
-          
+           
+        }
+        function OnNloader() {
+            <%--// 20211104 #4942 --%>
             hideNloader();
         }
 
@@ -47,15 +49,14 @@
                 }
             }
         }
-        function DisableButton() {
 
+        function DisableButton() { <%--
             // Intercambio  20211104 #4942
             if (document.activeElement.id == "<%=Button5.ClientID %>") {
                 document.getElementById("<%=Button5.ClientID %>").disabled = true;
                 document.getElementById("<%=Button6.ClientID %>").disabled = true;
                 document.getElementById("<%=LbEnProcesoIntercambio.ClientID %>").visible = true;
                 document.getElementById("<%=LbEnProcesoIntercambio.ClientID %>").textContent = "En proceso intercambio TOP. Espere...";
-
                 document.getElementById("initloader").style.display = "block";
             }
             // Agrupación 20211104 #4942
@@ -72,7 +73,7 @@
                 document.getElementById("<%=LbEnProcesoSectorizar.ClientID %>").visible = true;
                 document.getElementById("<%=LbEnProcesoSectorizar.ClientID %>").textContent = "En proceso sectorización. Espere..";
                 document.getElementById("initloader").style.display = "block";
-            }
+            }--%>
       }
 
       window.onbeforeunload = DisableButton;

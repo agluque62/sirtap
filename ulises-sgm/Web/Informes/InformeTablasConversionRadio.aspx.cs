@@ -249,7 +249,7 @@ public partial class InformeTablasConversionRadio : System.Web.UI.Page
 
                         if (dtsRecTabCalidad != null)
                             dtsRecTabCalidad.Clear();
-
+                        logDebugView.Error(string.Format("Error al ejecutar el informe {0}. Error:{1} ", sFicheroReport, ex.Message.ToString()));
                     }
                     catch (Exception ex)
                     {

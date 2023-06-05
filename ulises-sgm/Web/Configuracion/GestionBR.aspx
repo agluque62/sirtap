@@ -86,20 +86,5 @@
 		Width="551px" meta:resourcekey="LblMensajeConfirmacionResource1"></asp:Label>
 	&nbsp;
 
-    <script type="text/javascript">
-        function PingSessionSrv() {
-            var CONTROLADOR = "PingSrv.aspx";
-            var head = document.getElementsByTagName("head").item(0);
-            script = document.createElement("script");
-            script.src = CONTROLADOR;
-            script.setAttribute("type", "text/javascript");
-            script.defer = true;
-            head.appendChild(script);
-        }
-    </script>
-    <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
-    </script>
-
 </asp:Content>
 

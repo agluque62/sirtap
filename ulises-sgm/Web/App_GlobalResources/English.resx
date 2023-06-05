@@ -229,7 +229,7 @@
     <value>Sectorización rechazada. En la sectorización seleccionada, no están todos los sectores reales.</value>
   </data>
   <data name="NucleoConSectores" xml:space="preserve">
-    <value>No se puede eliminar un núcleo con sectores.</value>
+    <value>Cannot delete a core with allocated sectors.</value>
   </data>
   <data name="NumRutasDirectas" xml:space="preserve">
     <value>No se permiten más de una ruta directa por encaminamiento.</value>
@@ -625,7 +625,7 @@
     <value>El número de abonado ATS no es correcto.</value>
   </data>
   <data name="LB_VERSION" xml:space="preserve">
-    <value>©  Grupo Amper. Copyright @ 2021-2022. Version 2.6.2 All rights reserved</value>
+    <value>©  Grupo Amper. Copyright @ 2021-2023. Version 3.0.0 All rights reserved</value>
   </data>
   <data name="MsgDestinoFDConMetodoBSSNoPermitido" xml:space="preserve">
     <value>En el Modo destino "MultiEmp", no se puede seleccionar el método BSS "RSSI y NUCLEO" si alguno de los recursos asignados es un circuito de recepción que no está asignado a una pasarela.</value>
@@ -956,5 +956,11 @@
   </data>
   <data name="ErrorOperadorOffline" xml:space="preserve">
     <value>The affected operator was not updated in the OffLine Management Database</value>
+  </data>
+  <data name="NucleoConOperadores" xml:space="preserve">
+    <value>No se puede eliminar un núcleo con operadores asignados.</value>
+  </data>
+  <data name="ErrorEliminarConferencia" xml:space="preserve">
+    <value>An error has occurred: The conference "{0}" has not been deleted.</value>
   </data>
 </root>

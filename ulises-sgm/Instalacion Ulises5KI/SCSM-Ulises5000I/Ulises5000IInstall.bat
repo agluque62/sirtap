@@ -179,13 +179,13 @@ iisreset /START
 
 
 @echo **************************************************************
-@echo **** Directorio de apliación es C:\inetpub\wwwroot\UlisesV5000
+@echo **** Directorio de apliacion es C:\inetpub\wwwroot\UlisesV5000
 @echo **** Recuerde asignar permiso Control Total sobre la carpeta
 @echo **** C:\inetpub\wwwroot\UlisesV5000 a los grupos de Usuarios y 
 @echo **** Administradores.  
 @echo **************************************************************
 @echo *****
-@echo *****  Fin de la Instalación Servicios Web Ulises 5000-I *****
+@echo *****  Fin de la Instalacion Servicios Web Ulises 5000-I *****
 @echo Pulse una tecla para finalizar
 pause
 goto menu

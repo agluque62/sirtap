@@ -334,13 +334,13 @@
   </wsdl:binding>
   <wsdl:service name="ServicioInterfazSacta">
     <wsdl:port name="ServicioInterfazSactaSoap" binding="tns:ServicioInterfazSactaSoap">
-      <soap:address location="http://localhost:19204/InterfazSacta/ServicioInterfazSacta.asmx" />
+      <soap:address location="http://localhost:51277/InterfazSacta/ServicioInterfazSacta.asmx" />
     </wsdl:port>
     <wsdl:port name="ServicioInterfazSactaSoap12" binding="tns:ServicioInterfazSactaSoap12">
-      <soap12:address location="http://localhost:19204/InterfazSacta/ServicioInterfazSacta.asmx" />
+      <soap12:address location="http://localhost:51277/InterfazSacta/ServicioInterfazSacta.asmx" />
     </wsdl:port>
     <wsdl:port name="ServicioInterfazSactaHttpPost" binding="tns:ServicioInterfazSactaHttpPost">
-      <http:address location="http://localhost:19204/InterfazSacta/ServicioInterfazSacta.asmx" />
+      <http:address location="http://localhost:51277/InterfazSacta/ServicioInterfazSacta.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

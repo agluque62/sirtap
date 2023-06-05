@@ -291,7 +291,47 @@ namespace PageBaseCD40
             return bConfiguracionOffline;
         }
 
+        // RQF 8422
+        public bool MostrarMultifrecuencia()
+        {
+            const string CONF_KEY_MOSTRAR_MULTIFRECUENCIA = "MostrarMultifrecuencia";
+            bool bMostrarMultifrecuencia = false;
 
+            Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            KeyValueConfigurationElement objConf = null;
+
+            //Se obtiene el parametro que indica si se debe o no visualizar la gestion de Multifrecuencia
+            objConf = config.AppSettings.Settings[CONF_KEY_MOSTRAR_MULTIFRECUENCIA];
+
+            if ((objConf != null) && (!string.IsNullOrEmpty(objConf.Value) && string.Compare(objConf.Value, "SI", true) == 0))
+            {
+                //El sistema está configurado para gestionar multifrecuencia
+                bMostrarMultifrecuencia = true;
+            }
+            return bMostrarMultifrecuencia;
+        }
+
+        // RQF 8422
+        public int NumeroMaximoFrecuenciasMultifrecuencia()
+        {
+            const string CONF_KEY_NMF_MULTIFRECUENCIA = "NumMaxFMultifrecuencia";
+            int iNMFMultifrecuencia = 0;
+
+            Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            KeyValueConfigurationElement objConf = null;
+
+            //Se obtiene el parametro que indica si se debe o no visualizar la gestion de Multifrecuencia
+            objConf = config.AppSettings.Settings[CONF_KEY_NMF_MULTIFRECUENCIA];
+
+            if ((objConf != null) && (!string.IsNullOrEmpty(objConf.Value)))
+            {
+                //El sistema está configurado para gestionar multifrecuencia
+                iNMFMultifrecuencia = Convert.ToInt32(objConf.Value);
+            }
+            if (iNMFMultifrecuencia < 1 && iNMFMultifrecuencia > 16)
+                iNMFMultifrecuencia = 1;
+            return iNMFMultifrecuencia;
+        }
 
 		#region ICallbackEventHandler Members
 		// Respuesta a la regeneración de las sectorizaciones

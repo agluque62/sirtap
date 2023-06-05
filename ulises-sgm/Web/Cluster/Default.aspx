@@ -272,8 +272,24 @@
                }
            }
        }
-
    </script>
+<%--Control actividad de sesión    --%>
+    <script type="text/javascript">
+        function PingSessionSrv() {
+            var CONTROLADOR = "PingSrv.aspx";
+            var head = document.getElementsByTagName("head").item(0);
+            script = document.createElement("script");
+            script.src = CONTROLADOR;
+            script.setAttribute("type", "text/javascript");
+            script.defer = true;
+            head.appendChild(script);
+        }
+    </script>
+    <script language="javascript" type="text/javascript">
+        setInterval("PingSessionSrv()", 15000);
+    </script>
+<%--Control actividad de sesión FIN    --%>
+
    <form id="frmCallback" name="frmCallback" runat="server" class="estiloDiv gradpositivo white">
 		 <asp:ScriptManager ID="ScriptManager1" EnableScriptLocalization="true" runat="server">
 				  <Scripts>
@@ -455,7 +471,7 @@
        </div>
         <div style="z-index: 301; left: 8px; width: 1264px; position: absolute; top: 855px; height: 37px; text-align:center; color: black; font-family:Arial; font-size:small" >
             <br\ />
-            &#169  Grupo Amper. Copyright @ 2021-2022. Versión 2.6.2 Todos los Derechos Reservados
+            &#169  Grupo Amper Copyright @ 2021-2023. Versión 3.0.0 Todos los Derechos Reservados
         </div>	
             <table>
                 <tr>

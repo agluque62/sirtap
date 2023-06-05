@@ -22,8 +22,7 @@
     static IPEndPoint _EndPoint2;
     static System.Timers.Timer _PeriodicTasks;
     static System.Timers.Timer _PeriodicTasksTick4Idle;
-    static System.Timers.Timer _PeriodicTasksSession;
-    
+ 
     static DateTime _LastReceivedNodo1;
     static DateTime _LastReceivedNodo2;
     static byte[] _ActivateMsg;
@@ -44,16 +43,12 @@
     static bool bConexionSocket = false;
     static int iTiempoRefresco = 3000;
     static int iTiempoReconexion = 60000;
-    static int iTiempoControlSession = 15000;
     private static readonly ILog logDebugView = LogManager.GetLogger("CLUSTER");
 
 
     public enum Sesion_Activa { NO_INICIADA = 0, INICIADA };
     public enum Sesion_Estado { FINALIZADA = 0, ACTIVA, SUPERVISADA, CADUCADA, DESCONOCIDA };
-    static ServiciosCD40 ForControlSesion;
 
-    // Data set operdores en sesion
-    private static DataSet listasesiones;
 
     static SessionsControl Sesiones { get; set; }
     static int MaxSessions = 2;
@@ -71,8 +66,6 @@
         Application["UsersLoggedIn"] = new System.Collections.Generic.List<string>();
         try
         {
-            ForControlSesion = new ServiciosCD40();
-
             //Esta función se ejecuta la primera vez que se accede a la aplicacion a través del navegador, es decir, cuando 
             //se crea el primer objeto httpAplication
             logDebugView.Info("    ");
@@ -114,6 +107,9 @@
                 Application["Cnf_ModoCluster"] = false;
             }
             
+            // Se lanza la gestión de sesiones de operador
+            ControlSession_Start(sender, e);
+            
             // Se lanza el control de sesiones de operador
             // El timer se inicia a  segundos
             _PeriodicTasksTick4Idle = new System.Timers.Timer(15000);
@@ -126,7 +122,7 @@
             logDebugView.Error("(Global.asax-Application_Start): Se ha producido un error ", ex);
         }
     }
-    void Application_Start(object sender, EventArgs e)
+    void ControlSession_Start(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_Start");
         Sesiones = new SessionsControl(MaxSessions);
@@ -146,21 +142,18 @@
             _PeriodicTasks.Close();
             _PeriodicTasks = null;
         }
+        if (null != _PeriodicTasks)
+        {
+            _PeriodicTasksTick4Idle.Enabled = false;
+            _PeriodicTasksTick4Idle.Close();
+            _PeriodicTasksTick4Idle = null;
+        }
 
         if (null != _Comm)
         {
             _Comm.Dispose();
             _Comm = null;
         }
-
-        if (null != _PeriodicTasksSession)
-        {
-            _PeriodicTasksSession.Enabled = false;
-            _PeriodicTasksSession.Close();
-            _PeriodicTasksSession = null;
-        }
-
-
         logDebugView.Info("(Global.asax-Application_OnEnd):    ---- PARADA DE LA APLICACION ----\n");
     }
     void Application_End(object sender, EventArgs e)
@@ -197,6 +190,7 @@
         // This method is called just before authentication is performed. This is time and place where we can write our own authentication codes.
        NLogLogger.Trace<Object>(String.Format("{0} {1} {2}", Request.HttpMethod, Request.Url, Request.IsAuthenticated));
     }
+    
     void Application_AuthorizeRequest(object sender, EventArgs e)
     {
         // After the user is authenticated (identified), it's time to determine the user's permissions. Here we can assign user with special privileges
@@ -206,48 +200,52 @@
             HttpContext contextTick = HttpContext.Current;
             TickHandler.ProcessRequest(contextTick);
         }
-        else            
+        else
         {
             Sesiones.Renew(Request, Response);
         }
-
     }
+    
     void Application_ResolveRequestCache(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_ResolveRequestCache");
 
     }
+    
     void Application_AcquireRequestState(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_RequestState");
 
     }
+    
     void Application_PreRequestHandlerExecute(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>(String.Format("Application_PreRequestHandleExecute => {0}", Request.Url));
 
     }
+    
     void Application_PostRequestHandlerExecute(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_PostRequestHandlerExecute");
 
     }
+    
     void Application_ReleaseRequestState(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_ReleaseRequestState");
 
     }
+    
     void Application_UpdateRequestCache(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>("Application_UpdateRequestCache");
 
     }
+    
     void Application_EndRequest(object sender, EventArgs e)
     {
         NLogLogger.Trace<Object>(String.Format("{0} {1} {2}", Request.HttpMethod, Request.Url, Request.IsAuthenticated));
-
     }
-
 
     bool GetDataReplicationState(DataReplicacionState estadoNode1, DataReplicacionState estadoNode2)
     {
@@ -784,92 +782,4 @@
         _PeriodicTasksTick4Idle.Enabled = true;
     }
 
-    // Control de las sesiones de operadores
-    void PeriodicTasksSession(object sender, ElapsedEventArgs e)
-    {
-        bool bAppLock = false;
-        string idoperador = string.Empty;
-        int sesionactiva = (int)Sesion_Activa.NO_INICIADA;
-        int sesionestado = (int)Sesion_Estado.FINALIZADA;
-        int nuevoestado = (int)Sesion_Estado.DESCONOCIDA;
-
-
-        StringBuilder strMsgError = new StringBuilder();
-
-        try
-        {
-
-            System.Collections.Generic.List<string> d = Application["UsersLoggedIn"]
-                as System.Collections.Generic.List<string>;
-
-            Application.Lock();
-            bAppLock = true;
-
-            listasesiones = ForControlSesion.GetEstadoOperadoresEnSesion(sistema, (int)Sesion_Activa.INICIADA);
-
-            if (null != listasesiones && listasesiones.Tables.Count > 0)
-            {
-                foreach (System.Data.DataRow ds in listasesiones.Tables[0].Rows)
-                {
-                    if (ds["IdOperador"] != DBNull.Value)
-                        idoperador = (string)ds["IdOperador"];
-                    if (ds["SesionEstado"] != DBNull.Value)
-                        sesionestado = (int)ds["SesionEstado"];
-                    switch (sesionestado)
-                    {
-                        case (int)Sesion_Estado.ACTIVA:
-                            sesionactiva = (int)Sesion_Activa.INICIADA;
-                            nuevoestado = (int)Sesion_Estado.SUPERVISADA;
-                            break;
-                        case (int)Sesion_Estado.SUPERVISADA:
-                            sesionactiva = (int)Sesion_Activa.INICIADA;
-                            nuevoestado = (int)Sesion_Estado.CADUCADA;
-                            break;
-                        case (int)Sesion_Estado.CADUCADA:
-                            sesionactiva = (int)Sesion_Activa.NO_INICIADA;
-                            nuevoestado = (int)Sesion_Estado.FINALIZADA;
-                            break;
-                        default:
-                            sesionactiva = (int)Sesion_Activa.NO_INICIADA;
-                            nuevoestado = (int)Sesion_Estado.DESCONOCIDA;
-                            break;
-                    }
-
-                    ForControlSesion.GestionSesionOperador(sistema, idoperador, sesionactiva, nuevoestado);
-                    if (nuevoestado == (int)Sesion_Estado.FINALIZADA || nuevoestado == (int)Sesion_Estado.DESCONOCIDA)
-                    {
-                        if (d != null)
-                        {
-                            lock (d)
-                            {
-                                d.Remove(idoperador);
-                            }
-                        }
-                    }
-                }
-            }
-            Application.UnLock();
-            bAppLock = false;
-        }
-        catch (Exception ex)
-        {
-            logDebugView.Error("(Global.asax-PeriodicTasks) Error en la funcion PeriodicTasksSession:", ex);
-
-            if (bAppLock)
-            {
-                //Si previamente, se ha producido un bloqueo, se desbloquea
-                Application.UnLock();
-                bAppLock = false;
-            }
-        }
-        finally
-        {
-            _PeriodicTasksSession.Interval = iTiempoControlSession;
-            _PeriodicTasksSession.Enabled = true;
-            if (strMsgError.Length > 0)
-                strMsgError.Clear();
-        }
-    }
-    
-    
 </script>

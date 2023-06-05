@@ -214,7 +214,7 @@
     <value>Sectorization rejected. All real sectors are not in the selected sectorization.</value>
   </data>
   <data name="NucleoConSectores" xml:space="preserve">
-    <value>A core with assigned sectors cannot be deleted.</value>
+    <value>Cannot delete a core with allocated sectors.</value>
   </data>
   <data name="NumRutasDirectas" xml:space="preserve">
     <value>Only one direct route in routing is allowed.</value>
@@ -706,7 +706,7 @@
     <value>The resource {3} can not be deleted. The destination {0} is assigned to the ATS destination '{1}' in the Instantaneous access panel of sector {2}. Please, release the destination before you delete it.</value>
   </data>
   <data name="LB_VERSION" xml:space="preserve">
-    <value>©  Grupo Amper. Copyright @ 2021-2022. Version 2.6.2 All rights reserved</value>
+    <value>©  Grupo Amper. Copyright @ 2021-2023. Version 3.0.0 All rights reserved</value>
   </data>
   <data name="ErrorAsignacionFrecuenciaHFConRedundancia" xml:space="preserve">
     <value>Under the "Normal" destination mode and frequency type "HF" the option 1+1 is not available.</value>
@@ -1001,5 +1001,11 @@
   </data>
   <data name="ErrorOperadorOffline" xml:space="preserve">
     <value>The affected operator was not updated in the OffLine Management Database</value>
+  </data>
+  <data name="NucleoConOperadores" xml:space="preserve">
+    <value>A core with assigned operators cannot be deleted.</value>
+  </data>
+  <data name="ErrorEliminarConferencia" xml:space="preserve">
+    <value>An error has occurred: The conference "{0}" has not been deleted.</value>
   </data>
 </root>

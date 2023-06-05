@@ -97,6 +97,15 @@ namespace SectorizacionDll.Properties {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Sectores de distintos núcleos asociados a la misma UCS.
+        /// </summary>
+        internal static string GroupingCoreSectorsTopError {
+            get {
+                return ResourceManager.GetString("GroupingCoreSectorsTopError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Error obteniendo la configuración activa de la base de datos.
         /// </summary>
         internal static string LoadActiveCfgError {

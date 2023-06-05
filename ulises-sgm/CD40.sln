@@ -21,7 +21,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Servicios", "Servicios\", "
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "49692"
+		VWDPort = "50468"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{0CF731EA-A45A-40C0-92BA-F19C39C75AA5} = {0CF731EA-A45A-40C0-92BA-F19C39C75AA5}
@@ -132,7 +132,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InterfazSOAPConfiguracion",
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "51890"
+		VWDPort = "54293"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesCD40", "Utilities\UtilitiesCD40.csproj", "{D9D5B865-733E-4FC9-9A1D-8319E1380ADE}"

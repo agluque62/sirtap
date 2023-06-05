@@ -1581,14 +1581,12 @@
   <data name="ListTipo_Audio_NM_Rx.Text" xml:space="preserve">
     <value>Audio M +N Rx</value>
   </data>
-
   <data name="ListTipo_Audio_NM.Text" xml:space="preserve">
     <value>M+N Audio</value>
   </data>
   <data name="ListTipo_Audio_NM.Value" xml:space="preserve">
     <value>4</value>
   </data>
-  
   <data name="ListTipo_Audio_NM_Rx.Value" xml:space="preserve">
     <value>4</value>
   </data>
@@ -1624,7 +1622,7 @@
   </data>
   <data name="RangeValidatorFrequencyResource.Text" xml:space="preserve">
     <value>*</value>
-  </data>  
+  </data>
   <data name="RangeValidatorHFFrequencyResource.ErrorMessage" xml:space="preserve">
     <value>The value must be between 2.000 and 30.000 MHz for HF frequency</value>
   </data>
@@ -1636,7 +1634,7 @@
   </data>
   <data name="RangeValidatorUHFFrequencyResource.Text" xml:space="preserve">
     <value>*</value>
-  </data>  
+  </data>
   <data name="RangeValidatorVHFFrequencyResource.ErrorMessage" xml:space="preserve">
     <value>The value must be between 118.000 and 137.000 MHz  for VHF frequency</value>
   </data>
@@ -1706,7 +1704,6 @@
   <data name="RVTxtGananciaRxResource1.ErrorMessage" xml:space="preserve">
     <value>The DA Gain value should be between -24.3 and 1.10</value>
   </data>
-  
   <data name="RVTxtGananciaTxResource1.MaximumValue" xml:space="preserve">
     <value>1.2</value>
   </data>
@@ -1844,5 +1841,17 @@
   </data>
   <data name="RVTBTxUmbralADResource1.ToolTip" xml:space="preserve">
     <value />
-  </data>  
+  </data>
+  <data name="ListItemFiltroTelemandoResource0" xml:space="preserve">
+    <value>Without remote control</value>
+  </data>
+  <data name="ListItemFiltroTelemandoResource1" xml:space="preserve">
+    <value>ROHDE 4200</value>
+  </data>
+  <data name="ListItemFiltroTelemandoResource2" xml:space="preserve">
+    <value>JOTRON 7000</value>
+  </data>
+  <data name="LbMFGestionMFResource1.Text" xml:space="preserve">
+    <value>Multi-Frequency Management</value>
+  </data>
 </root>

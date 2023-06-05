@@ -145,17 +145,24 @@ public partial class Nucleos :	PageBaseCD40.PageCD40		//System.Web.UI.Page
     {
         if (ListBox1.SelectedValue != "" && Session["idsistema"] != null)
         {
-			if (ListBox2.Items.Count == 0)
-			{
-				Label3.Visible = false;
-				ListBox2.Visible = false;
-				Session["elemento"] = ListBox1.SelectedValue;				
-                EliminarElemento();
-			}
-			else
-			{
-				cMsg.alert((string)GetGlobalResourceObject("Espaniol", "NucleoConSectores"));
-			}
+            if (ServicioCD40.HayOperadoresEnNucleo((string)Session["idsistema"], ListBox1.SelectedValue))
+            {
+                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "NucleoConOperadores"));
+            }
+            else
+            {
+                if (ListBox2.Items.Count == 0)
+                {
+                    Label3.Visible = false;
+                    ListBox2.Visible = false;
+                    Session["elemento"] = ListBox1.SelectedValue;
+                    EliminarElemento();
+                }
+                else
+                {
+                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "NucleoConSectores"));
+                }
+            }
 		}
     }
 

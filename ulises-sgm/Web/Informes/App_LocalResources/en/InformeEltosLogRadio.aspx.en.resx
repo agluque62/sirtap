@@ -435,4 +435,7 @@
   <data name="RECURSO_TIPO_EE_RXTX" xml:space="preserve">
     <value>EE RX TX Audio</value>
   </data>
+  <data name="SUBINF_FREC_RADIO_MULTIFRECUENCIA" xml:space="preserve">
+    <value>Act. MultiFreq.</value>
+  </data>
 </root>

@@ -16,7 +16,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 
-public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
+public partial class GrupoFD : PageBaseCD40.PageCD40
 {
     const string FREC_DESPLAZADA_MODO_ASAP = "0";
     const string FREC_DESPLAZADA_MODO_TIEMPO_FIJO = "1";
@@ -60,7 +60,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
     const string FORMATO_LB_RECURSOS = "{0, -20} {1, -15} {2,-10}";
     //20201014  #4539 const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -15}";
-    const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -20} {2,-15} ";
+    const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -20} {2,-15} {3,-10} ";
 
     private static ServiciosCD40.Tablas[] datos;
     
@@ -78,6 +78,22 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
     // 20211210 JOI  #2857 Analisis centralizado QIDX
     private static bool btnNuevo = false;
+   
+    // RQF 8422
+    private static string sFrecuenciaDefecto = String.Empty;
+    private static string[] sFrecuencias = new string[1];
+    private static bool bRecargaPorCambioEnMultiFrecuencia = false;
+    private static bool bOldCheckMultifrecuencia = false;
+    private static string SVHF_F_MIN = "118.000";
+    private static string SVHF_F_MAX = "137.000";
+    private static string SUHF_F_MIN = "225.000";
+    private static string SUHF_F_MAX = "400.000";
+
+    private static int NVHF_F_MIN = 118000;
+    private static int NVHF_F_MAX = 137000;
+    private static int NUHF_F_MIN = 225000;
+    private static int NUHF_F_MAX = 400000;
+
 
     public static ILog logDebugView
     {
@@ -100,7 +116,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
         if (Context.Request.IsAuthenticated)
         {
-            // retrieve user's identity from httpcontext user 
             FormsIdentity ident = (FormsIdentity)Context.User.Identity;
             string perfil = ident.Ticket.UserData;
             if (perfil == "0")
@@ -108,10 +123,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO", false);
                 return;
             }
-
-            //PermisoSegunPerfil = BtModificar.Visible = BtNuevo.Visible = perfil != "1" ;
-            //Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-            //Version = config.AppSettings.Settings["Version"];
             PermisoSegunPerfil = perfil != "1";
             BtModificar.Visible = BtNuevo.Visible = (!BtAceptar.Visible && PermisoSegunPerfil);
 
@@ -141,15 +152,12 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             ListTipos.Attributes.Add("disabled", "");
             ListEmplazamientosLibres.Attributes.Add("disabled", "");
             ListTiposLibres.Attributes.Add("disabled", "");
-
+            ListRecursosMF.Attributes.Add("disabled", "");
+            ListRecursosMFLibres.Attributes.Add("disabled", "");
            
             // Mostrar Tipo destino radio HF sólo para NDjamena (Versión=2)
             if (UlisesToolsVersion.Tools["RadioHF"] == null)
                 DListTipo.Items.RemoveAt(2);
-            
-            
-            //BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");            
-            // cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "AceptarCambios"), "aceptparam");
             BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");            
 
             MuestraDatos(DameDatos());
@@ -197,7 +205,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         Panel1.Enabled = true;
 
         RequiredFieldIdentificador.Enabled = RequiredFieldIdentificador.Visible = true;
-        //RequiredFieldValidator1.Enabled = RequiredFieldValidator1.Visible = true;
         errores.Visible = true;
         MostrarMenu();
         DListTipo.Enabled = true;   /* CheckExclusividad.Enabled = true; */
@@ -213,6 +220,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         Label4.Visible = true;
         ListRecursos.Items.Clear();
         ListEmplazamientos.Items.Clear();
+        ListRecursosMF.Items.Clear();
         Frecuencia = string.Empty;
         CheckBoxRedundancia.Checked = false;
         //20200520 JOI #4425
@@ -240,10 +248,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         ListRecursosLibres.Visible = true;
         
         LblFiltroEmplazamiento.Visible = DListEmplazamiento.Visible = DropDownFiltro.Visible = true;
-
         IButAsignar.Visible = true;
         IButQuitar.Visible = true;
         DListEmplazamiento.Enabled = true;
+
 
         //ListTiposLibres.Visible = (String.Compare("0", DropDownFiltro.SelectedValue) == 0);
         //ListEmplazamientosLibres.Visible = !ListTiposLibres.Visible;
@@ -309,7 +317,9 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             //Se le asignan los valores por defecto a los campos Metodo climax, Tiempo CLD, Ventana BSS y Metodo BSS para el modo Normal
             AsignaValoresDefectoModoNormal();
         }
-
+        // RQF 8422
+        InicializaDatosMultifrecuencia();
+        VisualizaCamposMultifrecuencia(false);
         IndexListBox1 = ListBox1.SelectedIndex;
     }
 
@@ -323,12 +333,12 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             StringBuilder strTexto = new StringBuilder();
             int i = 0;
             ServiciosCD40.Tablas[] d=null;
-
+            string IdentificaMultifrecuencia = string.Format((string)GetLocalResourceObject("CheckedMultiFrecuenciaResource1"));
+            string stxtMultiFrec = String.Empty;
             ListRecursosLibres.Items.Clear();
             ListTiposLibres.Items.Clear();
             ListEmplazamientosLibres.Items.Clear();
-            //ListTiposLibres.Visible = (String.Compare("0", DropDownFiltro.SelectedValue) == 0);
-            //ListEmplazamientosLibres.Visible = !ListTiposLibres.Visible;
+            ListRecursosMFLibres.Items.Clear();
 
             Label4.Text = (string)GetLocalResourceObject("Label4Resource1.Text");
 
@@ -338,8 +348,9 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, null);
             }
             else
+            {
                 d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, DListEmplazamiento.Text);
-
+            }
             ServiciosCD40.RecursosRadio recRd = new ServiciosCD40.RecursosRadio();
 
             if (d != null)
@@ -355,7 +366,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
                     strTexto.Clear();
                     ServiciosCD40.Recursos rec = (ServiciosCD40.Recursos)d[i];
-
                     // Si el destino es de tipo HF, sólo se pueden mostrar recursos de tipo 0 = AUDIO_RX
                     // o si el tipo no es HF, Si el tipo de recurso es TIPO_DESTINO_AUDIO_HF_TX=3  no se carga en la lista,
                     //independientemente de que esté o no definida la tool RadioHF
@@ -370,6 +380,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         // Mostrar Tipo recurso radio Audio HF-Tx sólo para NDjamena (Versión=2)
                         //if (((ServiciosCD40.Recursos)d[i]).Tipo == 3) /* Audio-HF-Tx */  //&& UlisesToolsVersion.Tools["RadioHF"] == null)
                         //    continue;
+
                         strTipoValue = rec.Tipo.ToString();
 
                         if (rec.Tipo >= 4 && rec.Tipo <= 6)
@@ -416,8 +427,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         {
                             strTipo = itemTipo.Text;
                         }
-
-                        //Se obtiene el emplazamiento al que pertenece el recurso
+                        // Se obtiene el emplazamiento al que pertenece el recurso y el tipo de telemando para gestión Multifrecuencia
                         recRd.IdSistema = strSistema;
                         recRd.IdRecurso = ((ServiciosCD40.Recursos)d[i]).IdRecurso;
                         recRd.DescDestino = TxtIdEnlace.Text; // RQF-34
@@ -425,22 +435,36 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         ServiciosCD40.Tablas[] l2 = ServicioCD40.ListSelectSQL(recRd);
                         if (null != l2 && l2.Length > 0)
                         {
+                            // RQF 8422
+                            if (MostrarMultifrecuencia())
+                            {
+                                if ((((ServiciosCD40.RecursosRadio)l2[0]).Telemando > 0))
+                                {
+                                    stxtMultiFrec = IdentificaMultifrecuencia;
+                                }
+                                else
+                                {
+                                    stxtMultiFrec = String.Empty;
+                                }
+                                ListRecursosMFLibres.Items.Add(stxtMultiFrec);
+                            }
                             strEmplazamiento = ((ServiciosCD40.RecursosRadio)l2[0]).IdEmplazamiento;
                             ListEmplazamientosLibres.Items.Add(strEmplazamiento);
                         }
 
+                        strTexto.Clear();
                         if (visualizaRecLibresTipos)
                         {
                             //Se visaliza el recurso libre con el tipo
                             //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo);
-                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo, strEmplazamiento);
+                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo, strEmplazamiento, stxtMultiFrec);
                             lbItem.Attributes.Add("title", strEmplazamiento);
                         }
                         else
                         {
                             //Se visaliza el recurso libre con el emplazamiento
                             //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento);
-                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento, strTipo);
+                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento, strTipo, stxtMultiFrec);
                             lbItem.Attributes.Add("title", strTipo);
                         }
                         strTexto.Replace(" ", "\u00A0");
@@ -460,6 +484,19 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         {
             logDebugView.Error(string.Format("(DestinosRadio-CargarRecursosSinAsignar): error al cargar los recursos de tipo {0}  ", DListTipo.SelectedValue), e);
         }
+    }
+
+    protected void LimpiarecursosLibresDuplicados()
+    {
+        // Elimina de la presentación de recursos libres los asignados por TEMA MF
+        if (ListRecursos.Items.Count > 0)
+        {
+            for (int ind = 0; ind < ListRecursos.Items.Count; ind++)
+            {
+                ListRecursosLibres.Items.Remove(ListRecursosLibres.Items.FindByValue(ListRecursos.Items[ind].Value));
+            }
+        }
+
     }
 
     protected void DListEmplazamiento_SelectedIndexChanged(object sender, EventArgs e)
@@ -505,7 +542,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(t);
             LblErrorMismatchFrequency.Visible = false;
             Frecuencia = string.Empty;
-
+            string IdentificaMultifrecuencia = string.Format((string)GetLocalResourceObject("CheckedMultiFrecuenciaResource1"));
+            string stxtMultiFrec = String.Empty;
             int tipoRec = 0;
             string empDefecto = null;
             string tVueltaDefecto = "0";
@@ -522,6 +560,19 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         tipoRec = 4;
                     else
                         tipoRec = (int) rec.Tipo;
+                    // RQF 8422
+                    if (MostrarMultifrecuencia())
+                    {
+                        if (rec.Telemando > 0)
+                        {
+                            stxtMultiFrec = IdentificaMultifrecuencia;
+                        }
+                        else
+                        {
+                            stxtMultiFrec = String.Empty;
+                        }
+                        ListRecursosMF.Items.Add(stxtMultiFrec);
+                    }
 
                     ListEmplazamientos.Items.Add(rec.IdEmplazamiento);
 
@@ -607,7 +658,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                     {
                         if (((ServiciosCD40.DestinosRadio)datos[r]).IdDestino == t.IdDestino)
                         {
-                            //if (((ServiciosCD40.DestinosRadio)datos[r]).EmplazamientoDefecto != null)
                             if (!string.IsNullOrEmpty(((ServiciosCD40.DestinosRadio)datos[r]).EmplazamientoDefecto))
                             {
                                 empDefecto = ((ServiciosCD40.DestinosRadio)datos[r]).EmplazamientoDefecto;
@@ -664,9 +714,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 else
                     LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
             }
-
-
-
         }
         catch (Exception e)
         {
@@ -704,6 +751,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         BtCancelar.Visible = false;
         BtModificar.Visible = BtEliminar.Visible = PermisoSegunPerfil && ListBox1.Items.Count > 0;
         ListRecursos.Items.Clear();
+        ListRecursosMF.Items.Clear();
         ListEmplazamientos.Items.Clear();
         bool bRecargarRecursosLibres = false;
         ListItem dataItem = new ListItem(); // RQF-34
@@ -724,7 +772,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                     BtEliminar_ConfirmButtonExtender.ConfirmText = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarDestino"), ((ServiciosCD40.DestinosRadio)datos[i]).DescDestino);
                     sIdDestinosRadioKey = ((ServiciosCD40.DestinosRadio)datos[i]).IdDestino; // RQF-34
                     TxtIdEnlace.Text = ((ServiciosCD40.DestinosRadio)datos[i]).DescDestino;
-
                     //CheckExclusividad.Checked = ((ServiciosCD40.DestinosRadio)datos[i]).ExclusividadTXRX;
                     // DListTipo.SelectedValue = ((ServiciosCD40.DestinosRadio)datos[i]).TipoFrec.ToString();
                     TblTunedFreq.Visible = ((ServiciosCD40.DestinosRadio)datos[i]).TipoFrec == Convert.ToUInt32(DESTINORADIO_TIPOFRECUENCIA_HF);
@@ -765,13 +812,27 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                     }
 
                     DListModoDestino.SelectedValue = sModoDest;
-                    
+                    // RQF 8422
+                    CheckMultiFrecuencia.Checked = ((ServiciosCD40.DestinosRadio)datos[i]).MultiFrecuencia;
+                    VisualizaCamposMultifrecuencia(CheckMultiFrecuencia.Checked);
+                    if (CheckMultiFrecuencia.Checked != bOldCheckMultifrecuencia)
+                    {
+                        bRecargaPorCambioEnMultiFrecuencia = true;
+                        bOldCheckMultifrecuencia = CheckMultiFrecuencia.Checked;
+                    }
+
                     if (!string.IsNullOrEmpty(sTipo))
                     {
                         //Si el tipo del destino a mostrar es distinto del anterior y algun tipo es HF, hay que actualizar la lista de recursos libres
-                        if (string.Compare(DListTipo.SelectedValue, sTipo)!=0 && (string.Compare(DListTipo.SelectedValue,DESTINORADIO_TIPOFRECUENCIA_HF)==0 || string.Compare(sTipo,DESTINORADIO_TIPOFRECUENCIA_HF)==0))
+                        if (string.Compare(DListTipo.SelectedValue, sTipo) != 0 &&
+                            (string.Compare(DListTipo.SelectedValue, DESTINORADIO_TIPOFRECUENCIA_HF) == 0 ||
+                            string.Compare(sTipo, DESTINORADIO_TIPOFRECUENCIA_HF) == 0) ||
+                            // RQF 8422
+                            bRecargaPorCambioEnMultiFrecuencia == true)
+                        {
                             bRecargarRecursosLibres = true;
-
+                            bRecargaPorCambioEnMultiFrecuencia = false;
+                        }
                         DListTipo.SelectedValue = sTipo;
                     }
 
@@ -842,7 +903,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         {
                             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
                         }
-                       
                     }
                     else
                     {
@@ -858,6 +918,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                     CheckFrecNoDesasignable.Checked = ((ServiciosCD40.DestinosRadio)datos[i]).FrecuenciaNoDesasignable;
                     CheckPasivoRetransmision.Checked = ((ServiciosCD40.DestinosRadio)datos[i]).PasivoRetransmision;
 
+
                     if (TblTunedFreq.Visible)
                     {
                         TextBox tb = (TextBox)TblTunedFreq.FindControl("TbTunedFrequency");
@@ -865,6 +926,18 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                         {
                             tb.Text = ((ServiciosCD40.DestinosRadio)datos[i]).Frecuencia.ToString();
                         }
+                    }
+                    // RQF 8422
+                    if (CheckMultiFrecuencia.Checked)
+                    {
+                        // No se presenta no desasignable
+                        CheckFrecNoDesasignable.Visible = false;
+                        CargarMFFrecuencias();
+                    }
+                    else
+                    {
+                        CheckFrecNoDesasignable.Visible = true;
+                        InicializaDatosMultifrecuencia();
                     }
                     CargarRecursos();
                     if (bRecargarRecursosLibres)
@@ -895,50 +968,32 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
     private void MostrarMenu()
     {
-        LimpiarMenu();
-        
-        Label4.Visible = true;
-        
-        //TxtIdEnlace.Visible = true;
-        //DListTipo.Visible = true;
+        LimpiarMenu();        
+        Label4.Visible = true;      
         ListRecursosLibres.Visible = true;
-        //ListTiposLibres.Visible = true;
         LblFiltroEmplazamiento.Visible = DListEmplazamiento.Visible = DropDownFiltro.Visible = true;
-
-        //CheckExclusividad.Visible = true;
     }
 
     private void EsconderMenu()
     {
         Label4.Visible = false;
-        //DListTipo.Visible = false;
-        //IButAsignar.Visible = false;
-        //IButQuitar.Visible = false;
         ListRecursosLibres.Visible = false;
-        //ListTiposLibres.Visible = false;
-        //Label4.Visible = false;
-        //ListRecursosLibres.Visible = false;
-        //ListEmplazamientosLibres.Visible = false;
-        //DListTipoRec.Visible = false;
-
-
         LblFiltroEmplazamiento.Visible = DListEmplazamiento.Visible = DropDownFiltro.Visible = false;
-
         ListRecursos.Items.Clear();
         ListEmplazamientos.Items.Clear();
         ListRecursosLibres.Items.Clear();
         ListTiposLibres.Items.Clear();
         ListEmplazamientosLibres.Items.Clear();
         ListTipos.Items.Clear();
-        //TxtIdEnlace.Visible = false;
+        ListRecursosMF.Items.Clear();
+        ListRecursosMFLibres.Items.Clear();
+
         LimpiarMenu();
         BtAceptar.Visible = false;
         BtCancelar.Visible = false;
         BtModificar.Visible = false;
         RequiredFieldIdentificador.Enabled = RequiredFieldIdentificador.Visible = false;
-        //RequiredFieldValidator1.Enabled = RequiredFieldValidator1.Visible = false;
         errores.Visible = false;
-        //CheckExclusividad.Visible = false;
         TblTunedFreq.Visible = false;
         RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = false;
         valCustom.Enabled = valCustom.Visible=false;
@@ -957,6 +1012,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         CheckBox1Squelch.Checked = true;
         // 20211210 #2857 Analisis centralizado QIDX
         DLPorcentajeRSSI.SelectedValue = "0";
+        // RQF 8422
+        CheckMultiFrecuencia.Checked = false;
     }
 
     protected void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -1039,7 +1096,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
     protected override void CancelarCambios()
     {
         EsconderMenu();
-
         Panel1.Enabled = false;
         DListEmplazamiento.Enabled = false;
 
@@ -1066,6 +1122,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             bool bDestinoFmtFrecuencia = false; //Indica si el identificador del destino debe seguir el formato de las frecuencias
             bool bDestinoFmtFrecuenciaHFMN = false; //Indica si el identificador del destino debe seguir el formato de las frecuencias
             Dictionary<string, CRecursoRedundancia> mapaRecursosRed = new Dictionary<string, CRecursoRedundancia>();
+            
+            // RQF 8422
+            sFrecuenciaDefecto = String.Empty;
+            sFrecuencias[0] = String.Empty;
 
             //Se inicializa al valor configurado en el parámetro del fichero de configuración
             bDestinoFmtFrecuencia = bCnfIdFormatoFrecuencia;
@@ -1176,7 +1236,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                                 cMsg.confirm(strMsgAux, "aceptparam");
                                 return false;
                             }
-
                             break;
                         case DESTINORADIO_TIPOFRECUENCIA_UHF:
                             //Si tipo=UHF  /^(2|3|4)([0-9]{2})\.([0-9])([0-9])(0|5)$/;        /** 225.000 400.000 */
@@ -1335,6 +1394,20 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             n.FrecuenciaNoDesasignable = CheckFrecNoDesasignable.Checked;
             n.PasivoRetransmision = CheckPasivoRetransmision.Checked;
 
+            // RQF 8422
+            n.MultiFrecuencia = CheckMultiFrecuencia.Checked;
+            if (n.MultiFrecuencia)
+            {
+                if (!ValidaGuardarCambiosMF())
+                {
+                    return false;
+                }
+                ActualizaValoresMF();
+                // Se tiene que permitir desasignar frecuencia.
+                n.FrecuenciaNoDesasignable = false;
+            }
+
+            
             //Si el modo es FD, el método climax se almacena con los valores seleccionados por el usuario.
             //En cualquier otro caso, previamente se han asignado los valores por defecto: Ventana BSS = 500 Metodo Climax = Relativo Tiempo CLD=0 y Metodo BSS="0" (Ninguno)
             n.MetodoCalculoClimax = Convert.ToInt32(DListMetodoClimax.SelectedValue);
@@ -1426,7 +1499,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 }
                  */
 
-                destinoAnadido = ServicioCD40.AnadeDestinoRadio(n, r, tabRecRadio);
+                destinoAnadido = ServicioCD40.AnadeDestinoRadio(n, r, tabRecRadio, sFrecuenciaDefecto, sFrecuencias);
                 if (destinoAnadido)
                 {
                     if (ListRecursos.Items.Count > 0)
@@ -1451,14 +1524,13 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                             }
                         }
                     }
-
                     ActualizaWebPadre(true);
                 }
             }
             else
             {
                 IndexListBox1 = ListBox1.SelectedIndex;
-                destinoAnadido = ServicioCD40.ModificaDestinoRadio(n, r, tabRecRadio);
+                destinoAnadido = ServicioCD40.ModificaDestinoRadio(n, r, tabRecRadio, sFrecuenciaDefecto, sFrecuencias);
 
                 if (destinoAnadido)
                 {
@@ -1536,9 +1608,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
     protected void BtModificar_Click(object sender, EventArgs e)
     {
         IndexListBox1 = ListBox1.SelectedIndex;
-
-        //RequiredFieldValidator1.Enabled = RequiredFieldValidator1.Visible = true;       
-
         DListEmplazamiento.Enabled = true;
         DListPrioridadSIP.Enabled = true;
 
@@ -1595,7 +1664,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
         Panel1.Enabled = true;
         errores.Visible = true;
-       //DListTipo.Enabled = true;   // CheckExclusividad.Enabled = true;
         ListBox1.Enabled = false;
         BtNuevo.Visible = false;
         BtEliminar.Visible = false;
@@ -1603,19 +1671,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         BtAceptar.Visible = true;
         BtCancelar.Visible = true;
         ListRecursosLibres.Visible = true;
-
-        //ListTiposLibres.Visible = (String.Compare("0", DropDownFiltro.SelectedValue) == 0);
-        //ListEmplazamientosLibres.Visible = !ListTiposLibres.Visible;
-      
-        //TxtIdEnlace.ReadOnly = false;
-        //TxtIdEnlace.Enabled = true;
-
-        //DListTipoRec.Visible = true;
         ListRecursos.Enabled = true;
         Label4.Visible = true;
 
         LblFiltroEmplazamiento.Visible = DListEmplazamiento.Visible = DropDownFiltro.Visible = true;
-
         CargarRecursosSinAsignar();
         IButQuitar.Visible = true;
         IButAsignar.Visible = true;
@@ -2520,146 +2579,87 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
         Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
         KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-
         ServiciosCD40.RecursosRadio recRd = new ServiciosCD40.RecursosRadio();
-
         if (ListRecursosLibres.SelectedIndex >= 0)
             for (int i = 0; i < ListRecursosLibres.Items.Count; i++)
                 if (ListRecursosLibres.Items[i].Selected)
                 {
-                    #region Sincronizar
-                    if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                    {//Comprobar que el recurso seleccionado no tiene el mismo emplazamiento que otro recurso ya asignado
-                        List<ServiciosCD40.RecursosRadio> emplAsignados = new List<ServiciosCD40.RecursosRadio>();
-                        for (int h = 0; h < ListRecursos.Items.Count; h++)
-                        {
-                            ServiciosCD40.RecursosRadio rec = new ServiciosCD40.RecursosRadio();
-                            rec.IdSistema = (string)Session["IdSistema"];
-                            rec.IdRecurso = ListRecursos.Items[h].Value;
-                            ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(rec);
-                            rec.IdEmplazamiento = ((ServiciosCD40.RecursosRadio)d[0]).IdEmplazamiento;
-                            emplAsignados.Add(rec);
+                    ServiciosCD40.HFParams r = new ServiciosCD40.HFParams();
+                    r.IdSistema = (string)Session["idsistema"];
+                    r.IdRecurso = ListRecursosLibres.Items[i].Value;
+                    ServiciosCD40.Tablas[] h = ServicioCD40.ListSelectSQL(r);
 
-                        }
-                        //Obtener el emplazamiento del recurso seleccionado
-                        string empl = string.Empty;
-
-                        recRd.IdSistema = (string)Session["IdSistema"];
-                        recRd.IdRecurso = ListRecursosLibres.Items[i].Value;
-                        ServiciosCD40.Tablas[] l = ServicioCD40.ListSelectSQL(recRd);
-                        empl = ((ServiciosCD40.RecursosRadio)l[0]).IdEmplazamiento;
-
-                        bool asignar = true;
-                        foreach (ServiciosCD40.RecursosRadio s in emplAsignados)
-                        {
-                            if (s.IdEmplazamiento.CompareTo(empl) == 0)
-                            {
-                                asignar = false;
-                                cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "MismoEmplazamiento"), recRd.IdRecurso, s.IdRecurso));
-                                break;
-                            }
-                        }
-                        if (asignar)
-                        {
-                            ListRecursos.Items.Add(ListRecursosLibres.Items[i]);
-
-                            // MAF
-                            //ServiciosCD40.RecursosRadio emp1 = new ServiciosCD40.RecursosRadio();
-                            recRd.IdSistema = (string)Session["IdSistema"];
-                            recRd.IdRecurso = ListRecursosLibres.Items[i].Value;
-                            ServiciosCD40.Tablas[] l1 = ServicioCD40.ListSelectSQL(recRd);
-                            ListEmplazamientos.Items.Add(((ServiciosCD40.RecursosRadio)l1[0]).IdEmplazamiento);
-
-                            //MAF
-                            int uintp = ((ServiciosCD40.RecursosRadio)l1[0]).Tipo > 3 && ((ServiciosCD40.RecursosRadio)l1[0]).Tipo < 7 ? 4 : (int)((ServiciosCD40.RecursosRadio)l1[0]).Tipo;
-                            ListTipos.Items.Add(DListTipoRec.Items[uintp].Text);
-
-                            ListTipos.Items[ListTipos.Items.Count - 1].Value = ((ServiciosCD40.RecursosRadio)l1[0]).Tipo.ToString();//MAF_MAF
-
-                            // MAF
-                            ListRecursosLibres.Items.Remove(ListRecursosLibres.Items[i]);
-                            i--;
-                        }
-                    }
-                    #endregion
-                    else
+                    if (h.Length > 0)
                     {
-                        ServiciosCD40.HFParams r = new ServiciosCD40.HFParams();
-
-                        r.IdSistema = (string)Session["idsistema"];
-                        r.IdRecurso = ListRecursosLibres.Items[i].Value;
-                        ServiciosCD40.Tablas[] h = ServicioCD40.ListSelectSQL(r);
-
-                        if (h.Length > 0)
+                        //20201016 #4582 
+                        if (TxtIdEnlace.Text != ((ServiciosCD40.HFParams)h[0]).Frecuencia)
                         {
-                            //20201016 #4582 
-                            if (TxtIdEnlace.Text != ((ServiciosCD40.HFParams)h[0]).Frecuencia)
-                            {
-                                string mensaje;
-                                mensaje = string.Format((string)GetGlobalResourceObject("Espaniol", "ErrorFrecuenciaRecursoMN_Destino"), ((ServiciosCD40.HFParams)h[0]).Frecuencia, TxtIdEnlace.Text); 
-                                cMsg.confirm(mensaje, "aceptparam");
-                                return;
-                            }
-
-                            if (Frecuencia == string.Empty)
-                                Frecuencia = ((ServiciosCD40.HFParams)h[0]).Frecuencia;
-                            else if (Frecuencia != ((ServiciosCD40.HFParams)h[0]).Frecuencia)
-                            {
-                                LblErrorMismatchFrequency.Visible = true;
-                            }
+                            string mensaje;
+                            mensaje = string.Format((string)GetGlobalResourceObject("Espaniol", "ErrorFrecuenciaRecursoMN_Destino"), ((ServiciosCD40.HFParams)h[0]).Frecuencia, TxtIdEnlace.Text); 
+                            cMsg.confirm(mensaje, "aceptparam");
+                            return;
                         }
 
-                        recRd.IdSistema = (string)Session["IdSistema"];
-                        recRd.IdRecurso = ListRecursosLibres.Items[i].Value;
-                        ServiciosCD40.Tablas[] idRecRd = ServicioCD40.ListSelectSQL(recRd);
-                        ListEmplazamientos.Items.Add(((ServiciosCD40.RecursosRadio)idRecRd[0]).IdEmplazamiento);
-
-                        if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD && 
-                            DListModoTransmision.SelectedValue == MODO_TRANSMISION_ULTIMA_RECEPCION)
+                        if (Frecuencia == string.Empty)
+                            Frecuencia = ((ServiciosCD40.HFParams)h[0]).Frecuencia;
+                        else if (Frecuencia != ((ServiciosCD40.HFParams)h[0]).Frecuencia)
                         {
-                            //VMG 
-                            //18/02/2019 Metiendo los emplazamientos por defecto 
-                            for (int j = 0; j < ListEmplazamientos.Items.Count; j++)
-                            {
-                                if (DListEmplazamientoDefecto.Items.FindByText(ListEmplazamientos.Items[j].Text) == null)
-                                    DListEmplazamientoDefecto.Items.Add(ListEmplazamientos.Items[j].Text);
-                            }
+                            LblErrorMismatchFrequency.Visible = true;
                         }
-
-                        int uintp = ((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo > 3 && ((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo < 7 ? 4 : (int)((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo;
-                        ListItem lbItem = new ListItem();
-                        StringBuilder strTexto = new StringBuilder();
-                        ListItem itemTipoLibre = ListTiposLibres.Items[i];
-                        ListItem itemEmplazamientoLibre = ListEmplazamientosLibres.Items[i];
-
-                        lbItem.Value = ListRecursosLibres.Items[i].Value;
-
-                        strTexto.AppendFormat(FORMATO_LB_RECURSOS, recRd.IdRecurso, itemTipoLibre.Text, itemEmplazamientoLibre.Text);
-                        strTexto.Replace(" ", "\u00A0");
-                        lbItem.Text = strTexto.ToString();
-                        ListRecursos.Items.Add(lbItem);
-
-                        ListTipos.Items.Add(itemTipoLibre);
-                        //ListTipos.Items.Add(DListTipoRec.Items[uintp].Text);
-                        //ListTipos.Items[ListTipos.Items.Count-1].Value = ((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo.ToString();//MAF_MAF
-
-                        if (ListEmplazamientosLibres.Items.Count>0)
-                            ListEmplazamientosLibres.Items[i].Selected = true;
-
-                        if (ListTiposLibres.Items.Count>0)
-                            ListTiposLibres.Items[i].Selected = true;
-
-                        int index = ListRecursosLibres.SelectedIndex;
-
-                        ListRecursosLibres.Items.RemoveAt(index);
-
-                        if (ListEmplazamientosLibres.Items.Count > 0 && index<ListEmplazamientosLibres.Items.Count)
-                            ListEmplazamientosLibres.Items.RemoveAt(index);
-
-                        if (ListTiposLibres.Items.Count > 0 && index < ListTiposLibres.Items.Count)
-                            ListTiposLibres.Items.RemoveAt(index);
-                        i--;
                     }
+
+                    recRd.IdSistema = (string)Session["IdSistema"];
+                    recRd.IdRecurso = ListRecursosLibres.Items[i].Value;
+                    ServiciosCD40.Tablas[] idRecRd = ServicioCD40.ListSelectSQL(recRd);
+                    ListEmplazamientos.Items.Add(((ServiciosCD40.RecursosRadio)idRecRd[0]).IdEmplazamiento);
+
+                    if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD && 
+                        DListModoTransmision.SelectedValue == MODO_TRANSMISION_ULTIMA_RECEPCION)
+                    {
+                        //VMG 
+                        //18/02/2019 Metiendo los emplazamientos por defecto 
+                        for (int j = 0; j < ListEmplazamientos.Items.Count; j++)
+                        {
+                            if (DListEmplazamientoDefecto.Items.FindByText(ListEmplazamientos.Items[j].Text) == null)
+                                DListEmplazamientoDefecto.Items.Add(ListEmplazamientos.Items[j].Text);
+                        }
+                    }
+
+                    int uintp = ((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo > 3 && ((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo < 7 ? 4 : (int)((ServiciosCD40.RecursosRadio)idRecRd[0]).Tipo;
+                    ListItem lbItem = new ListItem();
+                    StringBuilder strTexto = new StringBuilder();
+                    ListItem itemTipoLibre = ListTiposLibres.Items[i];
+                    ListItem itemEmplazamientoLibre = ListEmplazamientosLibres.Items[i];
+                    ListItem itemRecursoMFLibre = ListRecursosMFLibres.Items[i];
+                    lbItem.Value = ListRecursosLibres.Items[i].Value;
+
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS, recRd.IdRecurso, itemTipoLibre.Text, itemEmplazamientoLibre.Text, itemRecursoMFLibre.Text);
+                    strTexto.Replace(" ", "\u00A0");
+                    lbItem.Text = strTexto.ToString();
+                    ListRecursos.Items.Add(lbItem);
+
+                    ListTipos.Items.Add(itemTipoLibre);
+
+                    if (ListEmplazamientosLibres.Items.Count>0)
+                        ListEmplazamientosLibres.Items[i].Selected = true;
+
+                    if (ListTiposLibres.Items.Count>0)
+                        ListTiposLibres.Items[i].Selected = true;
+
+                    int index = ListRecursosLibres.SelectedIndex;
+                    // RQF 8422
+                    if (MostrarMultifrecuencia())
+                    {
+                        if (ListRecursosMFLibres.Items.Count > 0 && index < ListRecursosMFLibres.Items.Count)
+                            ListRecursosMFLibres.Items.RemoveAt(index);
+                    }
+                    ListRecursosLibres.Items.RemoveAt(index);
+                    if (ListEmplazamientosLibres.Items.Count > 0 && index<ListEmplazamientosLibres.Items.Count)
+                        ListEmplazamientosLibres.Items.RemoveAt(index);
+
+                    if (ListTiposLibres.Items.Count > 0 && index < ListTiposLibres.Items.Count)
+                        ListTiposLibres.Items.RemoveAt(index);
+                    i--;
                 }
     }
 
@@ -2674,8 +2674,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         if (ListRecursos.SelectedIndex >= 0)
         {
             ServiciosCD40.RecursosRadio recRd = new ServiciosCD40.RecursosRadio();
-
-            if(DListEmplazamiento.SelectedIndex != 0)
+            // RQF 8422
+            if(DListEmplazamiento.SelectedIndex != 0 )
                 CargarRecursosSinAsignar();
 
             LiberaRecursos();
@@ -2737,16 +2737,16 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
                 if (visualizaRecLibresTipos)
                 {
-                    //Se visaliza el recurso libre con el tipo
+                    //Se visualiza el recurso libre con el tipo
                     //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text);
-                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text, ListEmplazamientos.Items[i].Text);
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text, ListEmplazamientos.Items[i].Text, ListRecursosMF.Items[i].Text);
                     lbItem.Attributes.Add("title", ListEmplazamientos.Items[i].Text);
                 }
                 else
                 {
                     //Se visaliza el recurso libre con el emplazamiento
                     //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text);
-                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text, ListTipos.Items[i].Text);
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text, ListTipos.Items[i].Text, ListRecursosMF.Items[i].Text);
                     lbItem.Attributes.Add("title", ListTipos.Items[i].Text);
                 }
                 strTexto.Replace(" ", "\u00A0");
@@ -2754,16 +2754,17 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 lbItem.Value = ListRecursos.Items[i].Value;
 
                 ListRecursosLibres.Items.Add(lbItem);
-
                 ListTiposLibres.Items.Add(ListTipos.Items[i]);
-                ListEmplazamientosLibres.Items.Add(ListEmplazamientos.Items[i]);
-
+                ListEmplazamientosLibres.Items.Add(ListEmplazamientos.Items[i]); 
+                ListRecursosMFLibres.Items.Add(ListRecursosMF.Items[i]);
                 ListEmplazamientos.Items[i].Selected = true;
                 ListTipos.Items[i].Selected = true;
                 index = ListRecursos.SelectedIndex;
+
                 ListRecursos.Items.RemoveAt(index);
                 ListEmplazamientos.Items.RemoveAt(index);
                 ListTipos.Items.RemoveAt(index);
+                ListRecursosMF.Items.RemoveAt(index);
                 i--;
             }
         }
@@ -2771,7 +2772,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         if (ListRecursos.Items.Count > 0)
             ListRecursos.SelectedIndex = 0;
     }
-
     private bool DestinoAsignadoATft(string destino)
     {
         ServiciosCD40.DestinosRadioSector drs = new ServiciosCD40.DestinosRadioSector();
@@ -2835,14 +2835,13 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
 
     protected void DListTipo_SelectedIndexChanged(object sender, EventArgs e)
     {
-        CargarRecursosSinAsignar();
 
         if (DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF)
         {
             TblTunedFreq.Visible = true;
             RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = true;
-            //Se limpia los recursos asignados para que cuando se cambie el tipo, si previamente se ha asignado algún recurso
-            //la configuración no se quede inconsistente
+            // Se limpian los recursos asignados para que cuando se cambie el tipo, si previamente se ha asignado algún recurso
+            // la configuración no se quede inconsistente
             if (DListModoDestino.SelectedIndex==1)
                 LblTunedFreq.Visible = TBTunedFrequency.Visible = Label10.Visible = false;
             else
@@ -2853,6 +2852,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
                 ListEmplazamientos.Items.Clear();
                 ListTipos.Items.Clear();
             }
+            // RQF 8422
+            CheckMultiFrecuencia.Checked = false;
+            CheckMultiFrecuencia.Enabled = false;
+            VisualizaCamposMultifrecuencia(CheckMultiFrecuencia.Checked);
         }
         else
         {
@@ -2860,6 +2863,16 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             TblTunedFreq.Visible = false;
             RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = false;
         }
+        // RQF 8422
+        if ( ListBoxMFrecuencias.Items.Count > 0 &&
+            CheckMultiFrecuencia.Checked == true &&
+            (DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_VHF || 
+            DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_UHF))
+        {
+            SonValidasFrecuenciasAsignadasEnMultifrecuencia();
+        }
+        AnalizaGestionMultifrecuencia();
+        CargarRecursosSinAsignar();
     }
 
     protected void DFiltro_SelectedIndexChanged(object sender, EventArgs e)
@@ -2909,7 +2922,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         }
         else
         {
-
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = false;
             Label44.Visible = TextBoxCLD.Visible = false;
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
@@ -2921,10 +2933,11 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
             // 20211210 JOI  #2857 Analisis centralizado QIDX
             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
         }
-
-
        TblTunedFreq.Visible = DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF ? true : false;
        RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = TblTunedFreq.Visible;
+       
+        // RQF 8422
+       AnalizaGestionMultifrecuencia();
     }
 
     protected void DListPrioridadSIP_SelectedIndexChanged(object sender, EventArgs e)
@@ -3054,8 +3067,354 @@ public partial class GrupoFD : PageBaseCD40.PageCD40    // System.Web.UI.Page
         }
     }
 
+    // RQF 8422
+    protected void CBMultiFrecuencia_CheckedChanged(object sender, EventArgs e)
+    {
+        if (CheckMultiFrecuencia.Checked == true)
+        {
+            CheckFrecNoDesasignable.Visible = false;          
+        }
+        else
+        {
+            CheckFrecNoDesasignable.Visible = true;          
+        }
+        VisualizaCamposMultifrecuencia(CheckMultiFrecuencia.Checked);
+        CargarRecursosSinAsignar();
+        if (ListBoxMFrecuencias.Items.Count > 0 &&
+            CheckMultiFrecuencia.Checked == true &&
+            (DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_VHF ||
+            DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_UHF))
+        {
+            SonValidasFrecuenciasAsignadasEnMultifrecuencia();
+        }
+        SonValidosRecursosAsignadosMF();
+    }
+     /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void ListBoxMFrecuencias_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        TBMFrecuencia.Text = ListBoxMFrecuencias.SelectedValue;
+    }
+    protected void IButMFAsignar_Click(object sender, ImageClickEventArgs e)
+    {
+        if (TBMFrecuencia.Text == String.Empty ||
+            !EsMultifrecuenciaValida(TBMFrecuencia.Text,true) || 
+            FrecuenciaDuplicada(true)||
+            AlcanzadoMaximoFrecuenciasPorDestino()
+            )
+            return;
+        // Sí es la primera se pone por defecto.
+        if (ListBoxMFrecuencias.Items.Count == 0)
+        {
+            TBMFrecuenciaDefecto.Text = TBMFrecuencia.Text;
+        }
+        ListBoxMFrecuencias.Items.Add(TBMFrecuencia.Text);
+    }
+    protected void IButMFDesAsignar_Click(object sender, ImageClickEventArgs e)
+    {
+        if (TBMFrecuencia.Text == String.Empty)
+            return;
+        ListBoxMFrecuencias.Items.Remove(TBMFrecuencia.Text);
+        if (TBMFrecuencia.Text == TBMFrecuenciaDefecto.Text)
+        {
+            TBMFrecuenciaDefecto.Text = String.Empty;
+        }
+        TBMFrecuencia.Text = String.Empty;
+        // Sí es la última se pone por defecto.
+        if (ListBoxMFrecuencias.Items.Count == 1)
+        {
+            TBMFrecuenciaDefecto.Text = ListBoxMFrecuencias.Items[0].Text;
+        }
+    }
+    protected void IButMFDefecto_Click(object sender, ImageClickEventArgs e)
+    {
+        if (TBMFrecuencia.Text == String.Empty ||
+            !EsMultifrecuenciaValida(TBMFrecuencia.Text,true)
+            )
+        {
+            return;
+        }
+        if (!FrecuenciaDuplicada(false))
+        {
+            if (AlcanzadoMaximoFrecuenciasPorDestino())
+            {
+                return;
+            }
+            TBMFrecuenciaDefecto.Text = TBMFrecuencia.Text;
+            ListBoxMFrecuencias.Items.Add(TBMFrecuencia.Text);
+        }
+        else
+        {
+            TBMFrecuenciaDefecto.Text = TBMFrecuencia.Text;
+        }
+    }
+
+    protected void IButMFLimpia_Click(object sender, ImageClickEventArgs e)
+    {
+        TBMFrecuencia.Text = String.Empty;
+    }
+
+    private void AnalizaGestionMultifrecuencia()
+    {
+        bool bVisualiza = false;
+        // Sí es Multiemplazamiento no puede ser multifrecuencia.
+        bVisualiza = DListModoDestino.SelectedValue != DESTINORADIO_MODO_FD && CheckMultiFrecuencia.Checked;
+        // Si es Multiemplazamiento no puede interactuar con chek de multifrecuencia;
+        if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD ||
+            DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF ||
+            DListTipo.SelectedValue == DESTINORADIO_MODO_EM
+            )
+        {
+            CheckMultiFrecuencia.Enabled = false;
+        }
+        else
+        {
+            CheckMultiFrecuencia.Enabled = true;
+        }
+        VisualizaCamposMultifrecuencia(bVisualiza);
+        if (CheckMultiFrecuencia.Checked == true)
+        {
+            CheckFrecNoDesasignable.Visible = false;
+        }
+        else
+        {
+            CheckFrecNoDesasignable.Visible = true;
+        }
+    }
+    private void VisualizaCamposMultifrecuencia(bool bVisualiza)
+    {
+        if (!MostrarMultifrecuencia())
+        {
+            bVisualiza = false;
+            LbMultiFrecuencia.Visible = bVisualiza;
+            CheckMultiFrecuencia.Visible = bVisualiza;
+        }
+
+        LbMFGestionMF.Visible = bVisualiza;
+        LbMFrecuencia.Visible = bVisualiza;
+        LbMFrecuencias.Visible = bVisualiza;
+        LbMFrecuenciaDefecto.Visible = bVisualiza;
+        
+        TBMFrecuencia.Visible = bVisualiza;
+        ListBoxMFrecuencias.Visible = bVisualiza;
+        TBMFrecuenciaDefecto.Visible = bVisualiza;
+        TBMFrecuenciaDefecto.Enabled = false;
+        IButMFLimpia.Visible = bVisualiza;
+        IButMFAsignar.Visible = bVisualiza;
+        IButMFDesAsignar.Visible = bVisualiza;
+        IButMFDefecto.Visible = bVisualiza;
+    }
+
+    private void BloqueaCamposMultifrecuencia(bool bBloquea)
+    {
+        TBMFrecuenciaDefecto.Enabled = false;
+        IButMFLimpia.Enabled = bBloquea;
+        IButMFAsignar.Enabled = bBloquea;
+        IButMFDesAsignar.Enabled = bBloquea;
+        IButMFDefecto.Enabled = bBloquea;
+        TBMFrecuencia.Enabled = bBloquea;
+        ListBoxMFrecuencias.Enabled = bBloquea;
+    }
+    private bool EsMultifrecuenciaValida(string frecuencia, bool bMsg)
+    {
+        bool retorno = true;
+        String strMsgAux = String.Empty;
+        int nfrecuencia = Convert.ToInt32(frecuencia.Replace(".", ""));
+        switch (DListTipo.SelectedValue)
+        {
+            case DESTINORADIO_TIPOFRECUENCIA_VHF:
+                //si tipo=VHF  /^(1)(1|2|3)([0-9]{1})\.([0-9])([0-9])(0|5)$/;   /** 118.000 137.000 */
+                if (!Regex.IsMatch(frecuencia, @"^(1)(1|2|3)([0-9]{1})\.([0-9]{2})(0|5)$"))
+                {
+                    retorno = false;
+                }
+                if (retorno)
+                {
+                    if (nfrecuencia < NVHF_F_MIN || nfrecuencia > NVHF_F_MAX)
+                        retorno = false;
+                }
+                if (bMsg && !retorno)
+                {
+                    // El identificador no tiene el formato correcto    
+                    strMsgAux = string.Format((string)GetGlobalResourceObject("Espaniol", "FormatoIdentificadoDestinoRadioIncorrecto"), DListTipo.Items[DListTipo.SelectedIndex].Text, SVHF_F_MIN, SVHF_F_MAX);
+                    cMsg.confirm(strMsgAux, "aceptparam");
+                }
+                break;
+            case DESTINORADIO_TIPOFRECUENCIA_UHF:
+                //Si tipo=UHF /** 225.000 400.000 */
+                if (!Regex.IsMatch(frecuencia, @"^(2|3|4)([0-9]{2})\.([0-9]{2})(0|5)$"))
+                {
+                    retorno = false;
+                }
+                if (retorno)
+                {
+                    if (nfrecuencia < NUHF_F_MIN || nfrecuencia > NUHF_F_MAX)
+                        retorno = false;
+                }
+                if (bMsg && !retorno)
+                {
+                    strMsgAux = string.Format((string)GetGlobalResourceObject("Espaniol", "FormatoIdentificadoDestinoRadioIncorrecto"), DListTipo.Items[DListTipo.SelectedIndex].Text, SUHF_F_MIN, SUHF_F_MAX);
+                    cMsg.confirm(strMsgAux, "aceptparam");
+                }
+                break;
+            default:
+                break;
+        }
+        return retorno;
+    }
+    private bool FrecuenciaDuplicada(bool bMsg)
+    {
+        bool retorno = false;
+        String strMsgAux = String.Empty;
+        for (int i = 0; i < ListBoxMFrecuencias.Items.Count; i++)
+        {
+            if (String.Compare((TBMFrecuencia.Text), ListBoxMFrecuencias.Items[i].Text, false) == 0)
+            {
+                if (bMsg)
+                {
+                    strMsgAux = string.Format((string)GetLocalResourceObject("TXTFrecuenciaDuplicada"));
+                    cMsg.confirm(strMsgAux, "aceptparam");
+                }
+                retorno = true;
+                break;
+            }
+        }
+        return retorno;
+    }
+
+    private bool AlcanzadoMaximoFrecuenciasPorDestino()
+    {
+        bool retorno = false;
+        String strMsgAux = String.Empty;
+        if (ListBoxMFrecuencias.Items.Count > NumeroMaximoFrecuenciasMultifrecuencia())
+        {
+            strMsgAux = string.Format((string)GetLocalResourceObject("TXTMaximoFrecuenciasDestino"));
+            cMsg.confirm(strMsgAux, "aceptparam");
+            retorno = true;
+        }
+        return retorno;
+    }
+
+    private void InicializaDatosMultifrecuencia()
+    {
+        CheckMultiFrecuencia.Checked = false;
+        TBMFrecuencia.Text= String.Empty;
+        ListBoxMFrecuencias.Items.Clear();
+        TBMFrecuenciaDefecto.Text = String.Empty;
+    }
+    private bool SonValidasFrecuenciasAsignadasEnMultifrecuencia()
+    {
+        int indfrec = 0;
+        bool retorno = true;
+        String strMsgAux = String.Empty;
+        for (indfrec = 0; indfrec < ListBoxMFrecuencias.Items.Count; indfrec++)
+        {
+            if (!EsMultifrecuenciaValida(ListBoxMFrecuencias.Items[indfrec].Text,false))
+            {
+                retorno = false;
+                break;
+            }
+        }
+        if (!retorno)
+        {
+            strMsgAux = string.Format((string)GetLocalResourceObject("TXTFrecuenciasDestinoIncompatibles"));
+            cMsg.confirm(strMsgAux, "aceptparam");
+        }
+         return retorno;
+    }
+
+    private void CargarMFFrecuencias()
+    {
+        try
+        {
+            InicializaDatosMultifrecuencia();
+            ServiciosCD40.DestinosMultiFrecuencia dmf = new ServiciosCD40.DestinosMultiFrecuencia();
+            dmf.IdSistema = (string)Session["idsistema"];
+            dmf.IdDestino = sIdDestinosRadioKey;
+            ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(dmf);
+            if (d != null)
+            {
+                for (int i = 0; i < d.Length; i++)
+                {
+                    CheckMultiFrecuencia.Checked = true;
+                    ServiciosCD40.DestinosMultiFrecuencia mf = (ServiciosCD40.DestinosMultiFrecuencia)d[i];
+                    ListBoxMFrecuencias.Items.Add(mf.Frecuencia);
+                    if (mf.FrecuenciaDefecto == true)
+                    {
+                        TBMFrecuenciaDefecto.Text = mf.Frecuencia;
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logDebugView.Error("(GrupoFD-CargarRecursosMultifrecuencia):", e);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    private bool ValidaGuardarCambiosMF()
+    {
+        bool retorno = true;
+        String strMsgAux = String.Empty;
+        if (TBMFrecuenciaDefecto.Text == String.Empty && CheckMultiFrecuencia.Checked == true)
+        {
+            strMsgAux = string.Format((string)GetLocalResourceObject("TXTMFOpcionNoCompatible"));
+            cMsg.confirm(strMsgAux, "aceptparam");
+            retorno = false;
+        }
+        if (!SonValidasFrecuenciasAsignadasEnMultifrecuencia())
+            retorno = false;
+        return retorno;
+    }
+    private void ActualizaValoresMF()
+    {
+        sFrecuenciaDefecto = TBMFrecuenciaDefecto.Text;
+        sFrecuencias = new string[ListBoxMFrecuencias.Items.Count];
+        for (int i = 0; i < ListBoxMFrecuencias.Items.Count; i++)
+        {
+            sFrecuencias[i] = ListBoxMFrecuencias.Items[i].Text;
+        }
+    }
+
+    private bool SonValidosRecursosAsignadosMF()
+    {
+        bool retorno = true;
+        String strMsgAux = String.Empty;
+        if (MostrarMultifrecuencia())
+        {
+            if (CheckMultiFrecuencia.Checked == true)
+            {
+                string strSistema = (string)Session["idsistema"];
+                for (int i = 0; i < ListRecursos.Items.Count; i++)
+                {
+                    ServiciosCD40.RecursosRadio rcmf = new ServiciosCD40.RecursosRadio();
+                    rcmf.IdSistema = strSistema;
+                    rcmf.IdRecurso = ListRecursos.Items[i].Value;
+                    ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(rcmf);
+                    if (d != null)
+                    {
+                        for (int j = 0; j < d.Length; j++)
+                        {
+                            ServiciosCD40.RecursosRadio rec = (ServiciosCD40.RecursosRadio)d[j];
+                            if (rec.Tipo > 2 || rec.Telemando == 0)
+                            {
+                                retorno = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!retorno)
+                {
+                    strMsgAux = string.Format((string)GetLocalResourceObject("TXTRecursosDestinoIncompatibles"));
+                    cMsg.confirm(strMsgAux, "aceptparam");
+                }
+            }
+        }
+        return retorno;
+    }
+
 }
-
- 
-
-

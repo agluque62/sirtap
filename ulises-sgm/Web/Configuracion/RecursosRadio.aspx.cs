@@ -88,7 +88,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     const string TIPO_REC_M_N_TX = "5";
     const string TIPO_REC_M_N_RXTX = "6";
     const string TIPO_REC_EQUIPO_EXT = "7";
-    
 
     static int[] Tabla_idbss = new int[16];
     
@@ -108,7 +107,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                 Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO", false);
 				return;
 			}
-
+            
             PermisoSegunPerfil = perfil != "1";
 
 			BtModificar.Visible = BtNuevo.Visible = perfil == "3" && !Editando;
@@ -147,9 +146,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
             BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
             BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");
-            
+
             NumPaginaActiva = 0;
             iTipoRecursoOriginal = -1;
+            PresentaMultifrecuencia(false);
 
             CargarZonas();
             CargarMetodosBSS();
@@ -163,7 +163,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         }
         else
         {
-
                 //Si se ha recargado la página, las variables datos y la variable de session tienen valor nulo es porque 
                 // si ha cambiado la sesión del servidor, bien por conmutación o reinicio
                 //por lo que se va a la página de login
@@ -173,7 +172,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                     return;
                 }
 
-				MultiView1.ActiveViewIndex = NumPaginaActiva;          
+				MultiView1.ActiveViewIndex = NumPaginaActiva;
                 
 				if (Request.Form["eliminadeTFT"] == "1")
 				{
@@ -288,11 +287,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         {
             ((TextBox)AccordionPane1.FindControl("TbMin")).Text = (string)GetLocalResourceObject("StrRangoMinimo.Text").ToString();
             ((TextBox)AccordionPane1.FindControl("TBMax")).Text = (string)GetLocalResourceObject("StrRangoMaximo.Text").ToString();
-            //if (Accordion2.Visible)
-            //{
-            //    ((TextBox)AccordionPane5.FindControl("TextBox3")).Text = (string)GetLocalResourceObject("StrRangoMinimo.Text").ToString();
-            //    ((TextBox)AccordionPane5.FindControl("TextBox4")).Text = (string)GetLocalResourceObject("StrRangoMaximo.Text").ToString();
-            //}
         }
 	}
 
@@ -310,7 +304,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 		DDLEquipoExternos.SelectedIndex = 0;
         DListZonas.SelectedIndex = 0;
         DListEmplazamiento.SelectedIndex = 0;
-
+        // RQF 8422
+        DDTelemando.SelectedIndex = 0;
 		ModoEdicion(true);
         HabilitarEscritura(false);
 
@@ -374,6 +369,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         DListTablasCalidad.SelectedIndex = 0;
         //MVO: Por defecto, el tipo de equipo es pasarela
         RBLTipoEquipo.SelectedValue = HW_TIPO_PASARELA;
+        DDTelemando.SelectedValue = "0";
+
 
         /*// MAF
         CheckGrabacionEd137.Checked = false;
@@ -415,6 +412,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         GVRangos.DataSource = /*GVRangos_NM.DataSource = */ null;
         GVRangos.DataBind();
         //GVRangos_NM.DataBind();
+        // RQF 8422
+        PresentaMultifrecuencia(false);
 
 		MuestraEquipoDelRecurso();
 
@@ -517,19 +516,21 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
                         //Solo visible para las pasarelas
                         CheckBoxEventosPTT_SQ.Visible = true;
+                        // RQF 8422
+                        PresentaMultifrecuencia(false);
                     }
                     else if ((rec.IdEquipo != null) && (rec.IdEquipo != ""))
                     {
                         //El recurso está asignado a un equipo externo
                         RBLTipoEquipo.SelectedValue = HW_TIPO_EQUIPO_EXTERNO;
                         DDLEquipoExternos.SelectedValue = rec.IdEquipo;
-
+                        // OJOOOO
+                        // RQF 8422
                         IBVoip.Enabled = IBAudio.Enabled = IBFuncionalidad.Enabled = false; // AUDIO N+M;
                         IBVoip.CssClass = "buttonImageDisabled";
                         IBAudio.CssClass = "buttonImageDisabled";
                         IBFuncionalidad.CssClass = "buttonImageDisabled";
-
-                        CheckBoxEventosPTT_SQ.Visible = false;
+                        PresentaMultifrecuencia(true);
                     }
                     break;
                 }
@@ -548,8 +549,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                     TxtGananciaRx.Text = r.GananciaAGCRXdBm.ToString();
                     TxtGananciaTx.Text = r.GananciaAGCTXdBm.ToString();
                     DListEmplazamiento.Text = r.IdEmplazamiento;
-
-
+                    CheckBoxEventosPTT_SQ.Visible = false;
                     _TipoDisabled = r.IdDestino != null;
                     if (r.IdDestino != null)
                     {
@@ -769,6 +769,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
                     PresentaParamAudioGananciaRx(RBGananciaRx.Checked);
                     PresentaParamAGCRx(RBAGCRx.Checked);
+                    // OJOOOO
+                    // RQF 8422
+                    DDTelemando.SelectedValue = r.Telemando.ToString();
                     break;
                 }
             }
@@ -1116,6 +1119,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
 		LblEquipoExterno.Visible = !muestraTifx;
 		DDLEquipoExternos.Visible = !muestraTifx;
+        PresentaMultifrecuencia(!muestraTifx);
 	}
 
     private void EsconderMenu()
@@ -1138,7 +1142,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     {
 		RBLTipoEquipo.Enabled = habilita && !RecursoAsignado && DDLEquipoExternos.SelectedIndex == 0;
 		DDLEquipoExternos.Enabled = habilita;
-		
+		HabilitaMultifrecuencia(habilita);
 		//CheckDiffServ.Enabled = habilita;
         //CheckSupresionSilencio.Enabled = habilita;        
         RBAGCRx.Enabled = habilita;
@@ -1750,7 +1754,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
             prRad.GrabacionEd137 = CheckGrabacionEd137.Checked;
             prRad.Radio_param_idradio_param = var_id_radio_param;
             prRad.OffSetFrequency = Int32.Parse(DDLOffsetGeneral.SelectedValue);
-
+            prRad.Telemando = Int32.Parse(DDTelemando.SelectedValue);
 
             if (DListTipo.SelectedValue == TIPO_REC_AUDIO_HF_TX ||   // 3 - HF
                 DListTipo.SelectedValue == TIPO_REC_M_N_RX ||        // 4 - M+N RX
@@ -2468,7 +2472,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 			TTifx.Visible = true;
 			LblEquipoExterno.Visible = false;
 			DDLEquipoExternos.Visible = false;
-
+            // RQF 8422
+            PresentaMultifrecuencia(false);
 
             CheckBoxEventosPTT_SQ.Visible = true;
             CheckBoxEventosPTT_SQ.Checked = false;
@@ -2497,15 +2502,16 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 			TTifx.Visible = false;
 			LblEquipoExterno.Visible = true;
 			DDLEquipoExternos.Visible = true;
-
+            // RQF 8422
+            PresentaMultifrecuencia(true);
             IBVoip.Enabled = IBAudio.Enabled = IBFuncionalidad.Enabled = false; // AUDIO N+M;
             IBVoip.CssClass = "buttonImageDisabled";
             IBAudio.CssClass = "buttonImageDisabled";
             IBFuncionalidad.CssClass = "buttonImageDisabled";
-
             CheckBoxEventosPTT_SQ.Visible = false;
             CheckBoxEventosPTT_SQ.Checked = false;
         }
+        
 	}
 
     private void MostrarParametrosFuncionalidad()
@@ -2543,6 +2549,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 	protected void DDLEquipoExternos_SelectedIndexChanged(object sender, EventArgs e)
 	{
 		RBLTipoEquipo.Enabled = DDLEquipoExternos.SelectedIndex == 0;
+        if (DDLEquipoExternos.SelectedIndex == 0)
+        {
+            DDTelemando.SelectedIndex = 0;
+        }
 	}
 
 	protected void OnButton_Click(object sender, EventArgs e)
@@ -2740,6 +2750,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     protected void DListTipo_SelectedIndexChanged(object sender, EventArgs e)
     {
         Accordion1.Visible = DListTipo.SelectedValue == "3"; // AUDIO RX TX HF
+        if (DListTipo.SelectedValue == "3" || DListTipo.SelectedValue == "4")
+        {
+            PresentaMultifrecuencia(false);
+        }
                 
         Label24.Visible = DListMetodoBSS.Visible = (CheckBSS.Visible && CheckBSS.Checked);
 
@@ -3048,5 +3062,28 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     {
         LBLRxNivelDA.Visible = TBRxNivelDA.Visible = LBLRxUmbralDA.Visible = TBRxUmbralDA.Visible = presenta;
     }
+
+    // RQF 8422
+    protected void PresentaMultifrecuencia(bool presenta)
+    {
+        if (MostrarMultifrecuencia())
+        {
+            // RQF 8422
+            if (DListTipo.SelectedValue != "4" && DListTipo.SelectedValue != "3")
+            {
+                LbMFGestionMF.Visible = presenta;
+                DDTelemando.Visible = presenta;
+            }
+        }
+    }
+
+    protected void HabilitaMultifrecuencia(bool habilita)
+    {
+        if (MostrarMultifrecuencia())
+        {
+            DDTelemando.Enabled = habilita;
+        }
+    }
+
 }
 

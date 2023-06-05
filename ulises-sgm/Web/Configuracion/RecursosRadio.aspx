@@ -1213,6 +1213,16 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                     meta:resourcekey="DDLEquipoExternosResource1">
                 </asp:DropDownList>
 
+                <asp:Label ID="LbMFGestionMF" runat="server" Style="z-index: 111; left: 10px; position: absolute; top: 105px"
+                Text="Gestión Multifrecuencia" Enabled="False" Visible = "False" meta:resourcekey="LbMFGestionMFResource1"></asp:Label>
+
+				<asp:DropDownList ID="DDTelemando" runat="server" Style="z-index: 201; left: 10px; position: absolute; top: 125px; height:auto"
+                    Width="180px" AppendDataBoundItems="True" class="select"
+                    Enabled="False" Visible = "False" AutoPostBack="True">
+                    <asp:ListItem Value="0" meta:resourcekey="ListItemFiltroTelemandoResource0">Sin Telemando</asp:ListItem>
+                    <asp:ListItem Value="1" meta:resourcekey="ListItemFiltroTelemandoResource1">ROHDE 4200</asp:ListItem>
+                    <asp:ListItem Value="2" meta:resourcekey="ListItemFiltroTelemandoResource2">JOTRON 7000</asp:ListItem>
+                    </asp:DropDownList>
             </asp:View>
         </asp:MultiView>
     </asp:Panel>
@@ -1231,23 +1241,6 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
 	<asp:Button ID="IBAsignacion" runat="server"  SkinId="ButtonTab"
 		OnClick="OnButton_Click" Style="z-index: 114; left: 692px; position: absolute;
 		top: 41px" meta:resourcekey="IBAsignacionResource1" />
-
-<%--Control actividad de sesión    --%>
-    <script type="text/javascript">
-        function PingSessionSrv() {
-            var CONTROLADOR = "PingSrv.aspx";
-            var head = document.getElementsByTagName("head").item(0);
-            script = document.createElement("script");
-            script.src = CONTROLADOR;
-            script.setAttribute("type", "text/javascript");
-            script.defer = true;
-            head.appendChild(script);
-        }
-    </script>
-    <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
-    </script>
-<%--Control actividad de sesión FIN    --%>
 
 </asp:Content>
 

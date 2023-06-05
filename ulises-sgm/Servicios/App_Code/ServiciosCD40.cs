@@ -106,6 +106,9 @@ public struct DatosControlBackup
 [XmlInclude(typeof(HistoricoIncidencias))]
 [XmlInclude(typeof(EquiposEU))]
 [XmlInclude(typeof(Tipos.ExportaTipoEnumerados))]
+[XmlInclude(typeof(DestinosMultiFrecuencia))]
+[XmlInclude(typeof(Conferencias))]
+[XmlInclude(typeof(ConferenciasParticipantes))]
 
 #endregion
 
@@ -126,7 +129,8 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     private static int Estado1 = 0;
     private static int Estado2 = 2;
 
-
+    private static int NumUCSs = 100;
+    private static List<string>[] ListaSectoresEnTop = new List<string>[NumUCSs];
 
     /// <summary>
     /// 
@@ -2650,6 +2654,15 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
             // Una vez el destino ha sido desasignado del recurso, se elimina aquel.
             GestorBDCD40.DeleteSQL(dExterno, tran);
 
+            // RQF 8422
+            DestinosMultiFrecuencia dmf = new DestinosMultiFrecuencia();
+            if (dExterno.IdSistema != String.Empty && dExterno.IdDestino != String.Empty)
+            {
+                dmf.IdSistema = dExterno.IdSistema;
+                dmf.IdDestino = dExterno.IdDestino;
+                GestorBDCD40.DeleteSQL(dmf, tran);
+            }
+
             GestorBDCD40.Commit(tran);
             return true;
         }
@@ -2668,7 +2681,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <param name="listaRecursos"></param>
     /// <returns></returns>
     [WebMethod]
-    public bool AnadeDestinoRadio(DestinosRadio destino, RecursosRadio recurso, Tablas[] listaRecursos)
+    public bool AnadeDestinoRadio(DestinosRadio destino, RecursosRadio recurso, Tablas[] listaRecursos, string frecuenciadefecto, string[] arrMFFrecuencias)
     {
         MySql.Data.MySqlClient.MySqlTransaction tran = GestorBDCD40.StartTransaction(true);
 
@@ -2677,7 +2690,9 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
             GestorBDCD40.InsertSQL(destino, tran);
             Utilidades.LiberaDestinoDeRecurso((ParametrosRecursoGeneral)recurso, tran);
             AsignaEnlaceARecurso(listaRecursos, tran);
-
+            // RQF 8422
+            if (destino.MultiFrecuencia)
+                GestionaMultifrecuencia(false, destino, frecuenciadefecto, arrMFFrecuencias, tran);
             GestorBDCD40.Commit(tran);
             return true;
         }
@@ -2696,7 +2711,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <param name="listaRecursos"></param>
     /// <returns></returns>
     [WebMethod]
-    public bool ModificaDestinoRadio(DestinosRadio destino, RecursosRadio recurso, Tablas[] listaRecursos)
+    public bool ModificaDestinoRadio(DestinosRadio destino, RecursosRadio recurso, Tablas[] listaRecursos, string frecuenciadefecto, string[] arrMFFrecuencias)
     {
         MySql.Data.MySqlClient.MySqlTransaction tran = GestorBDCD40.StartTransaction(true);
 
@@ -2705,7 +2720,8 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
             GestorBDCD40.UpdateSQL(destino, tran);
             Utilidades.LiberaDestinoDeRecurso((ParametrosRecursoGeneral)recurso, tran);
             AsignaEnlaceARecurso(listaRecursos, tran);
-
+            // RQF 8422
+            GestionaMultifrecuencia(false, destino, frecuenciadefecto, arrMFFrecuencias, tran);
             GestorBDCD40.Commit(tran);
             return true;
         }
@@ -3180,41 +3196,72 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <param name="idsector"></param>
     /// <returns> NO_ASOCIADO=1, ASOCIADO_NOACTIVA=2; 5 = error</returns>
     [WebMethod(Description = "Devuelve situacion del sector respecto a pertenencia a una sectorización: NO_ASOCIADO=1, ASOCIADO_NOACTIVA=2, ERROR_SQL=5")]
-    public int SectorAsignadoEnSectorizacionTemporalOActiva(string idSistema, string idsector)
+    public int SectorAsignadoEnSectorizacionTemporalOActiva(string idSistema, string idNucleo, string idSector)
     {
         //En esta función Estado_Sector {NO_ASOCIADO=1,ASOCIADO_NOACTIVA=2,ERROR_SQL=5 }
         StringBuilder strCadena = new StringBuilder();
-        int iCuenta = -1;
-        int iSituacion = 0;
+        int iSituacion = (int)Tipos.Estado_Sector.ASOCIADO_NOACTIVA;
 
-        if (string.IsNullOrEmpty(idSistema) || string.IsNullOrEmpty(idsector))
+        if (string.IsNullOrEmpty(idSistema) || string.IsNullOrEmpty(idSector) || string.IsNullOrEmpty(idNucleo))
         {
             iSituacion = (int)Tipos.Estado_Sector.ERROR_SQL;
             return iSituacion; // Marcamos error en consulta.
         }
         try
         {
-            // Se obtiene si esta asociado a una sectorización.
-            strCadena.Clear();
-            strCadena.Append("SELECT COUNT(1) FROM  ViewSectoresEnTops V, SECTORESSECTOR S ");
-            strCadena.Append(" WHERE V.IdSistema=S.IdSistema AND V.IdNucleo=s.IdNucleo AND V.IdSector=S.IdSector AND ");
-            strCadena.AppendFormat(" S.IdSistema='{0}' AND S.idSectorOriginal= '{1}' AND V.IdSectorizacion IN ", idSistema, idsector);
-            strCadena.Append(" (SELECT IdSectorizacion from SECTORIZACIONES where IdSectorizacion != ");
-            strCadena.Append(" (select DATE_FORMAT(FECHAACTIVACION,'%e/%m/%Y %H:%i:%S') from sectorizaciones  where activa = 1) ");
-            strCadena.Append(" AND (IdSectorizacion  != 'SCV') AND (IdSectorizacion  != 'SACTA') AND (IdSectorizacion  != 'TEMPORARY_CONTROLLER_SCTZ'))");
-            iCuenta = Convert.ToInt32(GestorBDCD40.ExecuteScalar(strCadena.ToString()));
-            if (iCuenta < 1)
+            const string ID_SECTORIZACION_SACTA = "SACTA"; //Identificador de la Sectorización recibida del Sistema SACTA
+            const string ID_SECTORIZACION_SCV = "SCV";   //Identificador interno de la Sectorización activa
+            const string ID_SECTOR_TEMPORAL_OPERADOR = "TEMPORARY_CONTROLLER_SCTZ";
+            string idSectorizacion = String.Empty;
+            int iNumSectorizaciones = 0;
+            int iEstaLiberado = 0;
+            DataSet dsSectorizaciones;
+            Sectorizaciones s = new Sectorizaciones();
+
+            CD40.BD.GestorBaseDatos.logFile.Debug(string.Format("Busca sector en sectorizaciones: sistema={0} nucleo {1} sector={2}", idSistema, idNucleo, idSector));
+            lock (_Sync)
             {
-                iSituacion = (int)Tipos.Estado_Sector.NO_ASOCIADO; // No esta asociado a sectorización;
+                s.IdSistema = idSistema;
+                dsSectorizaciones = DataSetSelectSQL(s);
+                if (dsSectorizaciones != null && dsSectorizaciones.Tables.Count > 0)
+                {
+                    for (int j = 0; j < dsSectorizaciones.Tables[0].Rows.Count; j++)
+                    {
+                        // Se comprueban todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion), SACTA, SCV o TEMPORAL
+                        if ((((DateTime)dsSectorizaciones.Tables[0].Rows[j]["FechaActivacion"]).ToString("dd/MM/yyyy HH:mm:ss") != (string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"]) &&
+                            ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTORIZACION_SACTA) &&
+                            ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTORIZACION_SCV) &&
+                            ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTOR_TEMPORAL_OPERADOR))
+                        {
+                            iNumSectorizaciones++;
+                            idSectorizacion = (string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"];
+                            DataSet d = Procedimientos.SectoresSinAsignarASectorizacion(GestorBDCD40.ConexionMySql, idSistema, idNucleo, idSectorizacion);
+                            if (null != d && d.Tables.Count > 0)
+                            {
+                                foreach (System.Data.DataRow ds in d.Tables[0].Rows)
+                                {
+                                    if (ds["IdSector"] != DBNull.Value && (string)ds["IdSector"] != "**FS**")
+                                    {
+                                        if ((string)ds["IdSector"] == idSector)
+                                        {
+                                            iEstaLiberado++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else
+            if (iNumSectorizaciones == iEstaLiberado)
             {
-                iSituacion = (int)Tipos.Estado_Sector.ASOCIADO_NOACTIVA; // Esta en alguna sectorización; 
+                iSituacion = (int)Tipos.Estado_Sector.NO_ASOCIADO;
             }
+            CD40.BD.GestorBaseDatos.logFile.Debug(string.Format("Sector : sistema={0} nucleo {1} sector={2}, asignado {3}", idSistema, idNucleo, idSector, iSituacion));
         }
         catch (Exception ex)
         {
-            iCuenta = -1;
+
             CD40.BD.GestorBaseDatos.logFile.Error(string.Format("SectorAsignadoEnSectorizacionTemporalOActiva- Error al ejecutar la consulta ({0}). Error:", strCadena.ToString()), ex);
             iSituacion = (int)Tipos.Estado_Sector.ERROR_SQL; // Marcamos error en consulta.
         }
@@ -3511,6 +3558,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         return bExiste;
     }
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -3647,6 +3695,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         return Procedimientos.GetEstadoOperadoresEnSesion(GestorBDCD40.ConexionMySql, null, id_sistema, sesion_activa);
     }
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -3738,10 +3787,169 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
                 pFinal.Close();
             }
         }
-
         return iCodSalida == 0 ? true:false;
     }
 
+    private bool SectorEnSectorizacion(string idSistema, string idNucleo, string idSector)
+    {
+        const string ID_SECTORIZACION_SACTA="SACTA"; //Identificador de la Sectorización recibida del Sistema SACTA
+        const string ID_SECTORIZACION_SCV = "SCV";   //Identificador interno de la Sectorización activa
+        const string ID_SECTOR_TEMPORAL_OPERADOR = "TEMPORARY_CONTROLLER_SCTZ";
+        string idSectorizacion = String.Empty;
+        int iNumSectorizaciones = 0;
+        int iEstaLiberado = 0;
+        DataSet dsSectorizaciones;
+        Sectorizaciones s = new Sectorizaciones();
 
+        CD40.BD.GestorBaseDatos.logFile.Debug(string.Format("Busca sector en sectorizaciones: sistema={0} nucleo {1} sector={2}", idSistema, idNucleo, idSector));
+        lock (_Sync)
+        {
+            s.IdSistema = idSistema;
+            dsSectorizaciones = DataSetSelectSQL(s);
+            if (dsSectorizaciones != null && dsSectorizaciones.Tables.Count > 0)
+            {
+                for (int j = 0; j < dsSectorizaciones.Tables[0].Rows.Count; j++)
+                {
+                    // Se comprueban todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion), SACTA, SCV o TEMPORAL
+                    if ((((DateTime)dsSectorizaciones.Tables[0].Rows[j]["FechaActivacion"]).ToString("dd/MM/yyyy HH:mm:ss") != (string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"]) &&
+                        ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTORIZACION_SACTA) &&
+                        ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTORIZACION_SCV) &&
+                        ((string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"] != ID_SECTOR_TEMPORAL_OPERADOR))
+                    {
+                        iNumSectorizaciones++;
+                        idSectorizacion = (string)dsSectorizaciones.Tables[0].Rows[j]["IdSectorizacion"];
+                        DataSet d = Procedimientos.SectoresSinAsignarASectorizacion(GestorBDCD40.ConexionMySql, idSistema, idNucleo, idSectorizacion);
+                        if (null != d && d.Tables.Count > 0)
+                        {
+                            foreach (System.Data.DataRow ds in d.Tables[0].Rows)
+                            {
+                                if (ds["IdSector"] != DBNull.Value && (string)ds["IdSector"] != "**FS**")
+                                {
+                                    if (ds["IdSector"] == idSector)
+                                    {
+                                        iEstaLiberado++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return (iNumSectorizaciones == iEstaLiberado);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id_sistema"></param>
+    /// <param name="id_nucleo"></param>
+    /// <returns></returns>
+    [WebMethod(Description = "Devuelve true si en el sistema existe algún operador asociado a un núcleo que se pasa como parámetro.")]
+    public bool HayOperadoresEnNucleo(string idSistema, string idNucleo)
+    {
+        StringBuilder strCadena = new StringBuilder();
+        bool bExiste = false;
+        int iCuenta = -1;
+
+        try
+        {
+            if (!string.IsNullOrEmpty(idSistema))
+            {
+                strCadena.Append("SELECT count(1) FROM permisosopedepats  ");
+                strCadena.AppendFormat("WHERE IdSistema='{0}' AND IdDependenciaATS='{1}'", idSistema, idNucleo);
+                iCuenta = Convert.ToInt32(GestorBDCD40.ExecuteScalar(strCadena.ToString()));
+
+                if (iCuenta > 0)
+                    bExiste = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            iCuenta = -1;
+            CD40.BD.GestorBaseDatos.logFile.Error(string.Format("HayOperadoresEnNucleo- Error al ejecutar la consulta ({0}). Error:", strCadena.ToString()), ex);
+        }
+
+        strCadena.Clear();
+
+        return bExiste;
+    }
+
+    // RQF 8422
+    private void GestionaMultifrecuencia(bool BorraMF, DestinosRadio destino, string frecuenciadefecto, string[] arrMFFrecuencias, MySql.Data.MySqlClient.MySqlTransaction tran)
+    {
+        if (string.IsNullOrEmpty(destino.IdSistema) || string.IsNullOrEmpty(destino.IdDestino))
+        {
+            return;
+        }
+        int indFrecuencias = 0;
+        try
+        {
+            DestinosMultiFrecuencia dmf = new DestinosMultiFrecuencia();
+            // Se borran los datos almacenados existan o no
+            dmf.IdSistema = destino.IdSistema;
+            dmf.IdDestino = destino.IdDestino;
+            GestorBDCD40.DeleteSQL(dmf, tran);
+            if (!BorraMF)
+            {
+                if (frecuenciadefecto != String.Empty)
+                {
+                    for (indFrecuencias = 0; indFrecuencias < arrMFFrecuencias.Length; indFrecuencias++)
+                    {
+                        dmf.IdSistema = destino.IdSistema;
+                        dmf.IdDestino = destino.IdDestino;
+                        dmf.Frecuencia = arrMFFrecuencias[indFrecuencias];
+                        if (frecuenciadefecto == arrMFFrecuencias[indFrecuencias])
+                        {
+                            dmf.FrecuenciaDefecto = true;
+                        }
+                        else
+                        {
+                            dmf.FrecuenciaDefecto = false;
+                        }
+                        GestorBDCD40.InsertSQL(dmf, tran);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            CD40.BD.GestorBaseDatos.logFile.Error("GestionaMultifrecuencia- Error:", ex);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="idSistema"></param>
+    /// <param name="idSalaBkk"></param>
+    /// <returns></returns>
+    [WebMethod(Description = "Devuelve true si en el sistema existe una Sala de Conferencia Brekeke con el identificador dado.")]
+    public bool SalaBKKExiste(string idSistema, string idConferencia,  string idSalaBkk)
+    {
+        StringBuilder strCadena = new StringBuilder();
+        bool bExiste = false;
+        int iCuenta = -1;
+
+        try
+        {
+            if (!string.IsNullOrEmpty(idSistema))
+            {
+                strCadena.Append("SELECT count(1) FROM conferencias ");
+                strCadena.AppendFormat("WHERE IdSistema='{0}' AND IdSalaBkk='{1}' AND IdConferencia != '{2}'", idSistema, idSalaBkk, idConferencia);
+
+                iCuenta = Convert.ToInt32(GestorBDCD40.ExecuteScalar(strCadena.ToString()));
+
+                if (iCuenta > 0)
+                    bExiste = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            iCuenta = -1;
+            CD40.BD.GestorBaseDatos.logFile.Error(string.Format("SalaBKKExiste- Error al ejecutar la consulta ({0}). Error:", strCadena.ToString()), ex);
+        }
+        strCadena.Clear();
+        return bExiste;
+    }
 }
 

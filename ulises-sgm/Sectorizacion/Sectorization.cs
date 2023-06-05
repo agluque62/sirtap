@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.Serialization;
@@ -8,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Soap;
 using System.Xml.Serialization;
 using MySql.Data.MySqlClient;
 using System.IO;
+
 
 using NLog;
 
@@ -21,10 +23,9 @@ namespace GeneraSectorizacionDll
    {
       Ok, Error, OtherSectReceived, EmptySectorization,
       TwoMaintenanceSectors, MissingRealSectors, MultiNucleoWithoutGroup,
-		IOLError, TimeOutError, NotPrincipalIOL, DuplicateSectors, InProgress = 0xFF
+		IOLError, TimeOutError, NotPrincipalIOL, DuplicateSectors, GroupingCoreSectorsTop, InProgress = 0xFF
    };
 	public enum Tipo_Sectorizacion { Sectorizacion_Completa, Sectorizacion_Radio, Sectorizacion_Telefonia };
-
     /// <summary>
     /// 
     /// </summary>
@@ -229,7 +230,6 @@ namespace GeneraSectorizacionDll
         //Contendrá la lista de Destinos ATS configurados en el panel de línea Caliente
         //Que pueden tener asignado algún destino LCEN
         System.Collections.Hashtable _LcEndPointsATSWithLCEN = null;
-
 		public void CreaUser(UserInfo usr)
 		{
 			NumDestinosInternosPag = usr.NumDestinosInternosPag;
@@ -2515,6 +2515,14 @@ namespace GeneraSectorizacionDll
                 throw new SectorizationException(SectorizationResult.MultiNucleoWithoutGroup, Resources.MultiNucleoSectError);
             }
 
+            // Comprobación ausencia de sectores mezclados en tops no correspondientes a los mismos núcleos.
+            // 20230315
+            if (!DistribucionSectoresATopOK(cmd, sectorUcs))
+            {
+                Log(true, "Sectoritation.DistribucionSectoresATopOK", "Sectores de distintos núcleos asociados a la misma UCS");
+                throw new SectorizationException(SectorizationResult.GroupingCoreSectorsTop, Resources.GroupingCoreSectorsTopError);
+            }
+
             //Se obtiene la lista de agrupaciones y la lista de sectores que componen cada agrupación
             GetGroupsInfo(cmd);
 			GetUcsInfo(cmd);
@@ -2524,9 +2532,9 @@ namespace GeneraSectorizacionDll
             GetInfoLCGroups(cmd);
 
 			// Eliminar los sectores de mantto. mezclados con los sectores reales o virtuales. 
-			// Se supone que esto nunca va a pasar
-			if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa)
-				RemoveMantSectors(); 
+			// 2023/03/21 Se permite tener sectores de mantenimiento y un máximo de dos en UCS
+            //if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa)
+		    // RemoveMantSectors();
 
             //De todos los sectores simples que forman parte de la sectorización, se recupera de cada sector:
             //los parámetros, sus destinos externos e internos de telefonía, la agenda y los destinos radio
@@ -2643,7 +2651,6 @@ namespace GeneraSectorizacionDll
                     _LceGroupsResourcesCount[dr.GetString(0)] = dr.GetInt32(1);
                 }
             }
-
         }
 
 		void GetGroupsInfo(DbCommand cmd)
@@ -2911,25 +2918,29 @@ namespace GeneraSectorizacionDll
                 // Añadir el usuario "Fuera de sectorización"
                 AnadeUsuarioFueraSectorizacion(idNucleo);
 
-				if (HacerComprobacionTodosSectoresReales)
-				{
-					foreach (KeyValuePair<string, int> keyValue in realSectorsByNucleoInSect)
-					{
-						int numRSectorsByNucleo = 0;
-						realSectorsByNucleo.TryGetValue(keyValue.Key, out numRSectorsByNucleo);
+                if (Name != "SACTA")
+                {
+                    if (HacerComprobacionTodosSectoresReales)
+                    {
+                        foreach (KeyValuePair<string, int> keyValue in realSectorsByNucleoInSect)
+                        {
+                            int numRSectorsByNucleo = 0;
+                            realSectorsByNucleo.TryGetValue(keyValue.Key, out numRSectorsByNucleo);
 
-						if (numRSectorsByNucleo > keyValue.Value)
-						{
-                            Log(true, "Sectoritation.GetSectorsInfo", "No Coinciden los Sectores Reales. {0}:{1}", numRSectorsByNucleo, keyValue.Value);
-                            throw new SectorizationException(SectorizationResult.MissingRealSectors, Resources.MissingRealSectorError);
-						}
-					}
-				}
+                            if (numRSectorsByNucleo > keyValue.Value)
+                            {
+                                Log(true, "Sectoritation.GetSectorsInfo", "No Coinciden los Sectores Reales. {0}:{1}", numRSectorsByNucleo, keyValue.Value);
+                                throw new SectorizationException(SectorizationResult.MissingRealSectors, Resources.MissingRealSectorError);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 
         private bool TodosLosSectoresAsignadosANucleosOK(DbCommand cmd, StringBuilder SectoresenSectorizacion)
         {
+            ArrayList topNucleo = new ArrayList();
             bool todosAsignados = true;
 		    // Nombre nucleos en configuracion 
 		    List<string> ListOfAllNucleos = new List<string>();
@@ -2941,7 +2952,7 @@ namespace GeneraSectorizacionDll
                 {
                     if (dr["IdNucleo"] != System.DBNull.Value)
                     {
-                        ListOfAllNucleos.Add ((string)dr["IdNucleo"]);                      
+                        ListOfAllNucleos.Add ((string)dr["IdNucleo"]);
                     }
                 }
             }
@@ -2970,6 +2981,44 @@ namespace GeneraSectorizacionDll
             }
             return todosAsignados;
         }
+
+        bool DistribucionSectoresATopOK(DbCommand cmd, string[] sectorUcs)
+        {
+            int IDSACTAMAX = 9999; // Mayor, reservado para terminales de mantenimiento.
+            // Pendiente NUCLEOS ESPECIALES.
+            Dictionary<int, string> _TopNucleo = new Dictionary<int, string>();
+            Dictionary<int, string> _SactaNucleo = new Dictionary<int, string>();
+            cmd.CommandText = "select numsacta, idnucleo from sectores where IdSistema = '" + IdSistema +"' and sectorsimple = 1 and ( tipo = 'R' or tipo = 'V')";
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    _SactaNucleo[dr.GetInt32(0)] = dr.GetString(1);
+                }
+            }
+            // Se comprueba que esten correctamente distribuidos
+            for (int i = 0, total = sectorUcs.Length; i < total; i += 2)
+            {
+                int ucsId = Int32.Parse(sectorUcs[i + 1]);
+                int sectorId = Int32.Parse(sectorUcs[i]);
+                if (sectorId > IDSACTAMAX)
+                    continue;
+                string sNucleo = _SactaNucleo[sectorId];
+                if (_TopNucleo.ContainsKey(ucsId))
+                {
+                    if (_TopNucleo[ucsId] != sNucleo)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    _TopNucleo.Add(ucsId, sNucleo);
+                }
+            }
+            return true;
+        }
+
 
 
         private void AnadeUsuarioFueraSectorizacion(string idNucleo)

@@ -74,12 +74,15 @@
     <Compile Include="Entidades\Agrupaciones.cs" />
     <Compile Include="Entidades\Alarmas.cs" />
     <Compile Include="Entidades\Altavoces.cs" />
+    <Compile Include="Entidades\Conferencias.cs" />
+    <Compile Include="Entidades\ConferenciasParticipantes.cs" />
     <Compile Include="Entidades\DependenciasATS.cs" />
     <Compile Include="Entidades\Destinos.cs" />
     <Compile Include="Entidades\DestinosExternos.cs" />
     <Compile Include="Entidades\DestinosExternosSector.cs" />
     <Compile Include="Entidades\DestinosInternos.cs" />
     <Compile Include="Entidades\DestinosInternosSector.cs" />
+    <Compile Include="Entidades\DestinosMultiFrecuencia.cs" />
     <Compile Include="Entidades\DestinosRadio.cs" />
     <Compile Include="Entidades\DestinosRadioSector.cs" />
     <Compile Include="Entidades\DestinosTelefonia.cs" />

@@ -483,6 +483,8 @@ namespace CD40.BD
                 catch (SectorizationException sEx)
                 {
                     GestorBDCD40.RollBack(trans);
+                    GestorBaseDatos.logFile.Error("Utilidades.GeneraSectorizacion--> SectorizationException");
+                    GestorBaseDatos.logFile.Error("Error:", sEx);
                 }
                 catch (System.Data.SqlClient.SqlException sqlException)
                 {
@@ -919,6 +921,7 @@ namespace CD40.BD
             */
             try
             {
+                // RQF 8422
                 strConsulta.Append("SELECT RR.IdSistema, RR.IdRecurso, R.Tipo FROM Recursos R,RecursosRadio RR ");
                 strConsulta.Append("LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso ");
                 strConsulta.Append("WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema  AND R.TipoRecurso=RR.TipoRecurso AND ");

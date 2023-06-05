@@ -131,6 +131,32 @@ CREATE TABLE `sistema` (
   `NumFreqPagina` int(10) unsigned DEFAULT NULL,
   `NumLlamadasEntrantesIDA` int(10) unsigned DEFAULT '5',
   `NumEnlacesAI` int(10) unsigned DEFAULT '18',
+  `NumMaxSectores` int(10) unsigned DEFAULT '32',
+  PRIMARY KEY (`IdSistema`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `IdSistema` varchar(32) NOT NULL,
+  `TiempoPTT` int(10) unsigned DEFAULT NULL,
+  `TiempoSinJack1` int(10) unsigned DEFAULT NULL,
+  `TiempoSinJack2` int(10) unsigned DEFAULT NULL,
+  `TamLiteralEnlExt` int(10) unsigned DEFAULT '32',
+  `TamLiteralDA` int(10) unsigned DEFAULT '32',
+  `TamLiteralIA` int(10) unsigned DEFAULT '32',
+  `TamLiteralAG` int(10) unsigned DEFAULT '32',
+  `TamLiteralEmplazamiento` int(10) unsigned DEFAULT '32',
+  `VersionIP` int(1) unsigned DEFAULT NULL,
+  `GrupoMulticastConfiguracion` varchar(15) DEFAULT NULL,
+  `PuertoMulticastConfiguracion` int(5) unsigned DEFAULT '1000',
+  `EstadoScvA` int(1) unsigned DEFAULT '0',
+  `EstadoScvB` int(1) unsigned DEFAULT '0',
+  `NumLlamadasEnIDA` int(10) unsigned DEFAULT '10',
+  `KeepAliveMultiplier` int(10) unsigned DEFAULT '10',
+  `KeepAlivePeriod` int(10) unsigned DEFAULT '200',
+  `NumPagDestinosInt` int(10) unsigned DEFAULT NULL,
+  `NumDestinosInternosPag` int(10) unsigned DEFAULT NULL,
+  `NumPagFreq` int(10) unsigned DEFAULT NULL,
+  `NumFreqPagina` int(10) unsigned DEFAULT NULL,
+  `NumLlamadasEntrantesIDA` int(10) unsigned DEFAULT '5',
+  `NumEnlacesAI` int(10) unsigned DEFAULT '18',
   PRIMARY KEY (`IdSistema`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -141,7 +167,7 @@ CREATE TABLE `sistema` (
 
 LOCK TABLES `sistema` WRITE;
 /*!40000 ALTER TABLE `sistema` DISABLE KEYS */;
-INSERT INTO `sistema` VALUES ('departamento',0,0,0,32,32,32,32,32,0,'224.100.10.1',1000,0,0,4,10,200,3,15,9,12,3,9);
+INSERT INTO `sistema` VALUES ('departamento',0,0,0,32,32,32,32,32,0,'224.100.10.1',1000,0,0,4,10,200,3,15,9,15,3,18,45);
 /*!40000 ALTER TABLE `sistema` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -364,7 +390,7 @@ CREATE TABLE `sistema` (
 
 LOCK TABLES `sistema` WRITE;
 /*!40000 ALTER TABLE `sistema` DISABLE KEYS */;
-INSERT INTO `sistema` VALUES ('departamento',0,0,0,32,32,32,32,32,0,'224.100.10.1',1000,0,0,4,10,200,3,15,9,12,3,9);
+INSERT INTO `sistema` VALUES ('departamento',0,0,0,32,32,32,32,32,0,'224.100.10.1',1000,0,0,4,10,200,3,15,9,15,3,18,45);
 /*!40000 ALTER TABLE `sistema` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;

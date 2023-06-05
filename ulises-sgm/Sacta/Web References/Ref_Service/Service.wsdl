@@ -94,6 +94,18 @@
           <s:element minOccurs="1" maxOccurs="1" name="InsertedId" type="s:long" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="SectoresAgrupacion">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="IdAgrupacion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="Alarmas">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
@@ -116,14 +128,18 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="TroncalesRuta">
+      <s:complexType name="Altavoces">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdTroncal" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Central" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdRuta" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdDestino" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="TipoDestino" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="PosHMI" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="NumAltavoz" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="Estado" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -288,16 +304,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="Tabla_bss_recurso">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:Tablas">
-            <s:sequence>
-              <s:element minOccurs="1" maxOccurs="1" name="Id_Tabla_bss_recurso" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Tabla_bss_idtabla_bss" type="s:int" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="Tabla_bss">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
@@ -305,6 +311,18 @@
               <s:element minOccurs="1" maxOccurs="1" name="IdTabla_bss" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ValoresTabla">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdValores_Tabla" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Tabla_bss_idtabla_bss" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Valor_Prop" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Valor_rssi" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -433,14 +451,14 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="SectoresAgrupacion">
+      <s:complexType name="TroncalesRuta">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="IdAgrupacion" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdTroncal" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Central" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdRuta" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -458,18 +476,12 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="Altavoces">
+      <s:complexType name="GruposTelefonia">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdDestino" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="TipoDestino" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="PosHMI" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="NumAltavoz" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="Estado" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdGrupo" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1176,6 +1188,8 @@
               <s:element minOccurs="1" maxOccurs="1" name="FechaUltimoAcceso" type="s:dateTime" />
               <s:element minOccurs="0" maxOccurs="1" name="Comentarios" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="TimeoutSesion" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="SesionActiva" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="SesionEstado" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1266,24 +1280,12 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="GruposTelefonia">
+      <s:complexType name="Tabla_bss_recurso">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdGrupo" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="ValoresTabla">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:Tablas">
-            <s:sequence>
-              <s:element minOccurs="1" maxOccurs="1" name="IdValores_Tabla" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Id_Tabla_bss_recurso" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="Tabla_bss_idtabla_bss" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Valor_Prop" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Valor_rssi" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1317,6 +1319,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="ConRedundancia" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="PasivoRetransmision" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Multifrecuencia" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1809,6 +1812,67 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetIdEsquemaResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GestionSesionOperador">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="id_sistema" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="id_operador" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="sesionactiva" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="sesionestado" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GestionSesionOperadorResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetEstadoOperadoresEnSesion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="id_sistema" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="sesion_activa" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEstadoOperadoresEnSesionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEstadoOperadoresEnSesionResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSectoresDuplicadosSectorizacion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="id_Sistema" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="id_Sectorizacion" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="estadoSacta" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSectoresDuplicadosSectorizacionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSectoresDuplicadosSectorizacionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ActualizaOperadoresOffline">
+        <s:complexType />
+      </s:element>
+      <s:element name="ActualizaOperadoresOfflineResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ActualizaOperadoresOfflineResult" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -3657,6 +3721,30 @@
   <wsdl:message name="GetIdEsquemaSoapOut">
     <wsdl:part name="parameters" element="tns:GetIdEsquemaResponse" />
   </wsdl:message>
+  <wsdl:message name="GestionSesionOperadorSoapIn">
+    <wsdl:part name="parameters" element="tns:GestionSesionOperador" />
+  </wsdl:message>
+  <wsdl:message name="GestionSesionOperadorSoapOut">
+    <wsdl:part name="parameters" element="tns:GestionSesionOperadorResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEstadoOperadoresEnSesionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEstadoOperadoresEnSesion" />
+  </wsdl:message>
+  <wsdl:message name="GetEstadoOperadoresEnSesionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEstadoOperadoresEnSesionResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSectoresDuplicadosSectorizacionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSectoresDuplicadosSectorizacion" />
+  </wsdl:message>
+  <wsdl:message name="GetSectoresDuplicadosSectorizacionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSectoresDuplicadosSectorizacionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ActualizaOperadoresOfflineSoapIn">
+    <wsdl:part name="parameters" element="tns:ActualizaOperadoresOffline" />
+  </wsdl:message>
+  <wsdl:message name="ActualizaOperadoresOfflineSoapOut">
+    <wsdl:part name="parameters" element="tns:ActualizaOperadoresOfflineResponse" />
+  </wsdl:message>
   <wsdl:message name="ControladoresRecuperaSectorizacionesSoapIn">
     <wsdl:part name="parameters" element="tns:ControladoresRecuperaSectorizaciones" />
   </wsdl:message>
@@ -4301,7 +4389,7 @@
       <wsdl:output message="tns:SectorAsignadoEnSectorizacionSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="SectorAsignadoEnSectorizacionTemporalOActiva">
-      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve situacion del sector respecto a sectorización: NO_ASOCIADO=1, ASOCIADO_NOACTIVA=2, ASOCIADO_ACTIVANOSACTA=3, ASOCIADO_ACTIVASACTA=4, ERROR_SQL=5</wsdl:documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve situacion del sector respecto a pertenencia a una sectorización: NO_ASOCIADO=1, ASOCIADO_NOACTIVA=2, ERROR_SQL=5</wsdl:documentation>
       <wsdl:input message="tns:SectorAsignadoEnSectorizacionTemporalOActivaSoapIn" />
       <wsdl:output message="tns:SectorAsignadoEnSectorizacionTemporalOActivaSoapOut" />
     </wsdl:operation>
@@ -4358,6 +4446,26 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna el identificador del esquema de base de datos utilizado en la conexion</wsdl:documentation>
       <wsdl:input message="tns:GetIdEsquemaSoapIn" />
       <wsdl:output message="tns:GetIdEsquemaSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GestionSesionOperador">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Gestiona los parámetros de operador asociados a la sesión</wsdl:documentation>
+      <wsdl:input message="tns:GestionSesionOperadorSoapIn" />
+      <wsdl:output message="tns:GestionSesionOperadorSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEstadoOperadoresEnSesion">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna una lista de operadores en sesión y el estado de la misma</wsdl:documentation>
+      <wsdl:input message="tns:GetEstadoOperadoresEnSesionSoapIn" />
+      <wsdl:output message="tns:GetEstadoOperadoresEnSesionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSectoresDuplicadosSectorizacion">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna los sectores duplicados en una sectorización si existiesen</wsdl:documentation>
+      <wsdl:input message="tns:GetSectoresDuplicadosSectorizacionSoapIn" />
+      <wsdl:output message="tns:GetSectoresDuplicadosSectorizacionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ActualizaOperadoresOffline">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Desencadena proceso para actualizar la tabla de operadores en BD. Offline</wsdl:documentation>
+      <wsdl:input message="tns:ActualizaOperadoresOfflineSoapIn" />
+      <wsdl:output message="tns:ActualizaOperadoresOfflineSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ControladoresRecuperaSectorizaciones">
       <wsdl:input message="tns:ControladoresRecuperaSectorizacionesSoapIn" />
@@ -5082,6 +5190,42 @@
     </wsdl:operation>
     <wsdl:operation name="GetIdEsquema">
       <soap:operation soapAction="http://CD40.es/GetIdEsquema" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GestionSesionOperador">
+      <soap:operation soapAction="http://CD40.es/GestionSesionOperador" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEstadoOperadoresEnSesion">
+      <soap:operation soapAction="http://CD40.es/GetEstadoOperadoresEnSesion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSectoresDuplicadosSectorizacion">
+      <soap:operation soapAction="http://CD40.es/GetSectoresDuplicadosSectorizacion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ActualizaOperadoresOffline">
+      <soap:operation soapAction="http://CD40.es/ActualizaOperadoresOffline" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -6208,6 +6352,42 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GestionSesionOperador">
+      <soap12:operation soapAction="http://CD40.es/GestionSesionOperador" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEstadoOperadoresEnSesion">
+      <soap12:operation soapAction="http://CD40.es/GetEstadoOperadoresEnSesion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSectoresDuplicadosSectorizacion">
+      <soap12:operation soapAction="http://CD40.es/GetSectoresDuplicadosSectorizacion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ActualizaOperadoresOffline">
+      <soap12:operation soapAction="http://CD40.es/ActualizaOperadoresOffline" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ControladoresRecuperaSectorizaciones">
       <soap12:operation soapAction="http://CD40.es/ControladoresRecuperaSectorizaciones" style="document" />
       <wsdl:input>
@@ -7048,10 +7228,10 @@
   </wsdl:binding>
   <wsdl:service name="ServiciosCD40">
     <wsdl:port name="ServiciosCD40Soap" binding="tns:ServiciosCD40Soap">
-      <soap:address location="http://localhost:49692/Servicios/Service.asmx" />
+      <soap:address location="http://localhost:50468/Servicios/Service.asmx" />
     </wsdl:port>
     <wsdl:port name="ServiciosCD40Soap12" binding="tns:ServiciosCD40Soap12">
-      <soap12:address location="http://localhost:49692/Servicios/Service.asmx" />
+      <soap12:address location="http://localhost:50468/Servicios/Service.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

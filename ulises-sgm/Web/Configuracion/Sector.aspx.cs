@@ -1245,12 +1245,13 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         if (ListBox1.SelectedValue != "")
         {
             string strSector = ListBox1.SelectedValue;
+            string strNucleo = DListNucleo.SelectedValue;
             // RQF-4 
             // FALTA VALIDAR CONTRA GRUPOS-ESPECIALES // OJOOOO
                 // 20210518 #4824
                 // estadosector NO_ASOCIADO=1, ASOCIADO_NOACTIVA=2 errorsql = 5 
                 // Devuelve situacion del sector, si está asignado a alguna sectorización.
-                iSituacion = ServicioCD40.SectorAsignadoEnSectorizacionTemporalOActiva((string)Session["idsistema"], strSector);
+            iSituacion = ServicioCD40.SectorAsignadoEnSectorizacionTemporalOActiva((string)Session["idsistema"], strNucleo, strSector);
                 if (iSituacion == (int)Estado_Sector.ASOCIADO_NOACTIVA)
                 {
                     BloquearFunciones();
@@ -1260,6 +1261,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                 {
                     IndexListBox1 = ListBox1.SelectedIndex;
                     Session["elemento"] = strSector;
+                    Session["idnucleo"] = DListNucleo.SelectedValue;
                     EliminarElemento();
                 }
         }        
@@ -1276,6 +1278,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         try
         {
 			ServiciosCD40.Sectores n = new ServiciosCD40.Sectores();
+            
             n.IdSistema = (string)Session["idsistema"];
             n.IdSector = (string)Session["elemento"];
 
@@ -1309,7 +1312,17 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 				}
                 else
                     cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
-			
+
+                ServiciosCD40.SectoresSector ss = new ServiciosCD40.SectoresSector();
+                ss.IdSistema = (string)Session["idsistema"];
+                ss.IdSectorOriginal = (string)Session["elemento"];
+                ss.IdNucleo = (string)Session["idnucleo"];
+
+                if (ServicioCD40.DeleteSQL(ss) < 0)
+                {
+                    logDebugView.Warn("(SectoresSector-EliminarElemento): No se ha podido eliminar el elemento sectoressector.");
+                }
+
 				MuestraDatos(DameDatos());
 				Session.Add("Sectorizando", true);
 				ServicioCD40.BeginRegeneraSectorizaciones((string)Session["idsistema"], true, false, false, CallbackCompletado, null);
@@ -2044,6 +2057,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
 
         PanelBorrarSector.Visible = false;
+        Session["idnucleo"] = DListNucleo.SelectedValue;
         HabilitarFunciones();
         EliminarElemento();
     }

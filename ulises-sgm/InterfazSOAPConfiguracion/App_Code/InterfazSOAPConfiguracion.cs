@@ -9,7 +9,6 @@ using System.IO;
 using System.Data;
 using CD40.BD;
 using CD40.BD.Entidades;
-//using SICCIP.Entidades;
 using ConfiguracionElementosHw;
 using System.Xml.Serialization;
 
@@ -81,6 +80,8 @@ using System.Xml.Serialization;
 [XmlInclude(typeof(NivelesSCV))]
 
 [XmlInclude(typeof(Tipos.ExportaTipoEnumerados))]
+[XmlInclude(typeof(DestinosMultiFrecuencia))]
+
 #endregion
 
 public class InterfazSOAPConfiguracion : System.Web.Services.WebService
@@ -118,6 +119,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
     CfgPasarela ConfiguracionPasarela;
     CfgEnlaceExterno []ConfiguracionEnlaceExterno;
     CfgEnlaceInterno []ConfiguracionEnlaceInterno;
+    ConfiguracionElementosHw.ConferenciasPreprogramadas CfgCP;
 
 	static object Sync = new object();
 
@@ -140,6 +142,8 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
        
         CfgSistema = new ConfiguracionSistema();
         CfgSistema.ParametrosGenerales = new ParametrosGeneralesSistema();
+        CfgCP = new ConfiguracionElementosHw.ConferenciasPreprogramadas();
+
     }
 
     #region Métodos
@@ -771,6 +775,22 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
                                 ObjEnlace.PorcentajeRSSI = ((DestinosRadio)listaEnlaces[0]).PorcentajeRSSI;
                                 // RQF 2823
                                 ObjEnlace.PasivoRetransmision = ((DestinosRadio)listaEnlaces[0]).PasivoRetransmision;
+
+                                // RQF 8422
+                                ObjEnlace.SelectableFrequencies = new List<string>();
+                                DestinosMultiFrecuencia dmf = new DestinosMultiFrecuencia();
+                                dmf.IdSistema = eExterno.IdSistema;
+                                dmf.IdDestino = eExterno.IdDestino;
+                                List<Tablas> listaMF = GestorBDCD40.ListSelectSQL(dmf, null);
+                                for (int indmf = 0; indmf < listaMF.Count; indmf++)
+                                {
+                                    ObjEnlace.SelectableFrequencies.Add(((DestinosMultiFrecuencia)listaMF[indmf]).Frecuencia);
+                                    if (((DestinosMultiFrecuencia)listaMF[indmf]).FrecuenciaDefecto)
+                                    {
+                                        ObjEnlace.DefaultFrequency = ((DestinosMultiFrecuencia)listaMF[indmf]).Frecuencia;
+                                    }
+                                }
+                                
                             }
 
                             for (int j = 0; j < listaRecursosEnlace.Count; j++)
@@ -823,6 +843,10 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
 
                                 // Obtener los valores de la tabla de calificación de audio
                                 cfgRecurso.ValuesTablaBss = GetValueTablaBss(cfgRecurso.NameTablaBss);
+
+                                // Obtiene el valor de telemando
+                                // RQF 8422
+                                cfgRecurso.Telemando = ((RecursosRadio)listaRecursosEnlace[j]).Telemando;
 
                                 ObjEnlace.ListaRecursos.Add(cfgRecurso);
                             }
@@ -1793,6 +1817,48 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
                 }
             }
             return null;
+        }
+    }
+
+    [WebMethod(Description = "Pasándole el identificador de sistema, devuelve las conferencias preprogramadas.")]
+    public ConferenciasPreprogramadas GetConferenciasPreprogramadas(string id_sistema)
+    {
+        lock (Sync)
+        {
+            int i = 0;
+            Conferencias co = new Conferencias();
+            co.IdSistema = id_sistema;
+            List<Tablas> listaConferencias = GestorBDCD40.ListSelectSQL(co, null);
+            if (listaConferencias.Count > 0)
+            {
+                CfgCP.ConferenciaProgramada = new Conferencia[listaConferencias.Count];
+                foreach (Conferencias lstconf in listaConferencias)
+                {
+                    CfgCP.ConferenciaProgramada[i] = new Conferencia();
+                    CfgCP.ConferenciaProgramada[i].IdSalaBkk = lstconf.IdSalaBkk;
+                    CfgCP.ConferenciaProgramada[i].TipoConferencia = lstconf.TipoConferencia;
+                    CfgCP.ConferenciaProgramada[i].Alias = lstconf.Alias;
+                    CfgCP.ConferenciaProgramada[i].PosHMI = lstconf.PosHMI;
+                    ConferenciasParticipantes cop = new ConferenciasParticipantes();
+                    cop.IdSistema = id_sistema;
+                    cop.IdConferencia = lstconf.IdConferencia;
+                    List<Tablas> listaParticipantes = GestorBDCD40.ListSelectSQL(cop, null);
+                    if (listaParticipantes.Count > 0)
+                    {
+                        CfgCP.ConferenciaProgramada[i].ParticipantesConferencia = new Participantes[listaParticipantes.Count];
+                        int p = 0;
+                        foreach ( ConferenciasParticipantes participante in listaParticipantes)
+                        {
+                            CfgCP.ConferenciaProgramada[i].ParticipantesConferencia[p] = new Participantes();
+                            CfgCP.ConferenciaProgramada[i].ParticipantesConferencia[p].SipUri = participante.SipUri;
+                            CfgCP.ConferenciaProgramada[i].ParticipantesConferencia[p].Descripcion = participante.Descripcion;
+                            p++;
+                        }
+                    }
+                    i++;
+                }
+            }
+            return CfgCP;
         }
     }
     #endregion

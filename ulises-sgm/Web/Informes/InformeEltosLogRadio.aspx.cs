@@ -143,7 +143,7 @@ public partial class InformeEltosLogRadio : System.Web.UI.Page
             //Subinforme Frecuencias Radio
             //Consulta de obtención de destinos radio
             strConsulta.Append("SELECT DR.IdSistema, DR.TipoDestino,DR.IdDestino,DR.CnfModoDestino,DR.CnfTipoFrecuencia,DR.PrioridadSesionSip,DR.MetodoCalculoClimax,");
-            strConsulta.Append("DR.CldSupervisionTime,DR.VentanaSeleccionBss,DR.ModoTransmision,MB.name as NameBss, DR.EmplazamientoDefecto, DR.TiempoVueltaADefecto, DR.ConRedundancia ");
+            strConsulta.Append("DR.CldSupervisionTime,DR.VentanaSeleccionBss,DR.ModoTransmision,MB.name as NameBss, DR.EmplazamientoDefecto, DR.TiempoVueltaADefecto, DR.ConRedundancia, DR.DescDestino, DR.Multifrecuencia ");
             strConsulta.Append("FROM DestinosRadio DR LEFT JOIN metodos_bss mb ON mb.idmetodos_bss = DR.MetodosBssOfrecidos ");
             strConsulta.AppendFormat("WHERE DR.IdSistema='{0}' ORDER BY DR.CnfTipoFrecuencia,DR.IdDestino",strIdSistema);
 

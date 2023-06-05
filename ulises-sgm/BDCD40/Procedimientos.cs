@@ -5008,7 +5008,7 @@ namespace CD40.BD
                         iddestinosradiokey = dataResultado.Tables[0].Rows[0][0].ToString();
                     }
                 }
-                catch (MySqlException ex)
+                catch (MySqlException)
                 {
                     StringBuilder strMsg = new StringBuilder();
                     strMsg.AppendFormat("Error en Procedimientos.GetIdDestinosRadioKey: id_sistema={0}", idSistema);

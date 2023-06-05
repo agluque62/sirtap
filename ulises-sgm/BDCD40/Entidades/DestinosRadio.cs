@@ -215,6 +215,13 @@ namespace CD40.BD.Entidades
             get { return _PasivoRetransmision; }
             set { _PasivoRetransmision = value; }
         }
+        // RQF 8422
+        private bool _MultiFrecuencia;
+        public bool MultiFrecuencia
+        {
+            get { return _MultiFrecuencia; }
+            set { _MultiFrecuencia = value; }
+        }
         #endregion
 
         public DestinosRadio()
@@ -329,6 +336,9 @@ namespace CD40.BD.Entidades
                     // RQF 2823
                     if (dr["PasivoRetransmision"] != System.DBNull.Value)
                         r.PasivoRetransmision = (bool)dr["PasivoRetransmision"];
+                    // RQF 8422
+                    if (dr["MultiFrecuencia"] != System.DBNull.Value)
+                        r.MultiFrecuencia = (bool)dr["MultiFrecuencia"];
                     ListaResultado.Add(r);
                 }
             }
@@ -343,7 +353,7 @@ namespace CD40.BD.Entidades
 
             strConsulta.Append("INSERT INTO DestinosRadio (IdSistema,IdDestino,TipoDestino,TipoFrec,ExclusividadTXRX,Frecuencia,MetodoCalculoClimax,VentanaSeleccionBss,SincronizaGrupoClimax,AudioPrimerSqBss,");
             strConsulta.Append("FrecuenciaNoDesasignable,VentanaReposoZonaTxDefecto,PrioridadSesionSip,MetodosBssOfrecidos,CldSupervisionTime,CnfModoDestino,CnfTipoFrecuencia,ModoTransmision,");
-            strConsulta.Append("EmplazamientoDefecto,TiempoVueltaADefecto,PorcentajeRSSI, ConRedundancia, DescDestino, PasivoRetransmision) ");
+            strConsulta.Append("EmplazamientoDefecto,TiempoVueltaADefecto,PorcentajeRSSI, ConRedundancia, DescDestino, PasivoRetransmision, MultiFrecuencia) ");
             strConsulta.AppendFormat(" VALUES ('{0}','{1}',{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},'{15}','{16}',{17}", IdSistema, IdDestino, TipoDestino, TipoFrec, ExclusividadTXRX,
                 Frecuencia, MetodoCalculoClimax, VentanaSeleccionBss, SincronizaGrupoClimax, AudioPrimerSqBss,
                 FrecuenciaNoDesasignable, VentanaReposoZonaTxDefecto, PrioridadSesionSip, MetodosBssOfrecidos, CldSupervisionTime,
@@ -358,7 +368,9 @@ namespace CD40.BD.Entidades
             strConsulta.AppendFormat(",{0}", Convert.ToInt16(PorcentajeRSSI)); 
             strConsulta.AppendFormat(",'{0}'", ConRedundancia);
             strConsulta.AppendFormat(",'{0}'", DescDestino); // RQF-34
-            strConsulta.AppendFormat(",{0})", PasivoRetransmision); // RQF 2823
+            strConsulta.AppendFormat(",{0}", PasivoRetransmision); // RQF 2823
+            strConsulta.AppendFormat(",{0})", MultiFrecuencia); // RQF 8422
+
 
             consulta[0] = strConsulta.ToString();
             consulta[1] = ReplaceSQL(IdSistema, "DestinosRadio");
@@ -390,7 +402,7 @@ namespace CD40.BD.Entidades
                                    IdSistema,IdDestino,TipoDestino,TipoFrec,ExclusividadTXRX,Frecuencia,MetodoCalculoClimax);
             strConsulta.AppendFormat(",VentanaSeleccionBss={0},SincronizaGrupoClimax={1},AudioPrimerSqBss={2},FrecuenciaNoDesasignable={3} ,VentanaReposoZonaTxDefecto={4},PrioridadSesionSip={5},MetodosBssOfrecidos={6},CldSupervisionTime={7}",
                                     VentanaSeleccionBss,SincronizaGrupoClimax,AudioPrimerSqBss, FrecuenciaNoDesasignable, VentanaReposoZonaTxDefecto,PrioridadSesionSip,MetodosBssOfrecidos,CldSupervisionTime);
-            strConsulta.AppendFormat(",CnfModoDestino='{0}',CnfTipoFrecuencia='{1}', ModoTransmision={2}, DescDestino='{3}', PasivoRetransmision={4}, ", CnfModoDestino, CnfTipoFrecuencia, ((ModoTransmision == null) ? "null" : ("'" + ModoTransmision + "'")), DescDestino, PasivoRetransmision);
+            strConsulta.AppendFormat(",CnfModoDestino='{0}',CnfTipoFrecuencia='{1}', ModoTransmision={2}, DescDestino='{3}', PasivoRetransmision={4}, MultiFrecuencia={5}, ", CnfModoDestino, CnfTipoFrecuencia, ((ModoTransmision == null) ? "null" : ("'" + ModoTransmision + "'")), DescDestino, PasivoRetransmision, MultiFrecuencia);
 
             if (!string.IsNullOrEmpty(EmplazamientoDefecto) && string.Compare(EmplazamientoDefecto,"0")!=0)
                 strConsulta.AppendFormat("EmplazamientoDefecto='{0}', TiempoVueltaADefecto={1} ", EmplazamientoDefecto, Convert.ToInt16(TiempoVueltaADefecto));

@@ -1836,4 +1836,16 @@
   <data name="RVTBTxUmbralADResource1.ToolTip" xml:space="preserve">
     <value />
   </data>
+  <data name="ListItemFiltroTelemandoResource0" xml:space="preserve">
+    <value>Sans télécommande</value>
+  </data>
+  <data name="ListItemFiltroTelemandoResource1" xml:space="preserve">
+    <value>ROHDE 4200</value>
+  </data>
+  <data name="ListItemFiltroTelemandoResource2" xml:space="preserve">
+    <value>JOTRON 7000</value>
+  </data>
+  <data name="LbMFGestionMFResource1.Text" xml:space="preserve">
+    <value>Gestion Multi-Fréquence</value>
+  </data>
 </root>

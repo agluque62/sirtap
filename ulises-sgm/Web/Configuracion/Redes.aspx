@@ -113,23 +113,5 @@
 		OnClick="OnButton_Click" Style="z-index: 110; left: 372px; position: absolute;
 		top: 66px" meta:resourcekey="IBRecursosResource1" />
 
-
-
-<%--Control actividad de sesión    --%>
-    <script type="text/javascript">
-        function PingSessionSrv() {
-            var CONTROLADOR = "PingSrv.aspx";
-            var head = document.getElementsByTagName("head").item(0);
-            script = document.createElement("script");
-            script.src = CONTROLADOR;
-            script.setAttribute("type", "text/javascript");
-            script.defer = true;
-            head.appendChild(script);
-        }
-    </script>
-    <script language="javascript" type="text/javascript">
-        setInterval("PingSessionSrv()", 5000);
-    </script>
-<%--Control actividad de sesión FIN    --%>
 </asp:Content>
 

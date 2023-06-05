@@ -61,7 +61,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
     static TListaDeNucleosAutorizados ListaDeNucleosAutorizados = new TListaDeNucleosAutorizados();
    
 
-    private static bool ControlDependenciasATS = false;
     private static bool ControlNucleos = true;
     const string ID_SECTORIZACION_SACTA="SACTA"; //Identificador de la Sectorización recibida del Sistema SACTA
     const string ID_SECTORIZACION_SCV = "SCV";   //Identificador interno de la Sectorización activa (Controlador)
@@ -124,16 +123,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
 		{
 			Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 			KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
-            // 20210317 #4749
-            #region ControlDependenciasATS
-            // RFQ-4
-            /*ControlDependenciasATS = SistemaConDependenciasATS();
-            if (ControlDependenciasATS)
-            {
-                RecuperaTopsAutorizados(IdOperador, s.Value);
-            }*/
-            ControlDependenciasATS = false;
-            #endregion ControlDependenciasATS
             if (ControlNucleos)
             {
                 RecuperaNucleosAutorizados(IdOperador, s.Value);
@@ -245,27 +234,11 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
 
 	private void RecuperaListaSectores(string idSistema, string idNucleo, string idSector, int indiceTerminal)
 	{
-        bool desbloqueadoATS = true;
         bool desbloqueadoNucleo = true;
         bool bloquea_seltodos = false; 
 		Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 		KeyValueConfigurationElement mostrarMantto = config.AppSettings.Settings["MostrarMantenimiento"];
 		KeyValueConfigurationElement mostrarVirtuales = config.AppSettings.Settings["MostrarVirtuales"];
-        #region ControlDependenciasATS
-        // 20210317 #4749
-        /*if (ControlDependenciasATS)
-        {
-            CheckBox cb = (CheckBox)Table1.Rows[indiceTerminal].Cells[1].FindControl("CBTop" + (indiceTerminal + 1));
-            if (cb != null)
-            {
-                if (cb.Enabled == false)
-                {
-                    desbloqueadoATS = false;
-                }
-            }
-        }*/
-        #endregion ControlDependenciasATS
-
         #region ControlNucleos
         // RQF-49
         if (ControlNucleos)
@@ -280,8 +253,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
             }
         }
         #endregion ControlNucleos
-
-
         System.Data.DataSet listaSectores = ServiceServiciosCD40.ControladoresRecuperaListaSectores(idSistema, idNucleo, idSector);
 		CheckBoxList cblSectores = (CheckBoxList)Table1.Rows[indiceTerminal].Cells[4].FindControl("CBLSectores" + (indiceTerminal + 1));
 		for (int i = 0; listaSectores.Tables.Count > 0 && i <  listaSectores.Tables[0].Rows.Count; i++)
@@ -290,13 +261,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
 			{
                 ListItem item = new ListItem((string)listaSectores.Tables[0].Rows[i]["IdSectorOriginal"]);
                 item.Value=(string)listaSectores.Tables[0].Rows[i]["Tipo"];
-                #region ControlDependenciasATS
-                // 20210317 #4749
-                //if (ControlDependenciasATS)
-                //{
-                 //   item.Enabled = desbloqueadoATS;
-                //}
-                #endregion ControlDependenciasATS
                 #region ControlNucleosS
                 // 20210317 #4749
                 if (ControlNucleos)
@@ -308,27 +272,7 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
 			}
 		}
 
-        //bloquea_seltodos = ReordenaCheckBoxList(cblSectores, idNucleo, desbloqueadoATS);
         bloquea_seltodos = ReordenaCheckBoxList(cblSectores, idNucleo, desbloqueadoNucleo);
-        #region ControlDependenciasATS
-        /*
-        if (ControlDependenciasATS)
-        {
-            CheckBox rball = (CheckBox)Table1.Rows[indiceTerminal].Cells[5].FindControl("CBtodos" + (indiceTerminal + 1));
-            if (rball != null)
-            {
-                if (bloquea_seltodos == true && desbloqueadoATS == true)
-                {
-                    rball.Enabled = false;
-                }
-                else if (bloquea_seltodos == false && desbloqueadoATS == true)
-                {
-                    rball.Enabled = true;
-                }
-            }
-        }*/
-        #endregion ControlDependenciasATS
-
         #region ControlNucleos
         
         if (ControlNucleos)
@@ -369,28 +313,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
                     {
                         rball.Text = (string)GetGlobalResourceObject("Espaniol", "TRDTODOS");
                     }
-                    #region ControlDependenciasATS
-                    //20210317 #4749
-                    /*
-                    if (ControlDependenciasATS)
-                    {
-                        if (!ListaDeTopAutorizados.Contains(cb.Text))
-                        {
-                            cb.Enabled = false;
-                            RadioButton rbTop = (RadioButton)Table1.Rows[i - 1].Cells[0].FindControl("RadioButton" + i);
-                            if (rbTop != null)
-                            {
-                                rbTop.Enabled = false;
-                            }
-
-                            //CheckBox rbTodos = (CheckBox)Table1.Rows[i - 1].Cells[5].FindControl("CBtodos" + i);
-                            if (rball != null)
-                            {
-                                rball.Enabled = false;                            
-                            }
-                        }
-                    }*/
-                    #endregion ControlDependenciasATS
                 }
 			}
 			int cuantos = Table1.Rows.Count - i;
@@ -659,11 +581,11 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
     {
         Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
         KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
-        /*if (SACTA_GET_SECTORIZATION != (int)ServiceServiciosCD40.ControladoresGetSectorizationSacta())
+        if (SACTA_GET_SECTORIZATION != (int)ServiceServiciosCD40.ControladoresGetSectorizationSacta())
         {
             SectorizacionSactaFallida();
             return;
-        }*/ 
+        }
         Confirmando = false;
         Panel11.Visible = false;
         RecuperaIdSectorizacionActiva(s.Value);
@@ -949,63 +871,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
 
 		return seguir ? idSectorizacion : string.Empty;
 	}
-
-    #region ReordenaCheckBoxList
-    /*
-	private bool ReordenaCheckBoxList(CheckBoxList lbSectores, string idNucleo, bool desbloqueadoATS)
-	{
-        bool bloquea_checkall = false;
-        System.Text.StringBuilder listaUsuarios = new System.Text.StringBuilder();
-        foreach (ListItem s in lbSectores.Items)
-            listaUsuarios.AppendFormat("'{0}',", s.Text);
-
-        if (listaUsuarios.Length == 0)
-            return bloquea_checkall;
-
-        listaUsuarios = listaUsuarios.Remove(listaUsuarios.Length - 1, 1);
-        lbSectores.Items.Clear();
-
-        // Ordenar la lista por el IDSacta
-        Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-        KeyValueConfigurationElement sistema = config.AppSettings.Settings["Sistema"];
-         // 20210317 #4749
-        if (!ControlDependenciasATS)
-        {
-            System.Data.DataSet d = ServiceServiciosCD40.SectoresNumSactaSorted(sistema.Value, idNucleo, listaUsuarios.ToString());
-            if (d != null && d.Tables.Count > 0)
-            {
-                foreach (System.Data.DataRow ds in d.Tables[0].Rows)
-                {
-                    ListItem i = new ListItem((string)ds[0], (string)ds[1]);
-                    i.Attributes.Add("style", (string)ds[1] == "M" ? "color:Blue;" : ((string)ds[1] == "R" ? "color:LightGreen;" : "color:orange;"));
-                    lbSectores.Items.Add(i);
-                }
-            }
-        }
-        else
-        {
-            System.Data.DataSet d = ServiceServiciosCD40.SectoresDependenciaATS(sistema.Value, idNucleo, listaUsuarios.ToString());
-            if (d != null && d.Tables.Count > 0)
-            {
-                foreach (System.Data.DataRow ds in d.Tables[0].Rows)
-                {
-                    ListItem i = new ListItem((string)ds[0], (string)ds[1]);
-                    i.Attributes.Add("style", (string)ds[1] == "M" ? "color:Blue;" : ((string)ds[1] == "R" ? "color:LightGreen;" : "color:orange;"));
-                    if ((ds["IdDependenciaATS"] != DBNull.Value) && (!ListaDeDepATSAutorizados.Contains((string)ds[2])))
-                    {
-                        i.Enabled = false;
-                        if (desbloqueadoATS)
-                            bloquea_checkall = true;
-                    }
-                    lbSectores.Items.Add(i);
-                }
-            }
-        }
-        return bloquea_checkall;
-	}
-
-    */
-    #endregion ReordenaCheckBoxList
 
     #region ReordenaCheckBoxListNucleos   
 	private bool ReordenaCheckBoxList(CheckBoxList lbSectores, string idNucleo, bool desbloqueadoNucleo)
@@ -1424,32 +1289,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
     }
  
     // 20210317 #4749
-    private void RecuperaTopsAutorizados(string IdOperador, string IdSistema)
-    {
-        try
-        {
-            System.Data.DataSet ds = ServiceServiciosCD40.ControladoresRecuperaTopsAutorizados(IdSistema, IdOperador);
-            ListaDeTopAutorizados.Clear();
-            ListaDeDepATSAutorizados.Clear();
-            if (ds != null && ds.Tables.Count > 0)
-            {
-                foreach (System.Data.DataRow dr in ds.Tables[0].Rows)
-                {
-                    ListaDeTopAutorizados.Add((string)dr["IdTop"]);
-                    if (!ListaDeDepATSAutorizados.Contains((string)dr["IdDependenciaATS"]))
-                    {
-                        ListaDeDepATSAutorizados.Add((string)dr["IdDependenciaATS"]);
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-
-        }
-    }
-
-    // 20210317 #4749
     private void RecuperaNucleosAutorizados(string IdOperador, string IdSistema)
     {
         try
@@ -1467,7 +1306,7 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
         }
         catch (Exception ex)
         {
-
+            logDebugView.Error("(RecuperaNucleosAutorizados-Controladores): ", ex);
         }
     }
 
