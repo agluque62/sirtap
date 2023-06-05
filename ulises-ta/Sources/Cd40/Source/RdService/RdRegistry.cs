@@ -357,7 +357,7 @@ namespace U5ki.RdService
             }
         }
 
-        public static void RespondToChangingFreq(string to, bool result, string idFrecuency, string assignedFrecuency, string cause)
+        public static void RespondToChangingFreq(string to, bool result, string idFrecuency, string assignedFrecuency, uint code)
         {
             if (!_Master)
                 return;
@@ -368,7 +368,7 @@ namespace U5ki.RdService
                 response.resultado = result;
                 response.IdFrecuency = idFrecuency;
                 response.AssignedFrecuency = assignedFrecuency;
-                response.Cause = cause;
+                response.Code = code;
 
                 MemoryStream ms = new MemoryStream();
                 Serializer.Serialize(ms, response);

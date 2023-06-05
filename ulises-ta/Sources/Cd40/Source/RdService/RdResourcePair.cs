@@ -33,12 +33,14 @@ namespace U5ki.RdService
             _ID = id;
             IdDestino = idDestino;
             FrequencyId = Frequency;
+            Check_1mas1_Resources_In_MSTxPersistence_count = 0;
         }
 
         private System.Timers.Timer checkPairWhenNbxStarts_Timer = null;
 
         public RdResourcePair(RdResource ActiveResource, RdResource StandbyResource, List<Node> nodes)
         {
+            Check_1mas1_Resources_In_MSTxPersistence_count = 0;
             //List<string> ids = new List<string>();
             //ids.Add(ActiveResource.ID);
             //ids.Add(StandbyResource.ID);
@@ -48,7 +50,7 @@ namespace U5ki.RdService
             FrequencyId = "TEST-FQ";
 
             checkPairWhenNbxStarts_Timer = null;
-            checkPttConfirmed_Timer = null;
+            checkPttConfirmed_Timer = null;            
 
             _ActiveResource = ActiveResource;
             StandbyResource.TxMute = true;
@@ -538,6 +540,49 @@ namespace U5ki.RdService
 
             return ret;
         }
+
+        private int Check_1mas1_Resources_In_MSTxPersistence_count;
+
+        /// <summary>
+        /// Comprueba si se corresponde el activo y standby con el fichero de persistencia
+        /// Retorna true si se corresponde
+        /// </summary>
+        public bool Check_1mas1_Resources_In_MSTxPersistence()
+        {
+            bool ret = false;
+
+            if (Check_1mas1_Resources_In_MSTxPersistence_count < 3)
+            {
+                Check_1mas1_Resources_In_MSTxPersistence_count++;
+                if (Check_1mas1_Resources_In_MSTxPersistence_count < 2) return ret;
+            }
+
+            if (checkPairWhenNbxStarts_Timer == null ||
+                (checkPairWhenNbxStarts_Timer != null && checkPairWhenNbxStarts_Timer.Enabled == true))
+            {
+                return ret;
+            }
+
+            if (!MSTxPersistence.IsMain(_ActiveResource))
+            {
+                if (_StandbyResource.Connected)
+                {
+                    //No se corresponde el activo con el del fichero de persistencia y el pasivo esta conectado
+                    Switch();
+                    NotifyAutomaticSelection("El fichero de persistencia a cambiado");
+                    ret = true;
+                }
+                else
+                {
+                    //No se corresponde el activo con el del fichero de persistencia y el pasivo esta desconectado
+                    //Se actualiza el fichero de persistencia
+                    MSTxPersistence.SelectMain(_ActiveResource, _StandbyResource);
+                }
+            }            
+
+            return ret;
+        }
+
         void NotifyAutomaticSelection(string cause)
         {
             var msg = $"Equipo {_ActiveResource.ID} seleccionado automaticamente en grupo 1+1 {ID}. Motivo: {cause}";

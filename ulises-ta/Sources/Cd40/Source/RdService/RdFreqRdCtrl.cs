@@ -23,7 +23,7 @@ namespace U5ki.RdService
             public string from;
             public FrChangeAsk msg;
             public bool result;
-            public string cause_returned;
+            public uint code_returned;
             public string selectedFrequency;
         }
 
@@ -35,7 +35,7 @@ namespace U5ki.RdService
 
             if (ProcessChangingFreqRunning)
             {
-                RdRegistry.RespondToChangingFreq(from, false, msg.IdFrecuency, msg.NewFrecuency, "ANOTHER PROCESS IS RUNNING");
+                RdRegistry.RespondToChangingFreq(from, false, msg.IdFrecuency, msg.NewFrecuency, Identifiers.FR_IN_PROGRESS);
                 return ret;
             }
             ProcessChangingFreqRunning = true;
@@ -53,32 +53,13 @@ namespace U5ki.RdService
             ret.from = from;
             ret.msg = msg;
             ret.result = true;
-            ret.cause_returned = "OK";
+            ret.code_returned = Identifiers.FR_CHANGE_OK;
             ret.selectedFrequency = msg.NewFrecuency;
 
             if (_TxIds.Count > 0 || _RxIds.Count > 0)
-            {
-                ret.cause_returned = "";
-                if (_TxIds.Count > 0)
-                {
-                    ret.cause_returned += "TX SELECTED IN:";
-                    foreach (string txids in _TxIds)
-                    {
-                        ret.cause_returned += txids;
-                        ret.cause_returned += ",";
-                    }
-                }
-                if (_RxIds.Count > 0)
-                {
-                    ret.cause_returned += "RX SELECTED IN:";
-                    foreach (string rxids in _RxIds)
-                    {
-                        ret.cause_returned += rxids;
-                        ret.cause_returned += ",";
-                    }
-                }
-
+            {          
                 ret.result = false;
+                ret.code_returned = Identifiers.FR_IS_IN_USE;
                 return ret;
             }
 
@@ -87,7 +68,7 @@ namespace U5ki.RdService
                 RdRegistry.Publish(_IdDestino, null);
             });
 
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             
             return ret;
         }
@@ -103,12 +84,16 @@ namespace U5ki.RdService
                 RdService.evQueueRd.Enqueue("SubProcessChangingFreqProcessed", delegate ()
                 {
                     RdRegistry.RespondToChangingFreq(resultProcess.from, resultProcess.result,
-                    resultProcess.msg.IdFrecuency, resultProcess.selectedFrequency, resultProcess.cause_returned);
+                    resultProcess.msg.IdFrecuency, resultProcess.selectedFrequency, resultProcess.code_returned);
 
                     SelectedFrequency = resultProcess.selectedFrequency;
-                    _FrRs.SelectedFrequency = resultProcess.selectedFrequency;
-                    RdRegistry.Publish(_IdDestino, _FrRs);
+                    if (_FrRs != null)
+                    {
+                        _FrRs.SelectedFrequency = resultProcess.selectedFrequency;
+                        RdRegistry.Publish(_IdDestino, _FrRs);
+                    }
                     ProcessChangingFreqRunning = false;
+                    MSTxPersistence.SelectFrequency(_IdDestino, resultProcess.selectedFrequency);
                 });                
             }
         }

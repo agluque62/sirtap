@@ -264,7 +264,10 @@ namespace U5ki.RdService
             NoFirstCheck = false;
             _IdDestino = idDestino;
             _Frecuency = fr;
-            _SelectedFrequency = defaultFrequency;
+            
+            _SelectedFrequency = MSTxPersistence.GetSelectFrequency(_IdDestino);
+            if (_SelectedFrequency == null) _SelectedFrequency = defaultFrequency;
+            
             PasivoRetransmision = false;
 
             _RtxSquelchTimer = new Timer(TIME_DELAY_TO_RTX)
@@ -348,9 +351,27 @@ namespace U5ki.RdService
         /// <summary>
         /// Genera los recursos radio (canales físicos) asociados a la frecuencia
         /// </summary>
-        public void Reset(ConfiguracionSistema sysCfg, CfgEnlaceExterno cfg, Dictionary<string, bool> selectedRs)
+        public void Reset(Cd40Cfg cd40cfg, CfgEnlaceExterno cfg, Dictionary<string, bool> selectedRs)
         {
             Debug.Assert(cfg.Literal == _IdDestino);
+
+            ConfiguracionSistema sysCfg = cd40cfg.ConfiguracionGeneral;
+
+            if (cfg.TipoFrecuencia == Tipo_Frecuencia.FD && cfg.TipoFrecuencia == Tipo_Frecuencia.ME)
+            {
+                SelectedFrequency = null;   //el cambio de frecuencia se aplica solo a destinos simples
+            }  
+            else
+            {
+                foreach (CfgRecursoEnlaceExterno r in cfg.ListaRecursos)
+                {
+                    if (cd40cfg.NodesMN.Where(n => n.Id == r.IdRecurso).FirstOrDefault() != null)
+                    {
+                        SelectedFrequency = null;   //el cambio de frecuencia se aplica solo a destinos simples que no tengan recursos M+N
+                        break;
+                    }
+                }                
+            }
 
             // Actualización de los nuevos parámetros de la frecuencia a partir de los recibidos en cfg.
             bool hayCambiosEnFrecuencia = ResetNewParams(cfg);
@@ -845,7 +866,7 @@ namespace U5ki.RdService
             return _TxIds.FindIndex(delegate (string tx) { return (tx == host); }) < 0 ? false : true;
         }
 
-        public void Check_1mas1_Resources_Disabled()
+        public void Check_1mas1_Resources()
         {
             foreach (IRdResource rdRs in _RdRs.Values)
             {
@@ -873,6 +894,7 @@ namespace U5ki.RdService
                                 }
                             }
                         }
+                        rdRsPair.Check_1mas1_Resources_In_MSTxPersistence();
                     }                    
                 }
                 catch (Exception exc)

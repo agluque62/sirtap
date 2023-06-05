@@ -984,7 +984,7 @@ void SipAgent::Stop()
 		/**
 		 * Cuelga todas las llamadas activas en el módulo.
 		 */
-
+		pj_bzero(&SipAgent::Cb, sizeof(SipAgent::Cb));
 		pj_bzero(&pjsua_var.ua_cfg.cb, sizeof(pjsua_var.ua_cfg.cb));	//Inhibimos todas las callbacks de la aplicacion
 
 		pjsua_call_id call_ids[PJSUA_MAX_CALLS];
