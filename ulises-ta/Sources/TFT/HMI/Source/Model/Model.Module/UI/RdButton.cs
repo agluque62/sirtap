@@ -38,6 +38,7 @@ namespace HMI.Model.Module.UI
 		//RQF34 
 		private string _IdFrecuency = "";
 		private string _NameFrecuency = "";
+		private string _FrecSeleccionada = "";
 
 		private int _RtxGroup = 0;
 		private Timer _Timer = new Timer();
@@ -53,7 +54,8 @@ namespace HMI.Model.Module.UI
         private Color _CurrentBackColor = VisualStyle.ButtonColor;
 		private bool _multifrecuencia;
 		private List <string> _frecuenciasel = new List<string>();
-		
+		private string _defaultfrecuency;
+
 		public new event EventHandler Click;
 		public event EventHandler TxClick;
 		public event EventHandler RxShortClick;
@@ -161,9 +163,10 @@ namespace HMI.Model.Module.UI
 
         public bool Multifrecuencia { get => _multifrecuencia; set => _multifrecuencia = value; }
         public List<string> FrecuencaSel { get => _frecuenciasel; }
-        public void SetFrecuencaSel(List<string>v)
+        public void SetFrecuenciaSel(List<string>v,string defaultfrecuency="")
 		{
 			_frecuenciasel = v;
+			_defaultfrecuency = defaultfrecuency;
 		}
 
         public RdButton()
@@ -366,8 +369,8 @@ namespace HMI.Model.Module.UI
             _PttRect = new Rectangle(1, 10, 12, 12);
             _SquelchRect = new Rectangle(Width - (1+12), 10, 12, 12);
 #else
-            _PttRect = new Rectangle(1, 4, 25, 25);
-            _SquelchRect = new Rectangle(Width - 22, 4, 25, 25);
+            _PttRect = new Rectangle(1, 5, 25, 25);
+            _SquelchRect = new Rectangle(Width - 22, 5, 25, 25);
 #endif
 
             _TxBtnInfo.Rect = new Rectangle(0, top, width, Height - top);
@@ -556,6 +559,12 @@ namespace HMI.Model.Module.UI
 
 			BtnRenderer.Draw(e.Graphics, _BtnInfo[st]);
 
+            if (Multifrecuencia)
+                using (Pen linePen = new Pen(Enabled ? _BtnInfo.GetBorderColor(BtnState.Normal) : _BtnInfo.GetBorderColor(BtnState.Inactive), 1))
+                {
+
+                    e.Graphics.DrawLine(linePen, 1 + 0, _TitleBtnInfo.Rect.Top + 15, Width - 0, _TitleBtnInfo.Rect.Top + 15);
+                }
 			if (_PttImage != null)
 			{
 #if DEBUG1
@@ -564,7 +573,7 @@ namespace HMI.Model.Module.UI
 				e.Graphics.DrawImage(_PttImage, _PttRect.X, _PttRect.Y);
 #endif
             }
-			if (_SquelchImage != null)
+            if (_SquelchImage != null)
 			{
 #if DEBUG1
                 e.Graphics.DrawImage(_SquelchImage, _SquelchRect);
@@ -587,7 +596,8 @@ namespace HMI.Model.Module.UI
 			if (Multifrecuencia)
 			{
 				Enabled = true;//221003 se habilita todo el boton.
-				BtnRenderer.Draw(e.Graphics, _TitleBtnInfo[stBT3]);
+				//230330 lo quito
+				//BtnRenderer.Draw(e.Graphics, _TitleBtnInfo[stBT3]);
 			}
 
 			//221103 El aspa se dibuja distinto para multifrecuencia.
@@ -637,8 +647,17 @@ namespace HMI.Model.Module.UI
                 textRect.Offset(0, 13);
                 fontToUse = _SmallFont;
             }
-            BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _Alias, fontToUse, ContentAlignment.TopCenter, ForeColor);
-            
+            if (Multifrecuencia)
+            {
+                textRect.Offset(0, +2);
+                BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _defaultfrecuency, fontToUse, ContentAlignment.TopCenter, ForeColor);
+            }
+			else
+			{
+                BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _Alias, fontToUse, ContentAlignment.TopCenter, ForeColor);
+
+            }
+
             if (_RtxGroup > 0)
 			{
 				string rtxGroup = ((char)('G' + _RtxGroup - 1)).ToString();
@@ -654,12 +673,6 @@ namespace HMI.Model.Module.UI
 				e.Graphics.DrawLine(linePen, 1, _TxBtnInfo.Rect.Top, Width - 1, _TxBtnInfo.Rect.Top);
 
 			}
-			if (Multifrecuencia)
-				using (Pen linePen = new Pen(Enabled ? _BtnInfo.GetBorderColor(BtnState.Normal) : _BtnInfo.GetBorderColor(BtnState.Inactive), 1))
-				{
-
-					e.Graphics.DrawLine(linePen, 1, _TitleBtnInfo.Rect.Top + 15, Width - 1, _TitleBtnInfo.Rect.Top + 15);
-				}
 		}
 
 		private void OnLongClick(object sender, EventArgs e)
@@ -685,8 +698,8 @@ namespace HMI.Model.Module.UI
 					// 221027 
 					// Cuando se desee habilitar esta funcion quitar este comentario
 ////////////////////////////
-///
-					if (this._DrawX==false)
+////230606 Tambien se permite aunque hya aspa.
+					//if (this._DrawX==false)
 						General.SafeLaunchEvent(TitleLongClick, this);
 /////////////////////////////////
 				}

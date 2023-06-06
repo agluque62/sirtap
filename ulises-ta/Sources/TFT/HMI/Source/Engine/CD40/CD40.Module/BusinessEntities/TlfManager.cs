@@ -12,6 +12,11 @@ using U5ki.Infrastructure;
 using Utilities;
 using NLog;
 using static System.Windows.Forms.LinkLabel;
+using NAudio.Gui;
+using conferencia;
+using System.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using HMI.CD40.Module.Constants;
 
 namespace HMI.CD40.Module.BusinessEntities
 {
@@ -42,10 +47,15 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<SnmpStringMsg<string, string>> SendSnmpTrapString;
         public event GenericEventHandler<RangeMsg<LlamadaHistorica>> HistoricalOfLocalCallsEngine;
         public event GenericEventHandler<PositionIdMsg> RedirectedCall;
+        //230516
+        public event GenericEventHandler<RangeMsg<TlfInfo>> ConferenciaPreprogramada;
         //lalm 211007
         //#2629 Presentar via utilizada en llamada saliente.
         public event GenericEventHandler<RangeMsg<TlfInfo>> ResourceChanged;
-
+        //230516
+        public event GenericEventHandler<RangeMsg<TlfInfo>> CambioConferenciaPreprogramada;
+        //230511
+        private TlfConferencePrepro _ConferencePrepro = new TlfConferencePrepro();
         public enum TlfRxAudioVia
         {
             NoAudio,
@@ -98,10 +108,9 @@ namespace HMI.CD40.Module.BusinessEntities
         //# Error 3629 Terminal de Audio -> Señalización de Actividad en LED ALTV Intercom cuando seleccionada TF en ALTV
         public int ActivityRing()
         {
-            TlfPosition tlf;
             for (int i = 0; i < Tlf.NumDestinations + Tlf.NumIaDestinations; i++)
             {
-                if (_TlfPositions.TryGetValue(i, out tlf) == true)
+                if (_TlfPositions.TryGetValue(i, out TlfPosition tlf) == true)
                 {
                     if ((tlf.State == TlfState.In) || (tlf.State == TlfState.InPrio) || (tlf.State == TlfState.RemoteIn))
                         return i;
@@ -128,8 +137,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public void RecuperaTonoRing()
         {
             int i = Top.Tlf.ActivityRing();
-            TlfPosition tlf;
-            if (_TlfPositions.TryGetValue(i, out tlf) == true)
+            if (_TlfPositions.TryGetValue(i, out TlfPosition tlf) == true)
             {
                 int _Tone = tlf.Tone;
                 Top.Mixer.Link(_Tone, MixerDev.Ring, MixerDir.Send, Mixer.UNASSIGNED_PRIORITY, FuentesGlp.Telefonia);
@@ -176,9 +184,8 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             get
             {
-                TlfPosition ret;
                 Debug.Assert(id < Tlf.NumDestinations + Tlf.NumIaDestinations);
-                _TlfPositions.TryGetValue(id, out ret);
+                _TlfPositions.TryGetValue(id, out TlfPosition ret);
                 return ret;
             }
         }
@@ -194,13 +201,55 @@ namespace HMI.CD40.Module.BusinessEntities
             }
         }
 
+        bool ConferencePreproState()
+        {
+            uint npi = Top.Cfg.NumPagEnlacesInt;
+            uint neip = Top.Cfg.NumEnlacesInternosPag;
+            uint c = 0;// 1;//numero de posiciones AID.
+            uint maxposaid = 0;// 3;
+            int c45 = (int)(npi * neip + c + maxposaid);//Supongo que hay 3 posiciones de AID
+
+            for (int i = c45; i < c45+neip; i++)
+            {
+                if (_TlfPositions.TryGetValue(i, out TlfPosition tlf) == true)
+                {
+                    if (tlf.State == TlfState.Set)
+                    {
+                        tlf.State = TlfState.ConfPreprogramada;
+                        return true;
+                    }
+                    if (tlf.State == TlfState.ConfPreprogramada)
+                    {
+                        tlf.State = TlfState.ConfPreprogramada;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool HayConferenciaPreprogramada
+        {
+            get
+            {
+                if (Top.Cfg.confcfg.Count > 0)
+                    return ConferencePreproState();
+                return false;
+                //if (Top.Cfg.confcfg.Count>0 )
+                //return _Conference != null && _Conference.Members.Count > 0 && _Conference.ConferenceState == ConfState.Executing;
+            }
+        }
+        public TlfConferencePrepro ConferencePrepro { get => _ConferencePrepro; set => _ConferencePrepro = value; }
+
 
         /// <summary>
         /// 
         /// </summary>
-		public void Init()
+        public void Init()
         {
             Top.Cfg.ConfigChanged += OnConfigChanged;
+            Top.Cfg.ConferenciaGChanged += OnConferenciaGChanged;
+            Top.Cfg.CambioConferenciaPreprogramada += OnCambioConferenciaPreprogramada ;//230516
             Top.Sip.TlfCallStateChanged += OnCallStateChanged;
             Top.Sip.IncomingTlfCall += OnIncomingCall;
             Top.Sip.TlfTransferRequest += OnTransferRequest;
@@ -208,6 +257,10 @@ namespace HMI.CD40.Module.BusinessEntities
             Top.Sip.TlfCallConfInfoAcc += OnConfInfoReceivedAcc;
             Top.Sip.InfoReceived += OnInfoReceived;
             Top.Sip.CallMoved += OnCallMoved;
+            //230516 aqui habria que capturar el evento de cambio de conferencia preprogramada.
+            //ConferenciaPreprogramada += OnConferenciaPreprogramada;
+            
+            
 
             for (int i = Tlf.NumDestinations, to = Tlf.NumDestinations + Tlf.NumIaDestinations; i < to; i++)
             {
@@ -220,10 +273,15 @@ namespace HMI.CD40.Module.BusinessEntities
 
         }
 
+        private void TlfManager_CambioConferenciaPreprogramada(object sender, RangeMsg<TlfInfo> par)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 
         /// </summary>
-		public void Start()
+        public void Start()
         {
         }
 
@@ -341,8 +399,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		public void RetryCall(int id)
         {
             Debug.Assert(id < Tlf.NumDestinations + Tlf.NumIaDestinations);
-            TlfPosition tlf = null;
-            if (_TlfPositions.TryGetValue(id, out tlf))
+            if (_TlfPositions.TryGetValue(id, out TlfPosition tlf))
             {
                 switch (tlf.State)
                 {
@@ -363,8 +420,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		public void Accept(int id, TlfConference conference)
         {
             Debug.Assert(id < Tlf.NumDestinations + Tlf.NumIaDestinations);
-            TlfPosition tlf = null;
-            if (_TlfPositions.TryGetValue(id, out tlf))
+            if (_TlfPositions.TryGetValue(id, out TlfPosition tlf))
             {
                 switch (tlf.State)
                 {
@@ -417,8 +473,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public void Hold(int id, bool on)
         {
             Debug.Assert(id < Tlf.NumDestinations + Tlf.NumIaDestinations);
-            TlfPosition tlf = null;
-            if (_TlfPositions.TryGetValue(id, out tlf))
+            if (_TlfPositions.TryGetValue(id, out TlfPosition tlf))
             {
                 if (!on)
                     tlf.HoldOnEstablish = on;
@@ -458,8 +513,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public void HangUp(int id)
         {
             Debug.Assert(id < Tlf.NumDestinations + Tlf.NumIaDestinations);
-            TlfPosition tlf = null;
-            if (_TlfPositions.TryGetValue(id, out tlf))
+            if (_TlfPositions.TryGetValue(id, out TlfPosition tlf))
             {
                 if (PickUp.Cancel(id) == false)
                     tlf.HangUp(0);
@@ -549,12 +603,12 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="on"></param>
+        ///// <param name="on"></param>
         public void HoldConference(bool on)
         {
             Debug.Assert(_Conference != null);
 
-            _Conference.Hold(on);
+            _Conference?.Hold(on);
 
             Hold(on);
         }
@@ -650,8 +704,7 @@ namespace HMI.CD40.Module.BusinessEntities
             }
 
             // PosInConference = 0;
-            if (_Conference != null)
-                _Conference.Dispose();
+            _Conference?.Dispose();
             _Conference = null;
         }
 
@@ -810,7 +863,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
         bool EstoyDescolgado()
         {
-            TlfIaPosition tlf = null;
+            TlfIaPosition tlf;
             if (_ActiveCalls.Count > 0)
             {
                 for (int i = 0; i < _ActiveCalls.Count; i++)
@@ -836,9 +889,8 @@ namespace HMI.CD40.Module.BusinessEntities
             int pos = Tlf.IaMappedPosition;
             int id1 = pos;
             TlfIaPosition tlfia3;
-            TlfPosition tlf2;
             int icolgar = -1;
-            // Si hay dos llamdas en curso, conferencia por ejemplo
+            // Si hay dos llamadas en curso, conferencia por ejemplo
             // no se deberia dejar pulsar la tecla descolgar.
             if (_ActiveCalls.Count > 0)
             {
@@ -852,7 +904,7 @@ namespace HMI.CD40.Module.BusinessEntities
                     }
                 }
             }
-            if (_TlfPositions.TryGetValue(id1, out tlf2) == true)
+            if (_TlfPositions.TryGetValue(id1, out TlfPosition tlf2) == true)
             {
                 TlfIaPosition tlfia;
                 if (icolgar != -1)
@@ -935,7 +987,6 @@ namespace HMI.CD40.Module.BusinessEntities
             }
             return salvado;
         }
-
 
 
         /// <summary>
@@ -1024,10 +1075,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
             foreach (TlfPosition actTlf in _ActiveCalls)
             {
-                if (actTlf.Conference != null)
-                {
-                    actTlf.Conference.HangUp();
-                }
+                actTlf.Conference?.HangUp();
             }
         }
         /// <summary>
@@ -1057,66 +1105,8 @@ namespace HMI.CD40.Module.BusinessEntities
             return false;
         }
 
-        private bool ConfigConferencia(RangeMsg<TlfInfo> tlfPositions,TlfPosition tlf, CfgEnlaceInterno link)
-        {
-            int NumPositionsByPage = 15;
-            if (tlf.Pos >= NumPositionsByPage * 3)
-            {
-                int modulo = tlf.Pos % NumPositionsByPage;
-                int primera_pos_conf = NumPositionsByPage * 10 + modulo;
 
-                TlfPosition tlf2 = new TlfPosition(primera_pos_conf);
-                _TlfPositions.Add(primera_pos_conf, tlf2);
-                _TlfPositions[primera_pos_conf].TlfPosStateChanged += OnTlfStateChanged;
-                _TlfPositions[primera_pos_conf].ForwardedCallMsg += OnForwardedCallMsg;
 
-                link.PosicionHMI = (uint)(NumPositionsByPage * 3 + modulo);
-                tlf2.Reset(link);
-                TlfInfo posInfo2 = new TlfInfo(tlf2.Literal, tlf2.State, tlf2.ChAllowsPriority(), TlfType.Ad, tlf2.IsTop, tlf2.ChAllowsForward);
-                tlfPositions.Info[primera_pos_conf] = posInfo2;
-                return true;
-            }
-            return false;
-        }
-
-        void SimulaConfiguracionConferencias(RangeMsg<TlfInfo> tlfPositions)
-        {
-            // relleno conferencias
-            // lalm 230410
-            int max_a_presentar = 15;
-            int NumPositionsByPage = 15;
-            TlfPosition tlf;
-            TlfPosition tlf2;
-            CfgEnlaceInterno guardalink = new CfgEnlaceInterno();
-            for (int i = 0; i < max_a_presentar; i++)//lo pongo a 1 para meter l2 en la posicion 2
-            {
-                int numpages = Tlf.NumDestinations / NumPositionsByPage;
-                int pos = (numpages - 1) * NumPositionsByPage + i;//ultima pagina
-                                                                  //int pos = 150+ i;// de momento coloco aqui
-                tlf = new TlfPosition(pos);
-
-                if (i < max_a_presentar)
-                {
-                    tlf2 = new TlfPosition(pos);
-                    _TlfPositions.Add(pos, tlf2);
-                    _TlfPositions[pos].TlfPosStateChanged += OnTlfStateChanged;
-                    _TlfPositions[pos].ForwardedCallMsg += OnForwardedCallMsg;
-
-                    guardalink.ListaRecursos.Clear();
-                    CfgRecursoEnlaceInterno interno = new CfgRecursoEnlaceInterno();
-                    interno.NombreRecurso = "L" + (1 + i).ToString();
-                    guardalink.ListaRecursos.Add(interno);
-                    guardalink.Literal = "Conf_" + (1 + i).ToString();
-                    guardalink.OrigenR2 = (31801 + i).ToString();
-                    guardalink.PosicionHMI = (uint)(NumPositionsByPage*3 + i);
-                    guardalink.TipoEnlaceInterno = "DA";
-                    tlf2.Reset(guardalink);
-                    TlfInfo posInfo2 = new TlfInfo(tlf2.Literal, tlf2.State, tlf2.ChAllowsPriority(), TlfType.Ad, tlf2.IsTop, tlf2.ChAllowsForward);
-                    tlfPositions.Info[pos] = posInfo2;
-                }
-            }
-
-        }
 
         /// <summary>
         /// 
@@ -1136,9 +1126,13 @@ namespace HMI.CD40.Module.BusinessEntities
 
                 //var copiaLink = Top.Cfg.TlfLinks.Select(e => e).ToList();
 
+
+                List<string> copia = Top.Cfg.TlfLinks.Select(e => e.Literal).ToList();
+                List<string> copia1 = Top.Cfg.TlfLinks.Select(e => (e.Literal.Contains("Conf")) ? e.Literal : "").ToList();
+                List<CfgEnlaceInterno> copia2 = Top.Cfg.TlfLinks.Where(o => o.Literal.Contains("Conf")).ToList();
                 foreach (CfgEnlaceInterno link in Top.Cfg.TlfLinks)
-			    {
-				    int pos = (int)link.PosicionHMI - 1;
+                {
+                    int pos = (int)link.PosicionHMI - 1;
 
 				    if (pos < Tlf.NumDestinations)
 				    {
@@ -1153,12 +1147,8 @@ namespace HMI.CD40.Module.BusinessEntities
                             tlfPositionsCopy.Remove(pos);
 					    tlf.Reset(link);
 						
-						// Configura teclas de conferencia si la hay.
-                        if (!ConfigConferencia(tlfPositions, tlf, link))
-                        {
-                            TlfInfo posInfo = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Ad, tlf.IsTop, tlf.ChAllowsForward);
-                            tlfPositions.Info[pos] = posInfo;
-                        }
+                        TlfInfo posInfo = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Ad, tlf.IsTop, tlf.ChAllowsForward);
+                        tlfPositions.Info[pos] = posInfo;
                     }
                 }
                 foreach (CfgEnlaceInterno link in Top.Cfg.MdTlfLinksAjeno)
@@ -1240,8 +1230,7 @@ namespace HMI.CD40.Module.BusinessEntities
                       tlfPositions.Info[i] = new TlfInfo("", TlfState.Unavailable, false, TlfType.Unknown, false, true); 
                 }
 
-                //SimulaConfiguracionConferencias(tlfPositions);
-
+    
                 General.SafeLaunchEvent(NewPositions, this, tlfPositions);
                 General.SafeLaunchEvent(IaPositionsChanged, this, tlfIaPositions);
             }
@@ -1259,9 +1248,195 @@ namespace HMI.CD40.Module.BusinessEntities
         /// 
         /// </summary>
         /// <param name="sender"></param>
+        /// <param name="status"></param>
+        private void OnCambioConferenciaPreprogramada(object sender, ConferenceStatus status)//230516
+        {
+            //int pos = 45;
+            //_TlfPositions[pos].Participantes_ca.Add("1234");
+            //RangeMsg<TlfInfo> tlfPositionsred = new RangeMsg<TlfInfo>(0, Tlf.NumDestinations);
+            //if (_TlfPositions.TryGetValue(pos, out TlfPosition tlf))
+            //{
+            //    tlf.Reset();
+            //    tlf.Participantes_ca.Add("1234");
+            //}
+            //General.SafeLaunchEvent(NewPositions, this, tlfPositionsred);// para por lo menos que aparezca la tecla que he metido
+            Top.Cfg.confstatus.Count();
+            string sala = status.RoomName;
+            int poshmi = Top.Cfg.confcfg.Where(i => i.IdSalaBkk == sala).FirstOrDefault().PosHMI-1;
+            var par = Top.Cfg.confcfg.Where(i => i.IdSalaBkk == sala)?.FirstOrDefault().participantesConferencia?.Select(i => i.SipUri).ToList();
+            if (poshmi >= 0)
+            {
+                uint npi = Top.Cfg.NumPagEnlacesInt;
+                uint neip = Top.Cfg.NumEnlacesInternosPag;
+                int c45 =(int) (npi * neip );//La pagina de conferencia esta siempre a continuacion de la paginas de AD.
+
+                //230606 cambio la forma de asignación.
+                if (_TlfPositions.TryGetValue(c45 + poshmi, out TlfPosition tlf) == true)
+                {
+                    tlf.Participantes_conf = par;
+                    tlf.IsConfPreprogramada = true;
+                }
+                //_TlfPositions[c45 + poshmi].Participantes_conf = par;
+                //_TlfPositions[c45 + poshmi].IsConfPreprogramada = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="p1"></param>
+        private void OnConferenciaGChanged(object sender, List <Conferencia> p1)
+        {
+            _ChangingCfg = true;
+            try
+            {
+                /*-----------------------------------------*/
+                /* Guardo valores*/
+                /*-----------------------------------------*/
+
+                RangeMsg<TlfInfo> tlfPositions = new RangeMsg<TlfInfo>(0, Tlf.NumDestinations);
+                RangeMsg<TlfInfo> tlfPositionsred = new RangeMsg<TlfInfo>(0, Tlf.NumDestinations);
+                RangeMsg<TlfIaDestination> tlfIaPositions = new RangeMsg<TlfIaDestination>(Tlf.NumDestinations, Tlf.NumIaDestinations);
+                //RangeMsg<TlfIaDestination> tlfIaPositions = new RangeMsg<TlfIaDestination>(Tlf.NumDestinations, Tlf.NumIaDestinations);
+                TlfPosition tlf;
+                SortedList<int, TlfPosition> tlfPositionsCopy = new SortedList<int, TlfPosition>(_TlfPositions);
+                for (int i = Tlf.IaMappedPosition; i < Tlf.IaMappedPosition + Tlf.NumIaDestinations; i++)
+                    tlfPositionsCopy.Remove(i);
+
+                SortedList<int, Conferencias> _Conferencias = new SortedList<int,Conferencias>();
+
+                int inc = 0;
+
+                /*-----------------------------------------*/
+                int NumPositionsByPage = (int)Top.Cfg.NumEnlacesInternosPag;
+                int max_a_presentar = NumPositionsByPage;
+                int NumPagEnlacesInt= (int)Top.Cfg.NumPagEnlacesInt; //Tlf.NumPagEnlacesInt;
+                int numpages = 3;// Tlf.NumDestinations / NumPositionsByPage;
+                if (NumPagEnlacesInt > 4)
+                {
+                    numpages = NumPagEnlacesInt;
+                }
+                int firstpositionconf = NumPagEnlacesInt * NumPositionsByPage;
+                /*-----------------------------------------*/
+
+
+                /*-----------------------------------------*/
+                /* Recorro conferencias inserto en _TlfPositons, borro de tlfPositionsCopy*/
+                /*-----------------------------------------*/
+                var copiaLink = Top.Cfg.TlfLinks.Select(e => e).ToList();
+                List<CfgEnlaceInterno> links = Top.Cfg.TlfLinksConf1(p1).ToList();
+                foreach (CfgEnlaceInterno link in links)
+                {
+                    if (inc > NumPositionsByPage)
+                    {
+                        _Logger.Error(String.Format("TlfManager:OnConferenciaGChanged Nuber of pos exceded "));
+                        break;
+                    }
+                    int pos = (int)link.PosicionHMI - 1;
+                    inc++;
+                    if (pos >= NumPositionsByPage*(numpages))
+                    {
+                        if (_TlfPositions.TryGetValue(pos, out tlf) == false)
+                        {
+                            tlf = new TlfPosition(pos,true);//true conferencia preprogramada.
+                            
+                            _TlfPositions.Add(pos, tlf);
+                            _TlfPositions[pos].TlfPosStateChanged += OnTlfStateChanged;
+                            _TlfPositions[pos].ForwardedCallMsg += OnForwardedCallMsg;
+                        }
+                        else
+                        {
+                            tlfPositionsCopy.Remove(pos);
+                        }
+
+                        int ultimapagina = (int)Top.Cfg.NumPagEnlacesInt - 1;//3 para torre 9 para asecna que seria la cuarta y la decima
+                        int modulo = tlf.Pos % NumPositionsByPage;
+                        int primera_pos_conf = NumPositionsByPage * (numpages) + modulo;
+
+                        tlf.Reset(link);
+                        TlfInfo posInfo2 = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Ad, tlf.IsTop, tlf.ChAllowsForward);
+                        tlfPositionsred.Info[tlf.Pos] = posInfo2;
+                    }
+                    else
+                    {
+                        _Logger.Error(String.Format("TlfManager:OnConferenciaGChanged Nuber of links exceded "));
+                        ;
+                    }
+                }
+
+                for (int i = 0; i < tlfPositionsCopy.Count; i++)
+                {
+                    //TlfPosition tlf = _TlfPositions[i];
+                    foreach (int keyToRemove in tlfPositionsCopy.Keys)
+                    {
+                        if (_TlfPositions.TryGetValue(keyToRemove, out tlf))
+                        {
+                            if (keyToRemove < firstpositionconf)
+                            {
+                                //tlf.Reset();
+                                TlfInfo posInfo = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Unknown, tlf.IsTop, tlf.ChAllowsForward);
+                                tlfPositions.Info[keyToRemove] = posInfo;
+                            }
+                            else
+                                _TlfPositions.Remove(keyToRemove);
+                        }
+                    }
+                    tlfPositionsCopy.Clear();
+                }
+
+
+                for (int i = 0; i < firstpositionconf + NumPositionsByPage; i++)
+                {
+                    TlfInfo tt;
+                    if (i < firstpositionconf)
+                        tt = tlfPositions.Info[i];
+                    else
+                         tt = tlfPositionsred.Info[i];
+                    if (tt != null)
+                        tlfPositions.Info[i] = tt;
+                }
+                for (int i = 0; i < Tlf.NumDestinations; i++)
+                {
+                    if (tlfPositions.Info[i] == null)
+                        tlfPositions.Info[i] = new TlfInfo("", TlfState.Unavailable, false, TlfType.Unknown, false, true);
+                }
+                General.SafeLaunchEvent(NewPositions, this, tlfPositions);// para por lo menos que aparezca la tecla que he metido
+                for (int i = Tlf.NumDestinations, to = Tlf.NumDestinations + Tlf.NumIaDestinations; i < to; i++)
+                {
+                    if (_TlfPositions.TryGetValue(i, out tlf) == true)
+                    {
+                        TlfIaPosition tlfIa = (TlfIaPosition)tlf;
+                        if (CoincideConMiAbonado(tlfIa.Number))
+                            tlfIa.Reset();
+                        if ((tlfIa.Cfg != null) && (Top.Cfg.ResetUsuario))
+                            tlfIa.Reset();
+                        else
+                            tlfIa.Update();
+                        TlfIaDestination posInfo = new TlfIaDestination(tlfIa.Literal, tlfIa.Number, tlfIa.State, tlf.IsTop, tlf.ChAllowsForward);
+                        tlfIaPositions.Info[i - Tlf.NumDestinations] = posInfo;
+                    }
+                }
+                General.SafeLaunchEvent(IaPositionsChanged, this, tlfIaPositions);
+            }
+            catch (Exception exc)
+            {
+                _Logger.Error(String.Format("TlfManager:OnConferenciaGChanged exception {0}, {1}", exc.Message, exc.StackTrace));
+            }
+            finally
+            {
+                _ChangingCfg = false;
+            }
+            _ChangingCfg = false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
         /// <param name="call"></param>
         /// <param name="stateInfo"></param>
-		private void OnCallStateChanged(object sender, int call, CORESIP_CallStateInfo stateInfo)
+        private void OnCallStateChanged(object sender, int call, CORESIP_CallStateInfo stateInfo)
 		{
             /* AGL. Captura Excepciones para marcarlas en el LOG */
             foreach (TlfPosition tlf in _TlfPositions.Values)
@@ -1406,21 +1581,20 @@ namespace HMI.CD40.Module.BusinessEntities
                 //}
                 //lalm 220603
                 //lalm 220902 No se pueden tratar 2 llamadas entrantes por AI
-                string reason = "";
-                if (tlf is TlfIaPosition && this._UnhangUpTone>0)
+                if (tlf is TlfIaPosition && this._UnhangUpTone > 0)
                 {
                     //LALM 221207 Si esta el tono de invitacion a marcar lo quito para permitir llamadas entrantes por 19+1
                     if (EstoyDescolgado())
                     {
                         Descuelga();
-                    }    
+                    }
                     else
                     {
                         answer.Value = SipAgent.SIP_BUSY;
                         return;
                     }
                 }
-                answer.Value  = tlf.HandleIncomingCall(call, call2replace, info, inInfo, out reason);
+                answer.Value  = tlf.HandleIncomingCall(call, call2replace, info, inInfo, out string reason);
                 //if (answer.Value==SipAgent.SIP_DECLINE && tlf.Pos== Tlf.IaMappedPosition)
                 //{
                 //    SortedList<int, TlfPosition> tlfPositionsCopy = new SortedList<int, TlfPosition>(_TlfPositions);
@@ -1740,14 +1914,16 @@ namespace HMI.CD40.Module.BusinessEntities
 
 				if ((tlf.State == TlfState.Out && tlf.OldState == TlfState.Idle) ||	// Llamada saliente
 					(tlf.State == TlfState.Set) ||									// Conversacion
-					(tlf.State == TlfState.Idle && (tlf.OldState == TlfState.Out || tlf.OldState == TlfState.Set)) ||	// Fin llamada
+					(tlf.State == TlfState.ConfPreprogramada) ||                    // ConferenciaPreprogramada
+                    (tlf.State == TlfState.Idle && (tlf.OldState == TlfState.Out || tlf.OldState == TlfState.Set)) ||	// Fin llamada
 					(tlf.State == TlfState.In && tlf.OldState == TlfState.Idle))	// Llamada entrante
 				{
 					string snmpOid = string.Empty;
 					switch (tlf.State)
 					{
 						case TlfState.Set:
-							snmpOid = Settings.Default.EstablishedTfCallOid;
+						case TlfState.ConfPreprogramada:
+                            snmpOid = Settings.Default.EstablishedTfCallOid;
 							break;
 						case TlfState.Out:
 							snmpOid = Settings.Default.OutgoingTfCallOid;
@@ -1813,8 +1989,7 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             foreach (TlfPosition tlf in _TlfPositions.Values)
             {
-                CORESIP_Priority prioCall;
-                if (tlf.HandleCallMoved(call, out prioCall))
+                if (tlf.HandleCallMoved(call, out CORESIP_Priority prioCall))
                 {
                     TlfPosition tlfMoved = GetTlfPosition(dstUri, "");
                     if (tlfMoved != null)
@@ -1824,7 +1999,7 @@ namespace HMI.CD40.Module.BusinessEntities
                             case TlfState.Idle:
                             case TlfState.PaPBusy:
                                 if (prioCall == CORESIP_Priority.CORESIP_PR_EMERGENCY)
-                                    General.SafeLaunchEvent(RedirectedCall, this, new PositionIdMsg (tlfMoved.Pos.ToString()));
+                                    General.SafeLaunchEvent(RedirectedCall, this, new PositionIdMsg(tlfMoved.Pos.ToString()));
                                 tlfMoved.RedirectCall(call, dstUri);
                                 ResetActiveCalls(null);
                                 AddActiveCall(tlfMoved);
@@ -1947,7 +2122,7 @@ namespace HMI.CD40.Module.BusinessEntities
             if (_ActiveCalls.Count > 0)
 			{
 				List<TlfPosition> activeCalls = new List<TlfPosition>(_ActiveCalls);
-				TlfConference tlfConference = (tlf != null ? tlf.Conference : null);
+				TlfConference tlfConference = (tlf?.Conference);
 
 				_ActiveCalls.Clear();
 
@@ -2192,6 +2367,7 @@ namespace HMI.CD40.Module.BusinessEntities
 					Holded = st == TlfState.Hold;
 					break;
                 case TlfState.Conf: //para poder aparcar una MD o una conferencia
+                case TlfState.ConfPreprogramada:
                 case TlfState.Set:
                 //Se hace después de la respuesta de CORESIP para 
                 //evitar el desorden en hold on/off muy rapidos
@@ -2257,7 +2433,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		private void PublishConfList()
 		{
 			List<string> confList = new List<string>();
-            String ipAddr; // not used
+            string ipAddr; // not used
             General.SafeLaunchEvent(ConfListChanged, this, null);
 			foreach (KeyValuePair<TlfPosition, CORESIP_ConfInfo> p in _ConfInfos)
 			{
@@ -2381,6 +2557,11 @@ namespace HMI.CD40.Module.BusinessEntities
             }
 
             return nombreConocido;
+        }
+        
+        void AddConfPrepogramada(string sala,string user)
+        {
+            _ConferencePrepro.Add(sala,user);
         }
 
         //lalm 210930
