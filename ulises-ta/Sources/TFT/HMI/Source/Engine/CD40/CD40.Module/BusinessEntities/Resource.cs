@@ -16,6 +16,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		public event GenericEventHandler<short> NewMsg;
         public event GenericEventHandler<short> SelCalMsg;
         public event GenericEventHandler<short> SiteChanged;
+        public event GenericEventHandler<short> FrChanged;//lalm 230301
         public event GenericEventHandler<short> CambioConferenciaPreprogramada;//230512
 
         public string Id
@@ -104,7 +105,8 @@ namespace HMI.CD40.Module.BusinessEntities
         #region Protected Members
 
 		protected string _Id;
-		protected object _Content;
+        protected string _ContainerId;
+        protected object _Content;
 
 		#endregion
 	}
