@@ -209,6 +209,10 @@ namespace HMI.CD40.Module.Services
         [EventPublication(EventTopicNames.SiteChangedResultEngine, PublicationScope.Global)]
         public event EventHandler<StateMsg<string>> SiteChangedResultEngine;
 
+        //LALM 230306
+        [EventPublication(EventTopicNames.FrChangedResultEngine, PublicationScope.Global)]
+        public event EventHandler<FrChangeMsg<string>> FrChangedResultEngine;
+
         [EventPublication(EventTopicNames.PickUpStateEngine, PublicationScope.Global)]
         public event EventHandler<ListenPickUpMsg> PickUpStateEngine;
 
@@ -306,6 +310,7 @@ namespace HMI.CD40.Module.Services
                     Top.Rd.SetSnmpInt += OnSetSnmpInt;
                     Top.Rd.SelCalMessage += OnSelCalMessage;
                     Top.Rd.SiteChangedResultMessage += OnSiteChangedResultMessage;
+                    Top.Rd.FrChangedResultMessage += OnFrChangedResultMessage;//lalm230303
                     Top.Rd.AudioViaNotAvailable += OnAudioViaNotAvailable;
 #if _HF_GLOBAL_STATUS_
                     Top.Rd.HFGlobalStatus += OnHfGlobalStatus;
@@ -1144,7 +1149,7 @@ namespace HMI.CD40.Module.Services
             {
                 if (AllowRd(id) && (Twr() || AllowBriefing()))
                 {
-                    Top.Rd.SetNewFrecuency(id, frecuency);//SetNewFrecuency
+                    Top.Rd.SetNewFrecuency(id, frecuency);//lalm 230301
                 }
             });
         }
@@ -1897,6 +1902,50 @@ namespace HMI.CD40.Module.Services
                 string mensaje = msg.Alias + "," + msg.Frecuency + "," + msg.resultado;
                 StateMsg<string> mes = new StateMsg<string>(mensaje); ;
                 General.SafeLaunchEvent(SiteChangedResultEngine, this, mes);
+            });
+        }
+
+        private void OnFrChangedResultMessage(object sender, FrChangeRsp msg)//lalm 230303
+        {
+            Top.PublisherThread.Enqueue(EventTopicNames.FrChangedResultEngine, delegate ()
+            {
+                if (msg.Code != Identifiers.FR_CHANGE_OK)
+                {
+                    string literal = "";
+                    switch (msg.Code)
+                    {
+                        case Identifiers.FR_CHANGE_OK:
+                            literal = "Cambio de frecuencia OK";
+                            break;
+                        case Identifiers.FR_IS_IN_USE:
+                            literal = "La frecuencia esta seleccionada en algun puesto";
+                            break;
+                        case Identifiers.FR_IN_PROGRESS:
+                            literal = "Otro cambio de frecuencia esta en proceso";
+                            break;
+                        case Identifiers.FR_EQ_NO_RESPOND:
+                            literal = "El equipo radio no responde";
+                            break;
+                        case Identifiers.FR_CH_REJECTED:
+                            literal = "El cambio de frecuencia es rechazado por el equipo radio";
+                            break;
+                        case Identifiers.FR_INCORRECT_FREQ:
+                            literal = "La frecuancia resultante no es la correcta"; 
+                            break;
+                        case Identifiers.FR_GENERIC_ERROR:
+                            literal = "Otros errores";
+                            break;
+                        case Identifiers.FR_TIMEOUT_ERROR:
+                            literal = "Tiempo de espera excesivo";
+                            break;
+                        default:
+                            literal = "Error desconocido";
+                            break;
+                    }
+                    string mensaje = msg.IdFrecuency + "," + msg.AssignedFrecuency + "," + msg.resultado + "," + literal;
+                    FrChangeMsg<string> mes = new FrChangeMsg<string>(mensaje);
+                    General.SafeLaunchEvent(FrChangedResultEngine, this, mes);
+                }
             });
         }
 

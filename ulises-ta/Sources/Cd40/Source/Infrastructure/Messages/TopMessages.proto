@@ -76,3 +76,6 @@ message ChangeSiteRsp
 	required string Frecuency = 2;
 	required string Alias = 3;
 }
+
+
+

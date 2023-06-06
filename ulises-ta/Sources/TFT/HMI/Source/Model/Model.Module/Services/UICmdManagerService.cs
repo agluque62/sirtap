@@ -21,6 +21,7 @@ namespace HMI.Model.Module.Services
 		public string pantalla { get; set; }
 		public int id { get; set; }
 		public string frecuencias { get; set; }
+		public List<string> listafrecuencias;
 	}
 
 	public class UICmdManagerService : IModelCmdManagerService
@@ -239,10 +240,13 @@ namespace HMI.Model.Module.Services
 
 		public void SwitchRadView(string pantalla, int id, string fr)
 		{
+			if (pantalla=="CambioFrecuencia" && _StateManager.Radio[id].AudioVia != RdRxAudioVia.NoAudio)
+				return;
 			changefr view = new changefr();
 			view.id = id;
 			view.frecuencias = fr;
 			view.pantalla = pantalla;
+			view.listafrecuencias = _StateManager.Radio[id].Frecuencia_Sel;
 			General.SafeLaunchEvent(SwitchRadViewUI, this, new EventArgs<changefr>(view));
 		}
 
@@ -1272,12 +1276,12 @@ namespace HMI.Model.Module.Services
 		}
 
 		//LALM 221028 CambioFrecuencia
-		public void SetNewFrecuency(int id,string frecuency)
+		public void SetNewFrecuency(int id,string frecuency)//lalm 230301
 		{
 			RdDst dst = _StateManager.Radio[id];
 			Debug.Assert((_StateManager.Radio.Rtx == 0) || !dst.Tx || ((dst.RtxGroup != 0) && (dst.RtxGroup != _StateManager.Radio.Rtx)));
 
-			_EngineCmdManager.SetNewFrecuency(id, frecuency);
+			_EngineCmdManager.SetNewFrecuency(id, frecuency);//lalm 230301
 		}
 
 	}

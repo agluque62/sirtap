@@ -216,20 +216,18 @@ namespace HMI.CD40.Module.BusinessEntities
 		public void SetNewFrecuency(string fr, string literal, uint pttType, bool checkAlreadyAssigned)
 		{
 			_Logger.Trace($"SetNewFrecuency <{fr}>: {fr}, Literal {literal}, AlreadyAssigned {checkAlreadyAssigned}");
-			// Aqui habría que crear otra estructura, con protobuf.
-			FrTxChangeAsk change = new FrTxChangeAsk();
+			FrChangeAsk change = new FrChangeAsk();
 			change.HostId = Top.HostId;
-			change.Frecuency = fr;
-			//change.Tx = tx;
-			//change.PttType = pttType;
-			//change.CheckAlreadyAssigned = checkAlreadyAssigned;
+			change.IdFrecuency = literal;
+			change.NewFrecuency= fr;
 
 			Send(Identifiers.RdMasterTopic, Identifiers.FR_RXTX_CHANGE_ASK_MSG, change);
-		}
+            _Logger.Trace("SetNewFrecuency {0} {1} {2}",change.HostId,change.IdFrecuency,change.NewFrecuency);
+        }
 
-		#region Private Members
+        #region Private Members
 
-		private static Logger _Logger = LogManager.GetLogger("TopRegistry");
+        private static Logger _Logger = LogManager.GetLogger("TopRegistry");
 		//private static Logger _Logger = LogManager.GetCurrentClassLogger();
 		private Dictionary<string, Resource> _Resources = new Dictionary<string, Resource>();
 
@@ -443,7 +441,33 @@ namespace HMI.CD40.Module.BusinessEntities
                     }
                     );
                 }
-				else
+				else if (msg.Type==Identifiers.FR_RXTX_CHANGE_RESPONSE_MSG)
+				{
+                    FrChangeRsp resp = Deserialize<FrChangeRsp>(msg.Data, msg.Length);
+                    string type = Identifiers.TypeId(typeof(RdSrvFrRs));
+                    string rsUid = resp.IdFrecuency.ToUpper() + "_" + type;
+					string id = resp.IdFrecuency;
+					string newfrecuency = resp.AssignedFrecuency;
+					bool resultado = resp.resultado;
+					uint code = resp.Code;
+
+                    _Logger.Trace($"OnMsg Fr_rxtx Change Response <{resp.IdFrecuency}>: {newfrecuency}");
+
+                    Top.WorkingThread.Enqueue("ChangingFrecuencyResponse", delegate ()
+                    {
+                        Resource resource;
+                        if (_Resources.TryGetValue(rsUid, out resource))
+                        {
+                            resource.NotifFrChanged(msg.Type, resp);
+                        }
+                        else
+                        {
+                            _Logger.Error($"OnMsg Site Change Response Error. Resource not Found <{rsUid}>");
+                        }
+                    });
+
+                }
+                else
 				{
 					_Logger.Error($"OnMsgReceived Error. Unknown type <{msg.Type}>");
 				}

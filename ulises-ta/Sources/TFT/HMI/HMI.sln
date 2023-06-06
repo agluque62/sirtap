@@ -120,6 +120,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notas", "Notas", "{731D530C
 	ProjectSection(SolutionItems) = preProject
 		Configuracion.proto.txt = Configuracion.proto.txt
 		notas.txt = notas.txt
+		notas1.txt = notas1.txt
 	EndProjectSection
 EndProject
 Global
