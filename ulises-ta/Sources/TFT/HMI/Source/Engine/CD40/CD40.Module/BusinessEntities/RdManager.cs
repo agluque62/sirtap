@@ -544,7 +544,7 @@ namespace HMI.CD40.Module.BusinessEntities
             _FrecuencyTimer.Enabled = true;
             idtimerfrecuency = id;
             strtimerfrecuency = frecuency;
-
+            timepetchangefrecuency = DateTime.Now;
         }
 
 
@@ -611,6 +611,7 @@ namespace HMI.CD40.Module.BusinessEntities
         private Timer _FrecuencyTimer = new Timer(3000);//Settings.Default.FrecuencyCheckTime
         private int idtimerfrecuency=0;
         private string strtimerfrecuency = "";
+        private DateTime timepetchangefrecuency=DateTime.Now;
     /// <summary>
     /// 
     /// </summary>
@@ -637,14 +638,23 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             Top.WorkingThread.Enqueue("OnFrecuencyimerElapsed", delegate
             {
+                DateTime fecha1 = DateTime.Now;
+                TimeSpan precision = TimeSpan.FromMilliseconds(100);
+                int resultado = DateTime.Compare(fecha1,timepetchangefrecuency);
+                int ms100 = (int)(Math.Abs(fecha1.Subtract(timepetchangefrecuency).Ticks)/precision.Ticks);
+                if (ms100 >50) //  5 segundos es tiempo suficiente.
+                {
                     FrChangeRsp res = new FrChangeRsp();
-                res.Code= Identifiers.FR_TIMEOUT_ERROR;// "Error: Cambio de frecuencia.Tiempo de espera agotado";
+                    res.Code = Identifiers.FR_TIMEOUT_ERROR;// "Error: Cambio de frecuencia.Tiempo de espera agotado";
                     res.IdFrecuency = idtimerfrecuency.ToString();
                     res.AssignedFrecuency = strtimerfrecuency;
                     res.resultado = false;
                     General.SafeLaunchEvent(FrChangedResultMessage, this, res);
                     _PttBadOpeTimer.Enabled = false;
                     //BadOperation(true);
+
+                }
+
             });
         }
         /// <summary>

@@ -26,6 +26,7 @@ using Utilities;
 using NLog;
 using ProtoBuf;
 using System.Threading;
+
 /**
  * AGL 17072012. Trata de Rellenar la tabla de Dependencias desde un fichero local.
  * */
@@ -2003,9 +2004,14 @@ namespace HMI.CD40.Module.Services
                             literal = "Error desconocido";
                             break;
                     }
-                    string mensaje = msg.IdFrecuency + "," + msg.AssignedFrecuency + "," + msg.resultado + "," + literal;
-                    FrChangeMsg<string> mes = new FrChangeMsg<string>(mensaje);
-                    General.SafeLaunchEvent(FrChangedResultEngine, this, mes);
+                    //string mensaje = msg.IdFrecuency + "," + msg.AssignedFrecuency + "," + msg.resultado + "," + literal;
+                    //FrChangeMsg<string> mes = new FrChangeMsg<string>(mensaje);
+                    //General.SafeLaunchEvent(FrChangedResultEngine, this, mes);
+
+                    //230606 cambio el tipo de mensahepara que salga
+                    string mensaje = literal;
+                    NotifMsg msg1 = new NotifMsg(Resources.ActivityError, Resources.DeviceError, mensaje, 30000, MessageType.Error, MessageButtons.Ok);
+                    General.SafeLaunchEvent(ShowNotifMsgEngine, this, msg1);
                 }
             });
         }

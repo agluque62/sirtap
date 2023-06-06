@@ -698,8 +698,8 @@ namespace HMI.Model.Module.UI
 					// 221027 
 					// Cuando se desee habilitar esta funcion quitar este comentario
 ////////////////////////////
-///
-					if (this._DrawX==false)
+////230606 Tambien se permite aunque hya aspa.
+					//if (this._DrawX==false)
 						General.SafeLaunchEvent(TitleLongClick, this);
 /////////////////////////////////
 				}
