@@ -192,6 +192,9 @@
     <None Include="Web References\SoapCfg\CfgUsuario1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\SoapCfg\ConferenciasPreprogramadas1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\SoapCfg\ConfiguracionSistema1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>

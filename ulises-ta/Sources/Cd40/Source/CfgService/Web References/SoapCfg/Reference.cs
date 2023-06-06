@@ -76,6 +76,8 @@ namespace U5ki.CfgService.SoapCfg {
         
         private System.Threading.SendOrPostCallback GetPoolNMElementsOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetConferenciasPreprogramadasOperationCompleted;
+        
         private bool useDefaultCredentialsSetExplicitly;
         
         /// <remarks/>
@@ -182,6 +184,9 @@ namespace U5ki.CfgService.SoapCfg {
         
         /// <remarks/>
         public event GetPoolNMElementsCompletedEventHandler GetPoolNMElementsCompleted;
+        
+        /// <remarks/>
+        public event GetConferenciasPreprogramadasCompletedEventHandler GetConferenciasPreprogramadasCompleted;
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetVersionConfiguracion_XML", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -864,6 +869,35 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetConferenciasPreprogramadas", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public ConferenciasPreprogramadas GetConferenciasPreprogramadas(string id_sistema) {
+            object[] results = this.Invoke("GetConferenciasPreprogramadas", new object[] {
+                        id_sistema});
+            return ((ConferenciasPreprogramadas)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetConferenciasPreprogramadasAsync(string id_sistema) {
+            this.GetConferenciasPreprogramadasAsync(id_sistema, null);
+        }
+        
+        /// <remarks/>
+        public void GetConferenciasPreprogramadasAsync(string id_sistema, object userState) {
+            if ((this.GetConferenciasPreprogramadasOperationCompleted == null)) {
+                this.GetConferenciasPreprogramadasOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetConferenciasPreprogramadasOperationCompleted);
+            }
+            this.InvokeAsync("GetConferenciasPreprogramadas", new object[] {
+                        id_sistema}, this.GetConferenciasPreprogramadasOperationCompleted, userState);
+        }
+        
+        private void OnGetConferenciasPreprogramadasOperationCompleted(object arg) {
+            if ((this.GetConferenciasPreprogramadasCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetConferenciasPreprogramadasCompleted(this, new GetConferenciasPreprogramadasCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -956,6 +990,129 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.estadoField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class Participantes {
+        
+        private string sipUriField;
+        
+        private string descripcionField;
+        
+        /// <remarks/>
+        public string SipUri {
+            get {
+                return this.sipUriField;
+            }
+            set {
+                this.sipUriField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Descripcion {
+            get {
+                return this.descripcionField;
+            }
+            set {
+                this.descripcionField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class Conferencia {
+        
+        private string idSalaBkkField;
+        
+        private int tipoConferenciaField;
+        
+        private string aliasField;
+        
+        private int posHMIField;
+        
+        private Participantes[] participantesConferenciaField;
+        
+        /// <remarks/>
+        public string IdSalaBkk {
+            get {
+                return this.idSalaBkkField;
+            }
+            set {
+                this.idSalaBkkField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int TipoConferencia {
+            get {
+                return this.tipoConferenciaField;
+            }
+            set {
+                this.tipoConferenciaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Alias {
+            get {
+                return this.aliasField;
+            }
+            set {
+                this.aliasField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int PosHMI {
+            get {
+                return this.posHMIField;
+            }
+            set {
+                this.posHMIField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public Participantes[] ParticipantesConferencia {
+            get {
+                return this.participantesConferenciaField;
+            }
+            set {
+                this.participantesConferenciaField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class ConferenciasPreprogramadas {
+        
+        private Conferencia[] conferenciaProgramadaField;
+        
+        /// <remarks/>
+        public Conferencia[] ConferenciaProgramada {
+            get {
+                return this.conferenciaProgramadaField;
+            }
+            set {
+                this.conferenciaProgramadaField = value;
             }
         }
     }
@@ -2281,8 +2438,8 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Externos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternosSector))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternosSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadioSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EstadosRecursos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Radio))]
@@ -2300,7 +2457,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFParams))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFRangoFrecuencias))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosMultiFrecuencia))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternosSector))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Agrupaciones))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresAgrupacion))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresSCV))]
@@ -6900,17 +7057,50 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Internos : Tablas {
+    public partial class GruposTelefonia : Tablas {
         
         private string idSistemaField;
         
-        private string idSectorizacionField;
+        private string idGrupoField;
+        
+        /// <remarks/>
+        public string IdSistema {
+            get {
+                return this.idSistemaField;
+            }
+            set {
+                this.idSistemaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdGrupo {
+            get {
+                return this.idGrupoField;
+            }
+            set {
+                this.idGrupoField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class DestinosInternosSector : Tablas {
+        
+        private string idSistemaField;
+        
+        private string idDestinoField;
+        
+        private uint tipoDestinoField;
         
         private string idNucleoField;
         
         private string idSectorField;
-        
-        private string idDestinoField;
         
         private uint idPrefijoField;
         
@@ -6937,12 +7127,22 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdSectorizacion {
+        public string IdDestino {
             get {
-                return this.idSectorizacionField;
+                return this.idDestinoField;
             }
             set {
-                this.idSectorizacionField = value;
+                this.idDestinoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint TipoDestino {
+            get {
+                return this.tipoDestinoField;
+            }
+            set {
+                this.tipoDestinoField = value;
             }
         }
         
@@ -6963,16 +7163,6 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.idSectorField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IdDestino {
-            get {
-                return this.idDestinoField;
-            }
-            set {
-                this.idDestinoField = value;
             }
         }
         
@@ -7043,39 +7233,6 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.literalField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class GruposTelefonia : Tablas {
-        
-        private string idSistemaField;
-        
-        private string idGrupoField;
-        
-        /// <remarks/>
-        public string IdSistema {
-            get {
-                return this.idSistemaField;
-            }
-            set {
-                this.idSistemaField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IdGrupo {
-            get {
-                return this.idGrupoField;
-            }
-            set {
-                this.idGrupoField = value;
             }
         }
     }
@@ -8819,17 +8976,17 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class DestinosInternosSector : Tablas {
+    public partial class Internos : Tablas {
         
         private string idSistemaField;
         
-        private string idDestinoField;
-        
-        private uint tipoDestinoField;
+        private string idSectorizacionField;
         
         private string idNucleoField;
         
         private string idSectorField;
+        
+        private string idDestinoField;
         
         private uint idPrefijoField;
         
@@ -8856,22 +9013,12 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdDestino {
+        public string IdSectorizacion {
             get {
-                return this.idDestinoField;
+                return this.idSectorizacionField;
             }
             set {
-                this.idDestinoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint TipoDestino {
-            get {
-                return this.tipoDestinoField;
-            }
-            set {
-                this.tipoDestinoField = value;
+                this.idSectorizacionField = value;
             }
         }
         
@@ -8892,6 +9039,16 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.idSectorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdDestino {
+            get {
+                return this.idDestinoField;
+            }
+            set {
+                this.idDestinoField = value;
             }
         }
         
@@ -11244,6 +11401,32 @@ namespace U5ki.CfgService.SoapCfg {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((Node[])(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    public delegate void GetConferenciasPreprogramadasCompletedEventHandler(object sender, GetConferenciasPreprogramadasCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetConferenciasPreprogramadasCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetConferenciasPreprogramadasCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ConferenciasPreprogramadas Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ConferenciasPreprogramadas)(this.results[0]));
             }
         }
     }

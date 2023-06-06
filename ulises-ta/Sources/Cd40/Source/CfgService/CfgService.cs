@@ -793,6 +793,13 @@ namespace U5ki.CfgService
                         }
                     }
 
+                    //Añade las conferencias preprogramadas
+                    SoapCfg.ConferenciasPreprogramadas conferences = soapSrv.GetConferenciasPreprogramadas(systemId);
+                    if (conferences != null)
+                    {
+                        CfgTranslators.Translate(cfg, conferences);
+                    }
+
                     try
                     {
                         /**

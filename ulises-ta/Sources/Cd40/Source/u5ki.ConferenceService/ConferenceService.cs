@@ -115,10 +115,10 @@ namespace u5ki.ConferenceService
             }
 
             public string roomName;
-            public string room_id;      //Identificador que maneja Brekeke.
-            public List<string> participants;
+            public string room_id;                  //Identificador que maneja Brekeke.
+            public List<string> participants;       //Son los participantes que envia la PBX en los mensajes de estado
         }
-        private Dictionary<string, RoomConference> roomConferences;
+        private Dictionary<string, RoomConference> roomConferences;  //La clave es el identificador de la sala de conferencia
 
         public ConferenceService()
         {
@@ -126,8 +126,8 @@ namespace u5ki.ConferenceService
             Status = ServiceStatus.Stopped;
             Master = false;
             roomConferences = new Dictionary<string, RoomConference>();
-            roomConferences.Add("1000", new RoomConference("1000"));
-            roomConferences.Add("2000", new RoomConference("2000"));
+            //roomConferences.Add("1000", new RoomConference("1000"));
+            //roomConferences.Add("2000", new RoomConference("2000"));
         }
 
         public void Start()
@@ -324,6 +324,47 @@ namespace u5ki.ConferenceService
                     }
                 }
             }
+
+            //Agregamos a roomConferences las salas de conferencia nuevas
+            foreach (U5ki.Infrastructure.Conferencia conferencia in cfg.ConferenciasPreprogramadas)
+            {
+                RoomConference roomconf;
+                if (roomConferences.TryGetValue(conferencia.IdSalaBkk, out roomconf))
+                {
+                    //La sala de conferencia ya esta incluida                    
+                }
+                else
+                {
+                    //La sala de conferencia no esta incluida
+                    roomConferences.Add(conferencia.IdSalaBkk, new RoomConference(conferencia.IdSalaBkk));
+                }
+            }
+
+            //Quitamos de roomConferences las salas que ya no esten configuradas
+            List<string> roomConferences_to_remove = new List<string>();
+            foreach (string roomname in roomConferences.Keys)
+            {
+                bool found = false;
+                foreach (U5ki.Infrastructure.Conferencia conferencia in cfg.ConferenciasPreprogramadas)
+                {
+                    if (conferencia.IdSalaBkk == roomname)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    roomConferences_to_remove.Add(roomname);
+                }
+            }
+
+            foreach (string roomname_to_remove in roomConferences_to_remove)
+            {
+                roomConferences.Remove(roomname_to_remove);
+            }
+
         }
 
         public void WebSocketInit()
@@ -507,12 +548,15 @@ namespace u5ki.ConferenceService
 
             LogInfo<ConferenceService>(String.Format("######## TRAZA: ProcessNotifyStatus: other_number {0} user {1}", bkkmsg.@params.other_number, bkkmsg.@params.user));
 
+            //Busca el identificador de la sala de conferencia recibida en roomConferences
             try
             {
                 if (roomConferences.TryGetValue(bkkmsg.@params.other_number, out roomConf))
                 {
                     if (bkkmsg.@params.room_id != roomConf.room_id)
                     {                        
+                        //El identificador interno de la PBX de la sala de conferencia ha cambiado
+                        //Por alguna causa la conferencia establecida ha cambiado
                         room_id_changed = true;
                     }
                 }
@@ -521,6 +565,10 @@ namespace u5ki.ConferenceService
             {                
             }
 
+            //Si no lo encuentra, puede ser que el mensaje no lo incluye, entonces lo buscamos por room_id
+            //que es el identificador interno que utiliza la PBX
+            //Cuando un participante desaparece de la sala de conferencia, la nofificacion websocket que envia
+            //la PBX no incluye other_number, por eso usamos en este caso room_id
             try
             {
                 if (roomConf == null)
@@ -538,9 +586,11 @@ namespace u5ki.ConferenceService
             catch(Exception x)
             {
             }
-
+                        
             if (roomConf != null)
             {
+                //La sala de conferencia recibida en la notificacion esta incluida en roomConferences
+
                 int status;
                 if (int.TryParse(bkkmsg.@params.status, out status))
                 {
@@ -548,13 +598,19 @@ namespace u5ki.ConferenceService
                         status == (int)NotifyStatusCode.CALL_SUCCESS_BIS ||
                         status == (int)NotifyStatusCode.ANSWER_SUCCESS)
                     {
+                        //Un usuario se ha agregado a la sala de conferencia
+
                         if (room_id_changed)
                         {
+                            //Como el room_id ha cambiado, que es el identificador interno que usa la PBX,
+                            //entonces descartamos los participantes que ya tenia roomConferences
+
                             roomConf.room_id = bkkmsg.@params.room_id;
                             roomConf.participants.Clear();
                             conference_changed = true;
                         }
 
+                        //Se agrega el participante
                         string participant = bkkmsg.@params.user;
                         if (roomConf.participants.IndexOf(participant) < 0)
                         {
@@ -566,13 +622,17 @@ namespace u5ki.ConferenceService
                     }
                     else if (status == (int)NotifyStatusCode.DISCONNECT)
                     {
+                        //El participante se ha ido de la sala de conferencia
                         if (room_id_changed)
                         {
+                            //Como room_id, que es el identificador interno que usa la PBX.
+                            //Descartamos todos los participantes que tenia roomConferences
                             roomConf.room_id = bkkmsg.@params.room_id;
                             roomConf.participants.Clear();
                             conference_changed = true;
                         }
 
+                        //Eliminamos el participante
                         string participant = bkkmsg.@params.user;
                         if (roomConf.participants.IndexOf(participant) >= 0)
                         {
@@ -585,6 +645,7 @@ namespace u5ki.ConferenceService
                 }
             }
 
+            //Se envia el estado de la conferencia a los puestos, si procede
             if (roomConf != null && ConfRegistry != null && conference_changed)
             {
                 ConferenceStatus message = new ConferenceStatus();
