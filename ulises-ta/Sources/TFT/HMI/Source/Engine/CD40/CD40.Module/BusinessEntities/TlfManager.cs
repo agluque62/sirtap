@@ -11,6 +11,7 @@ using HMI.CD40.Module.Properties;
 using U5ki.Infrastructure;
 using Utilities;
 using NLog;
+using static System.Windows.Forms.LinkLabel;
 
 namespace HMI.CD40.Module.BusinessEntities
 {
@@ -1056,6 +1057,67 @@ namespace HMI.CD40.Module.BusinessEntities
             return false;
         }
 
+        private bool ConfigConferencia(RangeMsg<TlfInfo> tlfPositions,TlfPosition tlf, CfgEnlaceInterno link)
+        {
+            int NumPositionsByPage = 15;
+            if (tlf.Pos >= NumPositionsByPage * 3)
+            {
+                int modulo = tlf.Pos % NumPositionsByPage;
+                int primera_pos_conf = NumPositionsByPage * 10 + modulo;
+
+                TlfPosition tlf2 = new TlfPosition(primera_pos_conf);
+                _TlfPositions.Add(primera_pos_conf, tlf2);
+                _TlfPositions[primera_pos_conf].TlfPosStateChanged += OnTlfStateChanged;
+                _TlfPositions[primera_pos_conf].ForwardedCallMsg += OnForwardedCallMsg;
+
+                link.PosicionHMI = (uint)(NumPositionsByPage * 3 + modulo);
+                tlf2.Reset(link);
+                TlfInfo posInfo2 = new TlfInfo(tlf2.Literal, tlf2.State, tlf2.ChAllowsPriority(), TlfType.Ad, tlf2.IsTop, tlf2.ChAllowsForward);
+                tlfPositions.Info[primera_pos_conf] = posInfo2;
+                return true;
+            }
+            return false;
+        }
+
+        void SimulaConfiguracionConferencias(RangeMsg<TlfInfo> tlfPositions)
+        {
+            // relleno conferencias
+            // lalm 230410
+            int max_a_presentar = 15;
+            int NumPositionsByPage = 15;
+            TlfPosition tlf;
+            TlfPosition tlf2;
+            CfgEnlaceInterno guardalink = new CfgEnlaceInterno();
+            for (int i = 0; i < max_a_presentar; i++)//lo pongo a 1 para meter l2 en la posicion 2
+            {
+                int numpages = Tlf.NumDestinations / NumPositionsByPage;
+                int pos = (numpages - 1) * NumPositionsByPage + i;//ultima pagina
+                                                                  //int pos = 150+ i;// de momento coloco aqui
+                tlf = new TlfPosition(pos);
+
+                if (i < max_a_presentar)
+                {
+                    tlf2 = new TlfPosition(pos);
+                    _TlfPositions.Add(pos, tlf2);
+                    _TlfPositions[pos].TlfPosStateChanged += OnTlfStateChanged;
+                    _TlfPositions[pos].ForwardedCallMsg += OnForwardedCallMsg;
+
+                    guardalink.ListaRecursos.Clear();
+                    CfgRecursoEnlaceInterno interno = new CfgRecursoEnlaceInterno();
+                    interno.NombreRecurso = "L" + (1 + i).ToString();
+                    guardalink.ListaRecursos.Add(interno);
+                    guardalink.Literal = "Conf_" + (1 + i).ToString();
+                    guardalink.OrigenR2 = (31801 + i).ToString();
+                    guardalink.PosicionHMI = (uint)(NumPositionsByPage*3 + i);
+                    guardalink.TipoEnlaceInterno = "DA";
+                    tlf2.Reset(guardalink);
+                    TlfInfo posInfo2 = new TlfInfo(tlf2.Literal, tlf2.State, tlf2.ChAllowsPriority(), TlfType.Ad, tlf2.IsTop, tlf2.ChAllowsForward);
+                    tlfPositions.Info[pos] = posInfo2;
+                }
+            }
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1071,7 +1133,10 @@ namespace HMI.CD40.Module.BusinessEntities
                 SortedList<int, TlfPosition> tlfPositionsCopy = new SortedList<int, TlfPosition>(_TlfPositions);
                 for (int i = Tlf.IaMappedPosition; i<Tlf.IaMappedPosition+Tlf.NumIaDestinations;i++)
                     tlfPositionsCopy.Remove(i);
-			    foreach (CfgEnlaceInterno link in Top.Cfg.TlfLinks)
+
+                //var copiaLink = Top.Cfg.TlfLinks.Select(e => e).ToList();
+
+                foreach (CfgEnlaceInterno link in Top.Cfg.TlfLinks)
 			    {
 				    int pos = (int)link.PosicionHMI - 1;
 
@@ -1087,11 +1152,15 @@ namespace HMI.CD40.Module.BusinessEntities
                         else
                             tlfPositionsCopy.Remove(pos);
 					    tlf.Reset(link);
-
-                        TlfInfo posInfo = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Ad, tlf.IsTop, tlf.ChAllowsForward);
-					    tlfPositions.Info[pos] = posInfo;
-				    }
-			    }
+						
+						// Configura teclas de conferencia si la hay.
+                        if (!ConfigConferencia(tlfPositions, tlf, link))
+                        {
+                            TlfInfo posInfo = new TlfInfo(tlf.Literal, tlf.State, tlf.ChAllowsPriority(), TlfType.Ad, tlf.IsTop, tlf.ChAllowsForward);
+                            tlfPositions.Info[pos] = posInfo;
+                        }
+                    }
+                }
                 foreach (CfgEnlaceInterno link in Top.Cfg.MdTlfLinksAjeno)
                 {
                     int pos = (int)link.PosicionHMI - 1;
@@ -1170,9 +1239,12 @@ namespace HMI.CD40.Module.BusinessEntities
                     if (tlfPositions.Info[i] == null)
                       tlfPositions.Info[i] = new TlfInfo("", TlfState.Unavailable, false, TlfType.Unknown, false, true); 
                 }
-			    General.SafeLaunchEvent(NewPositions, this, tlfPositions);
-			    General.SafeLaunchEvent(IaPositionsChanged, this, tlfIaPositions);
-		}
+
+                //SimulaConfiguracionConferencias(tlfPositions);
+
+                General.SafeLaunchEvent(NewPositions, this, tlfPositions);
+                General.SafeLaunchEvent(IaPositionsChanged, this, tlfIaPositions);
+            }
             catch (Exception exc)
             {
                 _Logger.Error(String.Format("TlfManager:OnConfigChanged exception {0}, {1}", exc.Message, exc.StackTrace));

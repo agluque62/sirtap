@@ -1,3 +1,9 @@
+11-4-23
+Para poder modificar los recursos es necesario que los modulos esten compilados en anycpu
+hay dudas con coresip-voter que usa x86, ese modulo dejarlo en x86 y probar
+u5ki.Infraestructure debe tener x86
+
+
 10-01-23 Sprint23-01
 04-10-2022 Nueva entrega con la grabación probada.
 01-09-2022 Sprint 12
