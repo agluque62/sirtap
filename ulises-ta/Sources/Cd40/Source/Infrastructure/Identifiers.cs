@@ -8,7 +8,7 @@ namespace U5ki.Infrastructure
     /// 
     /// </summary>
 	public static class Identifiers
-	{
+    {
         /// <summary>
         /// 
         /// </summary>
@@ -46,6 +46,8 @@ namespace U5ki.Infrastructure
         /// </summary>
         public const string PhoneTopic = "UvkiPhone";
         public const string PhoneMasterTopic = "UvkiPhoSrv";
+        public const string ConferenceTopic = "UkiConf";
+        public const string ConferenceMasterTopic = "UkiConfSrv";
         /// <summary>
         /// 
         /// </summary>
@@ -65,7 +67,7 @@ namespace U5ki.Infrastructure
 
 
 
-		public const short FR_RXTX_CHANGE_ASK_MSG = 5;//LALM 221102 cambiofrecuencia
+        public const short FR_RXTX_CHANGE_ASK_MSG = 5;//LALM 221102 cambiofrecuencia
         /// <summary>
         /// 
         /// </summary>
@@ -82,7 +84,15 @@ namespace U5ki.Infrastructure
         /// 
         /// </summary>
         public const short FR_HF_TX_CHANGE_RESPONSE_MSG = 54;
-		public const short FR_RXTX_CHANGE_RESPONSE_MSG = 55;//LALM 221102 cambiofrecuencia
+        public const short FR_RXTX_CHANGE_RESPONSE_MSG = 55;//LALM 221102 cambiofrecuencia
+        /// <summary>
+        /// Codigos de retorno para el mensaje de cambio de frecuencia FrChangeRsp, asociado a FR_RXTX_CHANGE_RESPONSE_MSG
+        /// </summary>
+
+        // Mensajes referentes a las conferencias preprogramadas
+        public const short CONFERENCE_STATUS = 520;  //Estado de la conferencia. Se envia mensaje ConferenceStatus de TopMessages.proto
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -140,17 +150,17 @@ namespace U5ki.Infrastructure
         /// <param name="t"></param>
         /// <returns></returns>
 		public static string TypeId(Type t)
-		{
-			return t.Namespace + "." + t.Name;
-		}
+        {
+            return t.Namespace + "." + t.Name;
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="typeId"></param>
         /// <returns></returns>
 		public static Type GetType(string typeId)
-		{
-			return Type.GetType(typeId);
-		}
-	}
+        {
+            return Type.GetType(typeId);
+        }
+    }
 }
