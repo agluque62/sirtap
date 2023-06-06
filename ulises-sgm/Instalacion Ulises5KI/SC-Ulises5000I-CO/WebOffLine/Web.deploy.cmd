@@ -177,9 +177,9 @@ call :CheckParameterFile
 echo. Start executing msdeploy.exe
 echo -------------------------------------------------------
 if  not exist "%_DeploySetParametersFile%" (
-set _MSDeployCommandline="%MSDeployPath%msdeploy.exe" -source:package='%RootPath%Web.zip' -dest:%_Destination% -verb:sync -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -skip:objectname='dirPath',absolutepath='C:\\Users\\Administrator\\AppData\\Local\\Temp\\WebSitePublish\\Web--1795002593\\obj\\Debug\\Package\\PackageTmp\\App_Data$' -skip:objectname='dirPath',absolutepath='Default\ Web\ Site/UlisesV5000/U5kCfg\\App_Data$'
+set _MSDeployCommandline="%MSDeployPath%msdeploy.exe" -source:package='%RootPath%Web.zip' -dest:%_Destination% -verb:sync -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -skip:objectname='dirPath',absolutepath='C:\\Users\\Administrator\\AppData\\Local\\Temp\\WebSitePublish\\Web--892276814\\obj\\Debug\\Package\\PackageTmp\\App_Data$' -skip:objectname='dirPath',absolutepath='Default\ Web\ Site/UlisesV5000/U5kCfg\\App_Data$'
 ) else (
-set _MSDeployCommandline="%MSDeployPath%msdeploy.exe" -source:package='%RootPath%Web.zip' -dest:%_Destination% -verb:sync -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -skip:objectname='dirPath',absolutepath='C:\\Users\\Administrator\\AppData\\Local\\Temp\\WebSitePublish\\Web--1795002593\\obj\\Debug\\Package\\PackageTmp\\App_Data$' -skip:objectname='dirPath',absolutepath='Default\ Web\ Site/UlisesV5000/U5kCfg\\App_Data$' -setParamFile:"%_DeploySetParametersFile%"
+set _MSDeployCommandline="%MSDeployPath%msdeploy.exe" -source:package='%RootPath%Web.zip' -dest:%_Destination% -verb:sync -disableLink:AppPoolExtension -disableLink:ContentExtension -disableLink:CertificateExtension -skip:objectname='dirPath',absolutepath='C:\\Users\\Administrator\\AppData\\Local\\Temp\\WebSitePublish\\Web--892276814\\obj\\Debug\\Package\\PackageTmp\\App_Data$' -skip:objectname='dirPath',absolutepath='Default\ Web\ Site/UlisesV5000/U5kCfg\\App_Data$' -setParamFile:"%_DeploySetParametersFile%"
 )
 
 if "%_HaveArgMSDeployAdditonalFlags%" == "" (
