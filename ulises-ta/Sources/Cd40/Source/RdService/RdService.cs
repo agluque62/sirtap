@@ -1690,7 +1690,7 @@ namespace U5ki.RdService
                                 rdFrToRemove.Remove(rdLinkId);
                             else
                             {
-                                rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino, rdLink.DefaultFrequency);
+                                rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino);
                                 rdFr.TimerElapsed += OnRdFrecuencyTimerElapsed;
                                 rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;                                
                             }
@@ -1775,7 +1775,7 @@ namespace U5ki.RdService
                 if (!_UsrFreq.ContainsKey(clave))
                 {
                     RdFrecuency rdFr;
-                    rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino, rdLink.DefaultFrequency);
+                    rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino);
                     rdFr.TimerElapsed += OnRdFrecuencyTimerElapsed;
                     rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;
                     _UsrFreq[clave] = rdFr;

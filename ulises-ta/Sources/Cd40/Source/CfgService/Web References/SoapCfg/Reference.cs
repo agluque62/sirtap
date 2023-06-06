@@ -2281,8 +2281,8 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Externos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternosSector))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternosSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadioSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EstadosRecursos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Radio))]
@@ -2299,7 +2299,8 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFParams))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFRangoFrecuencias))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosMultiFrecuencia))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternosSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Agrupaciones))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresAgrupacion))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresSCV))]
@@ -3121,6 +3122,12 @@ namespace U5ki.CfgService.SoapCfg {
         
         private string comentariosField;
         
+        private int timeoutSesionField;
+        
+        private int sesionActivaField;
+        
+        private int sesionEstadoField;
+        
         /// <remarks/>
         public string IdOperador {
             get {
@@ -3208,6 +3215,36 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.comentariosField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int TimeoutSesion {
+            get {
+                return this.timeoutSesionField;
+            }
+            set {
+                this.timeoutSesionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int SesionActiva {
+            get {
+                return this.sesionActivaField;
+            }
+            set {
+                this.sesionActivaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int SesionEstado {
+            get {
+                return this.sesionEstadoField;
+            }
+            set {
+                this.sesionEstadoField = value;
             }
         }
     }
@@ -4406,6 +4443,8 @@ namespace U5ki.CfgService.SoapCfg {
         
         private string descDestinoField;
         
+        private int telemandoField;
+        
         /// <remarks/>
         public string IdRecurso {
             get {
@@ -4613,6 +4652,16 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.descDestinoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int Telemando {
+            get {
+                return this.telemandoField;
+            }
+            set {
+                this.telemandoField = value;
             }
         }
     }
@@ -6205,6 +6254,8 @@ namespace U5ki.CfgService.SoapCfg {
         
         private bool pasivoRetransmisionField;
         
+        private bool multiFrecuenciaField;
+        
         /// <remarks/>
         public int Fk_Metodosbss {
             get {
@@ -6453,6 +6504,16 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.pasivoRetransmisionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public bool MultiFrecuencia {
+            get {
+                return this.multiFrecuenciaField;
+            }
+            set {
+                this.multiFrecuenciaField = value;
             }
         }
     }
@@ -6839,50 +6900,17 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class GruposTelefonia : Tablas {
+    public partial class Internos : Tablas {
         
         private string idSistemaField;
         
-        private string idGrupoField;
-        
-        /// <remarks/>
-        public string IdSistema {
-            get {
-                return this.idSistemaField;
-            }
-            set {
-                this.idSistemaField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IdGrupo {
-            get {
-                return this.idGrupoField;
-            }
-            set {
-                this.idGrupoField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class DestinosInternosSector : Tablas {
-        
-        private string idSistemaField;
-        
-        private string idDestinoField;
-        
-        private uint tipoDestinoField;
+        private string idSectorizacionField;
         
         private string idNucleoField;
         
         private string idSectorField;
+        
+        private string idDestinoField;
         
         private uint idPrefijoField;
         
@@ -6909,22 +6937,12 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdDestino {
+        public string IdSectorizacion {
             get {
-                return this.idDestinoField;
+                return this.idSectorizacionField;
             }
             set {
-                this.idDestinoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint TipoDestino {
-            get {
-                return this.tipoDestinoField;
-            }
-            set {
-                this.tipoDestinoField = value;
+                this.idSectorizacionField = value;
             }
         }
         
@@ -6945,6 +6963,16 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.idSectorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdDestino {
+            get {
+                return this.idDestinoField;
+            }
+            set {
+                this.idDestinoField = value;
             }
         }
         
@@ -7015,6 +7043,39 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.literalField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class GruposTelefonia : Tablas {
+        
+        private string idSistemaField;
+        
+        private string idGrupoField;
+        
+        /// <remarks/>
+        public string IdSistema {
+            get {
+                return this.idSistemaField;
+            }
+            set {
+                this.idSistemaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdGrupo {
+            get {
+                return this.idGrupoField;
+            }
+            set {
+                this.idGrupoField = value;
             }
         }
     }
@@ -8701,17 +8762,74 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Internos : Tablas {
+    public partial class DestinosMultiFrecuencia : Tablas {
         
         private string idSistemaField;
         
-        private string idSectorizacionField;
+        private string idDestinoField;
+        
+        private bool frecuenciaDefectoField;
+        
+        private string frecuenciaField;
+        
+        /// <remarks/>
+        public string IdSistema {
+            get {
+                return this.idSistemaField;
+            }
+            set {
+                this.idSistemaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdDestino {
+            get {
+                return this.idDestinoField;
+            }
+            set {
+                this.idDestinoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public bool FrecuenciaDefecto {
+            get {
+                return this.frecuenciaDefectoField;
+            }
+            set {
+                this.frecuenciaDefectoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Frecuencia {
+            get {
+                return this.frecuenciaField;
+            }
+            set {
+                this.frecuenciaField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class DestinosInternosSector : Tablas {
+        
+        private string idSistemaField;
+        
+        private string idDestinoField;
+        
+        private uint tipoDestinoField;
         
         private string idNucleoField;
         
         private string idSectorField;
-        
-        private string idDestinoField;
         
         private uint idPrefijoField;
         
@@ -8738,12 +8856,22 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdSectorizacion {
+        public string IdDestino {
             get {
-                return this.idSectorizacionField;
+                return this.idDestinoField;
             }
             set {
-                this.idSectorizacionField = value;
+                this.idDestinoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint TipoDestino {
+            get {
+                return this.tipoDestinoField;
+            }
+            set {
+                this.tipoDestinoField = value;
             }
         }
         
@@ -8764,16 +8892,6 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.idSectorField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IdDestino {
-            get {
-                return this.idDestinoField;
-            }
-            set {
-                this.idDestinoField = value;
             }
         }
         
@@ -10024,6 +10142,8 @@ namespace U5ki.CfgService.SoapCfg {
         
         private string redundanciaRolField;
         
+        private int telemandoField;
+        
         /// <remarks/>
         public string IdRecurso {
             get {
@@ -10183,6 +10303,16 @@ namespace U5ki.CfgService.SoapCfg {
                 this.redundanciaRolField = value;
             }
         }
+        
+        /// <remarks/>
+        public int Telemando {
+            get {
+                return this.telemandoField;
+            }
+            set {
+                this.telemandoField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -10210,10 +10340,7 @@ namespace U5ki.CfgService.SoapCfg {
         private string estadoAsignacionField;
         
         private string[] destinoAudioField;
-
-        private string[] SelectableFrequenciesField;
-        private string SelectedFrequencyField;
-
+        
         private uint prioridadField;
         
         private bool supervisionPortadoraField;
@@ -10249,6 +10376,10 @@ namespace U5ki.CfgService.SoapCfg {
         private string porcentajeRSSIField;
         
         private bool pasivoRetransmisionField;
+        
+        private string[] selectableFrequenciesField;
+        
+        private string defaultFrequencyField;
         
         /// <remarks/>
         public string Literal {
@@ -10339,31 +10470,7 @@ namespace U5ki.CfgService.SoapCfg {
                 this.destinoAudioField = value;
             }
         }
-
-        public string[] SelectableFrequencies
-        {
-            get
-            {
-                return this.SelectableFrequenciesField;
-            }
-            set
-            {
-                this.SelectableFrequenciesField = value;
-            }
-        }
-
-        public string SelectedFrequency
-        {
-            get
-            {
-                return this.SelectedFrequencyField;
-            }
-            set
-            {
-                this.SelectedFrequencyField = value;
-            }
-        }
-
+        
         /// <remarks/>
         public uint Prioridad {
             get {
@@ -10541,6 +10648,26 @@ namespace U5ki.CfgService.SoapCfg {
             }
             set {
                 this.pasivoRetransmisionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string[] SelectableFrequencies {
+            get {
+                return this.selectableFrequenciesField;
+            }
+            set {
+                this.selectableFrequenciesField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string DefaultFrequency {
+            get {
+                return this.defaultFrequencyField;
+            }
+            set {
+                this.defaultFrequencyField = value;
             }
         }
     }

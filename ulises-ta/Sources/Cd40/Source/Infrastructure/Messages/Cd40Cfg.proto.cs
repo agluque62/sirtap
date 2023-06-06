@@ -1386,6 +1386,15 @@ namespace U5ki.Infrastructure
       get { return _RedundanciaRol; }
       set { _RedundanciaRol = value; }
     }
+
+    private int _Telemando = default(int);
+    [global::ProtoBuf.ProtoMember(15, IsRequired = false, Name=@"Telemando", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int Telemando
+    {
+      get { return _Telemando; }
+      set { _Telemando = value; }
+    }
     private global::ProtoBuf.IExtension extensionObject;
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }

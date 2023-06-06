@@ -793,8 +793,6 @@ namespace U5ki.CfgService
                         }
                     }
 
-                    ModifyConfigReceivedforTest(cfg);           //PARA PROBAR FRECUENCIAS SELECCIONABLES EN UN DESTINO SIMPLE
-
                     try
                     {
                         /**
@@ -857,61 +855,6 @@ namespace U5ki.CfgService
                 _CheckCfg.Enabled = true;
             }
             return;
-        }
-
-        /// <summary>
-        /// Realiza modificaciones sobre la configuracion recibida a partir de un fichero Json
-        /// Esta funcion se usa para simular configuraciones que no se han implementado todavia en la aplicacion WEB
-        /// </summary>
-        /// <param name="cfg_received"> Es la configuracion recibida que queremos modificar para test</param>
-        /// 
-
-        class FrequencyModifier
-        {
-            public string DescDestino;
-            public string[] SelectableFrequencies;
-            public string DefaultFrequency;
-            public string SelectedFrequency;
-        }
-
-        private void ModifyConfigReceivedforTest(Cd40Cfg cfg_received)
-        {
-            //Se van a modifcar la lista de frecuencias de cada destino radio
-            string modifierfile = "addfreqlist.json";
-            if (File.Exists(modifierfile))
-            {
-                try
-                {
-                    using (StreamReader r = new StreamReader(modifierfile))
-                    {
-                        string json = r.ReadToEnd();
-                        FrequencyModifier[] modifiers = JsonConvert.DeserializeObject<FrequencyModifier[]>(json);
-
-                        foreach (ConfiguracionUsuario user in cfg_received.ConfiguracionUsuarios)
-                        {
-                            foreach (CfgEnlaceExterno rdlink in user.RdLinks)
-                            {
-                                foreach (FrequencyModifier modifier in modifiers)
-                                {
-                                    if (rdlink.DescDestino == modifier.DescDestino)
-                                    {
-                                        rdlink.SelectableFrequencies.Clear();
-                                        foreach (string selectableFrequency in modifier.SelectableFrequencies)
-                                        {
-                                            rdlink.SelectableFrequencies.Add(selectableFrequency);
-                                        }
-                                        rdlink.DefaultFrequency = modifier.DefaultFrequency;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-                    ExceptionManage<CfgService>("ModifyConfigReceivedforTest", ex, "En ModifyConfigReceivedforTest Excepcion: " + ex.Message);
-                }
-            }
         }
 
         /// <summary>

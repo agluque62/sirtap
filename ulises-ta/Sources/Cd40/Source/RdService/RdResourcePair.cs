@@ -186,6 +186,22 @@ namespace U5ki.RdService
                 _StandbyResource.OldSelected = value;
             }
         }
+
+        //Si vale true quiere decir que el recurso esta sintonizado con la frecuencia correcta
+        //Si el recurso pertenece a un destino de frecuencia seleccionable, este valor indica si 
+        //la frecuencia sintonizada es la requerida.
+        //En 1+1 sera true si el de la activa es true. En valor se establece a cada recurso por separado
+        //por eso no hay set
+        public bool TunedFrequencyOK
+        {
+            get { return _ActiveResource.TunedFrequencyOK; }
+            set 
+            { 
+                _ActiveResource.TunedFrequencyOK = value;
+                _StandbyResource.TunedFrequencyOK = value;
+            }
+        }
+
         //used only in M+N resources
         public bool MasterMN { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool ReplacedMN { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -588,7 +604,7 @@ namespace U5ki.RdService
             var msg = $"Equipo {_ActiveResource.ID} seleccionado automaticamente en grupo 1+1 {ID}. Motivo: {cause}";
             LogInfo<RdService>(msg,
                 U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
-                IdDestino, FrequencyId,
+                FrequencyId,
                 Translate.CTranslate.translateResource(msg));
         }
 

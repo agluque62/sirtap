@@ -517,6 +517,7 @@ namespace U5ki.CfgService
 			{
 				cfg.SelectableFrequencies.AddRange(soapCfg.SelectableFrequencies);
 			}
+			cfg.DefaultFrequency = soapCfg.DefaultFrequency;
             //cfg.NombreZonaTxDefecto = soapCfg.NombreZonaTxDefecto;
             /*
             if (soapCfg.MetodosBss != null)
@@ -607,6 +608,7 @@ namespace U5ki.CfgService
             cfg.EnableEventPttSq = soapCfg.EnableEventPttSq;
             cfg.RedundanciaRol = soapCfg.RedundanciaRol;
             cfg.RedundanciaIdPareja = soapCfg.RedundanciaIdPareja;
+			cfg.Telemando = soapCfg.Telemando;
 		}
 
         /// <summary>

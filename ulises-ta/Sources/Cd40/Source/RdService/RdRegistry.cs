@@ -359,6 +359,9 @@ namespace U5ki.RdService
 
         public static void RespondToChangingFreq(string to, bool result, string idFrecuency, string assignedFrecuency, uint code)
         {
+            if (to == null) 
+                return;
+
             if (!_Master)
                 return;
 
