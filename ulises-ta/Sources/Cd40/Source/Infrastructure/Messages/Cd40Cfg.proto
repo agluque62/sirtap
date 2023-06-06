@@ -339,6 +339,7 @@ message CfgRecursoEnlaceExterno
 	optional bool EnableEventPttSq = 12;
 	optional string RedundanciaIdPareja = 13;
 	optional string RedundanciaRol = 14;
+	optional int32 Telemando = 15; 
 }
 
 message CfgEnlaceExterno
@@ -370,6 +371,8 @@ message CfgEnlaceExterno
 	optional int32 TiempoVueltaADefecto = 25;
 	optional uint32 PorcentajeRSSI = 26;
 	optional bool PasivoRetransmision = 27;
+	repeated string SelectableFrequencies = 28;
+	optional string DefaultFrequency = 29;
 }
 
 message CfgRecursoEnlaceInterno
@@ -455,6 +458,21 @@ message Node
 	optional string idEmplazamiento = 22;
 }
 
+message Participantes
+{
+	optional string SipUri = 1;
+	optional string Descripcion = 2;
+}
+
+message Conferencia
+{
+	optional string IdSalaBkk = 1;
+	optional string Alias = 2;
+	optional int32 TipoConferencia = 3;
+	optional int32 PosHMI = 4;
+	repeated Participantes participantesConferencia = 5;
+}
+
 message Cd40Cfg 
 {
 	optional string Version = 1;
@@ -463,4 +481,7 @@ message Cd40Cfg
 	repeated PoolHfElement PoolHf = 4;
 	repeated Node NodesMN = 5;
 	repeated Node NodesEE = 6;
+	repeated Conferencia ConferenciasPreprogramadas = 7;
 }
+
+
