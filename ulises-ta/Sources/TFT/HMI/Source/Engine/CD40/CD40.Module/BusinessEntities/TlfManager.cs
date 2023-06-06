@@ -1270,8 +1270,14 @@ namespace HMI.CD40.Module.BusinessEntities
                 uint neip = Top.Cfg.NumEnlacesInternosPag;
                 int c45 =(int) (npi * neip );//La pagina de conferencia esta siempre a continuacion de la paginas de AD.
 
-                _TlfPositions[c45 + poshmi].Participantes_conf = par;
-                _TlfPositions[c45 + poshmi].IsConfPreprogramada = true;
+                //230606 cambio la forma de asignación.
+                if (_TlfPositions.TryGetValue(c45 + poshmi, out TlfPosition tlf) == true)
+                {
+                    tlf.Participantes_conf = par;
+                    tlf.IsConfPreprogramada = true;
+                }
+                //_TlfPositions[c45 + poshmi].Participantes_conf = par;
+                //_TlfPositions[c45 + poshmi].IsConfPreprogramada = true;
             }
         }
 
