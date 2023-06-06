@@ -29,7 +29,6 @@ namespace HMI.Model.Module.BusinessEntities
 		Out,
 		Set,
 		Conf,
-		ConfPreprogramada,
 		Congestion,
 		Busy,
 		RemoteIn,
@@ -73,7 +72,6 @@ namespace HMI.Model.Module.BusinessEntities
 		Busy = TlfState.Busy,
 		Set = TlfState.Set,
 		Conf = TlfState.Conf,
-		ConfPreprogramada = TlfState.ConfPreprogramada,
 		Out = TlfState.Out,
 		OutOfService = TlfState.OutOfService,
 		NotAllowed = TlfState.NotAllowed,
@@ -258,10 +256,6 @@ namespace HMI.Model.Module.BusinessEntities
 
 		public void Reset(TlfInfo dst)
 		{
-			if (dst==null)
-			{
-				return;
-			}
 			if (dst.Dst == "")
 			{
 				Reset();
@@ -391,7 +385,6 @@ namespace HMI.Model.Module.BusinessEntities
 			{
 				case TlfState.Set:
 				case TlfState.Conf:
-				case TlfState.ConfPreprogramada:
                     if (_Type == TlfType.Md)
                         StateDescription = Resources.MultidestinationCall + " " + _Dst;
 					else
@@ -1052,13 +1045,10 @@ namespace HMI.Model.Module.BusinessEntities
 					case TlfState.Set:
 						State = UnhangState.Set;
 						break;
-                    case TlfState.Conf:
-                        State = UnhangState.Conf;
-                        break;
-                    case TlfState.ConfPreprogramada:
-                        State = UnhangState.ConfPreprogramada;
-                        break;
-                    case TlfState.Busy:
+					case TlfState.Conf:
+						State = UnhangState.Conf;
+						break;
+					case TlfState.Busy:
 						State = UnhangState.Busy;
 						break;
 					case TlfState.RemoteHold:
@@ -1090,37 +1080,34 @@ namespace HMI.Model.Module.BusinessEntities
 
 	public sealed class Tlf
 	{
-		//Peticiones #3638
+        //Peticiones #3638
 		public static int NumIaDestinations = 1;//LALM 210923 , anulada, solo puede existir una lina de AI.
 		public static int NumDestinations = Settings.Default.NumTlfDestinations;
-		public static int NumPagEnlacesInt = Settings.Default.NumPagEnlacesInt;
-		public static int NumDestinationsCP = Settings.Default.NumTlfDestinationsCP;
-		public static bool PagConferencia = Settings.Default.PagConferencia;
 		public static int IaMappedPosition = NumDestinations;
 
-		private TlfDst[] _Dst = new TlfDst[NumDestinations + NumDestinationsCP + NumIaDestinations];
+		private TlfDst[] _Dst = new TlfDst[NumDestinations + NumIaDestinations];
 		private int[] _NumDstInState = new int[Enum.GetValues(typeof(TlfState)).Length];
 		private Priority _Priority;
 		private IntrudedBy _IntrudedBy;
 		private InterruptedBy _InterruptedBy;
 		private IntrudeTo _IntrudeTo;
 		private Listen _Listen;
-		private PickUp _PickUp;
-		private Forward _Forward;
-		private ListenBy _ListenBy;
+        private PickUp _PickUp;
+        private Forward _Forward;
+        private ListenBy _ListenBy;
 		private Transfer _Transfer;
 		private HangTone _HangTone;
 		private Unhang _Unhang;
 		private ConfList _ConfList;
-		private bool _AltavozTlfEstado = Settings.Default.TlfSpeaker;
-		private bool _AltavozTlfEnable = Settings.Default.SpeakerTlfEnable && !Settings.Default.OnlySpeakerMode;
-		private bool _SoloAltavoces = Settings.Default.OnlySpeakerMode;
+        private bool _AltavozTlfEstado = Settings.Default.TlfSpeaker;
+        private bool _AltavozTlfEnable = Settings.Default.SpeakerTlfEnable && !Settings.Default.OnlySpeakerMode;
+        private bool _SoloAltavoces = Settings.Default.OnlySpeakerMode;
+
 		[EventPublication(EventTopicNames.TlfChanged, PublicationScope.Global)]
 		public event EventHandler<RangeMsg> TlfChanged;
-		public bool pageconf = false;
 
-		[EventPublication(EventTopicNames.ChangeTlfSpeaker, PublicationScope.Global)]
-		public event EventHandler<EventArgs<bool>> ChangeTlfSpeaker;
+        [EventPublication(EventTopicNames.ChangeTlfSpeaker, PublicationScope.Global)]
+        public event EventHandler<EventArgs<bool>> ChangeTlfSpeaker;
 
 		[CreateNew]
 		public Priority Priority
@@ -1164,21 +1151,21 @@ namespace HMI.Model.Module.BusinessEntities
 			set { _ListenBy = value; }
 		}
 
-		[CreateNew]
-		public PickUp PickUp
-		{
-			get { return _PickUp; }
-			set { _PickUp = value; }
-		}
+        [CreateNew]
+        public PickUp PickUp
+        {
+            get { return _PickUp; }
+            set { _PickUp = value; }
+        }
 
-		[CreateNew]
-		public Forward Forward
-		{
-			get { return _Forward; }
-			set { _Forward = value; }
-		}
+        [CreateNew]
+        public Forward Forward
+        {
+            get { return _Forward; }
+            set { _Forward = value; }
+        }
 
-		[CreateNew]
+        [CreateNew]
 		public Transfer Transfer
 		{
 			get { return _Transfer; }
@@ -1208,8 +1195,7 @@ namespace HMI.Model.Module.BusinessEntities
 
 		public TlfDst this[int i]
 		{
-			get { return (i < _Dst.Length) ?
-					_Dst[i] : null; }
+			get { return _Dst[i]; }
 		}
 
 		public int this[TlfState st]
@@ -1217,31 +1203,31 @@ namespace HMI.Model.Module.BusinessEntities
 			get { return _NumDstInState[(int)st]; }
 		}
 
-		public bool AltavozTlfEstado
-		{
-			get { return _AltavozTlfEstado; }
-			set {
-				bool oldState = _AltavozTlfEstado;
+        public bool AltavozTlfEstado
+        {
+            get { return _AltavozTlfEstado; }
+            set {
+                bool oldState = _AltavozTlfEstado;
 
-				_AltavozTlfEstado = value;
-				Settings.Default.TlfSpeaker = value;
-				Settings.Default.Save();
-				if (oldState != _AltavozTlfEstado)
-					General.SafeLaunchEvent(ChangeTlfSpeaker, this, new EventArgs<bool>(_AltavozTlfEstado));
-			}
-		}
+                _AltavozTlfEstado = value;
+                Settings.Default.TlfSpeaker = value;
+                Settings.Default.Save();
+                if (oldState != _AltavozTlfEstado)
+                    General.SafeLaunchEvent(ChangeTlfSpeaker, this, new EventArgs<bool>(_AltavozTlfEstado));
+            }
+        }
 
-		public bool AltavozTlfHabilitado
-		{
-			get { return _AltavozTlfEnable; }
-		}
+        public bool AltavozTlfHabilitado
+        {
+            get { return _AltavozTlfEnable; }
+        }
 
-		public bool SoloAltavoces
-		{
-			get { return _SoloAltavoces; }
-		}
+        public bool SoloAltavoces
+        {
+            get { return _SoloAltavoces; }
+        }
 
-		public Tlf()
+        public Tlf()
 		{
 			for (int i = 0; i < NumDestinations + NumIaDestinations; i++)
 			{
@@ -1249,14 +1235,14 @@ namespace HMI.Model.Module.BusinessEntities
 				_Dst[i].StChanged += OnTlfStChanged;
 			}
 
-			if (SoloAltavoces)
-				_AltavozTlfEstado = true;
-			else if (AltavozTlfHabilitado)
-				// Se inicializa con el estado guardado 
-				_AltavozTlfEstado = Settings.Default.TlfSpeaker;
-			else
-				_AltavozTlfEstado = false;
-			_NumDstInState[(int)TlfState.Idle] = (int)(NumDestinations + NumIaDestinations);
+            if (SoloAltavoces)
+                _AltavozTlfEstado = true;
+            else if (AltavozTlfHabilitado)
+                // Se inicializa con el estado guardado 
+                _AltavozTlfEstado = Settings.Default.TlfSpeaker;
+            else
+                _AltavozTlfEstado = false;
+			_NumDstInState[(int)TlfState.Idle] = NumDestinations + NumIaDestinations;
 		}
 
 		public void Reset()
@@ -1277,7 +1263,7 @@ namespace HMI.Model.Module.BusinessEntities
 			_HangTone.Reset();
 			_Unhang.Reset();
 			_ConfList.Reset();
-			_PickUp.Reset();
+            _PickUp.Reset();
 
 			for (int i = 0; i < NumDestinations + NumIaDestinations; i++)
 			{
@@ -1310,7 +1296,7 @@ namespace HMI.Model.Module.BusinessEntities
 
 			General.SafeLaunchEvent(TlfChanged, this, (RangeMsg)msg);
 
-			if ((_Transfer.State == FunctionState.Ready) &&
+			if ((_Transfer.State == FunctionState.Ready) && 
 				(_NumDstInState[(int)TlfState.Set] + _NumDstInState[(int)TlfState.Conf] != 1))
 			{
 				_Transfer.State = FunctionState.Idle;
@@ -1349,8 +1335,6 @@ namespace HMI.Model.Module.BusinessEntities
 
 		public void Reset(RangeMsg<TlfState> msg)
 		{
-			Debug.Assert(msg.From + msg.Count <= NumDestinations);
-
 			for (int i = 0; i < msg.Count; i++)
 			{
 				TlfDst dst = _Dst[i + msg.From];
@@ -1397,11 +1381,11 @@ namespace HMI.Model.Module.BusinessEntities
 
 				dst.Reset(info);
 
-				// 29112016. JCAM.  Poder intruir una llamada prioritaria desde AI
-				if (info.State == TlfState.Idle && IntrudeTo.IsIntrudingTo && IntrudeTo.To == dst.Dst)
-				{
-					IntrudeTo.Reset();
-				}
+                // 29112016. JCAM.  Poder intruir una llamada prioritaria desde AI
+                if (info.State ==  TlfState.Idle && IntrudeTo.IsIntrudingTo && IntrudeTo.To == dst.Dst)
+                {
+                    IntrudeTo.Reset();
+                }
 
 				if (dst.PrevState != dst.State)
 				{
@@ -1474,17 +1458,9 @@ namespace HMI.Model.Module.BusinessEntities
 
 			return st;
 		}
-		public int GetNumPagEnlacesInt()
-		{
-			return NumPagEnlacesInt;
-		}
-		public int GetNumDestinations()
-		{
-			return NumDestinations;
-		}
+
 		public int GetFirstInState(params TlfState[] st)
 		{
-			
 			for (int i = 0; i < NumDestinations + NumIaDestinations; i++)
 			{
 				if (Array.IndexOf(st, _Dst[i].State) >= 0)

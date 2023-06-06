@@ -32,6 +32,19 @@ namespace HMI.Presentation.AUrr.Properties {
             }
         }
         
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />")]
+        public global::System.Collections.Specialized.StringCollection Historic {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Historic"]));
+            }
+            set {
+                this["Historic"] = value;
+            }
+        }
+        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
@@ -197,6 +210,20 @@ namespace HMI.Presentation.AUrr.Properties {
             }
         }
         
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>FREC_1,False,False,NoAudio,True</string>\r\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection AssignatedStates {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["AssignatedStates"]));
+            }
+            set {
+                this["AssignatedStates"] = value;
+            }
+        }
+        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
@@ -284,33 +311,6 @@ namespace HMI.Presentation.AUrr.Properties {
         public int RdColumns {
             get {
                 return ((int)(this["RdColumns"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsd=\"http://www.w3." +
-            "org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />")]
-        public global::System.Collections.Specialized.StringCollection Historic {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["Historic"]));
-            }
-            set {
-                this["Historic"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsd=\"http://www.w3." +
-            "org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n  <s" +
-            "tring>FREC_1,False,False,NoAudio,True</string>\r\n</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection AssignatedStates {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["AssignatedStates"]));
-            }
-            set {
-                this["AssignatedStates"] = value;
             }
         }
     }

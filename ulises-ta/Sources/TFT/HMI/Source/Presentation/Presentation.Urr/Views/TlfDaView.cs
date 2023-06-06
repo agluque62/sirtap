@@ -342,7 +342,6 @@ namespace HMI.Presentation.Urr.Views
                     break;
                 case TlfState.Set:
                 case TlfState.Conf:
-                case TlfState.ConfPreprogramada:
                     backColor = VisualStyle.Colors.Green;
                     break;
                 case TlfState.Busy:

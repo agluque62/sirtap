@@ -11,29 +11,6 @@ message RdSrvRxRs
 	required uint32 RdRxPort = 6;
 }
 
-message FrRxChangeAsk
-{
-	required string HostId = 1;
-	required string Frecuency = 2;
-	required bool Rx = 3;
-}
-
-message FrTxChangeAsk
-{
-	required string HostId = 1;
-	required string Frecuency = 2;
-	required bool Tx = 3;
-	optional uint32 PttType = 4;
-	optional bool CheckAlreadyAssigned = 5;
-}
-
-message FrTxAssigned
-{
-	required string Frecuency = 1;
-	required string UserId = 2;
-}
-
-
 message RdSrvTxRs
 {
 }
@@ -64,7 +41,6 @@ message RdSrvFrRs
 	optional uint32 QidxValue = 8;
 	optional FrequencyStatusType FrequencyStatus = 9;
 	optional uint32 ErrorCode = 10;
-	optional string SelectedFrequency = 11;
 }
 
 message FrChangeResponse
@@ -98,15 +74,8 @@ message MSNodeInfo
 	required string site=1;
 	required string res=2;
 }
-message MSRdDestination
-{
-	required string id_destino=1;
-	required string selectedfrequency=2;
-}
 message MSStatus
 {
-	required string datetime=1;
-	repeated MSNodeInfo main_nodes=2;
-	repeated MSNodeInfo disabled_nodes=3;
-	repeated MSRdDestination rd_destination=4;	
+	repeated MSNodeInfo main_nodes=1;
+	repeated MSNodeInfo disabled_nodes=2;
 }

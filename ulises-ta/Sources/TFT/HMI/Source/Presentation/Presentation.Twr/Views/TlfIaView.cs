@@ -350,11 +350,6 @@ namespace HMI.Presentation.Twr.Views
 				//220905
 				_CallBT.ButtonColor = GetStateColor(_CallBT, _StateManager.Tlf.Unhang.State);
 			}
-			else if (e.Data==ViewNames.CambioFrecuencia)
-			{
-                _StateManager.Radio.GetFrecuenciaSeleccionada(e.Data);
-
-            }
 		}
 
 		[EventSubscription(EventTopicNames.TlfUnhangChanged, ThreadOption.Publisher)]

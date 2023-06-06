@@ -16,7 +16,6 @@ namespace HMI.Infrastructure.Interface.Constants
 	/// </summary>
 	public class EventTopicNames
 	{
-        public const string ActiveViewChanging = "ActiveViewChanging";
-        public const string RdListaFrecuencias = "RdListaFrecuencias";
-    }
+		public const string ActiveViewChanging = "ActiveViewChanging";
+	}
 }
