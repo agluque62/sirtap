@@ -120,12 +120,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.fr-FR.resx</DependentUpon>
     </Compile>
-	<!-- cambio resources1 por resources -->
-    <Compile Include="Properties\Resources.Designer.cs">
+    <None Include="Properties\Resources1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    </None>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

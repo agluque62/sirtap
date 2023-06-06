@@ -33,8 +33,10 @@ using System.Data;
 using System.Data.OleDb;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Linq;
+using static U5ki.Infrastructure.ConferenceStatus;
 /*
- * Fin de la Modificacion */
+* Fin de la Modificacion */
 
 namespace HMI.CD40.Module.Services
 {
@@ -288,6 +290,9 @@ namespace HMI.CD40.Module.Services
                     Top.Tlf.Forward.SetSnmpString += OnSetSnmpString;
                     //LALM 211007
                     Top.Tlf.ResourceChanged += OnTlfResourceChanged;
+                    //230516
+                    Top.Tlf.CambioConferenciaPreprogramada += OnCambioConferenciaPreprogramada;
+                    
                 }
                 if (Top.Lc != null)
                 {
@@ -471,7 +476,11 @@ namespace HMI.CD40.Module.Services
 
         public bool HayConferencia()
         {
-            return Top.Tlf.HayConferencia;
+            return Top.Tlf.HayConferencia /*|| Top.Tlf.HayConferenciaPreprogramada*/;
+        }
+        public bool HayConferenciaPreprogramada()
+        {
+            return Top.Tlf.HayConferenciaPreprogramada;
         }
 
         public void SetSplitMode(SplitMode mode)
@@ -1536,12 +1545,57 @@ namespace HMI.CD40.Module.Services
                 Top.Rd.GenerateBadOperationTone(durationInMsec);
             });
         }
+        public string ParserUri(string par,string Sala="")
+        {
+            for (int i = 0; i < Tlf.NumDestinations + Tlf.NumIaDestinations; i++)
+            {
+                if (!par.Contains("sip:"))
+                {
+                    string[] user = Top.Cfg.GetUserFromAddress(3, par);
+                    if (user != null)
+                    {
+                        var dst = user[1];//230523 aqui puedo obtener el parseado!!
+                        var lit = user[0];
+                        return dst;
+                    }
+                }
+                else 
+                {
+                    var resultado = Top.Cfg.confcfg.Where(Conferencia => Conferencia.IdSalaBkk == Sala).
+                                     SelectMany(Conferencia => Conferencia.participantesConferencia).
+                                     Where(Participantes => Participantes.SipUri == par).FirstOrDefault().Descripcion;
+                    if (resultado != null)
+                        return resultado.ToString();
+                }
+            }
+            return par;
+        }
 
+        //230510
+        public List <string> RefrescaListaParticipantesConf(string sala)
+        {
+            //TODO
+            try
+            {
+                List<string> s = Top.Cfg.confcfg.Where(i => i.IdSalaBkk == sala).FirstOrDefault()?.participantesConferencia.Select(j => j.SipUri).ToList();
+                var palabrastraducidas = from palabra in s select (ParserUri(palabra,sala));
+                //return s;
+                List<string> pt = new List<string>(palabrastraducidas?.ToList());
+                return palabrastraducidas?.ToList();
+                //return pt;
+            }
+            catch (Exception)
+            {
+                _Logger.Debug("Error RefrescaListaParticipantesConf {0}", sala);
+                return null;
+            
+            }
+        }
         #endregion
 
-		#region Private Members
+        #region Private Members
 
-		private static Logger _Logger = LogManager.GetCurrentClassLogger();
+        private static Logger _Logger = LogManager.GetCurrentClassLogger();
 
 		private int _ListenOperationTone = 0;
         private int _HoldedPosId = -1;
@@ -1749,7 +1803,8 @@ namespace HMI.CD40.Module.Services
 				General.SafeLaunchEvent(TlfInfoEngine, this, tlfPositions);
             });
 		}
-        //lalam 211007
+
+        //lalm 211007
         //#2629 Presentar via utilizada en llamada saliente.
         private void OnTlfResourceChanged(object sender, RangeMsg<TlfInfo> TlfInfoR)
         {
@@ -1757,6 +1812,12 @@ namespace HMI.CD40.Module.Services
             {
                 General.SafeLaunchEvent(TlfResStateEngine, this, TlfInfoR);
             });
+        }
+
+        //lalm 230516
+        private void OnCambioConferenciaPreprogramada(object sender, RangeMsg<TlfInfo> tlfPositions)
+        {
+            return;
         }
 
         private void OnTlfPositionsChanged(object sender, RangeMsg<TlfState> tlfStates)
@@ -2602,8 +2663,78 @@ namespace HMI.CD40.Module.Services
             //TODO
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="numberBook"></param>
+        /// <returns></returns>
+        private bool LoadParticipantesConferencia(Dictionary<string, string> numberBook)
+        {
+            // TODO 230510
+            return false;
+        }
+
+        //public List<string> GetListaSalasActiva()
+        //{
+        //    return Top.Cfg.confstatus?.Where(i => i.RoomName.Length > 0 && i.ActiveParticipants.Count > 0)?.
+        //        Select(i => i.RoomName).ToList();
+        //}
+
+        public List<string> GetListaParticipantesEstado(string sala)
+        {
+            // TODO 230510
+            List<string> result = new List <string>();
+            //List<string> result = Top.Cfg.GetParticipantesConferencia(sala/*"1000"*/);
+            List<string> parsea = new List<string>();
+            if ((Top.Cfg.confstatus!=null) && (Top.Cfg.confstatus.Where(i => i.RoomName == sala).Count() >0))
+            {
+                foreach (ConferenceStatus status in Top.Cfg.confstatus)
+                {
+                    if (status.RoomName == sala)
+                    {
+                        var c = Top.Cfg.TlfLinks.ToList();
+                        foreach (string par in status.ActiveParticipants)
+                        {
+                            string user = ParserUri(par);
+                            if (user != null)
+                            {
+                                parsea.Add(user);
+                            }
+                            else
+                                parsea.Add(par);
+                        }
+                    }
+                }
+                //result = status.ActiveParticipants;
+                result = parsea;
+            }
+            return result;
+        }
+        //List<string> GetListaSalasActvasConf()
+        //{
+        //    return Top.Cfg.confstatus.Select(i => i.RoomName).ToList();
+        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="poshmi"></param>
+        /// <returns></returns>
+        public string GetSala(int poshmi)
+        {
+            if (Top.Cfg.confcfg == null)
+                return "";
+            var IdSalaBkk = Top.Cfg.confcfg.Where(i => (i.PosHMI-1) == poshmi).FirstOrDefault()?.IdSalaBkk;
+            return IdSalaBkk;
+        }
+
+        public void ShowAdButtons()
+        {
+            //habra que enviar un mensaje.
+            // pretende mostrar teclas de ad
+            Top.Tlf.EndTlfAll();
+        }
         /**
-         * Fin de Modificacion */
-		#endregion
-	}
+        * Fin de Modificacion */
+        #endregion
+    }
 }

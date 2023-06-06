@@ -552,7 +552,16 @@ namespace HMI.Model.Module.Services
 
         public void TlfLoadDaPage(int page)
 		{
-			General.SafeLaunchEvent(LoadTlfDaPageUI, this, new PageMsg(page));
+            try
+            {
+				General.SafeLaunchEvent(LoadTlfDaPageUI, this, new PageMsg(page));
+
+			}
+			catch (Exception)
+            {
+
+                throw;
+            }
 		}
 
 		public void TlfClick(int id)
@@ -623,7 +632,8 @@ namespace HMI.Model.Module.Services
 				case TlfState.Congestion:
 				case TlfState.OutOfService:
 				case TlfState.NotAllowed:
-					_EngineCmdManager.EndTlfCall(id);
+                case TlfState.ConfPreprogramada:
+                    _EngineCmdManager.EndTlfCall(id);
 					if (_StateManager.Tlf.Priority.AssociatePosition == id)
 					{
 						_StateManager.Tlf.Priority.Reset();
@@ -663,6 +673,8 @@ namespace HMI.Model.Module.Services
 
 		public void PriorityClick()
 		{
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
 			switch (_StateManager.Tlf.Priority.State)
 			{
 				case FunctionState.Idle:
@@ -688,6 +700,8 @@ namespace HMI.Model.Module.Services
 
 		public void ListenClick()
 		{
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
 			switch (_StateManager.Tlf.Listen.State)
 			{
 				case FunctionState.Idle:
@@ -707,15 +721,26 @@ namespace HMI.Model.Module.Services
 
 		public void HoldClick()
 		{
+
+    //        if (_StateManager.Tlf.pageconf)//230523
+				//return;
+            if (_EngineCmdManager.HayConferenciaPreprogramada())
+            {
+                return;
+            }
             if (_EngineCmdManager.HayConferencia())
             {
                 _EngineCmdManager.SetHold(true);
             }
             else
             {
-                int id = _StateManager.Tlf.GetFirstInState(TlfState.Set, TlfState.Conf, TlfState.RemoteHold);
+				//GetListaSalasEstado();
+				//RefrescaListaParticipantesConf("");
 
-                if (id >= 0)
+				int id = _StateManager.Tlf.GetFirstInState(TlfState.Set, TlfState.Conf, TlfState.RemoteHold);
+				////firstbuttonConf=_StateManager.Tlf.GetNumDestinations();
+				//int nd = _StateManager.Tlf.NumDestinations;
+				//230525 las conferencias preprogramadas no se pueden retener.
                 {
                     _EngineCmdManager.SetHold(id, true);
                 }
@@ -724,6 +749,12 @@ namespace HMI.Model.Module.Services
 
 		public void TransferClick()
 		{
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
+			if (_EngineCmdManager.HayConferenciaPreprogramada())
+			{
+				return;
+			}
 			switch (_StateManager.Tlf.Transfer.State)
 			{
 				case FunctionState.Idle:
@@ -743,7 +774,9 @@ namespace HMI.Model.Module.Services
 
         public void ConferenceClick()
         {
-            if (!_EngineCmdManager.HayConferencia())
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
+			if (!_EngineCmdManager.HayConferencia())
             {
                 if (_StateManager.Tlf[TlfState.Hold] + _StateManager.Tlf[TlfState.Set] <= Settings.Default.NumMaxInConference - 1)
                     _EngineCmdManager.MakeConference(true);
@@ -832,12 +865,17 @@ namespace HMI.Model.Module.Services
 					_StateManager.Tlf.Priority.Reset();
 				}
 			}
-			else if (_StateManager.Tlf[TlfState.Conf] > 0)
-			{
-				if (test) return true;
-				_EngineCmdManager.EndTlfAll();
-			}
-			else if (_StateManager.Tlf[TlfState.Out] + _StateManager.Tlf[TlfState.NotAllowed] > 0)
+            else if (_StateManager.Tlf[TlfState.Conf] > 0)
+            {
+                if (test) return true;
+                _EngineCmdManager.EndTlfAll();
+            }
+            else if (_StateManager.Tlf[TlfState.ConfPreprogramada] > 0)
+            {
+                if (test) return true;
+                _EngineCmdManager.EndTlfAll();
+            }
+            else if (_StateManager.Tlf[TlfState.Out] + _StateManager.Tlf[TlfState.NotAllowed] > 0)
 			{
 				if (test) return true;
 				int id = _StateManager.Tlf.GetFirstInState(TlfState.Out, TlfState.NotAllowed);
@@ -901,7 +939,9 @@ namespace HMI.Model.Module.Services
 
         public void ReplayClick()
         {
-            General.SafeLaunchEvent(ReplayUI, this);
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
+			General.SafeLaunchEvent(ReplayUI, this);
         }
 
         public void FunctionReplay(FunctionReplay function, ViaReplay via, string fileName, long fileLength)
@@ -934,7 +974,9 @@ namespace HMI.Model.Module.Services
 
         public void PickUpClick()
         {
-            switch (_StateManager.Tlf.PickUp.State)
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
+			switch (_StateManager.Tlf.PickUp.State)
             {
                 case FunctionState.Idle:
                     _StateManager.Tlf.PickUp.State = FunctionState.Ready;
@@ -951,7 +993,9 @@ namespace HMI.Model.Module.Services
 
         public void ForwardClick()
         {
-            switch (_StateManager.Tlf.Forward.State)
+			if (_StateManager.Tlf.pageconf)//230523
+				return;
+			switch (_StateManager.Tlf.Forward.State)
             {
                 case FunctionState.Idle:
                     _StateManager.Tlf.Forward.State = FunctionState.Ready;
@@ -1284,5 +1328,72 @@ namespace HMI.Model.Module.Services
 			_EngineCmdManager.SetNewFrecuency(id, frecuency);//lalm 230301
 		}
 
+		//LALM 230510
+		public List<string> RefrescaListaParticipantesConf(string sala)
+		{
+			return _EngineCmdManager.RefrescaListaParticipantesConf(sala);
+		}
+
+		public List<string> GetListaParticipantesEstado(string sala)
+		{
+			return _EngineCmdManager.GetListaParticipantesEstado(sala);
+		}
+		public string GetSala(int poshmi)
+		{
+			return _EngineCmdManager.GetSala(poshmi);
+		}
+		public void DisableFunctionsPagConferencia(bool disable = true)
+        {
+            if (disable)
+            {
+                if (_StateManager.Tlf.Priority.State == FunctionState.Ready)
+                    _StateManager.Tlf.Priority.Reset();
+				if (_StateManager.Tlf.Listen.State == FunctionState.Ready)
+				{
+					_StateManager.Tlf.Listen.State = FunctionState.Idle;
+					_StateManager.Tlf.Listen.Reset();
+				}
+				if (_StateManager.Tlf.Transfer.State == FunctionState.Ready)
+                    _StateManager.Tlf.Transfer.State = FunctionState.Idle;
+                if (_StateManager.Tlf.PickUp.State == FunctionState.Ready)
+                    _StateManager.Tlf.PickUp.State = FunctionState.Idle;
+                if (_StateManager.Tlf.Forward.State == FunctionState.Ready)
+                    _StateManager.Tlf.Forward.State = FunctionState.Idle;
+            }
+			else
+            {
+				if (_StateManager.Tlf.Priority.State == FunctionState.Idle)
+					_StateManager.Tlf.Priority.Reset();
+				if (_StateManager.Tlf.Listen.State == FunctionState.Idle)
+				{
+					_StateManager.Tlf.Listen.State = FunctionState.Ready;
+					_StateManager.Tlf.Listen.State = FunctionState.Idle;
+					_StateManager.Tlf.Listen.State = FunctionState.Ready;
+					_StateManager.Tlf.Listen.Reset();
+				}
+				if (_StateManager.Tlf.Transfer.State == FunctionState.Idle)
+				{
+					_StateManager.Tlf.Transfer.State = FunctionState.Ready;
+					_StateManager.Tlf.Transfer.State = FunctionState.Idle;
+				}
+				if (_StateManager.Tlf.PickUp.State == FunctionState.Idle)
+					_StateManager.Tlf.PickUp.State = FunctionState.Ready;
+				if (_StateManager.Tlf.Forward.State == FunctionState.Idle)
+					_StateManager.Tlf.Forward.State = FunctionState.Ready;
+
+			}
+		}
+
+		/// <summary>
+		/// Muestra los botones de la pagina de conferencia que pueden haber sido ocultados 
+		/// al presentar la lista de participantes.
+		/// </summary>
+		public void ShowAdButtons(int page)
+		{
+			
+			TlfLoadDaPage(page);
+
+			//_EngineCmdManager.ShowAdButtons();
+		}
 	}
 }
