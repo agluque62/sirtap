@@ -21,7 +21,6 @@ namespace HMI.Model.Module.Services
 		public string pantalla { get; set; }
 		public int id { get; set; }
 		public string frecuencias { get; set; }
-		public List<string> listafrecuencias;
 	}
 
 	public class UICmdManagerService : IModelCmdManagerService
@@ -244,7 +243,6 @@ namespace HMI.Model.Module.Services
 			view.id = id;
 			view.frecuencias = fr;
 			view.pantalla = pantalla;
-			view.listafrecuencias = _StateManager.Radio[id].Frecuencia_Sel;
 			General.SafeLaunchEvent(SwitchRadViewUI, this, new EventArgs<changefr>(view));
 		}
 

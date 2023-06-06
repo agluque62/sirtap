@@ -22,7 +22,7 @@ namespace u5ki.RemoteControlService
     /// <summary>
     /// Esta es la clase que engloba la funcionalidad principal del telemando de Jotron modelo 7000.
     /// </summary>
-    public class RCJotron7000 : BaseCode, IRemoteControl
+    class RCJotron7000 : BaseCode, IRemoteControl
     {
 
         #region Declarations
@@ -922,7 +922,7 @@ namespace u5ki.RemoteControlService
         /// <param name="frecuency"></param>
         /// <param name="openSession"></param>
         /// <returns></returns>
-        public GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true)
+        private GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true)
         {
             String logMethod = "FRECUENCY SET";
 #if DEBUG
@@ -982,7 +982,7 @@ namespace u5ki.RemoteControlService
         /// </summary>
         /// <param name="targetIp"></param>
         /// <returns></returns>
-        public String SNMPFrecuencyGet(String targetIp, bool isEmitter)
+        private String SNMPFrecuencyGet(String targetIp, bool isEmitter)
         {
             String logMethod = "FRECUENCY GET";
 #if DEBUG

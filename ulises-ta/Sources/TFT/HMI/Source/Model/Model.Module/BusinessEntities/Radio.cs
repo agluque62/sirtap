@@ -102,10 +102,7 @@ namespace HMI.Model.Module.BusinessEntities
         /** 20190205. RTX Information*/
         private string _PttSrcId = string.Empty;
         public string PttSrcId { get { return _PttSrcId; } }
-        
-		//230223 radio
-        private bool _multifrecuencia=false;
-		private List<string> _frecuenciasel = new List<string>();
+
 		public int Id
 		{
 			get { return _Id; }
@@ -253,21 +250,7 @@ namespace HMI.Model.Module.BusinessEntities
             get { return _RxOnly; }
         }
 
-        //230223 radio
-        public bool Multifrecuencia
-        {
-            get => _multifrecuencia;
-            set => _multifrecuencia = value;
-        }
-
-        public List<string> Frecuencia_Sel
-        {
-            get => _frecuenciasel;
-			set => _frecuenciasel=value;
-	    }
-
-
-        public RdDst(int id)
+		public RdDst(int id)
 		{
 			_Id = id;
 		}
@@ -378,10 +361,6 @@ namespace HMI.Model.Module.BusinessEntities
 				}
 
                 //_PttSrcId = dst.PttSrcId;
-                //Multifrecuencia
-                //230223 radio
-                Multifrecuencia = dst.frecuencia_sel.multifrecuencia();
-				Frecuencia_Sel = dst.frecuencia_sel.getfrecuencies();
 			}
 		}
 

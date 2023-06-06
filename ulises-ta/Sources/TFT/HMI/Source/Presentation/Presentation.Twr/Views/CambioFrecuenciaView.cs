@@ -14,25 +14,17 @@ using Microsoft.Practices.CompositeUI;
 using Microsoft.Practices.CompositeUI.SmartParts;
 using HMI.Model.Module.UI;
 using NLog;
-using Microsoft.Practices.CompositeUI.EventBroker;
-using HMI.Infrastructure.Interface.Constants;
-using HMI.Infrastructure.Interface;
 
 namespace HMI.Presentation.Twr.Views
 {
     [SmartPart]
     public partial class CambioFrecuenciaView : UserControl
     {
-
-        //[EventPublication(EventTopicNames.RdListaFrecuencias, PublicationScope.Global)]
-        //public event EventHandler<int> RdListaFrecuencias;
-
         private IModelCmdManagerService _CmdManager = null;
         private StateManagerService _StateManager = null;
         private bool _IsCurrentView = false;
         private static Logger _Logger = LogManager.GetCurrentClassLogger();
 
-        List<string> listafrecuencias = null;
         public CambioFrecuenciaView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
         {
             InitializeComponent();
@@ -43,31 +35,23 @@ namespace HMI.Presentation.Twr.Views
             _IsCurrentView = true;
         }
 
-        [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
-        public void OnActiveViewChanging(object sender, EventArgs<string> e)
-        {
-            rellenalista();
-        }
-
         private void rellenalista()
         {
-            int id = _StateManager.Radio.Idsel;
-            listafrecuencias = _StateManager.Radio[id].Frecuencia_Sel;
             listboxFr.Items.Clear();
-            foreach (string s in listafrecuencias)
+            foreach (RdDst r in _StateManager.Radio.Destinations)
             {
-                listboxFr.Items.Add(s);
+                listboxFr.Items.Add(r.Frecuency);
             }
             listboxFr.Items.Clear(); 
-            foreach (String s in listafrecuencias)
+            foreach (String r in _StateManager.Radio.GetListaFrecuencias())
             {
-                if (s.Length > 0)
-                    listboxFr.Items.Add(s);
+                if (r.Length > 0)
+                    listboxFr.Items.Add(r);
 
             }
             int c = listboxFr.Items.Count;
-            //for (int i=c+1;i<=16;i++)
-            //    listboxFr.Items.Add("frecuencia xxx"+i.ToString());
+            for (int i=c+1;i<=16;i++)
+                listboxFr.Items.Add("frecuencia xxx"+i.ToString());
             if (this._HMIButtons.Count==0)
             {
  
@@ -75,18 +59,18 @@ namespace HMI.Presentation.Twr.Views
                 _HMIButtons.Add(hmiButton2);
                 _HMIButtons.Add(hmiButton3);
                 _HMIButtons.Add(hmiButton4);
-                _HMIButtons.Add(hmiButton5);
-                _HMIButtons.Add(hmiButton6);
-                _HMIButtons.Add(hmiButton7);
                 _HMIButtons.Add(hmiButton8);
-                _HMIButtons.Add(hmiButton9);
-                _HMIButtons.Add(hmiButton10);
-                _HMIButtons.Add(hmiButton11);
+                _HMIButtons.Add(hmiButton7);
+                _HMIButtons.Add(hmiButton6);
+                _HMIButtons.Add(hmiButton5);
                 _HMIButtons.Add(hmiButton12);
-                _HMIButtons.Add(hmiButton13);
-                _HMIButtons.Add(hmiButton14);
-                _HMIButtons.Add(hmiButton15);
+                _HMIButtons.Add(hmiButton11);
+                _HMIButtons.Add(hmiButton10);
+                _HMIButtons.Add(hmiButton9);
                 _HMIButtons.Add(hmiButton16);
+                _HMIButtons.Add(hmiButton15);
+                _HMIButtons.Add(hmiButton14);
+                _HMIButtons.Add(hmiButton13);
 
             }
             int j = 0;
@@ -110,14 +94,10 @@ namespace HMI.Presentation.Twr.Views
         // Devuelve el id asociado al nombre de una frecuencia.
         private int GetId(string fr)
         {
-            int indice = 0;
-            int id = _StateManager.Radio.Idsel;
-            List<string> listafrecuencias = _StateManager.Radio[id].Frecuencia_Sel;
-            foreach (string r in listafrecuencias)
+            foreach (RdDst r in _StateManager.Radio.Destinations)
             {
-                if (r == fr)
-                    return indice;
-                indice++;
+                if (r.Frecuency == fr)
+                    return r.Id;
             }
             return -1;
         }
@@ -207,11 +187,5 @@ namespace HMI.Presentation.Twr.Views
                         listboxFr.SelectedIndex = indice;
             }
         }
-
-        //[EventSubscription(EventTopicNames.RdListaFrecuencias, ThreadOption.Publisher)]
-        //public void OnRdListaFrecuencias(object sender, EventArgs e)
-        //{
-        //    rellenalista();
-        //}
     }
 }

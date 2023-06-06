@@ -154,10 +154,7 @@ namespace HMI.Presentation.Twr
 		public void OnSwitchRadViewUI(object sender, EventArgs e)
 		{
 			string pantalla = ((EventArgs<changefr>)e).Data.pantalla;
-			
-            //StateManager.Radio.IdFrecuenciaNoDesasignable=Data.Radio.IdFrecuencia;
-
-            NavigateTo(pantalla,false);
+			NavigateTo(pantalla,false);
 		}
 
 		[EventSubscription(EventTopicNames.ScreenSaverChanged, ThreadOption.Publisher)]

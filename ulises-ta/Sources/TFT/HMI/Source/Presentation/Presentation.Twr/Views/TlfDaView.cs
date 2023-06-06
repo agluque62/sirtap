@@ -44,7 +44,6 @@ namespace HMI.Presentation.Twr.Views
 		private IModelCmdManagerService _CmdManager;
 		private StateManagerService _StateManager;
 		private List<HMIButton> _TlfButtons = new List<HMIButton>();
-		private List<HMIButton> _TlfButtonsConf = new List<HMIButton>();//230410
 		private Dictionary<HMIButton, Color> _FastBlinkList;
 		private Dictionary<HMIButton, Color> _SlowBlinkList;
 		private bool _FastBlinkOn = true;
@@ -101,25 +100,6 @@ namespace HMI.Presentation.Twr.Views
 				}
 			}
 
-			//230410
-			for (int row = 0, pos = 0; row < _TlfButtonsTLP.RowCount; row++)
-			{
-				for (int column = 0; column < _TlfButtonsTLP.ColumnCount; column++, pos++)
-				{
-					HMIButton bt = new HMIButton();
-					_TlfButtonsTLP.Controls.Add(bt, column, row);
-					_TlfButtonsConf.Add(bt);
-
-					bt.Dock = DockStyle.Fill;
-					bt.Name = "_TlfButtonConf" + pos;
-					bt.Visible = false;
-					bt.Id = pos == _NumPositionsByPage ? Tlf.IaMappedPosition : pos;
-
-					bt.Click += TlfButton_Click;
-				}
-			}
-
-
 			_LcSpeakerUDB.Level = _StateManager.LcSpeaker.LevelLC;
 			_TlfHeadPhonesUDB.Level = _StateManager.TlfHeadPhones.Level;
 			_LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
@@ -153,12 +133,6 @@ namespace HMI.Presentation.Twr.Views
 			{
 				bt.Enabled = TlfDstEnabled(_StateManager.Tlf[bt.Id]);
 			}
-
-			//230410
-			foreach(HMIButton bt in _TlfButtonsConf)
-            {
-				bt.Enabled = true;// TlfDstEnabled(_StateManager.Tlf[bt.Id]);
-				bt.Name = "1234";          }
 		}
 
 		[EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
@@ -214,7 +188,7 @@ namespace HMI.Presentation.Twr.Views
 		{
 			if (_Page != e.Page)
 			{
-				Debug.Assert(e.Page < 4);
+				Debug.Assert(e.Page < 3);
 
 				_Page = e.Page;
 				int absPageBegin = _Page * _NumPositionsByPage;
@@ -223,26 +197,16 @@ namespace HMI.Presentation.Twr.Views
 				{
 					_TlfPageFirstBT.Text = "2";
 					_TlfPageSecondBT.Text = "3";
-					_TlfPageConfBT.Text = "C";
 				}
 				else if (_Page == 1)
 				{
 					_TlfPageFirstBT.Text = "1";
 					_TlfPageSecondBT.Text = "3";
-					_TlfPageConfBT.Text = "C";
 				}
 				else if (_Page == 2)
 				{
 					_TlfPageFirstBT.Text = "1";
 					_TlfPageSecondBT.Text = "2";
-					_TlfPageConfBT.Text = "C";
-				}
-				else if (_Page== 3)
-                {
-					_TlfPageFirstBT.Text = "1";
-					_TlfPageSecondBT.Text = "2";
-					_TlfPageConfBT.Text = "3";
-
 				}
 
 				for (int i = 0; i < _NumPositionsByPage; i++)
@@ -253,23 +217,8 @@ namespace HMI.Presentation.Twr.Views
 					Reset(bt, dst);
 				}
 
-				//230410
-				// la pagina de conferencias es la ultima pagina.
-				if (_Page == 3)
-				{
-                    int numpages = Tlf.NumDestinations / _NumPositionsByPage;
-                    int absConfBtPageBegin = numpages * _NumPositionsByPage - _NumPositionsByPage;
-					for (int i = 0; i < _NumPositionsByPage; i++)
-					{
-						HMIButton bt = _TlfButtons[i];
-						TlfDst dst = _StateManager.Tlf[i + absConfBtPageBegin];
-
-						Reset(bt, dst);
-					}
-				}
-				ResetBtPage(_TlfPageFirstBT);
+ 				ResetBtPage(_TlfPageFirstBT);
 				ResetBtPage(_TlfPageSecondBT);
-				ResetBtPage(_TlfPageConfBT);
 			}
 		}
 
@@ -285,33 +234,14 @@ namespace HMI.Presentation.Twr.Views
 
 				Reset(bt, dst);
 			}
-			
-			//230410 deberia ser tflconfchanged
-			if ((e.From + e.Count) > Tlf.IaMappedPosition)
-			{
-				HMIButton bt = _TlfButtons[_NumPositionsByPage];
-				TlfDst dst = _StateManager.Tlf[Tlf.IaMappedPosition];
-
-				Reset(bt, dst);
-			}
 
 			if (e.From < Tlf.NumDestinations)
 			{
 				int absPageBegin = _Page * _NumPositionsByPage;
 				int absFirstBtPageBegin = (int.Parse(_TlfPageFirstBT.Text) - 1) * _NumPositionsByPage;
-                int absSecondBtPageBegin = (int.Parse(_TlfPageSecondBT.Text) - 1) * _NumPositionsByPage;
+				int absSecondBtPageBegin = (int.Parse(_TlfPageSecondBT.Text) - 1) * _NumPositionsByPage;
 
-				// 230412 Estará en la última página, 
-				//int absConfBtPageBegin = Tlf.NumDestinations- _NumPositionsByPage;
-				int numpages = Tlf.NumDestinations / _NumPositionsByPage;
-                int absConfBtPageBegin = numpages *_NumPositionsByPage-_NumPositionsByPage;
-				if (e.From>_NumPositionsByPage*3)
-				{
-					_Page = (Tlf.NumDestinations / _NumPositionsByPage-1);
-                    absPageBegin = _Page * _NumPositionsByPage;
-                }
-
-                for (int i = Math.Max(e.From, absPageBegin), to = Math.Min(e.From + e.Count, absPageBegin + _NumPositionsByPage); i < to; i++)
+				for (int i = Math.Max(e.From, absPageBegin), to = Math.Min(e.From + e.Count, absPageBegin + _NumPositionsByPage); i < to; i++)
 				{
 					HMIButton bt = _TlfButtons[i - absPageBegin];
 					TlfDst dst = _StateManager.Tlf[i];
@@ -324,17 +254,12 @@ namespace HMI.Presentation.Twr.Views
 					ResetBtPage(_TlfPageFirstBT);
 				}
 
-                if ((e.From < absSecondBtPageBegin + _NumPositionsByPage) && (e.From + e.Count > absSecondBtPageBegin))
-                {
-                    ResetBtPage(_TlfPageSecondBT);
-                }
-				//230412 pagina de conferencias
-                if ((e.From < absConfBtPageBegin + _NumPositionsByPage) && (e.From + e.Count > absConfBtPageBegin))
-                {
-                    ResetBtPage(_TlfPageConfBT);
-                }
-            }
-        }
+				if ((e.From < absSecondBtPageBegin + _NumPositionsByPage) && (e.From + e.Count > absSecondBtPageBegin))
+				{
+					ResetBtPage(_TlfPageSecondBT);
+				}
+			}
+		}
 
 		[EventSubscription(EventTopicNames.TlfPriorityChanged, ThreadOption.Publisher)]
 		[EventSubscription(EventTopicNames.TlfListenChanged, ThreadOption.Publisher)]
@@ -486,17 +411,8 @@ namespace HMI.Presentation.Twr.Views
 				_SlowBlinkOn = true;
 			}
 
-			int page;
-			TlfState st = TlfState.Idle;
-			if (bt.Text.ToUpper() != "C")
-			{
-				page = int.Parse(bt.Text) - 1;
-				st = _StateManager.Tlf.GetTlfState(page * _NumPositionsByPage, _NumPositionsByPage);
-			}
-			else
-			{
-				page = 3;
-			}
+			int page = int.Parse(bt.Text) - 1;
+			TlfState st = _StateManager.Tlf.GetTlfState(page * _NumPositionsByPage, _NumPositionsByPage);
 			bt.ButtonColor = GetStateColor(bt, st);
 		}
 
@@ -715,25 +631,6 @@ namespace HMI.Presentation.Twr.Views
 				string msg = string.Format("ERROR pulsando tecla TlfAD [Pos={0}] [Id={1}]", pos, id);
 				_Logger.Error(msg, ex);
 			}
-		}
-
-        private void _TlfPageConfBT_Click(object sender, EventArgs e)
-        {
-			int page = 3;
-			if (_TlfPageConfBT.Text.ToUpper() == "C")
-				page = 3;
-			else
-				page = int.Parse(_TlfPageConfBT.Text) - 1;
-
-			try
-			{
-				_CmdManager.TlfLoadDaPage(page);
-			}
-			catch (Exception ex)
-			{
-				_Logger.Error("ERROR solicitando cambio de pagina TLF a " + page, ex);
-			}
-
 		}
 	}
 }

@@ -120,11 +120,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.fr-FR.resx</DependentUpon>
     </Compile>
-    <None Include="Properties\Resources1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </None>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -274,8 +269,7 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <CustomToolNamespace>HMI.Presentation.Urr.Properties</CustomToolNamespace>
-	  <!-- quito resources1 por resources -->
-      <!-- <LastGenOutput>Resources1.Designer.cs</LastGenOutput> -->
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.fr-FR.resx">
       <SubType>Designer</SubType>
