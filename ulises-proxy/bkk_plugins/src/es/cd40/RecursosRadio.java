@@ -35,8 +35,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="OffSetFrequency" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="EnableEventPttSq" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="Metodos_bss_idmetodos_bss" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="RedundanciaRol" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="RedundanciaIdPareja" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="idTIFX" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="DestRad_tipoFrec" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="DescDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Telemando" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -63,8 +67,12 @@ import javax.xml.bind.annotation.XmlType;
     "offSetFrequency",
     "enableEventPttSq",
     "metodosBssIdmetodosBss",
+    "redundanciaRol",
+    "redundanciaIdPareja",
     "idTIFX",
-    "destRadTipoFrec"
+    "destRadTipoFrec",
+    "descDestino",
+    "telemando"
 })
 @XmlSeeAlso({
     RecursosRadioForGateway.class
@@ -107,10 +115,18 @@ public class RecursosRadio
     protected boolean enableEventPttSq;
     @XmlElement(name = "Metodos_bss_idmetodos_bss")
     protected int metodosBssIdmetodosBss;
+    @XmlElement(name = "RedundanciaRol")
+    protected String redundanciaRol;
+    @XmlElement(name = "RedundanciaIdPareja")
+    protected String redundanciaIdPareja;
     protected String idTIFX;
     @XmlElement(name = "DestRad_tipoFrec")
     @XmlSchemaType(name = "unsignedInt")
     protected long destRadTipoFrec;
+    @XmlElement(name = "DescDestino")
+    protected String descDestino;
+    @XmlElement(name = "Telemando")
+    protected int telemando;
 
     /**
      * Obtiene el valor de la propiedad idRecurso.
@@ -425,6 +441,54 @@ public class RecursosRadio
     }
 
     /**
+     * Obtiene el valor de la propiedad redundanciaRol.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRedundanciaRol() {
+        return redundanciaRol;
+    }
+
+    /**
+     * Define el valor de la propiedad redundanciaRol.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRedundanciaRol(String value) {
+        this.redundanciaRol = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad redundanciaIdPareja.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRedundanciaIdPareja() {
+        return redundanciaIdPareja;
+    }
+
+    /**
+     * Define el valor de la propiedad redundanciaIdPareja.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRedundanciaIdPareja(String value) {
+        this.redundanciaIdPareja = value;
+    }
+
+    /**
      * Obtiene el valor de la propiedad idTIFX.
      * 
      * @return
@@ -462,6 +526,46 @@ public class RecursosRadio
      */
     public void setDestRadTipoFrec(long value) {
         this.destRadTipoFrec = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad descDestino.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescDestino() {
+        return descDestino;
+    }
+
+    /**
+     * Define el valor de la propiedad descDestino.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescDestino(String value) {
+        this.descDestino = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad telemando.
+     * 
+     */
+    public int getTelemando() {
+        return telemando;
+    }
+
+    /**
+     * Define el valor de la propiedad telemando.
+     * 
+     */
+    public void setTelemando(int value) {
+        this.telemando = value;
     }
 
 }

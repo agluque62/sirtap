@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="NumDestinosInternosPag" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="NumPagDestinosInt" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="NumEnlacesAI" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="NumMaxSectores" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -77,7 +78,8 @@ import javax.xml.bind.annotation.XmlType;
     "numPagEnlacesInt",
     "numDestinosInternosPag",
     "numPagDestinosInt",
-    "numEnlacesAI"
+    "numEnlacesAI",
+    "numMaxSectores"
 })
 public class Sistema
     extends Tablas
@@ -156,6 +158,9 @@ public class Sistema
     @XmlElement(name = "NumEnlacesAI")
     @XmlSchemaType(name = "unsignedInt")
     protected long numEnlacesAI;
+    @XmlElement(name = "NumMaxSectores")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long numMaxSectores;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -571,6 +576,22 @@ public class Sistema
      */
     public void setNumEnlacesAI(long value) {
         this.numEnlacesAI = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad numMaxSectores.
+     * 
+     */
+    public long getNumMaxSectores() {
+        return numMaxSectores;
+    }
+
+    /**
+     * Define el valor de la propiedad numMaxSectores.
+     * 
+     */
+    public void setNumMaxSectores(long value) {
+        this.numMaxSectores = value;
     }
 
 }

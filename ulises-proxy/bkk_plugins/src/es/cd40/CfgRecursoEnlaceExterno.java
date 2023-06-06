@@ -32,6 +32,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="GrsDelay" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="OffSetFrequency" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="EnableEventPttSq" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="RedundanciaIdPareja" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="RedundanciaRol" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Telemando" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -55,7 +58,10 @@ import javax.xml.bind.annotation.XmlType;
     "valuesTablaBss",
     "grsDelay",
     "offSetFrequency",
-    "enableEventPttSq"
+    "enableEventPttSq",
+    "redundanciaIdPareja",
+    "redundanciaRol",
+    "telemando"
 })
 public class CfgRecursoEnlaceExterno {
 
@@ -90,6 +96,12 @@ public class CfgRecursoEnlaceExterno {
     protected int offSetFrequency;
     @XmlElement(name = "EnableEventPttSq")
     protected boolean enableEventPttSq;
+    @XmlElement(name = "RedundanciaIdPareja")
+    protected String redundanciaIdPareja;
+    @XmlElement(name = "RedundanciaRol")
+    protected String redundanciaRol;
+    @XmlElement(name = "Telemando")
+    protected int telemando;
 
     /**
      * Obtiene el valor de la propiedad idRecurso.
@@ -369,6 +381,70 @@ public class CfgRecursoEnlaceExterno {
      */
     public void setEnableEventPttSq(boolean value) {
         this.enableEventPttSq = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad redundanciaIdPareja.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRedundanciaIdPareja() {
+        return redundanciaIdPareja;
+    }
+
+    /**
+     * Define el valor de la propiedad redundanciaIdPareja.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRedundanciaIdPareja(String value) {
+        this.redundanciaIdPareja = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad redundanciaRol.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRedundanciaRol() {
+        return redundanciaRol;
+    }
+
+    /**
+     * Define el valor de la propiedad redundanciaRol.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRedundanciaRol(String value) {
+        this.redundanciaRol = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad telemando.
+     * 
+     */
+    public int getTelemando() {
+        return telemando;
+    }
+
+    /**
+     * Define el valor de la propiedad telemando.
+     * 
+     */
+    public void setTelemando(int value) {
+        this.telemando = value;
     }
 
 }

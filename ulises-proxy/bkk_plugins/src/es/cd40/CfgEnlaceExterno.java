@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="Literal" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="AliasEnlace" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="DescDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="ListaPosicionesEnHmi" type="{http://CD40.es/}ArrayOfUnsignedInt" minOccurs="0"/&gt;
  *         &lt;element name="TipoFrecuencia" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="ExclusividadTxRx" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
@@ -40,6 +41,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="CldSupervisionTime" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="MetodosBssOfrecidos" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="ModoTransmision" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="EmplazamientoDefecto" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="TiempoVueltaADefecto" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="PorcentajeRSSI" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="PasivoRetransmision" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="SelectableFrequencies" type="{http://CD40.es/}ArrayOfString" minOccurs="0"/&gt;
+ *         &lt;element name="DefaultFrequency" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -52,6 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "CfgEnlaceExterno", propOrder = {
     "literal",
     "aliasEnlace",
+    "descDestino",
     "listaPosicionesEnHmi",
     "tipoFrecuencia",
     "exclusividadTxRx",
@@ -71,7 +79,13 @@ import javax.xml.bind.annotation.XmlType;
     "prioridadSesionSIP",
     "cldSupervisionTime",
     "metodosBssOfrecidos",
-    "modoTransmision"
+    "modoTransmision",
+    "emplazamientoDefecto",
+    "tiempoVueltaADefecto",
+    "porcentajeRSSI",
+    "pasivoRetransmision",
+    "selectableFrequencies",
+    "defaultFrequency"
 })
 public class CfgEnlaceExterno {
 
@@ -79,6 +93,8 @@ public class CfgEnlaceExterno {
     protected String literal;
     @XmlElement(name = "AliasEnlace")
     protected String aliasEnlace;
+    @XmlElement(name = "DescDestino")
+    protected String descDestino;
     @XmlElement(name = "ListaPosicionesEnHmi")
     protected ArrayOfUnsignedInt listaPosicionesEnHmi;
     @XmlElement(name = "TipoFrecuencia")
@@ -121,6 +137,18 @@ public class CfgEnlaceExterno {
     protected int metodosBssOfrecidos;
     @XmlElement(name = "ModoTransmision")
     protected String modoTransmision;
+    @XmlElement(name = "EmplazamientoDefecto")
+    protected String emplazamientoDefecto;
+    @XmlElement(name = "TiempoVueltaADefecto")
+    protected String tiempoVueltaADefecto;
+    @XmlElement(name = "PorcentajeRSSI")
+    protected String porcentajeRSSI;
+    @XmlElement(name = "PasivoRetransmision")
+    protected boolean pasivoRetransmision;
+    @XmlElement(name = "SelectableFrequencies")
+    protected ArrayOfString selectableFrequencies;
+    @XmlElement(name = "DefaultFrequency")
+    protected String defaultFrequency;
 
     /**
      * Obtiene el valor de la propiedad literal.
@@ -168,6 +196,30 @@ public class CfgEnlaceExterno {
      */
     public void setAliasEnlace(String value) {
         this.aliasEnlace = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad descDestino.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescDestino() {
+        return descDestino;
+    }
+
+    /**
+     * Define el valor de la propiedad descDestino.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescDestino(String value) {
+        this.descDestino = value;
     }
 
     /**
@@ -536,6 +588,142 @@ public class CfgEnlaceExterno {
      */
     public void setModoTransmision(String value) {
         this.modoTransmision = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad emplazamientoDefecto.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEmplazamientoDefecto() {
+        return emplazamientoDefecto;
+    }
+
+    /**
+     * Define el valor de la propiedad emplazamientoDefecto.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEmplazamientoDefecto(String value) {
+        this.emplazamientoDefecto = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tiempoVueltaADefecto.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTiempoVueltaADefecto() {
+        return tiempoVueltaADefecto;
+    }
+
+    /**
+     * Define el valor de la propiedad tiempoVueltaADefecto.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTiempoVueltaADefecto(String value) {
+        this.tiempoVueltaADefecto = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad porcentajeRSSI.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPorcentajeRSSI() {
+        return porcentajeRSSI;
+    }
+
+    /**
+     * Define el valor de la propiedad porcentajeRSSI.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPorcentajeRSSI(String value) {
+        this.porcentajeRSSI = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad pasivoRetransmision.
+     * 
+     */
+    public boolean isPasivoRetransmision() {
+        return pasivoRetransmision;
+    }
+
+    /**
+     * Define el valor de la propiedad pasivoRetransmision.
+     * 
+     */
+    public void setPasivoRetransmision(boolean value) {
+        this.pasivoRetransmision = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad selectableFrequencies.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfString }
+     *     
+     */
+    public ArrayOfString getSelectableFrequencies() {
+        return selectableFrequencies;
+    }
+
+    /**
+     * Define el valor de la propiedad selectableFrequencies.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfString }
+     *     
+     */
+    public void setSelectableFrequencies(ArrayOfString value) {
+        this.selectableFrequencies = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad defaultFrequency.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDefaultFrequency() {
+        return defaultFrequency;
+    }
+
+    /**
+     * Define el valor de la propiedad defaultFrequency.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDefaultFrequency(String value) {
+        this.defaultFrequency = value;
     }
 
 }

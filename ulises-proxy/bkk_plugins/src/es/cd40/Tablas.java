@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
     SectoresAgrupacion.class,
     Agrupaciones.class,
     Internos.class,
+    DestinosMultiFrecuencia.class,
     HFRangoFrecuencias.class,
     HFParams.class,
     ParametrosSectorSCV.class,

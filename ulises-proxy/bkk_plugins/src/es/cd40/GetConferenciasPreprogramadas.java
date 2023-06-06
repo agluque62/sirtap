@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="id_sistema" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="tipo" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -30,15 +29,13 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "idSistema",
-    "tipo"
+    "idSistema"
 })
-@XmlRootElement(name = "GetPoolNMElements")
-public class GetPoolNMElements {
+@XmlRootElement(name = "GetConferenciasPreprogramadas")
+public class GetConferenciasPreprogramadas {
 
     @XmlElement(name = "id_sistema")
     protected String idSistema;
-    protected String tipo;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -62,30 +59,6 @@ public class GetPoolNMElements {
      */
     public void setIdSistema(String value) {
         this.idSistema = value;
-    }
-
-    /**
-     * Obtiene el valor de la propiedad tipo.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTipo() {
-        return tipo;
-    }
-
-    /**
-     * Define el valor de la propiedad tipo.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTipo(String value) {
-        this.tipo = value;
     }
 
 }

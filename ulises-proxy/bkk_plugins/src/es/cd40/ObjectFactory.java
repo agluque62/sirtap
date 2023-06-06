@@ -44,6 +44,7 @@ public class ObjectFactory {
     private final static QName _ParametrosMulticast_QNAME = new QName("http://CD40.es/", "ParametrosMulticast");
     private final static QName _ArrayOfPoolHfElement_QNAME = new QName("http://CD40.es/", "ArrayOfPoolHfElement");
     private final static QName _ArrayOfNode_QNAME = new QName("http://CD40.es/", "ArrayOfNode");
+    private final static QName _ConferenciasPreprogramadas_QNAME = new QName("http://CD40.es/", "ConferenciasPreprogramadas");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: es.cd40
@@ -573,6 +574,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetConferenciasPreprogramadas }
+     * 
+     */
+    public GetConferenciasPreprogramadas createGetConferenciasPreprogramadas() {
+        return new GetConferenciasPreprogramadas();
+    }
+
+    /**
+     * Create an instance of {@link GetConferenciasPreprogramadasResponse }
+     * 
+     */
+    public GetConferenciasPreprogramadasResponse createGetConferenciasPreprogramadasResponse() {
+        return new GetConferenciasPreprogramadasResponse();
+    }
+
+    /**
+     * Create an instance of {@link ConferenciasPreprogramadas }
+     * 
+     */
+    public ConferenciasPreprogramadas createConferenciasPreprogramadas() {
+        return new ConferenciasPreprogramadas();
+    }
+
+    /**
      * Create an instance of {@link EstadoNode }
      * 
      */
@@ -706,6 +731,14 @@ public class ObjectFactory {
      */
     public Internos createInternos() {
         return new Internos();
+    }
+
+    /**
+     * Create an instance of {@link DestinosMultiFrecuencia }
+     * 
+     */
+    public DestinosMultiFrecuencia createDestinosMultiFrecuencia() {
+        return new DestinosMultiFrecuencia();
     }
 
     /**
@@ -1349,19 +1382,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfHfRangoFrecuencias }
+     * Create an instance of {@link ArrayOfHFRangoFrecuenciasBis }
      * 
      */
-    public ArrayOfHfRangoFrecuencias createArrayOfHfRangoFrecuencias() {
-        return new ArrayOfHfRangoFrecuencias();
+    public ArrayOfHFRangoFrecuenciasBis createArrayOfHFRangoFrecuenciasBis() {
+        return new ArrayOfHFRangoFrecuenciasBis();
     }
 
     /**
-     * Create an instance of {@link HfRangoFrecuenciass }
+     * Create an instance of {@link HFRangoFrecuenciasBis }
      * 
      */
-    public HfRangoFrecuenciass createHfRangoFrecuenciass() {
-        return new HfRangoFrecuenciass();
+    public HFRangoFrecuenciasBis createHFRangoFrecuenciasBis() {
+        return new HFRangoFrecuenciasBis();
     }
 
     /**
@@ -1370,6 +1403,38 @@ public class ObjectFactory {
      */
     public Node createNode() {
         return new Node();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfConferencia }
+     * 
+     */
+    public ArrayOfConferencia createArrayOfConferencia() {
+        return new ArrayOfConferencia();
+    }
+
+    /**
+     * Create an instance of {@link Conferencia }
+     * 
+     */
+    public Conferencia createConferencia() {
+        return new Conferencia();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfParticipantes }
+     * 
+     */
+    public ArrayOfParticipantes createArrayOfParticipantes() {
+        return new ArrayOfParticipantes();
+    }
+
+    /**
+     * Create an instance of {@link Participantes }
+     * 
+     */
+    public Participantes createParticipantes() {
+        return new Participantes();
     }
 
     /**
@@ -1550,6 +1615,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://CD40.es/", name = "ArrayOfNode")
     public JAXBElement<ArrayOfNode> createArrayOfNode(ArrayOfNode value) {
         return new JAXBElement<ArrayOfNode>(_ArrayOfNode_QNAME, ArrayOfNode.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ConferenciasPreprogramadas }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://CD40.es/", name = "ConferenciasPreprogramadas")
+    public JAXBElement<ConferenciasPreprogramadas> createConferenciasPreprogramadas(ConferenciasPreprogramadas value) {
+        return new JAXBElement<ConferenciasPreprogramadas>(_ConferenciasPreprogramadas_QNAME, ConferenciasPreprogramadas.class, null, value);
     }
 
 }

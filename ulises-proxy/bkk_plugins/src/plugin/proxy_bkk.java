@@ -29,7 +29,7 @@ import java.util.concurrent.Semaphore;
 
 public class proxy_bkk
 {
-	static private String VERSION = "proxy_bkk Version 1.4";
+	static private String VERSION = "proxy_bkk Version 3.0";
 	static public String login_name_PBX = "sa";
 	static public String login_pass_PBX = "sa";
 	static public DependenciasSet dependenciasSet = new DependenciasSet();
@@ -774,5 +774,73 @@ public class proxy_bkk
 	    
 	    return ret;
 	}
+	
+	/**************************************************************************************************/
+	/* Funcion pluging de brekeke											
+	 * Retorna true si el To es una sala de Conferencias
+	 */
+	/**************************************************************************************************/
+	static public boolean is_to_conferenceroom( String[] arg, com.brekeke.net.sip.SIPpacket  sippacket, Properties pr ) throws Exception
+	{
+		Utilities.StarLog();
+		Utilities.StartSettingsApp();
+		
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("ENTRA --------------  is_to_conferenceroom --------------");
+		
+		uri_elements urie = Utilities.GetUriElements(sippacket.getValue("To"));
+		if (urie == null)
+		{
+			return false;
+		}
+		
+		return SoapConfig.EstaEnConferenciasPreprogramadas(urie.user);		
+	}
+	
+	/**************************************************************************************************/
+	/* Funcion pluging de brekeke											
+	 * Retorna true si el From es una sala de Conferencias
+	 */
+	/**************************************************************************************************/
+	static public boolean is_from_conferenceroom( String[] arg, com.brekeke.net.sip.SIPpacket  sippacket, Properties pr ) throws Exception
+	{
+		Utilities.StarLog();
+		Utilities.StartSettingsApp();
+		
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("ENTRA --------------  is_from_conferenceroom --------------");
+		
+		uri_elements urie = Utilities.GetUriElements(sippacket.getValue("From"));
+		if (urie == null)
+		{
+			return false;
+		}
+		
+		return SoapConfig.EstaEnConferenciasPreprogramadas(urie.user);
+	}
+	
+	/**************************************************************************************************/
+	/* Funcion pluging de brekeke											
+	 * Retorna true si el usuario de la uri del argumento es un usuario local del SCV
+	 */
+	/**************************************************************************************************/
+	static public boolean is_local_user( String[] arg, com.brekeke.net.sip.SIPpacket  sippacket, Properties pr ) throws Exception
+	{
+		Utilities.StarLog();
+		Utilities.StartSettingsApp();
+		
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("ENTRA --------------  is_local_user --------------");
+		
+		uri_elements urie = Utilities.GetUriElements(sippacket.getValue(arg[0]));
+		if (urie == null)
+		{
+			return false;
+		}
+		
+		boolean ret = SoapConfig.EstaEnListaAbonadosATSSectores(urie.user);		
+		if (ret == false)
+			ret = SoapConfig.EstaEnListaTelefonosVoIP(urie.user);
+		return ret;		
+	}
+	
+		
 	
 }

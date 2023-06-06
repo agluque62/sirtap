@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="IdAgrupacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IdSistema" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="AgrupacionEspecial" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -30,7 +31,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Agrupaciones", propOrder = {
     "idAgrupacion",
-    "idSistema"
+    "idSistema",
+    "agrupacionEspecial"
 })
 public class Agrupaciones
     extends Tablas
@@ -40,6 +42,8 @@ public class Agrupaciones
     protected String idAgrupacion;
     @XmlElement(name = "IdSistema")
     protected String idSistema;
+    @XmlElement(name = "AgrupacionEspecial")
+    protected boolean agrupacionEspecial;
 
     /**
      * Obtiene el valor de la propiedad idAgrupacion.
@@ -87,6 +91,22 @@ public class Agrupaciones
      */
     public void setIdSistema(String value) {
         this.idSistema = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad agrupacionEspecial.
+     * 
+     */
+    public boolean isAgrupacionEspecial() {
+        return agrupacionEspecial;
+    }
+
+    /**
+     * Define el valor de la propiedad agrupacionEspecial.
+     * 
+     */
+    public void setAgrupacionEspecial(boolean value) {
+        this.agrupacionEspecial = value;
     }
 
 }

@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IdEquipo" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IdTifX" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="PuertoSip" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="IpRed1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -37,7 +38,8 @@ import javax.xml.bind.annotation.XmlType;
     "tipoRecurso",
     "idEquipo",
     "idTifX",
-    "puertoSip"
+    "puertoSip",
+    "ipRed1"
 })
 public class Recursos
     extends RecursosSCV
@@ -55,6 +57,8 @@ public class Recursos
     @XmlElement(name = "PuertoSip")
     @XmlSchemaType(name = "unsignedInt")
     protected long puertoSip;
+    @XmlElement(name = "IpRed1")
+    protected String ipRed1;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -158,6 +162,30 @@ public class Recursos
      */
     public void setPuertoSip(long value) {
         this.puertoSip = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad ipRed1.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIpRed1() {
+        return ipRed1;
+    }
+
+    /**
+     * Define el valor de la propiedad ipRed1.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIpRed1(String value) {
+        this.ipRed1 = value;
     }
 
 }

@@ -25,6 +25,15 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IdDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IdTroncal" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IdRed" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="TReleaseBL" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iDetCallerId" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="iTmCallerId" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iDetInversionPol" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="iTmLlamEntrante" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iTmDetFinLlamada" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPeriodoSpvRing" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iFiltroSpvRing" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iDetDtmf" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -41,7 +50,16 @@ import javax.xml.bind.annotation.XmlType;
     "tipoDestino",
     "idDestino",
     "idTroncal",
-    "idRed"
+    "idRed",
+    "tReleaseBL",
+    "iDetCallerId",
+    "iTmCallerId",
+    "iDetInversionPol",
+    "iTmLlamEntrante",
+    "iTmDetFinLlamada",
+    "iPeriodoSpvRing",
+    "iFiltroSpvRing",
+    "iDetDtmf"
 })
 public class RecursosTF
     extends ParametrosGrabacionTf
@@ -63,6 +81,25 @@ public class RecursosTF
     protected String idTroncal;
     @XmlElement(name = "IdRed")
     protected String idRed;
+    @XmlElement(name = "TReleaseBL")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long tReleaseBL;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iDetCallerId;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iTmCallerId;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iDetInversionPol;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iTmLlamEntrante;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iTmDetFinLlamada;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPeriodoSpvRing;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iFiltroSpvRing;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iDetDtmf;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -214,6 +251,150 @@ public class RecursosTF
      */
     public void setIdRed(String value) {
         this.idRed = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tReleaseBL.
+     * 
+     */
+    public long getTReleaseBL() {
+        return tReleaseBL;
+    }
+
+    /**
+     * Define el valor de la propiedad tReleaseBL.
+     * 
+     */
+    public void setTReleaseBL(long value) {
+        this.tReleaseBL = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iDetCallerId.
+     * 
+     */
+    public short getIDetCallerId() {
+        return iDetCallerId;
+    }
+
+    /**
+     * Define el valor de la propiedad iDetCallerId.
+     * 
+     */
+    public void setIDetCallerId(short value) {
+        this.iDetCallerId = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iTmCallerId.
+     * 
+     */
+    public long getITmCallerId() {
+        return iTmCallerId;
+    }
+
+    /**
+     * Define el valor de la propiedad iTmCallerId.
+     * 
+     */
+    public void setITmCallerId(long value) {
+        this.iTmCallerId = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iDetInversionPol.
+     * 
+     */
+    public short getIDetInversionPol() {
+        return iDetInversionPol;
+    }
+
+    /**
+     * Define el valor de la propiedad iDetInversionPol.
+     * 
+     */
+    public void setIDetInversionPol(short value) {
+        this.iDetInversionPol = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iTmLlamEntrante.
+     * 
+     */
+    public long getITmLlamEntrante() {
+        return iTmLlamEntrante;
+    }
+
+    /**
+     * Define el valor de la propiedad iTmLlamEntrante.
+     * 
+     */
+    public void setITmLlamEntrante(long value) {
+        this.iTmLlamEntrante = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iTmDetFinLlamada.
+     * 
+     */
+    public long getITmDetFinLlamada() {
+        return iTmDetFinLlamada;
+    }
+
+    /**
+     * Define el valor de la propiedad iTmDetFinLlamada.
+     * 
+     */
+    public void setITmDetFinLlamada(long value) {
+        this.iTmDetFinLlamada = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPeriodoSpvRing.
+     * 
+     */
+    public long getIPeriodoSpvRing() {
+        return iPeriodoSpvRing;
+    }
+
+    /**
+     * Define el valor de la propiedad iPeriodoSpvRing.
+     * 
+     */
+    public void setIPeriodoSpvRing(long value) {
+        this.iPeriodoSpvRing = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iFiltroSpvRing.
+     * 
+     */
+    public long getIFiltroSpvRing() {
+        return iFiltroSpvRing;
+    }
+
+    /**
+     * Define el valor de la propiedad iFiltroSpvRing.
+     * 
+     */
+    public void setIFiltroSpvRing(long value) {
+        this.iFiltroSpvRing = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iDetDtmf.
+     * 
+     */
+    public short getIDetDtmf() {
+        return iDetDtmf;
+    }
+
+    /**
+     * Define el valor de la propiedad iDetDtmf.
+     * 
+     */
+    public void setIDetDtmf(short value) {
+        this.iDetDtmf = value;
     }
 
 }

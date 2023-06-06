@@ -23,6 +23,7 @@ public class GenericThread implements Runnable
 			{
 				SoapConfig.Creados_ExtensionesPBX = SoapConfig.CreaExtensionesPBXPorWebsocket();
 				SoapConfig.Creados_UsuariosProxy = SoapConfig.CrearUsuariosProxy();
+				SoapConfig.Creadas_SalasConferencia = SoapConfig.CrearConferenciasPreprogramadasPBX();
 			}
 			
 			while (run_th)

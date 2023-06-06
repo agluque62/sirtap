@@ -29,6 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="NumAltavoces" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="Grabador1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Grabador2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="IdDependenciaATS" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="GrabacionAnalogica" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="GrabacionED137" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="TipoGrabacionAnalogica" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="RtspGrabador1" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="RtspGrabador2" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -49,7 +55,13 @@ import javax.xml.bind.annotation.XmlType;
     "conexionJacksAyudante",
     "numAltavoces",
     "grabador1",
-    "grabador2"
+    "grabador2",
+    "idDependenciaATS",
+    "grabacionAnalogica",
+    "grabacionED137",
+    "tipoGrabacionAnalogica",
+    "rtspGrabador1",
+    "rtspGrabador2"
 })
 public class Top
     extends Tablas
@@ -78,6 +90,18 @@ public class Top
     protected String grabador1;
     @XmlElement(name = "Grabador2")
     protected String grabador2;
+    @XmlElement(name = "IdDependenciaATS")
+    protected String idDependenciaATS;
+    @XmlElement(name = "GrabacionAnalogica")
+    protected int grabacionAnalogica;
+    @XmlElement(name = "GrabacionED137")
+    protected int grabacionED137;
+    @XmlElement(name = "TipoGrabacionAnalogica")
+    protected int tipoGrabacionAnalogica;
+    @XmlElement(name = "RtspGrabador1")
+    protected int rtspGrabador1;
+    @XmlElement(name = "RtspGrabador2")
+    protected int rtspGrabador2;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -309,6 +333,110 @@ public class Top
      */
     public void setGrabador2(String value) {
         this.grabador2 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad idDependenciaATS.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIdDependenciaATS() {
+        return idDependenciaATS;
+    }
+
+    /**
+     * Define el valor de la propiedad idDependenciaATS.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIdDependenciaATS(String value) {
+        this.idDependenciaATS = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad grabacionAnalogica.
+     * 
+     */
+    public int getGrabacionAnalogica() {
+        return grabacionAnalogica;
+    }
+
+    /**
+     * Define el valor de la propiedad grabacionAnalogica.
+     * 
+     */
+    public void setGrabacionAnalogica(int value) {
+        this.grabacionAnalogica = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad grabacionED137.
+     * 
+     */
+    public int getGrabacionED137() {
+        return grabacionED137;
+    }
+
+    /**
+     * Define el valor de la propiedad grabacionED137.
+     * 
+     */
+    public void setGrabacionED137(int value) {
+        this.grabacionED137 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tipoGrabacionAnalogica.
+     * 
+     */
+    public int getTipoGrabacionAnalogica() {
+        return tipoGrabacionAnalogica;
+    }
+
+    /**
+     * Define el valor de la propiedad tipoGrabacionAnalogica.
+     * 
+     */
+    public void setTipoGrabacionAnalogica(int value) {
+        this.tipoGrabacionAnalogica = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspGrabador1.
+     * 
+     */
+    public int getRtspGrabador1() {
+        return rtspGrabador1;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspGrabador1.
+     * 
+     */
+    public void setRtspGrabador1(int value) {
+        this.rtspGrabador1 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspGrabador2.
+     * 
+     */
+    public int getRtspGrabador2() {
+        return rtspGrabador2;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspGrabador2.
+     * 
+     */
+    public void setRtspGrabador2(int value) {
+        this.rtspGrabador2 = value;
     }
 
 }

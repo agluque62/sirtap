@@ -26,6 +26,18 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SupresionSilencio" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="TamRTP" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="Codec" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrTmLlamEntrante" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrDetDtmf" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="TPrReleaseBL" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrPeriodoSpvRing" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrFiltroSpvRing" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrDetCallerId" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="iPrTmCallerId" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="iPrDetInversionPol" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="iPrTmDetFinLlamada" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="tipoInterface" type="{http://CD40.es/}TipoInterface"/&gt;
+ *         &lt;element name="UmbralAGCTXdBm" type="{http://www.w3.org/2001/XMLSchema}float"/&gt;
+ *         &lt;element name="UmbralAGCRXdBm" type="{http://www.w3.org/2001/XMLSchema}float"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -42,7 +54,19 @@ import javax.xml.bind.annotation.XmlType;
     "gananciaAGCRXdBm",
     "supresionSilencio",
     "tamRTP",
-    "codec"
+    "codec",
+    "iPrTmLlamEntrante",
+    "iPrDetDtmf",
+    "tPrReleaseBL",
+    "iPrPeriodoSpvRing",
+    "iPrFiltroSpvRing",
+    "iPrDetCallerId",
+    "iPrTmCallerId",
+    "iPrDetInversionPol",
+    "iPrTmDetFinLlamada",
+    "tipoInterface",
+    "umbralAGCTXdBm",
+    "umbralAGCRXdBm"
 })
 @XmlSeeAlso({
     ParametrosEM.class
@@ -69,6 +93,32 @@ public class ParametrosRecursoTelefonia
     @XmlElement(name = "Codec")
     @XmlSchemaType(name = "unsignedInt")
     protected long codec;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPrTmLlamEntrante;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iPrDetDtmf;
+    @XmlElement(name = "TPrReleaseBL")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long tPrReleaseBL;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPrPeriodoSpvRing;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPrFiltroSpvRing;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iPrDetCallerId;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPrTmCallerId;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iPrDetInversionPol;
+    @XmlSchemaType(name = "unsignedInt")
+    protected long iPrTmDetFinLlamada;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected TipoInterface tipoInterface;
+    @XmlElement(name = "UmbralAGCTXdBm")
+    protected float umbralAGCTXdBm;
+    @XmlElement(name = "UmbralAGCRXdBm")
+    protected float umbralAGCRXdBm;
 
     /**
      * Obtiene el valor de la propiedad gananciaAGCTX.
@@ -180,6 +230,206 @@ public class ParametrosRecursoTelefonia
      */
     public void setCodec(long value) {
         this.codec = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrTmLlamEntrante.
+     * 
+     */
+    public long getIPrTmLlamEntrante() {
+        return iPrTmLlamEntrante;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrTmLlamEntrante.
+     * 
+     */
+    public void setIPrTmLlamEntrante(long value) {
+        this.iPrTmLlamEntrante = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrDetDtmf.
+     * 
+     */
+    public short getIPrDetDtmf() {
+        return iPrDetDtmf;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrDetDtmf.
+     * 
+     */
+    public void setIPrDetDtmf(short value) {
+        this.iPrDetDtmf = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tPrReleaseBL.
+     * 
+     */
+    public long getTPrReleaseBL() {
+        return tPrReleaseBL;
+    }
+
+    /**
+     * Define el valor de la propiedad tPrReleaseBL.
+     * 
+     */
+    public void setTPrReleaseBL(long value) {
+        this.tPrReleaseBL = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrPeriodoSpvRing.
+     * 
+     */
+    public long getIPrPeriodoSpvRing() {
+        return iPrPeriodoSpvRing;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrPeriodoSpvRing.
+     * 
+     */
+    public void setIPrPeriodoSpvRing(long value) {
+        this.iPrPeriodoSpvRing = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrFiltroSpvRing.
+     * 
+     */
+    public long getIPrFiltroSpvRing() {
+        return iPrFiltroSpvRing;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrFiltroSpvRing.
+     * 
+     */
+    public void setIPrFiltroSpvRing(long value) {
+        this.iPrFiltroSpvRing = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrDetCallerId.
+     * 
+     */
+    public short getIPrDetCallerId() {
+        return iPrDetCallerId;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrDetCallerId.
+     * 
+     */
+    public void setIPrDetCallerId(short value) {
+        this.iPrDetCallerId = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrTmCallerId.
+     * 
+     */
+    public long getIPrTmCallerId() {
+        return iPrTmCallerId;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrTmCallerId.
+     * 
+     */
+    public void setIPrTmCallerId(long value) {
+        this.iPrTmCallerId = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrDetInversionPol.
+     * 
+     */
+    public short getIPrDetInversionPol() {
+        return iPrDetInversionPol;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrDetInversionPol.
+     * 
+     */
+    public void setIPrDetInversionPol(short value) {
+        this.iPrDetInversionPol = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iPrTmDetFinLlamada.
+     * 
+     */
+    public long getIPrTmDetFinLlamada() {
+        return iPrTmDetFinLlamada;
+    }
+
+    /**
+     * Define el valor de la propiedad iPrTmDetFinLlamada.
+     * 
+     */
+    public void setIPrTmDetFinLlamada(long value) {
+        this.iPrTmDetFinLlamada = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tipoInterface.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TipoInterface }
+     *     
+     */
+    public TipoInterface getTipoInterface() {
+        return tipoInterface;
+    }
+
+    /**
+     * Define el valor de la propiedad tipoInterface.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TipoInterface }
+     *     
+     */
+    public void setTipoInterface(TipoInterface value) {
+        this.tipoInterface = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad umbralAGCTXdBm.
+     * 
+     */
+    public float getUmbralAGCTXdBm() {
+        return umbralAGCTXdBm;
+    }
+
+    /**
+     * Define el valor de la propiedad umbralAGCTXdBm.
+     * 
+     */
+    public void setUmbralAGCTXdBm(float value) {
+        this.umbralAGCTXdBm = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad umbralAGCRXdBm.
+     * 
+     */
+    public float getUmbralAGCRXdBm() {
+        return umbralAGCRXdBm;
+    }
+
+    /**
+     * Define el valor de la propiedad umbralAGCRXdBm.
+     * 
+     */
+    public void setUmbralAGCRXdBm(float value) {
+        this.umbralAGCRXdBm = value;
     }
 
 }

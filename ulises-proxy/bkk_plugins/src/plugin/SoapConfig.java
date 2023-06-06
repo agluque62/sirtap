@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import es.cd40.*;
+import plugin.Utilities.uri_elements;
 
 public class SoapConfig {
 	
@@ -33,6 +34,7 @@ public class SoapConfig {
 	private static InterfazSOAPConfiguracionSoap soap_port = null;
 	public static boolean Creados_ExtensionesPBX = false;
 	public static boolean Creados_UsuariosProxy = false;
+	public static boolean Creadas_SalasConferencia = false;
 	
 	private static String cfg_url = null;
 	private static String id_sistema = null;
@@ -57,6 +59,8 @@ public class SoapConfig {
 		ArrayOfNumeracionATS _numeracionATS = null;
 		ArrayOfListaRedes _listaRedes = null;
 		ArrayOfListaTroncales _listaTroncales = null;	
+		
+		List<Conferencia> _conferencias_preprogramadas = null;
 		
 		if (Utilities.GetIpVirtual() == null)
 		{
@@ -182,9 +186,22 @@ public class SoapConfig {
 						_asignacion_usuarios = _configuracion_sistema.getPlanAsignacionUsuarios();
 						_asignacion_recursos = _configuracion_sistema.getPlanAsignacionRecursos();
 						_planDireccionamientoSip = _configuracion_sistema.getPlanDireccionamientoSIP();
-						UlisesConfigTmp.VersionConfiguracion = _VersionConfiguracion;
+						UlisesConfigTmp.VersionConfiguracion = _VersionConfiguracion;						
+						
+						_conferencias_preprogramadas = 
+								soap_port.getConferenciasPreprogramadas(id_sistema).getConferenciaProgramada().getConferencia();
 						
 						/*Cada elemento de la configuracion lo creamos vacia si el objeto obtenido por SOAP es null*/
+						
+						if (_conferencias_preprogramadas == null)
+						{
+							UlisesConfigTmp.conferenciasPreprogramadas = new ArrayList<Conferencia>();
+						}
+						else
+						{
+							UlisesConfigTmp.conferenciasPreprogramadas = _conferencias_preprogramadas;
+						}
+						
 						
 						if (_asignacion_recursos == null)
 						{
@@ -297,16 +314,40 @@ public class SoapConfig {
 					
 					Utilities.MyLog("Lista de telefonos VoIP obtenida por SOAP: ");
 					Utilities.MyLog(UlisesConfigObj.listaTelefonosVoIP.toString());
-					Utilities.MyLog(" ");	
+					Utilities.MyLog(" ");
+					
+					Utilities.MyLog("Lista de conferencias preprogramadas obtenida por SOAP: ");
+					
+					try
+					{
+						List<String> idconflist = new ArrayList<String>();
+						for (int i = 0; i < UlisesConfigObj.conferenciasPreprogramadas.size(); i++)
+						{
+							idconflist.add(UlisesConfigObj.conferenciasPreprogramadas.get(i).getIdSalaBkk());
+						}
+						Utilities.MyLog(idconflist.toString());
+					}
+					catch (Exception e)
+					{
+						Utilities.MyLog("Excepcion intentando imprimir UlisesConfigObj.conferenciasPreprogramadas " + e.getMessage());
+					}
+					
+					Utilities.MyLog(" ");
 						
 					WriteUlisesConfigToFile();
 					Creados_ExtensionesPBX = false;
-					Creados_UsuariosProxy = false;			
+					Creados_UsuariosProxy = false;		
+					Creadas_SalasConferencia = false;
 				}
 				
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e1) {							
+				}
+				
+				if (!Creadas_SalasConferencia)
+				{
+					SoapConfig.Creadas_SalasConferencia = SoapConfig.CrearConferenciasPreprogramadasPBX();
 				}
 				
 				if (!Creados_ExtensionesPBX)
@@ -1218,6 +1259,115 @@ public class SoapConfig {
 		return ret;	    
 	}
 	
+	
+	/***********************************************************************************************************/
+	/*Se crean las salas de conferencia en la PBX
+	 * 
+	 */
+	static public boolean CrearConferenciasPreprogramadasPBX()
+	{
+		boolean ret = true;
+		
+		Utilities.MyLog(" -------------- CONFERENCIAS EN PBX --------------------- ");
+
+		//Se obtiene el array con todas las extensiones tipo user
+		JSONArray ext_array = null;
+		
+		ext_array = GetExtensiones("conference");
+		if (ext_array == null)
+		{
+			Utilities.MyLogError("ERROR CrearConferenciasPreprogramadasPBX. No se puede obtener lista de salas de conferencia ");	
+			return false;
+		}	
+		
+		Utilities.MyLog("Extensiones tipo conference en PBX: ");
+        Utilities.MyLog(ext_array.toJSONString());
+        Utilities.MyLog("--- ");
+		
+		//Se borran de la BPX las extensiones que no estan en la configuracion.		
+        for (int i = 0; i < ext_array.size(); i++) {        	
+       		String ext = (String) ext_array.get(i); 		
+       		
+       		if (!EstaEnConferenciasPreprogramadas(ext))
+       		{
+       			//Borra la extension de la pbx
+       			if (BorrarExtensionPBX(ext) == false)
+       			{
+					Utilities.MyLogError("No se puede borrar la conference"+(String) ext_array.get(i)+" por websocket");
+					ret = false;
+	       		}
+       		}
+        }
+        
+        //Obtenemos la nueva lista de las extensiones
+        ext_array = GetExtensiones("conference");
+		if (ext_array == null)
+		{
+			Utilities.MyLogError("ERROR CrearConferenciasPreprogramadasPBX. No se puede obtener lista de extensiones tipo conference despues de borrar los que no se encuentran en la configuracion");	
+			return false;
+		}
+        
+        Utilities.MyLog("Extensiones tipo conference en PBX despues de borrar: ");
+        Utilities.MyLog(ext_array.toJSONString());
+        Utilities.MyLog("--- ");
+        
+        try {
+			sem.acquire();
+		} catch (InterruptedException e) {
+			Utilities.MyLogError(e.toString()+" "+e.getMessage());
+			Utilities.MyLogError("CrearConferenciasPreprogramadasPBX. No puede adquirir el semaforo sem");
+			return false;
+		}
+                
+        try {
+        	
+        	//Se crean o modifican las salas de conferencia en la PBX
+	        //Se crean las extensiones de los telefonos VoIP del SCV en la PBX
+	        if (UlisesConfigObj != null && UlisesConfigObj.conferenciasPreprogramadas != null)
+	        {        	
+	        	for (int i = 0; i < UlisesConfigObj.conferenciasPreprogramadas.size(); i++)
+	        	{
+	        		Conferencia soap_conf = UlisesConfigObj.conferenciasPreprogramadas.get(i);
+	        		
+	        		//Creamos la conferencia si no esta creada, o la modifica si encuentra alguna diferencia
+        			int result = CrearConferencePBX(soap_conf, ext_array.contains(soap_conf.getIdSalaBkk()));
+        			if (result != CREADA_EXTENSION_PBX)
+    	        	{
+        	        	Utilities.MyLogError("ERROR. No se ha podido agregar en la PBX la extension " + soap_conf.getIdSalaBkk());
+        	        	ret = false;
+        	        }
+	        	}
+	        }      	
+	             
+		} catch (Exception e) {
+			Utilities.MyLogError(e.toString()+" "+e.getMessage());
+			Utilities.MyLogError("CrearConferenciasPreprogramadasPBX. Error creando o borrando conferencias en PBX");
+			ret = false;
+		}
+        
+        sem.release();  
+        
+        if (!ret) return ret;
+        
+        //Obtenemos la definitiva lista de las extensiones
+		ext_array = GetExtensiones("conference");
+		if (ext_array == null) 
+		{
+			Utilities.MyLogError("ERROR CrearConferenciasPreprogramadasPBX. No se puede obtener lista definitiva de extensiones tipo user");	
+			ret = false;
+		}
+        else
+        {
+	        Utilities.MyLog("Lista definitiva de salas de conferencia en la PBX: ");
+	        Utilities.MyLog(ext_array.toString());
+	        Utilities.MyLog("---");
+        }
+        
+		return ret;	    
+	}
+	
+	
+	
 	/***********************************************************************************************************/
 	/*
 	 * Se crean los usuarios en la base de datos que luego utiliza "user authetication" en el SIP proxy
@@ -1367,7 +1517,7 @@ public class SoapConfig {
 	/***********************************************************************************************************/
 	/*Return true si el abonado exite en la lista de Abonados de los sectores 
 	 */
-	static private boolean EstaEnListaAbonadosATSSectores(String ab)
+	static public boolean EstaEnListaAbonadosATSSectores(String ab)
 	{
 		boolean ret = false;
 		
@@ -1431,7 +1581,7 @@ public class SoapConfig {
 	/***********************************************************************************************************/
 	/*Return true si el abonado exite en la lista de telefonos VoIP
 	 */
-	static private boolean EstaEnListaTelefonosVoIP(String ab)
+	static public boolean EstaEnListaTelefonosVoIP(String ab)
 	{
 		boolean ret = false;
 		
@@ -1467,7 +1617,7 @@ public class SoapConfig {
 	@SuppressWarnings("unchecked")
 	static private JSONArray GetExtensiones(String type)
 	{
-		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Entra en GetExtensiones");
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Entra en GetExtensiones type:"+type);
 		
 		if (wclenp == null) return null;
 		
@@ -1642,6 +1792,12 @@ public class SoapConfig {
 		}
 		
 		/*Creamos las propiedades de la extension*/
+		/*Para saber todas las propiedades que se pueden configurar:
+		 * Se crea una extension con la herramienta de Brekeke.
+		 * En la maquina Linux en /usr/local/tomcat7/webapps/pbx/WEB-INF/work/users
+		 * hay un directorio por cada extension. 
+		 * Las propiedades estan en el fichero user.properties de ese directorio
+		 */
 		
 		tries = 3;		
 		while (tries > 0)
@@ -1725,6 +1881,492 @@ public class SoapConfig {
 			if (Utilities.LOGDEBENABLED) Utilities.MyLogError("Propiedades de Extension no pueden ser creadas "+ext);
 			return ERROR_AL_CREAR_EXTENSION_PBX;			
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	static private int CrearConferencePBX(Conferencia soap_conference, boolean ya_existe)
+	{
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Entra en CrearConferencePBX");
+		
+		if (wclenp == null) return ERROR_AL_CREAR_EXTENSION_PBX;
+				
+		if (ya_existe == false)
+		{
+			int tries = 3;
+			while (tries > 0)
+			{
+				wclenp_sem.drainPermits();
+				resultado_obtenido = null;
+				
+				/*Enviamos methodo createExtension. para crear la extension*/
+				JSONObject obj = new JSONObject();
+		        obj.put("jsonrpc", "2.0");
+				obj.put("method", "createExtension");
+				id_message++;
+				if (id_message == 50000) id_message = 1;
+				id_esperado = Integer.toString(id_message);
+				obj.put("id", id_esperado);
+				
+				JSONObject obj_param = new JSONObject();
+				obj_param.put("extension", soap_conference.getIdSalaBkk());
+				obj_param.put("type", "conference");
+				obj.put("params", obj_param);		
+				String message = obj.toString();
+				wclenp.sendMessage(message);
+				
+				boolean semr = false;
+				try
+				{
+					semr = wclenp_sem.tryAcquire(15, TimeUnit.SECONDS);
+				}
+				catch (Exception e)
+				{
+					semr = false;
+				}
+				if (semr == false)
+				{
+					//No ha habido respuesta
+					Utilities.MyLogError("ERROR Sin respuesta al mensaje por websocket "+message);
+				}
+				else if (resultado_obtenido != null)
+				{
+					//Ha habido respuesta
+					break;
+				}
+				tries--;
+			}
+			
+			if (tries <= 0)
+			{
+				//No ha habido respuesta despues de varios intentos
+				//Cerramos el websocket para que vuelva a intentar abrirlo
+				if (wclenp != null) wclenp.Close();
+				wclenp = null;
+				return ERROR_AL_CREAR_EXTENSION_PBX;
+			}
+			
+			String id = (String) resultado_obtenido.get("id");
+			if (id == null) return ERROR_AL_CREAR_EXTENSION_PBX;		
+			if (id.equals(id_esperado) == false) return ERROR_AL_CREAR_EXTENSION_PBX;
+			
+			String result = (String) resultado_obtenido.get("result");
+			if (result == null)
+			{
+				JSONObject error = (JSONObject) resultado_obtenido.get("error");
+				if (error != null) 
+				{
+					String message = (String) error.get("message");
+					if (message != null)
+					{
+						Utilities.MyLogError("ERROR Conferencia " + soap_conference.getIdSalaBkk() + " no se puede crear. " + message);
+					}
+				}
+				return ERROR_AL_CREAR_EXTENSION_PBX;
+			}
+			
+			if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Resultado de crear conferencia "+soap_conference.getIdSalaBkk()+" por WebSocket result: " + result.toString());
+			
+			if (result.equals("true") == true)
+			{
+				if (Utilities.LOGDEBENABLED) Utilities.MyLogDeb("Conferencia creada con exito "+soap_conference.getIdSalaBkk());
+			}
+			else
+			{
+				if (Utilities.LOGDEBENABLED) Utilities.MyLogError("Conferencia no puede ser creada "+soap_conference.getIdSalaBkk());
+				return ERROR_AL_CREAR_EXTENSION_PBX;			
+			}
+		}	
+		
+		/*Modificamos las propiedades de la extension*/
+		/*Para saber todas las propiedades que se pueden configurar:
+		 * Se crea una extension con la herramienta de Brekeke.
+		 * En la maquina Linux en /usr/local/tomcat7/webapps/pbx/WEB-INF/work/users
+		 * hay un directorio por cada extension/conferencia. 
+		 * Las propiedades estan en el fichero user.properties de ese directorio
+		 * Para la conferencias son:
+		 * 
+		 * conf.accept=314001,314002
+			language=en
+			phoneforward=314001,314002
+			broadcast=false
+			anothercall.disconnect=false
+			busyforward.voicemail=true
+			desc=1000
+			conf.from=true
+			exit.on.host.disconnected=true
+			time.created=1684392882109
+			type=conference
+			conf.host=
+			temp=false
+			noanswerforward_org=vm1000
+			pln1_d_ringertime=90
+			noanswerforward.voicemail=true
+			defaultpickup=
+		 */
+		
+		/*Leemos las propiedades actuales*/
+		int tries = 3;		
+		while (tries > 0)
+		{
+			wclenp_sem.drainPermits();
+			resultado_obtenido = null;
+			
+			JSONObject obj = new JSONObject();
+	        obj.put("jsonrpc", "2.0");
+			obj.put("method", "getExtensionProperties");
+			id_message++;
+			if (id_message == 50000) id_message = 1;
+			id_esperado = Integer.toString(id_message);
+			obj.put("id", id_esperado);
+			
+			JSONObject obj_param = new JSONObject();
+			obj_param.put("extension", soap_conference.getIdSalaBkk());	
+			
+			JSONArray property_names = new JSONArray();
+			property_names.add("conf.accept");
+			property_names.add("phoneforward");
+			property_names.add("broadcast");
+			property_names.add("anothercall.disconnect");
+			property_names.add("busyforward.voicemail");
+			property_names.add("conf.from");
+			property_names.add("exit.on.host.disconnected");
+			property_names.add("noanswerforward.voicemail");			
+			
+			obj_param.put("property_names", property_names);
+			obj.put("params", obj_param);			
+			
+			String message = obj.toString();
+			wclenp.sendMessage(message);
+			
+			boolean semr = false;
+			try
+			{
+				semr = wclenp_sem.tryAcquire(15, TimeUnit.SECONDS);
+			}
+			catch (Exception e)
+			{
+				semr = false;
+			}
+			if (semr == false)
+			{
+				//No ha habido respuesta
+				Utilities.MyLogError("ERROR Sin respuesta al mensaje por websocket "+message);
+			}
+			else if (resultado_obtenido != null)
+			{
+				//Ha habido respuesta
+				break;
+			}
+			tries--;
+		}
+		
+		if (tries <= 0)
+		{
+			//No ha habido respuesta despues de varios intentos
+			//Cerramos el websocket para que vuelva a intentar abrirlo
+			if (wclenp != null) wclenp.Close();
+			wclenp = null;
+			return ERROR_AL_CREAR_EXTENSION_PBX;
+		}
+		
+		String id = (String) resultado_obtenido.get("id");
+		if (id == null) return ERROR_AL_CREAR_EXTENSION_PBX;		
+		if (id.equals(id_esperado) == false) return ERROR_AL_CREAR_EXTENSION_PBX;
+		
+		JSONArray resultGetProperties = null;
+		try
+		{
+			resultGetProperties = (JSONArray) resultado_obtenido.get("result");
+			if (resultGetProperties == null) return ERROR_AL_CREAR_EXTENSION_PBX;
+			if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Resultado de getExtensionProperties "+soap_conference.getIdSalaBkk()+" por WebSocket result: " + resultGetProperties.toString());
+		}
+		catch (Exception ex)
+		{
+			Utilities.MyLogError(ex.getMessage());
+			return ERROR_AL_CREAR_EXTENSION_PBX;
+		}
+		
+		/*Comprobamos que las propiedades son correctas*/
+		boolean update_properties = false;
+		
+		//Se comprueba "conf.accept". La lista de participantes de la conferencia que son aceptados
+		//En este caso se ha visto que Brekeke no acepta bien una URI, solo ponemos el user en la lista
+		String confaccept = (String) resultGetProperties.get(0);
+		String[] confacceptArray = confaccept.split(",");
+		List<Participantes> soap_participantes = soap_conference.getParticipantesConferencia().getParticipantes();
+				
+		if (confacceptArray.length != soap_participantes.size()) update_properties = true;
+		
+		if (!update_properties)
+		{
+			for (int i = 0; i < soap_participantes.size(); i++)
+			{
+				String soap_participantUri = soap_participantes.get(i).getSipUri();
+				String soap_participantUser = "";
+				
+				if (soap_participantUri.matches("^sip:(.+)@(.+)"))
+				{
+					soap_participantUser = Utilities.GetUriElements(soap_participantUri).user;
+				}
+				else
+				{
+					soap_participantUser = soap_participantUri;
+				}
+				boolean found = false;
+				for (int j = 0; j < confacceptArray.length; j++)
+				{
+					if (confacceptArray[j].equals(soap_participantUser))
+					{
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found)
+				{
+					update_properties = true;
+					break;
+				}
+			}
+		}
+		
+		//Se comprueba "phoneforward". La lista de participantes a los que se les llama para el tipo 3 Preset		
+		if (!update_properties)
+		{
+			String phoneforward = (String) resultGetProperties.get(1);
+			String[] phoneforwardArray = phoneforward.split(",");
+			
+			if (soap_conference.getTipoConferencia() == 1)
+			{
+				//Tipo meet me. Este campo debe estar vacio
+				if (!phoneforward.isEmpty()) update_properties = true;
+			}
+			else if (phoneforwardArray.length != soap_participantes.size())
+			{
+				update_properties = true;
+			}
+			else
+			{
+				for (int i = 0; i < soap_participantes.size(); i++)
+				{
+					boolean found = false;
+					for (int j = 0; j < phoneforwardArray.length; j++)
+					{
+						if (phoneforwardArray[j].equals(soap_participantes.get(i).getSipUri()))
+						{
+							found = true;
+							break;
+						}
+					}
+					
+					if (!found)
+					{
+						update_properties = true;
+						break;
+					}
+				}
+			}
+		}		
+		
+		//Se comprueba "broadcast"
+		if (!update_properties)
+		{
+			String broadcast = (String) resultGetProperties.get(2);
+			if (!broadcast.equalsIgnoreCase("false")) update_properties = true;			
+		}		
+		
+		//Se comprueba "anothercall.disconnect"
+		if (!update_properties)
+		{
+			String anothercalldisc = (String) resultGetProperties.get(3);
+			if (!anothercalldisc.equalsIgnoreCase("false")) update_properties = true;			
+		}	
+		
+		//Se comprueba "busyforward.voicemail"
+		if (!update_properties)
+		{
+			String busyforward_voicemail = (String) resultGetProperties.get(4);
+			if (!busyforward_voicemail.equalsIgnoreCase("false")) update_properties = true;			
+		}		
+		
+		//Se comprueba "conf.from"
+		if (!update_properties)
+		{
+			String conf_from = (String) resultGetProperties.get(5);
+			if (!conf_from.equalsIgnoreCase("true")) update_properties = true;			
+		}
+		
+		//Se comprueba "exit.on.host.disconnected"
+		if (!update_properties)
+		{
+			String exit_on_host_disconnected = (String) resultGetProperties.get(6);
+			if (soap_conference.getTipoConferencia() == 1)
+			{
+				//Tipo meet me. En este caso tiene que estar a false
+				if (!exit_on_host_disconnected.equalsIgnoreCase("false")) update_properties = true;
+			}
+			else
+			{
+				//Tipo Preset, debe estar a true
+				if (!exit_on_host_disconnected.equalsIgnoreCase("true")) update_properties = true;
+			}
+		}		
+		
+		//Se comprueba "noanswerforward.voicemail"
+		if (!update_properties)
+		{
+			String noanswerforward_voicemail = (String) resultGetProperties.get(7);
+			if (!noanswerforward_voicemail.equalsIgnoreCase("false")) update_properties = true;			
+		}
+		
+		if (!update_properties)
+		{
+			if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("CrearConferencePBX: Las propiedades de " + soap_conference.getIdSalaBkk() + " son correctas, no se actualizan");
+			return CREADA_EXTENSION_PBX;
+		}
+		
+		tries = 3;		
+		while (tries > 0)
+		{
+			wclenp_sem.drainPermits();
+			resultado_obtenido = null;
+			
+			JSONObject obj = new JSONObject();
+	        obj.put("jsonrpc", "2.0");
+			obj.put("method", "setExtensionProperties");
+			id_message++;
+			if (id_message == 50000) id_message = 1;
+			id_esperado = Integer.toString(id_message);
+			obj.put("id", id_esperado);
+			
+			JSONObject obj_param = new JSONObject();
+			obj_param.put("extension", soap_conference.getIdSalaBkk());		
+			
+			JSONObject obj_param_properties = new JSONObject();	
+			obj_param_properties.put("type", "conference");
+			obj_param_properties.put("desc", "description");
+			
+			//Propiedad "conf.accept". La lista de participantes de la conferencia que son aceptados
+			//En este caso se ha visto que Brekeke no acepta bien una URI, solo ponemos el user en la lista
+			List<Participantes> soap_listaparticipantes = soap_conference.getParticipantesConferencia().getParticipantes();
+			String conf_accept_value = "";
+			
+			
+			if (soap_listaparticipantes.isEmpty())
+			{
+				conf_accept_value = "*";
+			}
+			else
+			{
+				for (int i = 0; i < soap_listaparticipantes.size(); i++)
+				{
+					String participantUri = soap_listaparticipantes.get(i).getSipUri();
+					String participantUser = "";
+					if (participantUri.matches("^sip:(.+)@(.+)"))
+					{
+						participantUser = Utilities.GetUriElements(participantUri).user;
+					}
+					else
+					{
+						participantUser = participantUri;
+					}
+					conf_accept_value += participantUser;
+					if ((i+1) < soap_listaparticipantes.size()) conf_accept_value += ",";
+				}
+			}
+					
+			obj_param_properties.put("conf.accept", conf_accept_value);
+			
+			//Propiedad "phoneforward". La lista de participantes a los que se les llama para el tipo 3 Preset	
+			String phoneforward_value = "";
+			if (soap_conference.getTipoConferencia() == 1)
+			{
+				//Tipo meet me. Este campo debe estar vacio
+				phoneforward_value = "";				
+			}
+			else
+			{
+				for (int i = 0; i < soap_listaparticipantes.size(); i++)
+				{
+					phoneforward_value += soap_listaparticipantes.get(i).getSipUri();
+					if ((i+1) < soap_listaparticipantes.size()) phoneforward_value += ",";
+				}
+			}
+			obj_param_properties.put("phoneforward", phoneforward_value);
+			
+			obj_param_properties.put("broadcast", "false");
+			obj_param_properties.put("anothercall.disconnect", "false");
+			obj_param_properties.put("busyforward.voicemail", "false");
+			obj_param_properties.put("conf.from", "true");
+			if (soap_conference.getTipoConferencia() == 1)
+			{
+				//Tipo meet me. En este caso tiene que estar a false
+				obj_param_properties.put("exit.on.host.disconnected", "false");
+			}
+			else
+			{
+				//Tipo Preset, debe estar a true
+				obj_param_properties.put("exit.on.host.disconnected", "true");
+			}
+			obj_param_properties.put("noanswerforward.voicemail", "false");
+			
+			obj_param.put("properties", obj_param_properties);			
+			obj.put("params", obj_param);
+			
+			String message = obj.toString();
+			wclenp.sendMessage(message);
+			
+			boolean semr = false;
+			try
+			{
+				semr = wclenp_sem.tryAcquire(15, TimeUnit.SECONDS);
+			}
+			catch (Exception e)
+			{
+				semr = false;
+			}
+			if (semr == false)
+			{
+				//No ha habido respuesta
+				Utilities.MyLogError("ERROR Sin respuesta al mensaje por websocket "+message);
+			}
+			else if (resultado_obtenido != null)
+			{
+				//Ha habido respuesta
+				break;
+			}
+			tries--;
+		}
+		
+		if (tries <= 0)
+		{
+			//No ha habido respuesta despues de varios intentos
+			//Cerramos el websocket para que vuelva a intentar abrirlo
+			if (wclenp != null) wclenp.Close();
+			wclenp = null;
+			return ERROR_AL_CREAR_EXTENSION_PBX;
+		}
+		
+		id = (String) resultado_obtenido.get("id");
+		if (id == null) return ERROR_AL_CREAR_EXTENSION_PBX;		
+		if (id.equals(id_esperado) == false) return ERROR_AL_CREAR_EXTENSION_PBX;
+		
+		String result = (String) resultado_obtenido.get("result");
+		if (result == null) return ERROR_AL_CREAR_EXTENSION_PBX;		
+		
+		if (Utilities.LOGDEBENABLED)  Utilities.MyLogDeb("Resultado de setExtensionProperties "+soap_conference.getIdSalaBkk()+" por WebSocket result: " + result.toString());
+		
+		if (result.equals("OK") == true)
+		{
+			if (Utilities.LOGDEBENABLED) Utilities.MyLogDeb("Propiedades de Extension creada con exito "+soap_conference.getIdSalaBkk());
+			return CREADA_EXTENSION_PBX;
+		}
+		else
+		{
+			if (Utilities.LOGDEBENABLED) Utilities.MyLogError("Propiedades de Extension no pueden ser creadas "+soap_conference.getIdSalaBkk());
+			return ERROR_AL_CREAR_EXTENSION_PBX;			
+		}
+		
 	}
 	
 	/* Se conecta con una base de datos mysql*/
@@ -2014,6 +2656,42 @@ public class SoapConfig {
 		
 		return version_returned;
 	}
+	
+	/***********************************************************************************************************/
+	/*Return true si el identificador esta en la lista de conferencias preprogramadas leidas de la configuracion de Ulises 
+	 */
+	static public boolean EstaEnConferenciasPreprogramadas(String conf_id)
+	{
+		boolean ret = false;
+		
+		try {
+			sem.acquire();
+		} catch (InterruptedException e) {
+			Utilities.MyLogError(e.toString()+" "+e.getMessage());
+			Utilities.MyLogError("EstaEnConferenciasPreprogramadas. No puede adquirir el semaforo sem");
+			return ret;
+		}
+		
+		if (UlisesConfigObj == null) 
+		{
+			sem.release();
+			return ret;
+		}
+		
+		for (int i = 0; i < UlisesConfigObj.conferenciasPreprogramadas.size(); i++)
+		{
+			if (UlisesConfigObj.conferenciasPreprogramadas.get(i).getIdSalaBkk().equals(conf_id))
+			{
+				ret = true;
+				break;
+			}
+		}
+		
+		sem.release();
+		
+		return ret;
+	}
+	
 	
 	
 }

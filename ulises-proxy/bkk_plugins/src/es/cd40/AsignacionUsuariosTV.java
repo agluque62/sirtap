@@ -22,6 +22,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IpGrabador1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IpGrabador2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="RtspPort" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="TipoGrabacionAnalogica" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="EnableGrabacionEd137" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="EnableGrabacionAnalogica" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="RtspPort1" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -36,7 +40,11 @@ import javax.xml.bind.annotation.XmlType;
     "idHost",
     "ipGrabador1",
     "ipGrabador2",
-    "rtspPort"
+    "rtspPort",
+    "tipoGrabacionAnalogica",
+    "enableGrabacionEd137",
+    "enableGrabacionAnalogica",
+    "rtspPort1"
 })
 public class AsignacionUsuariosTV {
 
@@ -50,6 +58,14 @@ public class AsignacionUsuariosTV {
     protected String ipGrabador2;
     @XmlElement(name = "RtspPort")
     protected int rtspPort;
+    @XmlElement(name = "TipoGrabacionAnalogica")
+    protected int tipoGrabacionAnalogica;
+    @XmlElement(name = "EnableGrabacionEd137")
+    protected boolean enableGrabacionEd137;
+    @XmlElement(name = "EnableGrabacionAnalogica")
+    protected boolean enableGrabacionAnalogica;
+    @XmlElement(name = "RtspPort1")
+    protected int rtspPort1;
 
     /**
      * Obtiene el valor de la propiedad idUsuario.
@@ -161,6 +177,70 @@ public class AsignacionUsuariosTV {
      */
     public void setRtspPort(int value) {
         this.rtspPort = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tipoGrabacionAnalogica.
+     * 
+     */
+    public int getTipoGrabacionAnalogica() {
+        return tipoGrabacionAnalogica;
+    }
+
+    /**
+     * Define el valor de la propiedad tipoGrabacionAnalogica.
+     * 
+     */
+    public void setTipoGrabacionAnalogica(int value) {
+        this.tipoGrabacionAnalogica = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad enableGrabacionEd137.
+     * 
+     */
+    public boolean isEnableGrabacionEd137() {
+        return enableGrabacionEd137;
+    }
+
+    /**
+     * Define el valor de la propiedad enableGrabacionEd137.
+     * 
+     */
+    public void setEnableGrabacionEd137(boolean value) {
+        this.enableGrabacionEd137 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad enableGrabacionAnalogica.
+     * 
+     */
+    public boolean isEnableGrabacionAnalogica() {
+        return enableGrabacionAnalogica;
+    }
+
+    /**
+     * Define el valor de la propiedad enableGrabacionAnalogica.
+     * 
+     */
+    public void setEnableGrabacionAnalogica(boolean value) {
+        this.enableGrabacionAnalogica = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspPort1.
+     * 
+     */
+    public int getRtspPort1() {
+        return rtspPort1;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspPort1.
+     * 
+     */
+    public void setRtspPort1(int value) {
+        this.rtspPort1 = value;
     }
 
 }

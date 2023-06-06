@@ -75,11 +75,11 @@ public class Node
     @XmlElement(name = "TipoDeCanal", required = true)
     @XmlSchemaType(name = "string")
     protected TipoCanal tipoDeCanal;
-    @XmlElement(name = "FormaDeTrabajo", required = true)
+    @XmlElement(name = "FormaDeTrabajo", required = true, nillable = true)
     @XmlSchemaType(name = "string")
     protected TipoFormatoTrabajo formaDeTrabajo;
-    @XmlElement(name = "Prioridad")
-    protected int prioridad;
+    @XmlElement(name = "Prioridad", required = true, type = Integer.class, nillable = true)
+    protected Integer prioridad;
     @XmlElement(name = "Puerto")
     @XmlSchemaType(name = "unsignedInt")
     protected long puerto;
@@ -234,16 +234,24 @@ public class Node
     /**
      * Obtiene el valor de la propiedad prioridad.
      * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
      */
-    public int getPrioridad() {
+    public Integer getPrioridad() {
         return prioridad;
     }
 
     /**
      * Define el valor de la propiedad prioridad.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
      */
-    public void setPrioridad(int value) {
+    public void setPrioridad(Integer value) {
         this.prioridad = value;
     }
 

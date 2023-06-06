@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
     "inicial",
     "_final"
 })
-
 @XmlSeeAlso({
     Rangos.class
 })

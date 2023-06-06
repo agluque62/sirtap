@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para ArrayOfHfRangoFrecuencias complex type.
+ * <p>Clase Java para ArrayOfParticipantes complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfHfRangoFrecuencias"&gt;
+ * &lt;complexType name="ArrayOfParticipantes"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="HfRangoFrecuenciass" type="{http://CD40.es/}HfRangoFrecuenciass" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Participantes" type="{http://CD40.es/}Participantes" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,41 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfHfRangoFrecuencias", propOrder = {
-    "hfRangoFrecuenciass"
+@XmlType(name = "ArrayOfParticipantes", propOrder = {
+    "participantes"
 })
-public class ArrayOfHfRangoFrecuencias {
+public class ArrayOfParticipantes {
 
-    @XmlElement(name = "HfRangoFrecuenciass", nillable = true)
-    protected List<HfRangoFrecuenciass> hfRangoFrecuenciass;
+    @XmlElement(name = "Participantes", nillable = true)
+    protected List<Participantes> participantes;
 
     /**
-     * Gets the value of the hfRangoFrecuenciass property.
+     * Gets the value of the participantes property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the hfRangoFrecuenciass property.
+     * This is why there is not a <CODE>set</CODE> method for the participantes property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getHfRangoFrecuenciass().add(newItem);
+     *    getParticipantes().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link HfRangoFrecuenciass }
+     * {@link Participantes }
      * 
      * 
      */
-    public List<HfRangoFrecuenciass> getHfRangoFrecuenciass() {
-        if (hfRangoFrecuenciass == null) {
-            hfRangoFrecuenciass = new ArrayList<HfRangoFrecuenciass>();
+    public List<Participantes> getParticipantes() {
+        if (participantes == null) {
+            participantes = new ArrayList<Participantes>();
         }
-        return this.hfRangoFrecuenciass;
+        return this.participantes;
     }
 
 }

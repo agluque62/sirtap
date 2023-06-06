@@ -37,6 +37,13 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="CnfModoDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="CnfTipoFrecuencia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="ModoTransmision" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="EmplazamientoDefecto" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="TiempoVueltaADefecto" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="PorcentajeRSSI" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="ConRedundancia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="DescDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="PasivoRetransmision" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="MultiFrecuencia" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -65,7 +72,14 @@ import javax.xml.bind.annotation.XmlType;
     "nombreZonaTxDefecto",
     "cnfModoDestino",
     "cnfTipoFrecuencia",
-    "modoTransmision"
+    "modoTransmision",
+    "emplazamientoDefecto",
+    "tiempoVueltaADefecto",
+    "porcentajeRSSI",
+    "conRedundancia",
+    "descDestino",
+    "pasivoRetransmision",
+    "multiFrecuencia"
 })
 public class DestinosRadio
     extends Destinos
@@ -110,6 +124,20 @@ public class DestinosRadio
     protected String cnfTipoFrecuencia;
     @XmlElement(name = "ModoTransmision")
     protected String modoTransmision;
+    @XmlElement(name = "EmplazamientoDefecto")
+    protected String emplazamientoDefecto;
+    @XmlElement(name = "TiempoVueltaADefecto")
+    protected String tiempoVueltaADefecto;
+    @XmlElement(name = "PorcentajeRSSI")
+    protected String porcentajeRSSI;
+    @XmlElement(name = "ConRedundancia")
+    protected String conRedundancia;
+    @XmlElement(name = "DescDestino")
+    protected String descDestino;
+    @XmlElement(name = "PasivoRetransmision")
+    protected boolean pasivoRetransmision;
+    @XmlElement(name = "MultiFrecuencia")
+    protected boolean multiFrecuencia;
 
     /**
      * Obtiene el valor de la propiedad fkMetodosbss.
@@ -453,6 +481,158 @@ public class DestinosRadio
      */
     public void setModoTransmision(String value) {
         this.modoTransmision = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad emplazamientoDefecto.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEmplazamientoDefecto() {
+        return emplazamientoDefecto;
+    }
+
+    /**
+     * Define el valor de la propiedad emplazamientoDefecto.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEmplazamientoDefecto(String value) {
+        this.emplazamientoDefecto = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tiempoVueltaADefecto.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTiempoVueltaADefecto() {
+        return tiempoVueltaADefecto;
+    }
+
+    /**
+     * Define el valor de la propiedad tiempoVueltaADefecto.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTiempoVueltaADefecto(String value) {
+        this.tiempoVueltaADefecto = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad porcentajeRSSI.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPorcentajeRSSI() {
+        return porcentajeRSSI;
+    }
+
+    /**
+     * Define el valor de la propiedad porcentajeRSSI.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPorcentajeRSSI(String value) {
+        this.porcentajeRSSI = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad conRedundancia.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getConRedundancia() {
+        return conRedundancia;
+    }
+
+    /**
+     * Define el valor de la propiedad conRedundancia.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setConRedundancia(String value) {
+        this.conRedundancia = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad descDestino.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescDestino() {
+        return descDestino;
+    }
+
+    /**
+     * Define el valor de la propiedad descDestino.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescDestino(String value) {
+        this.descDestino = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad pasivoRetransmision.
+     * 
+     */
+    public boolean isPasivoRetransmision() {
+        return pasivoRetransmision;
+    }
+
+    /**
+     * Define el valor de la propiedad pasivoRetransmision.
+     * 
+     */
+    public void setPasivoRetransmision(boolean value) {
+        this.pasivoRetransmision = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad multiFrecuencia.
+     * 
+     */
+    public boolean isMultiFrecuencia() {
+        return multiFrecuencia;
+    }
+
+    /**
+     * Define el valor de la propiedad multiFrecuencia.
+     * 
+     */
+    public void setMultiFrecuencia(boolean value) {
+        this.multiFrecuencia = value;
     }
 
 }

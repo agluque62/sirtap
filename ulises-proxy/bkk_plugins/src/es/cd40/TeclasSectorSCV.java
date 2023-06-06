@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SayAgain" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="InhabilitacionRedirec" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="Glp" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="PermisoRTXSQ" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="PermisoRTXSect" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -69,7 +71,9 @@ import javax.xml.bind.annotation.XmlType;
     "ltt",
     "sayAgain",
     "inhabilitacionRedirec",
-    "glp"
+    "glp",
+    "permisoRTXSQ",
+    "permisoRTXSect"
 })
 @XmlSeeAlso({
     TeclasSector.class
@@ -120,6 +124,10 @@ public class TeclasSectorSCV
     protected boolean inhabilitacionRedirec;
     @XmlElement(name = "Glp")
     protected boolean glp;
+    @XmlElement(name = "PermisoRTXSQ")
+    protected boolean permisoRTXSQ;
+    @XmlElement(name = "PermisoRTXSect")
+    protected boolean permisoRTXSect;
 
     /**
      * Obtiene el valor de la propiedad transConConsultaPrev.
@@ -455,6 +463,38 @@ public class TeclasSectorSCV
      */
     public void setGlp(boolean value) {
         this.glp = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad permisoRTXSQ.
+     * 
+     */
+    public boolean isPermisoRTXSQ() {
+        return permisoRTXSQ;
+    }
+
+    /**
+     * Define el valor de la propiedad permisoRTXSQ.
+     * 
+     */
+    public void setPermisoRTXSQ(boolean value) {
+        this.permisoRTXSQ = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad permisoRTXSect.
+     * 
+     */
+    public boolean isPermisoRTXSect() {
+        return permisoRTXSect;
+    }
+
+    /**
+     * Define el valor de la propiedad permisoRTXSect.
+     * 
+     */
+    public void setPermisoRTXSect(boolean value) {
+        this.permisoRTXSect = value;
     }
 
 }

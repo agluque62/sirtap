@@ -32,6 +32,11 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IpRed2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Grabador1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Grabador2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="iSupervLanGW" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="itmmaxSupervLanGW" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="GrabacionED137" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="RtspGrabador1" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="RtspGrabador2" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -55,7 +60,12 @@ import javax.xml.bind.annotation.XmlType;
     "ipRed1",
     "ipRed2",
     "grabador1",
-    "grabador2"
+    "grabador2",
+    "iSupervLanGW",
+    "itmmaxSupervLanGW",
+    "grabacionED137",
+    "rtspGrabador1",
+    "rtspGrabador2"
 })
 public class TifX
     extends Tablas
@@ -95,6 +105,16 @@ public class TifX
     protected String grabador1;
     @XmlElement(name = "Grabador2")
     protected String grabador2;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iSupervLanGW;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short itmmaxSupervLanGW;
+    @XmlElement(name = "GrabacionED137")
+    protected int grabacionED137;
+    @XmlElement(name = "RtspGrabador1")
+    protected int rtspGrabador1;
+    @XmlElement(name = "RtspGrabador2")
+    protected int rtspGrabador2;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -382,6 +402,86 @@ public class TifX
      */
     public void setGrabador2(String value) {
         this.grabador2 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iSupervLanGW.
+     * 
+     */
+    public short getISupervLanGW() {
+        return iSupervLanGW;
+    }
+
+    /**
+     * Define el valor de la propiedad iSupervLanGW.
+     * 
+     */
+    public void setISupervLanGW(short value) {
+        this.iSupervLanGW = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad itmmaxSupervLanGW.
+     * 
+     */
+    public short getItmmaxSupervLanGW() {
+        return itmmaxSupervLanGW;
+    }
+
+    /**
+     * Define el valor de la propiedad itmmaxSupervLanGW.
+     * 
+     */
+    public void setItmmaxSupervLanGW(short value) {
+        this.itmmaxSupervLanGW = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad grabacionED137.
+     * 
+     */
+    public int getGrabacionED137() {
+        return grabacionED137;
+    }
+
+    /**
+     * Define el valor de la propiedad grabacionED137.
+     * 
+     */
+    public void setGrabacionED137(int value) {
+        this.grabacionED137 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspGrabador1.
+     * 
+     */
+    public int getRtspGrabador1() {
+        return rtspGrabador1;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspGrabador1.
+     * 
+     */
+    public void setRtspGrabador1(int value) {
+        this.rtspGrabador1 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspGrabador2.
+     * 
+     */
+    public int getRtspGrabador2() {
+        return rtspGrabador2;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspGrabador2.
+     * 
+     */
+    public void setRtspGrabador2(int value) {
+        this.rtspGrabador2 = value;
     }
 
 }

@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="Cascos" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Literal" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="SupervisionPortadora" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="DescDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="DestinoId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -51,7 +53,9 @@ import javax.xml.bind.annotation.XmlType;
     "modoOperacion",
     "cascos",
     "literal",
-    "supervisionPortadora"
+    "supervisionPortadora",
+    "descDestino",
+    "destinoId"
 })
 public class Radio
     extends Tablas
@@ -84,6 +88,10 @@ public class Radio
     protected String literal;
     @XmlElement(name = "SupervisionPortadora")
     protected boolean supervisionPortadora;
+    @XmlElement(name = "DescDestino")
+    protected String descDestino;
+    @XmlElement(name = "DestinoId")
+    protected String destinoId;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -339,6 +347,54 @@ public class Radio
      */
     public void setSupervisionPortadora(boolean value) {
         this.supervisionPortadora = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad descDestino.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescDestino() {
+        return descDestino;
+    }
+
+    /**
+     * Define el valor de la propiedad descDestino.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescDestino(String value) {
+        this.descDestino = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad destinoId.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDestinoId() {
+        return destinoId;
+    }
+
+    /**
+     * Define el valor de la propiedad destinoId.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDestinoId(String value) {
+        this.destinoId = value;
     }
 
 }

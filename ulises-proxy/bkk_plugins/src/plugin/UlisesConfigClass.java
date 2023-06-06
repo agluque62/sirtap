@@ -24,6 +24,7 @@ public class UlisesConfigClass {
 	public List<ListaTroncales> listaTroncales;
 	public List<String> listaAbonadosATSSectores;
 	public List<String> listaTelefonosVoIP;
+	public List<Conferencia> conferenciasPreprogramadas;
 	
 	UlisesConfigClass()
 	{
@@ -42,6 +43,7 @@ public class UlisesConfigClass {
 		if (listaTroncales == null) return false;
 		if (listaAbonadosATSSectores == null) return false;
 		if (listaTelefonosVoIP == null) return false;
+		if (conferenciasPreprogramadas == null) return false;
 		return true;
 	}
 	

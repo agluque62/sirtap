@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IdPrefijo" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="TipoDestino" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="IdDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="isuperv_options" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="itm_superv_options" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -37,7 +39,9 @@ import javax.xml.bind.annotation.XmlType;
     "idSistema",
     "idPrefijo",
     "tipoDestino",
-    "idDestino"
+    "idDestino",
+    "isupervOptions",
+    "itmSupervOptions"
 })
 public class RecursosLCEN
     extends ParametrosRecursoLCEN
@@ -55,6 +59,12 @@ public class RecursosLCEN
     protected long tipoDestino;
     @XmlElement(name = "IdDestino")
     protected String idDestino;
+    @XmlElement(name = "isuperv_options")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long isupervOptions;
+    @XmlElement(name = "itm_superv_options")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long itmSupervOptions;
 
     /**
      * Obtiene el valor de la propiedad idRecurso.
@@ -158,6 +168,38 @@ public class RecursosLCEN
      */
     public void setIdDestino(String value) {
         this.idDestino = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad isupervOptions.
+     * 
+     */
+    public long getIsupervOptions() {
+        return isupervOptions;
+    }
+
+    /**
+     * Define el valor de la propiedad isupervOptions.
+     * 
+     */
+    public void setIsupervOptions(long value) {
+        this.isupervOptions = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad itmSupervOptions.
+     * 
+     */
+    public long getItmSupervOptions() {
+        return itmSupervOptions;
+    }
+
+    /**
+     * Define el valor de la propiedad itmSupervOptions.
+     * 
+     */
+    public void setItmSupervOptions(long value) {
+        this.itmSupervOptions = value;
     }
 
 }

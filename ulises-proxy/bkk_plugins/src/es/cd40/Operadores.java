@@ -28,6 +28,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="Telefono" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="FechaUltimoAcceso" type="{http://www.w3.org/2001/XMLSchema}dateTime"/&gt;
  *         &lt;element name="Comentarios" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="TimeoutSesion" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="SesionActiva" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="SesionEstado" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -46,7 +49,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "apellidos",
     "telefono",
     "fechaUltimoAcceso",
-    "comentarios"
+    "comentarios",
+    "timeoutSesion",
+    "sesionActiva",
+    "sesionEstado"
 })
 public class Operadores
     extends Tablas
@@ -72,6 +78,12 @@ public class Operadores
     protected XMLGregorianCalendar fechaUltimoAcceso;
     @XmlElement(name = "Comentarios")
     protected String comentarios;
+    @XmlElement(name = "TimeoutSesion")
+    protected int timeoutSesion;
+    @XmlElement(name = "SesionActiva")
+    protected int sesionActiva;
+    @XmlElement(name = "SesionEstado")
+    protected int sesionEstado;
 
     /**
      * Obtiene el valor de la propiedad idOperador.
@@ -279,6 +291,54 @@ public class Operadores
      */
     public void setComentarios(String value) {
         this.comentarios = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad timeoutSesion.
+     * 
+     */
+    public int getTimeoutSesion() {
+        return timeoutSesion;
+    }
+
+    /**
+     * Define el valor de la propiedad timeoutSesion.
+     * 
+     */
+    public void setTimeoutSesion(int value) {
+        this.timeoutSesion = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad sesionActiva.
+     * 
+     */
+    public int getSesionActiva() {
+        return sesionActiva;
+    }
+
+    /**
+     * Define el valor de la propiedad sesionActiva.
+     * 
+     */
+    public void setSesionActiva(int value) {
+        this.sesionActiva = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad sesionEstado.
+     * 
+     */
+    public int getSesionEstado() {
+        return sesionEstado;
+    }
+
+    /**
+     * Define el valor de la propiedad sesionEstado.
+     * 
+     */
+    public void setSesionEstado(int value) {
+        this.sesionEstado = value;
     }
 
 }

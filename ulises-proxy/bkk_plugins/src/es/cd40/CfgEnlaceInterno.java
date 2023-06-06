@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="Dependencia" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Prioridad" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="OrigenR2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Dominio" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -41,7 +42,8 @@ import javax.xml.bind.annotation.XmlType;
     "listaRecursos",
     "dependencia",
     "prioridad",
-    "origenR2"
+    "origenR2",
+    "dominio"
 })
 public class CfgEnlaceInterno {
 
@@ -61,6 +63,8 @@ public class CfgEnlaceInterno {
     protected long prioridad;
     @XmlElement(name = "OrigenR2")
     protected String origenR2;
+    @XmlElement(name = "Dominio")
+    protected String dominio;
 
     /**
      * Obtiene el valor de la propiedad literal.
@@ -212,6 +216,30 @@ public class CfgEnlaceInterno {
      */
     public void setOrigenR2(String value) {
         this.origenR2 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad dominio.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDominio() {
+        return dominio;
+    }
+
+    /**
+     * Define el valor de la propiedad dominio.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDominio(String value) {
+        this.dominio = value;
     }
 
 }

@@ -26,6 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SectorSimple" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="Tipo" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="NumSacta" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="SeleccionadoFS" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="IdDependenciaATS" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -43,7 +45,9 @@ import javax.xml.bind.annotation.XmlType;
     "idSistemaParejaUCS",
     "sectorSimple",
     "tipo",
-    "numSacta"
+    "numSacta",
+    "seleccionadoFS",
+    "idDependenciaATS"
 })
 public class Sectores
     extends SectoresSCV
@@ -66,6 +70,10 @@ public class Sectores
     @XmlElement(name = "NumSacta")
     @XmlSchemaType(name = "unsignedInt")
     protected long numSacta;
+    @XmlElement(name = "SeleccionadoFS")
+    protected boolean seleccionadoFS;
+    @XmlElement(name = "IdDependenciaATS")
+    protected String idDependenciaATS;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -241,6 +249,46 @@ public class Sectores
      */
     public void setNumSacta(long value) {
         this.numSacta = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad seleccionadoFS.
+     * 
+     */
+    public boolean isSeleccionadoFS() {
+        return seleccionadoFS;
+    }
+
+    /**
+     * Define el valor de la propiedad seleccionadoFS.
+     * 
+     */
+    public void setSeleccionadoFS(boolean value) {
+        this.seleccionadoFS = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad idDependenciaATS.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIdDependenciaATS() {
+        return idDependenciaATS;
+    }
+
+    /**
+     * Define el valor de la propiedad idDependenciaATS.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIdDependenciaATS(String value) {
+        this.idDependenciaATS = value;
     }
 
 }

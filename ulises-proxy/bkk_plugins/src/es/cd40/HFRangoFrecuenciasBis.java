@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para HfRangoFrecuenciass complex type.
+ * <p>Clase Java para HFRangoFrecuenciasBis complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType name="HfRangoFrecuenciass"&gt;
+ * &lt;complexType name="HFRangoFrecuenciasBis"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "HfRangoFrecuenciass", propOrder = {
+@XmlType(name = "HFRangoFrecuenciasBis", propOrder = {
     "fMin",
     "fMax"
 })
-public class HfRangoFrecuenciass {
+public class HFRangoFrecuenciasBis {
 
     @XmlElement(name = "FMin")
     @XmlSchemaType(name = "unsignedInt")

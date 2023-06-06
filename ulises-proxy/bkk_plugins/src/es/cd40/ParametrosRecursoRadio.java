@@ -27,6 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="TamRTP" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="Codec" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="GrabacionEd137" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="UmbralAGCTXdBm" type="{http://www.w3.org/2001/XMLSchema}float"/&gt;
+ *         &lt;element name="UmbralAGCRXdBm" type="{http://www.w3.org/2001/XMLSchema}float"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -44,7 +46,9 @@ import javax.xml.bind.annotation.XmlType;
     "supresionSilencio",
     "tamRTP",
     "codec",
-    "grabacionEd137"
+    "grabacionEd137",
+    "umbralAGCTXdBm",
+    "umbralAGCRXdBm"
 })
 @XmlSeeAlso({
     ParametrosRecursosRadioKeepAlive.class
@@ -73,6 +77,10 @@ public class ParametrosRecursoRadio
     protected long codec;
     @XmlElement(name = "GrabacionEd137")
     protected boolean grabacionEd137;
+    @XmlElement(name = "UmbralAGCTXdBm")
+    protected float umbralAGCTXdBm;
+    @XmlElement(name = "UmbralAGCRXdBm")
+    protected float umbralAGCRXdBm;
 
     /**
      * Obtiene el valor de la propiedad gananciaAGCTX.
@@ -200,6 +208,38 @@ public class ParametrosRecursoRadio
      */
     public void setGrabacionEd137(boolean value) {
         this.grabacionEd137 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad umbralAGCTXdBm.
+     * 
+     */
+    public float getUmbralAGCTXdBm() {
+        return umbralAGCTXdBm;
+    }
+
+    /**
+     * Define el valor de la propiedad umbralAGCTXdBm.
+     * 
+     */
+    public void setUmbralAGCTXdBm(float value) {
+        this.umbralAGCTXdBm = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad umbralAGCRXdBm.
+     * 
+     */
+    public float getUmbralAGCRXdBm() {
+        return umbralAGCRXdBm;
+    }
+
+    /**
+     * Define el valor de la propiedad umbralAGCRXdBm.
+     * 
+     */
+    public void setUmbralAGCRXdBm(float value) {
+        this.umbralAGCRXdBm = value;
     }
 
 }

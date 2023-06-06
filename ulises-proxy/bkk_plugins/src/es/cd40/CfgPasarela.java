@@ -29,6 +29,11 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="PeriodoSupervisionSIP" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="IpGrabador1" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IpGrabador2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="iSupervLanGW" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="itmmaxSupervLanGW" type="{http://www.w3.org/2001/XMLSchema}unsignedByte"/&gt;
+ *         &lt;element name="EnableGrabacionEd137" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="RtspPort" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
+ *         &lt;element name="RtspPort1" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="ListaRecursos" type="{http://CD40.es/}ArrayOfRecursosSCV" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -51,6 +56,11 @@ import javax.xml.bind.annotation.XmlType;
     "periodoSupervisionSIP",
     "ipGrabador1",
     "ipGrabador2",
+    "iSupervLanGW",
+    "itmmaxSupervLanGW",
+    "enableGrabacionEd137",
+    "rtspPort",
+    "rtspPort1",
     "listaRecursos"
 })
 public class CfgPasarela {
@@ -82,6 +92,18 @@ public class CfgPasarela {
     protected String ipGrabador1;
     @XmlElement(name = "IpGrabador2")
     protected String ipGrabador2;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short iSupervLanGW;
+    @XmlSchemaType(name = "unsignedByte")
+    protected short itmmaxSupervLanGW;
+    @XmlElement(name = "EnableGrabacionEd137")
+    protected boolean enableGrabacionEd137;
+    @XmlElement(name = "RtspPort")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long rtspPort;
+    @XmlElement(name = "RtspPort1")
+    @XmlSchemaType(name = "unsignedInt")
+    protected long rtspPort1;
     @XmlElement(name = "ListaRecursos")
     protected ArrayOfRecursosSCV listaRecursos;
 
@@ -291,6 +313,86 @@ public class CfgPasarela {
      */
     public void setIpGrabador2(String value) {
         this.ipGrabador2 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad iSupervLanGW.
+     * 
+     */
+    public short getISupervLanGW() {
+        return iSupervLanGW;
+    }
+
+    /**
+     * Define el valor de la propiedad iSupervLanGW.
+     * 
+     */
+    public void setISupervLanGW(short value) {
+        this.iSupervLanGW = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad itmmaxSupervLanGW.
+     * 
+     */
+    public short getItmmaxSupervLanGW() {
+        return itmmaxSupervLanGW;
+    }
+
+    /**
+     * Define el valor de la propiedad itmmaxSupervLanGW.
+     * 
+     */
+    public void setItmmaxSupervLanGW(short value) {
+        this.itmmaxSupervLanGW = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad enableGrabacionEd137.
+     * 
+     */
+    public boolean isEnableGrabacionEd137() {
+        return enableGrabacionEd137;
+    }
+
+    /**
+     * Define el valor de la propiedad enableGrabacionEd137.
+     * 
+     */
+    public void setEnableGrabacionEd137(boolean value) {
+        this.enableGrabacionEd137 = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspPort.
+     * 
+     */
+    public long getRtspPort() {
+        return rtspPort;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspPort.
+     * 
+     */
+    public void setRtspPort(long value) {
+        this.rtspPort = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad rtspPort1.
+     * 
+     */
+    public long getRtspPort1() {
+        return rtspPort1;
+    }
+
+    /**
+     * Define el valor de la propiedad rtspPort1.
+     * 
+     */
+    public void setRtspPort1(long value) {
+        this.rtspPort1 = value;
     }
 
     /**

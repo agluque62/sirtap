@@ -8,7 +8,13 @@ LEER DE LA BASE DE DATOS POR SOAP EN ECLIPSE JAVA
 
 -De la web http://127.0.0.1/NucleoDF/U5kCfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx, pincho en 'descripción de servicios' y me bajo el fichero wsdl (InterfazSOAPConfiguracion.wsdl).
 
--Se podria crear el cliente soap directamente de la web, pero me daba error porque la palabra HfRangoFrecuencias se utiliza en dos sitios pero cambiando una letra de mayúsculas a minúsculas. Eso hacía que se intentaran crar dos clases java con el mismo nombre ya que windows no disintgue mayúsculas y minúsculas. Como esa clase no la voy a necesitar cambio de nombre HfRangoFrecuencias en el fichero.
+-Se podria crear el cliente soap directamente de la web, pero me daba error porque la palabra HfRangoFrecuencias 
+se utiliza en dos sitios pero cambiando una letra de mayusculas a minusculas. 
+Eso hacia que se intentaran crear dos clases java con el mismo nombre ya que windows no distingue mayusculas y minusculas.
+Como esa clase no la voy a necesitar hago estos cambios a mano en el fichero:
+-El literal HFRangoFrecuencias (H y F en mayusculas) lo dejo igual
+-El literal HfRangoFrecuencias lo cambio por HFRangoFrecuenciasBis
+
 
 -El fichero InterfazSOAPConfiguracion.wsdl lo pongo en la carpeta src del proyecto de java. Hacemos un refres en eclipse y aparece eel fichero en el proyecto.
 
@@ -17,6 +23,10 @@ Creando las funciones de Cliente Soap de Java con Apache CXF
 ---------------------------------------------------------------------------------------------------------------
 
 De http://cxf.apache.org/download.html nos bajamos apache-cxf-3.2.7.zip.
+Tambi�n nos hace falta tener instalado el jdk. En concreto instalamos: jdk-8u371-windows-i586.exe
+En la variable de entorno de Windows creamos la variable:
+JAVA_HOME=C:\Program Files (x86)\Java\jdk-1.8
+
 Lo descomprimimos y ejecutamos la siguiente linea de comandos:
 
 D:\users\d223843\Downloads\apache-cxf-3.2.7\bin>wsdl2java -client InterfazSOAPConfiguracion.wsdl

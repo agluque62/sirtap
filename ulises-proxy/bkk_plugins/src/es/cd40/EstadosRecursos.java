@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="IdDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="TipoDestino" type="{http://www.w3.org/2001/XMLSchema}unsignedInt"/&gt;
  *         &lt;element name="Estado" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="DescDestino" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -45,7 +46,8 @@ import javax.xml.bind.annotation.XmlType;
     "tipoRecurso",
     "idDestino",
     "tipoDestino",
-    "estado"
+    "estado",
+    "descDestino"
 })
 public class EstadosRecursos
     extends Tablas
@@ -72,6 +74,8 @@ public class EstadosRecursos
     protected long tipoDestino;
     @XmlElement(name = "Estado")
     protected String estado;
+    @XmlElement(name = "DescDestino")
+    protected String descDestino;
 
     /**
      * Obtiene el valor de la propiedad idSistema.
@@ -263,6 +267,30 @@ public class EstadosRecursos
      */
     public void setEstado(String value) {
         this.estado = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad descDestino.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescDestino() {
+        return descDestino;
+    }
+
+    /**
+     * Define el valor de la propiedad descDestino.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescDestino(String value) {
+        this.descDestino = value;
     }
 
 }

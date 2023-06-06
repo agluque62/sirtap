@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SipUri" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="IpGestor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Oid" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="Frecs" type="{http://CD40.es/}ArrayOfHfRangoFrecuencias" minOccurs="0"/&gt;
+ *         &lt;element name="Frecs" type="{http://CD40.es/}ArrayOfHFRangoFrecuenciasBis" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -53,7 +53,7 @@ public class PoolHfElement {
     @XmlElement(name = "Oid")
     protected String oid;
     @XmlElement(name = "Frecs")
-    protected ArrayOfHfRangoFrecuencias frecs;
+    protected ArrayOfHFRangoFrecuenciasBis frecs;
 
     /**
      * Obtiene el valor de la propiedad id.
@@ -156,10 +156,10 @@ public class PoolHfElement {
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfHfRangoFrecuencias }
+     *     {@link ArrayOfHFRangoFrecuenciasBis }
      *     
      */
-    public ArrayOfHfRangoFrecuencias getFrecs() {
+    public ArrayOfHFRangoFrecuenciasBis getFrecs() {
         return frecs;
     }
 
@@ -168,10 +168,10 @@ public class PoolHfElement {
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfHfRangoFrecuencias }
+     *     {@link ArrayOfHFRangoFrecuenciasBis }
      *     
      */
-    public void setFrecs(ArrayOfHfRangoFrecuencias value) {
+    public void setFrecs(ArrayOfHFRangoFrecuenciasBis value) {
         this.frecs = value;
     }
 

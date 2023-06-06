@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://CD40.es/}CfgRecursoEnlaceInterno"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="Interface" type="{http://CD40.es/}TipoInterface"/&gt;
+ *         &lt;element name="NombreMostrar" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -29,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CfgRecursoEnlaceInternoConInterface", propOrder = {
-    "_interface"
+    "_interface",
+    "nombreMostrar"
 })
 public class CfgRecursoEnlaceInternoConInterface
     extends CfgRecursoEnlaceInterno
@@ -38,6 +40,8 @@ public class CfgRecursoEnlaceInternoConInterface
     @XmlElement(name = "Interface", required = true)
     @XmlSchemaType(name = "string")
     protected TipoInterface _interface;
+    @XmlElement(name = "NombreMostrar")
+    protected String nombreMostrar;
 
     /**
      * Obtiene el valor de la propiedad interface.
@@ -61,6 +65,30 @@ public class CfgRecursoEnlaceInternoConInterface
      */
     public void setInterface(TipoInterface value) {
         this._interface = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad nombreMostrar.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNombreMostrar() {
+        return nombreMostrar;
+    }
+
+    /**
+     * Define el valor de la propiedad nombreMostrar.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNombreMostrar(String value) {
+        this.nombreMostrar = value;
     }
 
 }
