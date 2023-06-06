@@ -1001,7 +1001,13 @@ namespace HMI.CD40.Module.BusinessEntities
                     General.SafeLaunchEvent(HfGlobalStatus, this, (HFStatusCodes)msg);
                     break;
 #endif
-			}
+                case Identifiers.FR_RXTX_CHANGE_RESPONSE_MSG://LALM 220228
+                    {
+                        General.SafeLaunchEvent(SiteChangedResult, this,(ChangeSiteRsp) msg);
+                    }
+                    break;
+
+            }
 		}
 
 		private void OnFrChanged(object sender)

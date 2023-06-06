@@ -662,7 +662,26 @@ namespace HMI.CD40.Module.BusinessEntities
 						RdPosition rd = _RdPositions[pos];
 						rd.Reset(link);
                             //RQF-14 parametro frecuencianodesasignable
-                            RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly);
+
+                            selectable_frequencies sf= new selectable_frequencies();
+                            if (link.Alias.Contains("122.001"))
+                            {
+                                sf.setnewfrecuency("122.001");
+                                sf.setnewfrecuency("122.002");
+                                sf.setindex(0);
+                            }
+                            else if (link.Alias.Contains("121.001"))
+                            {
+                                sf.setnewfrecuency("121.001");
+                                sf.setnewfrecuency("121.002");
+                                sf.setnewfrecuency("121.003");
+                                sf.setindex(0);
+                            }
+                            else
+                                sf.setindex(-1);
+
+                            RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
+                            
                             /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                             posInfo.KeyAlias = rd.KeyAlias;
                             //LALM 220329 introduzco DescDestino.
@@ -683,7 +702,9 @@ namespace HMI.CD40.Module.BusinessEntities
 					rd.Reset();
 
                         //RQf-14 parametro frecuencianodesasignable
-                        RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly);
+                        //List <string> listpossiblefrec = new List<string>();
+                        selectable_frequencies sf= new selectable_frequencies();
+                        RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
                         /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                         posInfo.KeyAlias = rd.KeyAlias;
                         //LALM 210223 Errores #4756 prioridad

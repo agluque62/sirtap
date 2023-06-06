@@ -20,5 +20,5 @@ namespace HMI.Presentation.Twr.Constants
 		public const string DependencesNumberCalled = "DependencesNumberCalled";
 		public const string CambioPaginaRadioUp = "CambioPaginaRadioUp";
 		public const string CambioPaginaRadioDown = "CambioPaginaRadioDown";
-	}
+    }
 }
