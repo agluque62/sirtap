@@ -395,19 +395,15 @@ void DlgSubs::on_tsx_state(pjsip_evsub* sub, pjsip_transaction* tsx, pjsip_event
 		//Se ha recibido un mensaje SIP y se establece la cabecera WG67-version si no lo estaba
 		if (pjsip_dlg_get_WG67_version(subdlg, NULL) == PJ_FALSE)
 		{
-			char remote_radio_version = 0;
-			char remote_phone_version = 0;
-			pjsip_endpt_Get_ED137Version_from_msg(event->body.rx_msg.rdata->msg_info.msg, &remote_radio_version, &remote_phone_version);
-			dlg_subs->ED137Version = pjsip_endpt_Negocia_ED137Version(dlg_subs->ED137Version, remote_phone_version);
-			if (dlg_subs->ED137Version == 'C')
+			char radio_version = 0;
+			char phone_version = 0;
+			char WG67_version_value_buf[32];
+
+			if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, tsx->last_tx->msg, event->body.rx_msg.rdata->msg_info.msg, &radio_version, &phone_version,
+				WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
 			{
-				pjsip_dlg_set_WG67_version(subdlg, "phone.02", PJ_TRUE);
-				pjsip_tsx_set_WG67_version(tsx, "phone.02");
-			}
-			else
-			{
-				pjsip_dlg_set_WG67_version(subdlg, "phone.01", PJ_TRUE);
-				pjsip_tsx_set_WG67_version(tsx, "phone.01");
+				pjsip_dlg_set_WG67_version(subdlg, WG67_version_value_buf, PJ_TRUE);
+				pjsip_tsx_set_WG67_version(tsx, WG67_version_value_buf);
 			}
 		}
 	}
@@ -680,9 +676,15 @@ pj_bool_t DlgSubs::SubscriptionRxRequest(pjsip_rx_data* rdata)
 	
 	pjsip_dlg_inc_lock(dlg);
 
-	char neg_wg67version[64];
-	pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, rdata, neg_wg67version, sizeof(neg_wg67version), NULL, NULL);
-	if (pj_ansi_strlen(neg_wg67version) > 0) pjsip_dlg_set_WG67_version(dlg, neg_wg67version, PJ_TRUE);
+	char radio_version = 0;
+	char phone_version = 0;
+	char WG67_version_value_buf[32];
+
+	if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, NULL, rdata->msg_info.msg, &radio_version, &phone_version,
+		WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
+	{
+		pjsip_dlg_set_WG67_version(dlg, WG67_version_value_buf, PJ_TRUE);
+	}
 
 	pjsip_evsub* conftmp = SubscriptionServer::Get_subMod(accid, dlg->remote.contact->uri, &STR_DIALOG);
 	if (conftmp != NULL)

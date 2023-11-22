@@ -701,7 +701,7 @@ void SubscriptionServer::SendWG67NotifyFromAcc(pjsua_acc_id acc_id, pj_bool_t on
 			if (only_ED137C)
 			{
 				pjsip_dialog* dlg = pjsip_evsub_get_dlg(wg76sub);
-				if (pj_stricmp2(&dlg->WG67_version->hvalue, "radio.02") == 0)
+				if (dlg->WG67_version != NULL && pj_stricmp2(&dlg->WG67_version->hvalue, "radio.02") == 0)
 				{
 					WG67Subs::Send_WG67_current_notify(wg76sub);
 				}

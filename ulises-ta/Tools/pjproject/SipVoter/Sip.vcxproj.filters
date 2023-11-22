@@ -226,4 +226,9 @@
       <UniqueIdentifier>{5903e2c4-da1b-4d90-a265-529b412a20c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="FuncionamientoSistemaAudio.txt">
+      <Filter>Source</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

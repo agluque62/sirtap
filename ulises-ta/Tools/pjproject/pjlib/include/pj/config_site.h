@@ -27,6 +27,14 @@
 #define PJMEDIA_TONEGEN_ALG PJMEDIA_TONEGEN_SINE
 #define PJMEDIA_HAS_ALAW_ULAW_TABLE	    1
 
+
+/*Para simular que en el sdp el puerto es 0 y no hay c= en el request con inactive*/
+#undef SIMULAR_SDP_SIN_MEDIA_EN_REQUEST_HOLD      
+/*Para simular que en el sdp el puerto es 0 y no hay c= en el 200ok con inactive*/
+#undef SIMULAR_SDP_SIN_MEDIA_EN_RESPONSE_HOLD        
+
+
+
 #if PJMEDIA_DISABLE_RTCP
 #	define PJMEDIA_ADVERTISE_RTCP					0
 #else

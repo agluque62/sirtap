@@ -367,6 +367,8 @@ struct pjmedia_sdp_conn
     pj_str_t	net_type;	/**< Network type ("IN").		*/
     pj_str_t	addr_type;	/**< Address type ("IP4", "IP6").	*/
     pj_str_t	addr;		/**< The address.			*/
+	pj_bool_t	not_received; /**< El contenido del objeto fue forzado a la direccion 0.0.0.0
+									porque el atributo c (connection info) no se ha recibido*/									
 };
 
 

@@ -371,7 +371,7 @@ PJ_DEF(pj_status_t) pjsua_call_make_call( pjsua_acc_id acc_id,
 	pj_str_t gPriorityHdr = { "Priority", 8 };
 	pjsip_subject_hdr *subject;
 	pjsip_priority_hdr *priority;
-	pj_str_t wg67ver = { "WG67-version", 12 };
+	pj_str_t wg67ver = { "WG67-Version", 12 };
 	pjsip_generic_string_hdr* wg67ver_hdr;
 	
 	if (options & PJSIP_INV_VIA_PROXY)	invite_hacia_proxy = PJ_TRUE;
@@ -3733,8 +3733,15 @@ static pj_status_t create_sdp_of_call_hold(pjsua_call *call,
 			attr = pjmedia_sdp_attr_create(pool, "inactive", NULL);
 			pjmedia_sdp_media_add_attr(sdp->media[0], attr);
 
-			//sdp->media[0]->desc.port = 0;			//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive.
-			//sdp->media[0]->desc.port_count = 0;	//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive.
+#ifdef SIMULAR_SDP_SIN_MEDIA_EN_REQUEST_HOLD			
+			//Descomentar lo siquiente para simular que se envia puerto 0 y no se envia rtpmap en un request invite con atributo inactive para hacer un hold
+			sdp->media[0]->desc.port = 0;								//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive.
+			sdp->media[0]->desc.port_count = 0;							//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive.
+			sdp->media[0]->desc.fmt_count = 1;							//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda rtpmap con inactive.
+			pjmedia_sdp_media_remove_all_attr(sdp->media[0], "rtpmap");	//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda rtpmap con inactive.
+#endif
+			
+
 		//}
 	}
 
@@ -3780,7 +3787,8 @@ static void pjsua_call_on_rx_offer(pjsip_inv_session *inv,
 		pj_strcmp2(&conn->addr, "0")==0)
 	{
 		/* Modify address */
-		answer->conn->addr = pj_str("0.0.0.0");
+		answer->conn->addr = pj_str("0.0.0.0");				
+		answer->conn->not_received = conn->not_received;
 	}
 
 	/* Check if call is on-hold */

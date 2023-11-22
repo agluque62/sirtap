@@ -537,32 +537,34 @@ PJ_DECL(void) pjsip_endpt_Set_Ed137_version(pjsip_endpoint* endpt, char ED137Rad
 PJ_DECL(void) pjsip_endpt_Get_Ed137_version(pjsip_endpoint* endpt, char* ED137Radioversion, char* ED137Phoneversion);
 
 /**
-* Negocia la version de la ED137
-* @param local_version	version local
-* @param remote_version	version remota
-* return Version resultante 'B' o 'C'
+* Fuerza la cabecera de WG67-version
+* @param endpt	pjsip endpoint
+* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
 */
-PJ_DECL(char) pjsip_endpt_Negocia_ED137Version(char local_version, char remote_version);
+PJ_DECL(void) pjsip_endpt_Force_Ed137_version_header(pjsip_endpoint* endpt, int force, char *ED137Radioversion);
+
+/**
+* Retorna si se Fuerza la cabecera de WG67-version
+* @param endpt	pjsip endpoint
+* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
+* @param ED137Radioversion_size Longitud del buffer ED137Radioversion
+*/
+PJ_DECL(void) pjsip_endpt_Get_Force_Ed137_version_header(pjsip_endpoint* endpt, int* force, char* ED137Radioversion, int ED137Radioversion_size);
 
 /**
 * Busca la version de la ED137 en un mensaje
-* @param msg	mensaje
+* @param rx_msg	mensaje recibido del remoto
+* @param tx_msg	mensaje transmitido. Este puede ser NULL
 * @param radio_version	Retorna 'C' si en el mensaje hay una cabecera WG67-Version con radio.02. retorna 'B' si solo encuentra radio.01, y 0 si no encuentra ninguno
 * @param phone_version	Retorna 'C' si en el mensaje hay una cabecera WG67-Version con phone.02. retorna 'B' si solo encuentra phone.01, y 0 si no encuentra ninguno
-*/
-PJ_DECL(void) pjsip_endpt_Get_ED137Version_from_msg(const pjsip_msg* msg, char* radio_version, char* phone_version);
-
-/**
-* Negocia la cabecera WG67-version y se obtiene el valor de la cabecera para enviar los paquetes
-* @param endpt  Endpoint
-* @param rdata	paquete recibido
-* @param WG67_version_value_buf     Buffer donde se deja el string del valor de la cabecera
+* @param WG67_version_value_buf     Buffer donde se deja el string del valor de la cabecera, despues de la negociacion
 * @param WG67_version_value_size    Capacidad del buffer
-* @param negED137RadVer. Retorna la version negociada, respecto a radio
-* @param negED137PhoneVer. Retorna la version negociada, respecto a phone
+* @Return   PJ_TRUE Si la version obtenida es correcta. PJ_FALSE Si la versión no es soportada.
 */
-PJ_DEF(void) pjsip_endpt_Neg_ED137Version_from_rdata(pjsip_endpoint* endpt, const pjsip_rx_data* rdata, char* WG67_version_value_buf, int WG67_version_value_size,
-	char* negED137RadVer, char* negED137PhoneVer);
+PJ_DECL(pj_bool_t) pjsip_endpt_Neg_ED137Version_from_msg(pjsip_endpoint* endpt, const pjsip_msg* tx_msg, const pjsip_msg* rx_msg, char* radio_version, char* phone_version,
+	char* WG67_version_value_buf, int WG67_version_value_size);
 
 /**
 * Establece si el endpoint es un ETM

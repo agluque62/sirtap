@@ -1,0 +1,115 @@
+Funcionamiento del sistema de audio
+----------------------------------------
+
+Se describe como se integran los dispositivos de sonido del sistema Windows del PC con la PJSIP.
+La versión de PJSIP es la 1.6.
+
+SipAgent::Init()
+----------------------------------------
+
+En pjsua_init() se llama a pjsua_media_subsys_init() que a su vez llama a pjmedia_aud_subsys_init().
+
+Se está utilizando el sistema PORTAUDIO. Está activado este flag en config_site.h
+#define PJMEDIA_AUDIO_DEV_HAS_PORTAUDIO		1
+
+Portaudio utiliza el dispositivo ASIO.
+
+SipAgent::Start()
+----------------------------------------
+
+En esta función, entre otras cosas, 
+
+-Se llama a pjsua_set_no_snd_dev() para desconectar todos los dispositivos de audio de la conferencia de la pjsip
+-Con pjmedia_aud_dev_default_param y siguientes instrucciones configura los parámetros para utilizar el dispositivo ASIO por PORAUDIO, con el index 0.
+ La estructura de los parámetros (parece) ha sido modificada para que se adapte con el driver ASIO:
+
+	unsigned in_channel_count;
+	unsigned out_channel_count;
+
+	void * inHostApiSpecificStreamInfo;
+	void * outHostApiSpecificStreamInfo;
+
+	unsigned in_samples_per_frame;
+	unsigned out_samples_per_frame;
+
+Es decir, que con ASIO se diferencia la entrada y la salida. La entrada captura en un frame todos los dispositivos de entrada, y la salida reproduce todos
+los dispositivos de salida que tiene configurados. 
+
+Por eso se explica esto:
+
+	param.in_samples_per_frame = param.samples_per_frame * _NumInChannels;				//Cada frame tiene las muestras de todos los canales
+	param.out_samples_per_frame = param.samples_per_frame * _NumOutChannels;
+
+Entonces, cada vez que hay una captura de un frame de entrada, este tiene las muestras de todos los dispositivos de entrada. Por tanto, hay que
+pasarle al port de la pjmedia el fragmento que le corresponde. Más abajo se explica.
+
+Con los dispositivos de salida es a la inversa.
+
+
+-Se llama a la función pjmedia_aud_stream_create(). Esta función inicializa el stream del dispositivo de audio.
+En esta función se pasan dos callbacks definidas así:
+ * @param rec_cb	Callback to be called on every input frame captured.
+ * @param play_cb	Callback to be called everytime the sound device needs
+ *			audio frames to be played back.
+
+rec_cb:
+
+pj_status_t SipAgent::RecCb(void * userData, pjmedia_frame * frame)
+
+Esta función se llama cada vez que se captura un frame en los dispositivos de audio de entrada (micrófonos, etc.)
+La longitud del frame viene dado por in_samples_per_frame, que es  param.samples_per_frame * _NumInChannels = 160 * _NumInChannels
+Es decir, que ASIO llama a esta callback con todas las muestras de los dispositivos de entrada.
+En la callback se asigna el frame correspondiente a cada elemento de _SndPorts que sea de entrada, el cual es ya un port de la pjmedia
+
+play_cb:
+
+pj_status_t SipAgent::PlayCb(void * userData, pjmedia_frame * frame)
+
+Esta función se llama cada vez que ASIO tiene que reproducir un frame. En este caso el frame tiene una longitud de:
+param.samples_per_frame * _NumOutChannels = 160 * _NumOutChannels
+
+Después se pasa a cada miembro de salida de _SndPorts el buffer donde tiene que poner las muestras cada vez que estos ports tienen que hacer un put frame.
+
+CORESIP_AddSndDevice
+-------------------------------------
+
+Con esta función se crean los ports del array _SndPorts. Son ports de la pjmedia que se utilizan para transferir audio entre el pjmedia_aud_stream y 
+la conferencia de la pjmedia.
+Es decir, si se quiere enviar audio de la conferencia, por ejemplo desde una llamada a un altavoz, entonces se conecta con la función pjsua_conf_connect
+el port de la llamada con el _Sndport correspondiente, el cual envia el audio al altavoz con la callback configurada para pjmedia_aud_stream.
+Es decir, con BrigeLink se conecta la llamada con el _SndPort correspondiente al altavoz, y luego en la callback play_cb pjmedia_aud_stream toma las muestras
+que se reproducen en el altavoz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

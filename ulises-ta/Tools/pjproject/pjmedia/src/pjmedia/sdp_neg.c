@@ -546,7 +546,9 @@ static void update_media_direction(pj_pool_t *pool,
 	switch (new_dir) {
 	case PJMEDIA_DIR_NONE:
 	    a = pjmedia_sdp_attr_create(pool, "inactive", NULL);
-		//local->desc.port = 0;			//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive.
+#ifdef SIMULAR_SDP_SIN_MEDIA_EN_RESPONSE_HOLD
+		local->desc.port = 0;			//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda puerto con inactive en el 200 OK
+#endif
 	    break;
 	case PJMEDIA_DIR_ENCODING:
 	    a = pjmedia_sdp_attr_create(pool, "sendonly", NULL);
@@ -1381,6 +1383,18 @@ static pj_status_t create_answer( pj_pool_t *pool,
 	if (am->desc.port != 0)
 	    has_active = PJ_TRUE;
     }
+
+#ifdef SIMULAR_SDP_SIN_MEDIA_EN_RESPONSE_HOLD
+	//TEST PORT 0 con inactive. Descomentar esto para simular que no se manda rtpmap con inactive en el 200 OK
+	for (i = 0; i < answer->media_count; ++i) {
+		if (pjmedia_sdp_media_find_attr2(answer->media[i], "inactive", NULL))
+		{
+			//answer->desc.fmt_count = 1;
+			pjmedia_sdp_media_remove_all_attr(answer->media[i], "rtpmap");
+			pjmedia_sdp_media_remove_all_attr(answer->media[i], "fmtp");			
+		}
+	}
+#endif
 
     *p_answer = answer;
 

@@ -42,12 +42,13 @@ FrecDesp::FrecDesp()
 			groups[i].sessions[j].Bss_type = 0;
 			groups[i].sessions[j].squ_status = PJ_FALSE;
 			groups[i].sessions[j].selected = PJ_FALSE;
-			groups[i].sessions[j].Tred = 0;
+			groups[i].sessions[j].Tn1 = 0;
 			groups[i].sessions[j]._MetodoClimax = Relative;
 			groups[i].sessions[j].Bss_selected_method[0] = '\0';
 			groups[i].sessions[j].Tid_orig = 0;
 			groups[i].sessions[j].Tid = 0;
-			groups[i].sessions[j].Tsd = 0;
+			groups[i].sessions[j].Ts2 = 0;
+			groups[i].sessions[j].Tn2 = 0;
 			groups[i].sessions[j].cld_prev = INVALID_CLD_PREV;
 			groups[i].sessions[j].CallFlags = CORESIP_CALL_RD_RXONLY;			
 		}
@@ -59,6 +60,7 @@ FrecDesp::FrecDesp()
 		groups[i].SelectedUri[0] = '\0';
 		groups[i].SelectedUriPttId = 0;
 		groups[i].sipcall_in_window_timer = NULL;
+		groups[i].every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
 	}
 	ngroups = 0;
 	NTP_synchronized = PJ_FALSE;
@@ -173,6 +175,7 @@ int FrecDesp::AddToGroup(char *rdfr, pjsua_call_id call_id, SipCall *psipcall, c
 						groups[i].SelectedUri[0] = '\0';
 						groups[i].SelectedUriPttId = 0;
 						groups[i].sipcall_in_window_timer = NULL;
+						groups[i].every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
 						ngroups_aux++;
 					}
 					else
@@ -207,12 +210,14 @@ int FrecDesp::AddToGroup(char *rdfr, pjsua_call_id call_id, SipCall *psipcall, c
 					groups[i].sessions[j].cld_absoluto = PJ_FALSE;
 					groups[i].sessions[j].AirQidxInWindows = 0;
 					groups[i].sessions[j].Bss_type = 0;
-					groups[i].sessions[j].Tred = 0;
+					groups[i].sessions[j].Tn1 = 0;
+					groups[i].sessions[j].Ts2 = 0;
+					groups[i].sessions[j].Tn2 = 0;
 					groups[i].sessions[j].squ_status = PJ_FALSE;
 					groups[i].sessions[j].selected = PJ_FALSE;
 					groups[i].sessions[j]._MetodoClimax = metCld;
 					groups[i].sessions[j].Tid_orig = 0;
-					groups[i].sessions[j].cld_prev = INVALID_CLD_PREV;		
+					groups[i].sessions[j].cld_prev = INVALID_CLD_PREV;							
 					if (Bss_selected_method)
 					{
 						strncpy(groups[i].sessions[j].Bss_selected_method, Bss_selected_method, 
@@ -224,6 +229,15 @@ int FrecDesp::AddToGroup(char *rdfr, pjsua_call_id call_id, SipCall *psipcall, c
 
 					if (flags & CORESIP_CALL_RD_RXONLY) groups[i].nsessions_rx_only++;
 					else if (flags & CORESIP_CALL_RD_TXONLY) groups[i].nsessions_tx_only++;
+
+					if (groups[i].sessions[j].pSipcall->ED137Version < 'C')
+					{
+						if ((flags & (CORESIP_CallFlagsMask)CORESIP_CALL_RD_TXONLY) == (CORESIP_CallFlagsMask)0)
+						{
+							//Es un transceptor o receptor que no soporta ED137C
+							groups[i].every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
+						}
+					}
 
 					psipcall->_Index_group = i;
 					psipcall->_Index_sess = j;
@@ -297,7 +311,7 @@ int FrecDesp::RemFromGroup(int index_group, int index_sess)
 	groups[index_group].sessions[index_sess].cld_absoluto = PJ_FALSE;
 	groups[index_group].sessions[index_sess].AirQidxInWindows = 0;
 	groups[index_group].sessions[index_sess].Bss_type = 0;
-	groups[index_group].sessions[index_sess].Tred = 0;
+	groups[index_group].sessions[index_sess].Tn1 = 0;
 	groups[index_group].sessions[index_sess].squ_status = PJ_FALSE;
 	groups[index_group].sessions[index_sess].selected = PJ_FALSE;
 	groups[index_group].sessions[index_sess]._MetodoClimax = Relative;
@@ -305,6 +319,8 @@ int FrecDesp::RemFromGroup(int index_group, int index_sess)
 	groups[index_group].sessions[index_sess].Tid_orig = 0;
 	groups[index_group].sessions[index_sess].Tid = 0;
 	groups[index_group].sessions[index_sess].Tsd = 0;
+	groups[index_group].sessions[index_sess].Ts2 = 0;
+	groups[index_group].sessions[index_sess].Tn2 = 0;
 	groups[index_group].sessions[index_sess].cld_prev = INVALID_CLD_PREV;
 
 	if (groups[index_group].nsessions > 0) groups[index_group].nsessions--;
@@ -322,11 +338,31 @@ int FrecDesp::RemFromGroup(int index_group, int index_sess)
 		groups[index_group].SelectedUri[0] = '\0';
 		groups[index_group].SelectedUriPttId = 0;
 		groups[index_group].sipcall_in_window_timer = NULL;
+		groups[index_group].every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
 		if (ngroups > 0) ngroups--;
 		pj_mutex_unlock(fd_mutex);
 	}
 	else
 	{
+		//Se actualiza every_receiver_and_transceiver_supports_ED137C
+		groups[index_group].every_receiver_and_transceiver_supports_ED137C = PJ_TRUE;
+		for (int i = 0; i < MAX_SESSIONS; i++)
+		{
+			if (groups[index_group].sessions[i].sess_callid == PJSUA_INVALID_ID) continue;
+			if (!pjsua_call_is_active(groups[index_group].sessions[i].sess_callid)) continue;
+			if (!pjsua_call_has_media(groups[index_group].sessions[i].sess_callid)) continue;
+
+			if (groups[index_group].sessions[i].pSipcall->ED137Version < 'C')
+			{
+				if ((groups[index_group].sessions[i].CallFlags & (CORESIP_CallFlagsMask)CORESIP_CALL_RD_TXONLY) == (CORESIP_CallFlagsMask)0)
+				{
+					//Hay algun transceptor o receptor que no soporta ED137C
+					groups[index_group].every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
+					break;
+				}
+			}
+		}
+
 		pj_mutex_unlock(fd_mutex);
 		UpdateGroupClimaxParams(index_group);
 	}	
@@ -340,9 +376,11 @@ int FrecDesp::RemFromGroup(int index_group, int index_sess)
  * @param	index_group		Indice del grupo 
  * @param	nsessions_rx_only	Numero de sesiones RX only
  * @param	nsessions_tx_only	Numero de sesiones TX only
+ * @param   every_receiver_and_transceiver_supports_ED137C. Indica si todos transceptores y receptores en el grupo soportan ED137C
  * @return	Numero total de sesiones en el grupo. -1 su hay error 
  */
-int FrecDesp::GetSessionsCountInGroup(int index_group, int *nsessions_rx_only, int *nsessions_tx_only)
+int FrecDesp::GetSessionsCountInGroup(int index_group, int *nsessions_rx_only, int *nsessions_tx_only,
+	pj_bool_t * every_receiver_and_transceiver_supports_ED137C)
 {
 	int ret;
 
@@ -356,6 +394,8 @@ int FrecDesp::GetSessionsCountInGroup(int index_group, int *nsessions_rx_only, i
 	ret = groups[index_group].nsessions;
 	if (nsessions_rx_only != NULL) *nsessions_rx_only = groups[index_group].nsessions_rx_only;
 	if (nsessions_tx_only != NULL) *nsessions_tx_only = groups[index_group].nsessions_tx_only;
+	if (every_receiver_and_transceiver_supports_ED137C != NULL) *every_receiver_and_transceiver_supports_ED137C = 
+		groups[index_group].every_receiver_and_transceiver_supports_ED137C;
 	pj_mutex_unlock(fd_mutex);
 
 	return ret;
@@ -449,8 +489,8 @@ int FrecDesp::UpdateGroupClimaxParamsAllGroups()
  * @return	-1 su hay error.
  */
 int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_uint32_t length,
-	unsigned int& Tn1_ms, unsigned int& Tj1_ms, unsigned int& Tid_ms, unsigned int& Tsd_ms, unsigned int& Ts2_ms,
-	pj_uint32_t& Tn1, pj_uint32_t& Tj1, pj_uint32_t& Tid, pj_uint32_t& Tsd, pj_uint32_t& Ts2,
+	unsigned int& Tn1_ms, unsigned int& Tj1_ms, unsigned int& Tid_ms, unsigned int& Tsd_ms, unsigned int& Ts2_ms, unsigned int& Tn2_ms,
+	pj_uint32_t& Tn1, pj_uint32_t& Tj1, pj_uint32_t& Tid, pj_uint32_t& Tsd, pj_uint32_t& Ts2, pj_uint32_t& Tn2, 
 	CORESIP_CLD_CALCULATE_METHOD requested_climax_method, CORESIP_CLD_CALCULATE_METHOD &used_climax_method,
 	pj_bool_t* request_MAM)
 {
@@ -532,6 +572,7 @@ int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_ui
 	}
 	else
 	{
+		Ts2 = 0;
 		Ts2_ms = (unsigned int) -1;
 	}
 
@@ -577,7 +618,7 @@ int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_ui
 		{
 			if (T1 - T2 > (ui32_OFFSET_THRESHOLD_us / 125))
 			{
-				//Aunque se est� sincronizado, si T2 < T1, entonces no podemos considerar que est�n sincronizado
+				//Aunque se esta sincronizado, si T2 < T1, entonces no podemos considerar que est�n sincronizado
 				//Puede ser porque haya un offset negativo. Se usa el metodo relativo
 				metodo_absoluto = PJ_FALSE;
 			}
@@ -586,6 +627,35 @@ int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_ui
 				//Si la diferencia es peque�a entonces consideramos un retardo de red de cero
 				Tn1 = 0;
 				metodo_absoluto = PJ_TRUE;
+			}
+		}
+				
+		if (metodo_absoluto)
+		{
+			//Tn2 = T4-(T2+Tsd)
+			if (T2 >= (0xFFFFFFFF - Tsd)) metodo_absoluto = PJ_FALSE;
+			else if (T4 >= (T2 + Tsd))
+			{
+				if ((T4 - (T2 + Tsd)) > (ui32_OFFSET_THRESHOLD_us / 125))
+					Tn2 = T4 - (T2 + Tsd);
+				else
+					Tn2 = 0;
+				metodo_absoluto = PJ_TRUE;
+			}
+			else
+			{
+				if (((T2 + Tsd) - T4) > (ui32_OFFSET_THRESHOLD_us / 125))
+				{
+					//Aunque se esta sincronizado, si T4 < (T2 + Tsd), entonces no podemos considerar que estan sincronizados
+					//Puede ser porque haya un offset negativo. Se usa el metodo relativo
+					metodo_absoluto = PJ_FALSE;
+				}
+				else
+				{
+					//Si la diferencia es pequena entonces consideramos un retardo de red de cero
+					Tn2 = 0;
+					metodo_absoluto = PJ_TRUE;
+				}
 			}
 		}
 	}
@@ -597,14 +667,18 @@ int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_ui
 		if (Tn1 >= Tsd) Tn1 -= Tsd;
 		else Tn1 = 0;
 		Tn1 /= 2;
+		Tn2 = Tn1;
 	}
 
 	Tn1_ms = (unsigned int)Tn1;		//En unidades de 125 us
-	Tn1_ms /= 8;						// Tn1 * 125 / 1000 = Tn1 / 8  (ms)
+	Tn1_ms /= 8;					// Tn1 * 125 / 1000 = Tn1 / 8  (ms)
+	Tn2_ms = (unsigned int)Tn2;		//En unidades de 125 us
+	Tn2_ms /= 8;					// Tn1 * 125 / 1000 = Tn1 / 8  (ms)
 
 	//TdTxIP = Tv1 + Tp1 + Tn1 + Tj1 + Tid;
 
-	PJ_LOG(5, (__FILE__, "CLIMAX: CalcTimeDelay Tv1 %d us, Tp1 %d us, Tn1 %d us, Tj1 %d us, Tid %d us, Tsd %d us", Tv1 * 125, Tp1 * 125, Tn1 * 125, Tj1 * 125, Tid * 125, Tsd * 125));
+	PJ_LOG(5, (__FILE__, "CLIMAX: CalcTimeDelay Tv1 %d us, Tp1 %d us, Tn1 %d us, Tj1 %d us, Tid %d us, Tsd %d us, Ts2 %d us, Tn2 %d us", 
+		Tv1 * 125, Tp1 * 125, Tn1 * 125, Tj1 * 125, Tid * 125, Tsd * 125, Ts2 * 125, Tn2 * 125));
 
 	if (metodo_absoluto) used_climax_method = Absolute;
 	else used_climax_method = Relative;
@@ -628,7 +702,8 @@ int FrecDesp::CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_ui
  * @return	Numero de time delays asignadas a la sesion. -1 su hay error.
  */
 int FrecDesp::SetTimeDelay(int index_group, int index_sess, 
-	pj_uint32_t Tn1, pj_uint32_t Tj1, pj_uint32_t Tid, pj_uint32_t Tsd, CORESIP_CLD_CALCULATE_METHOD used_climax_method)
+	pj_uint32_t Tn1, pj_uint32_t Tj1, pj_uint32_t Tid, pj_uint32_t Tsd, pj_uint32_t Ts2, pj_uint32_t Tn2,
+	CORESIP_CLD_CALCULATE_METHOD used_climax_method)
 {
 	if (index_group < 0 || index_sess < 0 || index_group >= MAX_GROUPS || index_sess >= MAX_SESSIONS) 
 	{
@@ -669,7 +744,9 @@ int FrecDesp::SetTimeDelay(int index_group, int index_sess,
 
 	groups[index_group].sessions[index_sess].Tid = Tid;
 	groups[index_group].sessions[index_sess].Tj1 = Tj1;
-	groups[index_group].sessions[index_sess].Tred = Tn1;
+	groups[index_group].sessions[index_sess].Tn1 = Tn1;
+	groups[index_group].sessions[index_sess].Ts2 = Ts2;
+	groups[index_group].sessions[index_sess].Tn2 = Tn2;
 
 	groups[index_group].sessions[index_sess].TdTxIP = Tv1 + Tp1 + Tn1 + Tj1 + Tid;
 	if (used_climax_method == Absolute) groups[index_group].sessions[index_sess].cld_absoluto = PJ_TRUE;
@@ -677,8 +754,8 @@ int FrecDesp::SetTimeDelay(int index_group, int index_sess,
 	
 	pj_mutex_unlock(fd_mutex);
 
-	PJ_LOG(5,(__FILE__, "CLIMAX: SetTimeDelay Fr %s TdTxIP %d us, Tn1 %d us, Tj1 %d us, Tid %d us, Tsd %d us", 
-		groups[index_group].RdFr, groups[index_group].sessions[index_sess].TdTxIP *125, Tn1*125, Tj1*125, Tid*125, Tsd*125));
+	PJ_LOG(5,(__FILE__, "CLIMAX: SetTimeDelay Fr %s TdTxIP %d us, Tn1 %d us, Tj1 %d us, Tid %d us, Tsd %d us, Ts2 %d us, Tn2 %d us", 
+		groups[index_group].RdFr, groups[index_group].sessions[index_sess].TdTxIP *125, Tn1*125, Tj1*125, Tid*125, Tsd*125, Ts2 * 125, Tn2 * 125));
 	
 	return 0;	
 }
@@ -710,13 +787,13 @@ int FrecDesp::GetRMMData(pj_uint8_t* ext_value, pj_uint32_t *TQV, pj_uint32_t *T
 }
 
 /**
- * GetRetToApply.	...
- * Calcula el el retardo a aplicar. Es la diferencia entre el maximo retardo de red y el de la sesion actual
+ * GetRxDelayToApply.	...
+ * Calcula el el retardo a aplicar en recepcion. Es la diferencia entre el maximo retardo de red y el de la sesion actual
  * @param	index_group		Indice del grupo
  * @param   index_sess		Indice de la sesion 
  * @return  El retardo en unidades de 125us. 
  */
-pj_uint32_t FrecDesp::GetRetToApply(int index_group, int index_sess)  
+pj_uint32_t FrecDesp::GetRxDelayToApply(int index_group, int index_sess)  
 {
 	if (index_group < 0 || index_sess < 0 || index_group >= MAX_GROUPS || index_sess >= MAX_SESSIONS) 
 	{
@@ -743,7 +820,9 @@ pj_uint32_t FrecDesp::GetRetToApply(int index_group, int index_sess)
 
 	pj_uint32_t ret = 0;
 
-	pj_uint32_t Tred_max = 0;
+	pj_uint32_t Trx_max = 0;
+	pj_uint32_t currentTrx = 0;
+	pj_bool_t all_receivers_support_ts2 = PJ_TRUE;
 	for (int j = 0; j < MAX_SESSIONS; j++)
 	{
 		if (groups[index_group].sessions[j].sess_callid == PJSUA_INVALID_ID) continue;
@@ -755,18 +834,32 @@ pj_uint32_t FrecDesp::GetRetToApply(int index_group, int index_sess)
 			CORESIP_CallInfo *_Info = groups[index_group].sessions[j].pSipcall->GetCORESIP_CallInfo();
 			if (!(_Info->CallFlags & CORESIP_CALL_RD_TXONLY))
 			{
+				if (groups[index_group].sessions[j].pSipcall->ED137Version < 'C')
+				{
+					all_receivers_support_ts2 = PJ_FALSE;
+					break;
+				}
+				
 				if (groups[index_group].sessions[j].TdTxIP != INVALID_TIME_DELAY)
 				{
-					if (groups[index_group].sessions[j].Tred > Tred_max)
+					pj_uint32_t Tj2 = 0;			//Retardo por buffer jitter en unidades de 125ms
+					//En nuestro caso es 0 ya que tomamos los frames directamente del RTP
+
+					pj_uint32_t Trx = groups[index_group].sessions[j].Tn2 + groups[index_group].sessions[j].Ts2 + Tj2;
+					if (j == index_sess) currentTrx = Trx;
+					if (Trx > Trx_max)
 					{
-						Tred_max = groups[index_group].sessions[j].Tred;
+						Trx_max = Trx;
 					}
-				}				
+				}
 			}
 		}
 	}	
 
-	ret = Tred_max - groups[index_group].sessions[index_sess].Tred;
+	if (all_receivers_support_ts2 == PJ_FALSE) ret = 0;				//Si algun receptor no soporta ED137C con Ts2
+																	//Entonces no aplicamos retardo en ningun caso
+	else if (Trx_max > currentTrx) ret = Trx_max - currentTrx;
+	else ret = 0;
 
 	pj_mutex_unlock(fd_mutex);
 
@@ -821,7 +914,7 @@ void FrecDesp::GetQidx(int index_group, int index_sess, pj_uint8_t *qidx, pj_uin
 
 	*qidx = groups[index_group].sessions[index_sess].pSipcall->GetSyncBss();
 	*qidx_ml = groups[index_group].sessions[index_sess].Bss_type;
-	*Tred = groups[index_group].sessions[index_sess].Tred;
+	*Tred = groups[index_group].sessions[index_sess].Tn1;
 
 	pj_mutex_unlock(fd_mutex);
 }
@@ -939,6 +1032,19 @@ int FrecDesp::GetCLD(pjsua_call_id call_id, pj_uint8_t *cld)
 		return -1;					
 	}
 
+	if (groups[group_index].sessions[sess_index].pSipcall->_Info.FrequencyType != FD &&
+		groups[group_index].sessions[sess_index].pSipcall->_Info.FrequencyType != ME)		
+	{
+		pj_mutex_unlock(fd_mutex);
+		return -1;
+	}
+
+	if (groups[group_index].sessions[sess_index].pSipcall->_Info.ModoTransmision != Climax)
+	{
+		pj_mutex_unlock(fd_mutex);
+		return -1;
+	}
+
 	if (groups[group_index].sessions[sess_index].TdTxIP == INVALID_TIME_DELAY)
 	{		
 		//Todav�a no ha habido c�lculo del retardo retornamos un cld=0 y con error.
@@ -953,7 +1059,7 @@ int FrecDesp::GetCLD(pjsua_call_id call_id, pj_uint8_t *cld)
 	if (SipAgent::ETM == PJ_TRUE)
 	{
 		//Si es un ETM forzamos a enviar el Tn1=Tred
-		delay_diff = groups[group_index].sessions[sess_index].Tred;
+		delay_diff = groups[group_index].sessions[sess_index].Tn1;
 		delay_diff /= 16;	//Unidades de 2ms
 	}	
 	else if ((groups[group_index].sessions[sess_index].cld_prev == 0) && (delay_diff <= 1))
@@ -1616,7 +1722,8 @@ int FrecDesp::SetBetterSession(SipCall *p_current_sipcall, pj_bool_t in_window, 
 				SetSelectedUri(p_better_sipcall);
 			}
 
-			if (SipAgent::Coresip_Local_Config._Debug_BSS)
+			if (SipAgent::Coresip_Local_Config._Debug_BSS ||
+				SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
 			{
 				PJ_LOG(3,(__FILE__, "BSS: ID DESTINO %s FR %s %s SELECCIONADO Qidx %d", p_better_sipcall->_IdDestino, 
 					p_better_sipcall->_RdFr, p_better_sipcall->DstUri, p_better_sipcall->GetSyncBss()));
@@ -1650,7 +1757,8 @@ int FrecDesp::SetBetterSession(SipCall *p_current_sipcall, pj_bool_t in_window, 
 					SetSelectedUri(p_current_sipcall);
 				}
 
-				if (SipAgent::Coresip_Local_Config._Debug_BSS)
+				if (SipAgent::Coresip_Local_Config._Debug_BSS ||
+					SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
 				{
 					PJ_LOG(3, (__FILE__, "BSS: ID DESTINO %s FR %s %s SELECCIONADO", p_current_sipcall->_IdDestino, p_current_sipcall->_RdFr, p_current_sipcall->DstUri));
 				}
@@ -1676,7 +1784,8 @@ int FrecDesp::SetBetterSession(SipCall *p_current_sipcall, pj_bool_t in_window, 
 					//Solo si estamos en la ventana se puede asignar en el grupo la uri seleccionada
 					SetSelectedUri(groups[index_group].sessions[better_index_sess].pSipcall);
 				}
-				if (SipAgent::Coresip_Local_Config._Debug_BSS)
+				if (SipAgent::Coresip_Local_Config._Debug_BSS ||
+					SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
 				{
 					PJ_LOG(3,(__FILE__, "BSS: ID DESTINO %s FR %s %s SELECCIONADO", 
 						groups[index_group].sessions[better_index_sess].pSipcall->_IdDestino,

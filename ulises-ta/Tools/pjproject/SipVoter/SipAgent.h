@@ -49,7 +49,20 @@
 struct stCoresip_Local_Config
 {
 	//Estructura que contiene los datos obtenido de la configuracion local de la CORESIP obtenida de un fichero de configuracion
-	pj_bool_t _Debug_BSS;						//Indica hay debig para el BSS
+	pj_bool_t _Debug_BSS;						//Indica hay debug para el BSS
+	pj_bool_t _Simular_menor_Qidx_rama_mas_lenta;
+												//-Fuerza que la rama mas lenta tenga un qidx peor. 
+												// De tal forma que si se activa primero la rama mas lenta, tenga que seleccionarse la rama mas rapida
+												// al final de la ventana de decision. 
+												// Esto sirve para que si se aplica el mismo audio en las dos ramas y activamos SQU primero en la mas lenta
+												// al final de la ventana se selecciones la mas rapida y no se detecta fallos en el audio en el momento de
+												// la transicion.
+	pj_bool_t _Test_ED137C_Dynamic_Delay_Compensation;
+												//Sirve para probar que funciona el dynamic delay compensation:												
+												//-Se generan logs del Retardo que se aplica a cada rama
+												//-Se tracea la funcion GetSyncBss, es decir, se generan logs de los valores de qidx
+												// de tal forma que se compare los que toma cada rama, y se compreube que
+												// se hace de forma similar cuando el audio de ambas ramas es el mismo.
 };
 
 class SipAgent
@@ -121,6 +134,7 @@ public:
 	static void Stop();
 	static void Set_Ed137_version(char ED137Radioversion, char ED137Phoneversion);
 	static void Get_Ed137_version(char* ED137Radioversion, char* ED137Phoneversion);
+	static void Force_Ed137_version_header(int force, char* ED137Radioversion);
 
 	static void SetSipPort(unsigned int port);
 	static void SetRTPPort(unsigned int port);

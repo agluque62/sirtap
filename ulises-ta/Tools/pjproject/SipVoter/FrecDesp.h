@@ -21,7 +21,7 @@ public:
 	static const int INVALID_GROUP_INDEX = -1;
 	static const int INVALID_SESS_INDEX = -1;
 	static const int MAX_GROUPS = 1024;   //maximo numero de grupos
-	static const int MAX_SESSIONS = 10;	 //maximo numero de sesiones en un grupo
+	static const int MAX_SESSIONS = 20;	 //maximo numero de sesiones en un grupo
 
 	static const pj_bool_t IN_WINDOW = PJ_TRUE;	 //Indica que se está en la ventana de decision bss
 	static const pj_bool_t ONLY_SELECTED_IN_WINDOW = PJ_TRUE;	 //Indica que solo se selecciona la que fue mejor en la ventana de decision
@@ -35,15 +35,17 @@ public:
 	int RemFromGroup(int index_group, int index_sess);
 	int SetGroupClimaxFlag(int index_group, pj_bool_t Esgrupoclimax);
 	int GetGroupClimaxFlag(pjsua_call_id call_id, pj_bool_t *Esgrupoclimax);
-	int GetSessionsCountInGroup(int index_group, int *nsessions_rx_only, int *nsessions_tx_only);
+	int GetSessionsCountInGroup(int index_group, int *nsessions_rx_only, int *nsessions_tx_only,
+		pj_bool_t* every_receiver_and_transceiver_supports_ED137C);
 	int SetTimeDelay(int index_group, int index_sess,
-		pj_uint32_t Tn1, pj_uint32_t Tj1, pj_uint32_t Tid, pj_uint32_t Tsd, CORESIP_CLD_CALCULATE_METHOD used_climax_method);
+		pj_uint32_t Tn1, pj_uint32_t Tj1, pj_uint32_t Tid, pj_uint32_t Tsd, pj_uint32_t Ts2, pj_uint32_t Tn2,
+		CORESIP_CLD_CALCULATE_METHOD used_climax_method);
 	int CalcTimeDelay(pjmedia_stream* stream, pj_uint8_t* ext_value, pj_uint32_t length,
-		unsigned int& Tn1_ms, unsigned int& Tj1_ms, unsigned int& Tid_ms, unsigned int& Tsd_ms, unsigned int& Ts2_ms,
-		pj_uint32_t& Tn1, pj_uint32_t& Tj1, pj_uint32_t& Tid, pj_uint32_t& Tsd, pj_uint32_t& Ts2,
+		unsigned int& Tn1_ms, unsigned int& Tj1_ms, unsigned int& Tid_ms, unsigned int& Tsd_ms, unsigned int& Ts2_ms, unsigned int& Tn2_ms,
+		pj_uint32_t& Tn1, pj_uint32_t& Tj1, pj_uint32_t& Tid, pj_uint32_t& Tsd, pj_uint32_t& Ts2, pj_uint32_t& Tn2,
 		CORESIP_CLD_CALCULATE_METHOD requested_climax_method, CORESIP_CLD_CALCULATE_METHOD& used_climax_method,
 		pj_bool_t* request_MAM);
-	pj_uint32_t GetRetToApply(int index_group, int index_sess);
+	pj_uint32_t GetRxDelayToApply(int index_group, int index_sess);
 	int GetCLD(pjsua_call_id call_id, pj_uint8_t *cld);
 	int SetQidxMethod(int index_group, int index_sess, pj_uint8_t qidx_method);
 	int SetAirQidxInWindows(int index_group, int index_sess);
@@ -103,6 +105,8 @@ private:
 		int nsessions;									//Cantidad total de sesiones
 		int nsessions_tx_only;							//Cantidad de sesiones Tx only
 		int nsessions_rx_only;							//Cantidad de sesiones Rx only
+		pj_bool_t every_receiver_and_transceiver_supports_ED137C;
+														//Indica si todos transceptores y receptores en el grupo soportan ED137C
 
 		struct stsess
 		{
@@ -115,10 +119,12 @@ private:
 			pj_uint32_t cld_prev;			//Ultimo cld obtenido. En 32 bits
 			pj_bool_t cld_absoluto;			//Indica si el metodo CLD es el absoluto o no
 			int Tn1_count;					//Cantidad de veces que el retardo es distinto al anterior
-			pj_uint32_t Tred;				//Ultimo retardo de red obtenido Tn1. En unidades de 125 us
+			pj_uint32_t Tn1;				//Ultimo retardo de red obtenido Tn1. En unidades de 125 us
 			pj_uint32_t Tid_orig;			//Tid obtenido en el primer MAM despues de que la sesion ha sido establecida o cuando NMR se recibe
 			pj_uint32_t Tid;				//Ultimo Tid obtenido en el MAM
 			pj_uint32_t Tsd;				//Ultimo Tsd obtenido en el MAM			
+			pj_uint32_t Tn2;				//Ultimo Tn2 calculado. Retardo de red de recepcion	
+			pj_uint32_t Ts2;				//Ultimo Ts2 obtenido en el MAM	
 			pj_uint8_t Bss_type;			//Tipo del bss recibido
 			pj_bool_t squ_status;			//Estado del squelch. 
 			pj_bool_t selected;				//Indica si es el seleccionado	

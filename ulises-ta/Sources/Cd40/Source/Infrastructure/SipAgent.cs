@@ -1374,7 +1374,7 @@ namespace U5ki.Infrastructure
         /// /// <param name="porcentajeRSSI">Peso del valor de Qidx del tipo RSSI en el calculo del Qidx final. 0 indica que el calculo es solo centralizado. 10 que el calculo es solo el RSSI.</param>
         /// <returns></returns>
 		public static int MakeRdCall(string accId, string dst, string frecuency, string IdDestino, CORESIP_CallFlags flags, string mcastIp, uint mcastPort,
-            CORESIP_Priority prioridad, string Zona, CORESIP_FREQUENCY_TYPE FrequencyType,
+            CORESIP_Priority prioridad, string Zona, CORESIP_FREQUENCY_TYPE FrequencyType, CORESIP_FREQUENCY_MODO_TRANSMISION ModoTransmision,
             CORESIP_CLD_CALCULATE_METHOD CLDCalculateMethod, int BssWindows, bool AudioSync, bool AudioInBssWindow,
             int cld_supervision_time, string bss_method, uint porcentajeRSSI = 0)
 		{
@@ -1405,6 +1405,7 @@ namespace U5ki.Infrastructure
             //EDU 20170223
             info.Zona = Zona;
             info.FrequencyType = FrequencyType;
+            info.ModoTransmision = ModoTransmision;
             info.CLDCalculateMethod = CLDCalculateMethod;
             info.BssWindows = BssWindows;
             info.AudioSync = AudioSync;
@@ -1890,6 +1891,31 @@ namespace U5ki.Infrastructure
             _Logger.Debug("Saliendo de SipAgent.SendInfo");
 #endif
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <param name="info"></param>
+		public static int Send_ED137C_SELCAL(int callId, string selcal_code)
+        {
+            CORESIP_Error err;
+            int ret = 0;
+
+#if _TRACEAGENT_
+            _Logger.Debug("Entrando en SipAgent.Send_ED137C_SELCAL {0}, {1}", callId, selcal_code);
+#endif
+            if (CORESIP_SendSELCAL(callId, selcal_code, out err) != 0)
+            {
+                _Logger.Error("SipAgent.Send_ED137C_SELCAL: " + err.Info);
+                ret = -1;
+            }
+#if _TRACEAGENT_
+            _Logger.Debug("Saliendo de SipAgent.Send_ED137C_SELCAL");
+#endif
+            return ret;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1905,7 +1931,7 @@ namespace U5ki.Infrastructure
          *	@param	error		Puntero a la Estructura de error
          *	@return				Codigo de Error
          */
-		public static void SendOptionsMsg(string dst, out string callid, bool isRadio)
+        public static void SendOptionsMsg(string dst, out string callid, bool isRadio)
 		{
 			CORESIP_Error err;
             StringBuilder callid_ = new StringBuilder(CORESIP_MAX_CALLID_LENGTH + 1);            

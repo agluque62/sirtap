@@ -575,6 +575,7 @@ PJ_DEF(pjmedia_sdp_conn*) pjmedia_sdp_conn_clone (pj_pool_t *pool,
     if (!pj_strdup (pool, &c->net_type, &rhs->net_type)) return NULL;
     if (!pj_strdup (pool, &c->addr_type, &rhs->addr_type)) return NULL;
     if (!pj_strdup (pool, &c->addr, &rhs->addr)) return NULL;
+    c->not_received = rhs->not_received;
 
     return c;
 }
@@ -742,6 +743,8 @@ static int print_session(const pjmedia_sdp_session *ses,
     unsigned i;
     int printed;
 
+    int no_print_conn = PJ_FALSE;
+
     /* Check length for v= and o= lines. */
     if (len < 5+ 
 	      2+ses->origin.user.slen+18+
@@ -788,8 +791,18 @@ static int print_session(const pjmedia_sdp_session *ses,
     *p++ = '\r';
     *p++ = '\n';
 
+#if ((defined SIMULAR_SDP_SIN_MEDIA_EN_REQUEST_HOLD) || (defined SIMULAR_SDP_SIN_MEDIA_EN_RESPONSE_HOLD))
+    //TEST PORT 0 con inactive. descomentar esto para simular que no se manda (c=)
+    for (i = 0; i < ses->media_count; ++i) {
+        if (pjmedia_sdp_media_find_attr2(ses->media[i], "inactive", NULL))
+        {
+            no_print_conn = PJ_TRUE;
+        }
+    }
+#endif
+
     /* Connection line (c=) if exist. */
-    if (ses->conn) {
+    if (ses->conn && !ses->conn->not_received && !no_print_conn) {
 	printed = print_connection_info(ses->conn, p, end-p);
 	if (printed < 1) {
 	    return -1;
@@ -1171,6 +1184,8 @@ PJ_DEF(pj_status_t) pjmedia_sdp_parse( pj_pool_t *pool,
     parse_context ctx;
     PJ_USE_EXCEPTION;
 
+    pj_bool_t conn_is_present = PJ_FALSE;
+
     ctx.last_error = PJ_SUCCESS;
 
     init_sdp_parser();
@@ -1211,6 +1226,7 @@ PJ_DEF(pj_status_t) pjmedia_sdp_parse( pj_pool_t *pool,
 		    } else {
 			session->conn = conn;
 		    }
+            conn_is_present = PJ_TRUE;
 		    break;
 		case 't':
 		    parse_time(&scanner, session, &ctx);
@@ -1272,6 +1288,16 @@ PJ_DEF(pj_status_t) pjmedia_sdp_parse( pj_pool_t *pool,
 
     if (session)
 	apply_media_direction(session);
+
+    if (ctx.last_error == PJ_SUCCESS && conn_is_present == PJ_FALSE)
+    {
+        conn = PJ_POOL_ZALLOC_T(pool, pjmedia_sdp_conn);
+        pj_strdup2(pool, &conn->addr, "0.0.0.0");
+        pj_strdup2(pool, &conn->addr_type, "IP4");
+        pj_strdup2(pool, &conn->net_type, "IN");
+        conn->not_received = PJ_TRUE;
+        session->conn = conn;
+    }
 
     *p_sdp = session;
     return ctx.last_error;

@@ -65,6 +65,7 @@ public:
 	//Parametros para cuando es un agente simulador de radio
 	char etm_grs_bss_method_selected[CORESIP_MAX_BSS_LENGTH + 1];	//Para ETM, como GRS receptor/transceptor, Es el metodo BSS seleccionado para enviar el Qidx. 
 																	//Si su longitud es cero entonces no hay envio de Qidx
+	pj_bool_t remote_grs_supports_ED137C_Selcal;		//es true si el grs remoto soporta selcal de ED137C.
 
 	CORESIP_CallFlagsMask CallFlags_prev_reinvite;		//Valor de los flags previamente a enviar un reinvite.
 		
@@ -139,6 +140,7 @@ public:
 	static pj_str_t gWG67VersionTelefValueC;	
 	static pj_str_t gWG67VersionRadioValueBC;
 	static pj_str_t gWG67VersionTelefValueBC;
+	static pj_str_t gWG67VersionTelefIAValueBC;
 		
 	static const int WAIT_INIT_TIME_seg = 4;
 	static const int WAIT_INIT_TIME_ms = 500;

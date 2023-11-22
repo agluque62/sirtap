@@ -541,23 +541,21 @@ void WG67Subs::wg67_on_tsx_state(pjsip_evsub* sub, pjsip_transaction* tsx,	pjsip
 		//Se ha recibido un mensaje SIP y se establece la cabecera WG67-version si no lo estaba
 		if (pjsip_dlg_get_WG67_version(subdlg, NULL) == PJ_FALSE)
 		{
-			char remote_radio_version = 0;
-			char remote_phone_version = 0;
-			pjsip_endpt_Get_ED137Version_from_msg(event->body.rx_msg.rdata->msg_info.msg, &remote_radio_version, &remote_phone_version);
-			wg67->ED137Version = pjsip_endpt_Negocia_ED137Version(wg67->ED137Version, remote_radio_version);
-			if (wg67->ED137Version == 'C')
+			char radio_version = 0;
+			char phone_version = 0;
+			char WG67_version_value_buf[32];
+
+			if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, tsx->last_tx->msg, event->body.rx_msg.rdata->msg_info.msg, &radio_version, &phone_version,
+				WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
 			{
-				pjsip_dlg_set_WG67_version(subdlg, "radio.02", PJ_TRUE);
-				pjsip_tsx_set_WG67_version(tsx, "radio.02");
-			}
-			else
-			{
-				pjsip_dlg_set_WG67_version(subdlg, "radio.01", PJ_TRUE);
-				pjsip_tsx_set_WG67_version(tsx, "radio.01");
+				if (pj_ansi_strlen(WG67_version_value_buf) > 0)
+				{
+					pjsip_dlg_set_WG67_version(subdlg, WG67_version_value_buf, PJ_TRUE);
+					pjsip_tsx_set_WG67_version(tsx, WG67_version_value_buf);
+				}
 			}
 		}
 	}
-
 }
 
 void WG67Subs::wg67_on_state(pjsip_evsub* sub, pjsip_event* event)
@@ -1008,7 +1006,14 @@ void WG67Subs::OnWG67SrvStateChanged(pjsip_evsub* sub, pjsip_event* event)
 			info.NotifierUri[0] = '\0';
 		}
 
-		pj_ansi_snprintf(info.WG67_Version, sizeof(info.WG67_Version), "%.*s", subdlg->WG67_version->hvalue.slen, subdlg->WG67_version->hvalue.ptr);
+		if (subdlg->WG67_version != NULL)
+		{
+			pj_ansi_snprintf(info.WG67_Version, sizeof(info.WG67_Version), "%.*s", subdlg->WG67_version->hvalue.slen, subdlg->WG67_version->hvalue.ptr);
+		}
+		else
+		{
+			info.WG67_Version[0] = 0;
+		}
 
 		if (sub_user_data != NULL) CallSubscribeCallback(&sub_user_data->last_info, &info);
 	}
@@ -1171,9 +1176,18 @@ pj_bool_t WG67Subs::SubscriptionRxRequest(pjsip_rx_data* rdata, pjsip_dialog* dl
 
 	pjsip_dlg_inc_lock(subdlg);
 
-	char neg_wg67version[64];
-	pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, rdata, neg_wg67version, sizeof(neg_wg67version), NULL, NULL);
-	if (pj_ansi_strlen(neg_wg67version) > 0) pjsip_dlg_set_WG67_version(subdlg, neg_wg67version, PJ_TRUE);
+	char radio_version = 0;
+	char phone_version = 0;
+	char WG67_version_value_buf[32];
+
+	if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, NULL, rdata->msg_info.msg, &radio_version, &phone_version,
+		WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
+	{
+		if (pj_ansi_strlen(WG67_version_value_buf) > 0)
+		{
+			pjsip_dlg_set_WG67_version(subdlg, WG67_version_value_buf, PJ_TRUE);
+		}
+	}
 
 	pj_bool_t enviar_PJSIP_SC_BAD_EVENT = PJ_FALSE;
 
@@ -1363,7 +1377,7 @@ void WG67Subs::Send_WG67_current_notify(pjsip_evsub* sub)
 
 	char WG67Version = 'B';
 	pjsip_dialog *subdlg = pjsip_evsub_get_dlg(sub);
-	if (subdlg != NULL)
+	if (subdlg != NULL && subdlg->WG67_version != NULL)
 	{
 		if (pj_stricmp(&subdlg->WG67_version->hvalue, &pj_str("radio.02")) == 0)
 		{

@@ -1425,6 +1425,16 @@ void SipAgent::Get_Ed137_version(char *ED137Radioversion, char *ED137Phoneversio
 }
 
 /**
+* Fuerza la cabecera de WG67-version
+* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
+*/
+void SipAgent::Force_Ed137_version_header(int force, char* ED137Radioversion)
+{
+	pjsip_endpt_Force_Ed137_version_header(pjsua_var.endpt, force, ED137Radioversion);
+}
+
+/**
  * SetLogLevel. Configura el Nivel de LOG de la clase.
  * @param	level	Nivel de Log
  * @return	Nada
@@ -3828,13 +3838,22 @@ void SipAgent::ReadiniFile()
 	if (DBSS) Coresip_Local_Config._Debug_BSS = PJ_TRUE;
 	else Coresip_Local_Config._Debug_BSS = PJ_FALSE;
 
+	UINT Simular_menor_Qidx_rama_mas_lenta = GetPrivateProfileInt("CORESIP", "Simular_menor_Qidx_rama_mas_lenta", 0, inipath);
+	if (Simular_menor_Qidx_rama_mas_lenta) Coresip_Local_Config._Simular_menor_Qidx_rama_mas_lenta = PJ_TRUE;
+	else Coresip_Local_Config._Simular_menor_Qidx_rama_mas_lenta = PJ_FALSE;	
+
+	UINT Test_ED137C_Dynamic_Delay_Compensation = GetPrivateProfileInt("CORESIP", "Test_ED137C_Dynamic_Delay_Compensation", 0, inipath);
+	if (Test_ED137C_Dynamic_Delay_Compensation) Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation = PJ_TRUE;
+	else Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation = PJ_FALSE;
+
 	/*Ejemplo fichero coresip.ini*/
 
 	/*
 
 	[CORESIP]
 	Debug_BSS=1
-
+	Simular_menor_Qidx_rama_mas_lenta=1
+	Simular_receptor_mas_rapido_con_menor_Qidx=1
 	*/
 }
 

@@ -220,6 +220,13 @@ typedef enum CORESIP_FREQUENCY_TYPE
 { Simple = 0, Dual = 1, FD = 2, ME = 3 } 
 CORESIP_FREQUENCY_TYPE;         // 0. Normal, 1: 1+1, 2: FD, 3: EM
 
+typedef enum CORESIP_FREQUENCY_MODO_TRANSMISION {
+	Climax = 0,
+	UltimoReceptor = 1,
+	Manual = 2,
+	Ninguno = 3
+} CORESIP_FREQUENCY_MODO_TRANSMISION;
+
 typedef enum CORESIP_CLD_CALCULATE_METHOD 
 { Relative, Absolute } 
 CORESIP_CLD_CALCULATE_METHOD;
@@ -283,6 +290,7 @@ typedef struct CORESIP_CallInfo
 
 	char Zona[CORESIP_MAX_ZONA_LENGTH + 1];		//UNIFETM: Este campo falta en ETM. Asignarle el valor 0 en ETM
     CORESIP_FREQUENCY_TYPE FrequencyType;		//UNIFETM: Este campo falta en ETM. Asignarle el valor Simple en ETM
+	CORESIP_FREQUENCY_MODO_TRANSMISION ModoTransmision;
     CORESIP_CLD_CALCULATE_METHOD CLDCalculateMethod;	//UNIFETM: Este campo falta en ETM. Asignarle el valor Relative en ETM
     int BssWindows;								//UNIFETM: Este campo falta en ETM. Asignarle el valor 0 en ETM
     pj_bool_t AudioSync;						//UNIFETM: Este campo falta en ETM. Asignarle el valor 0 en ETM
@@ -391,6 +399,8 @@ typedef struct CORESIP_CallStateInfo
 	unsigned ChannelCount;
 	unsigned BitsPerSample;
 	unsigned FrameTime;
+
+	pj_bool_t remote_grs_supports_ED137C_Selcal;		//es true si la sesion con el grs remoto soporta selcal de ED137C
 
 } CORESIP_CallStateInfo;
 
@@ -795,6 +805,13 @@ extern "C" {
 	*	@return			Codigo de Error
 	*/
 	CORESIP_API int	CORESIP_Get_Ed137_version(char *ED137Radioversion, char *ED137Phoneversion, CORESIP_Error* error);
+
+	/**
+	* CORESIP_Force_Ed137_version_header. Fuerza la cabecera de WG67-version
+	* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+	* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
+	*/
+	CORESIP_API int	CORESIP_Force_Ed137_version_header(int force, char* ED137Radioversion, CORESIP_Error* error);
 
 	/**
 	 * CORESIP_SetSipPort. Establece el puerto SIP

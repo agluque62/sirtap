@@ -3126,25 +3126,18 @@ static pj_status_t tsx_on_state_proceeding_uac(pjsip_transaction *tsx,
 		if (tsx->method.id == PJSIP_INVITE_METHOD) {
 			pj_status_t status;
 
-			char WG67_version_value_buf[64];
-			WG67_version_value_buf[0] = '\0';
-			char negED137RadVer, negED137PhoneVer;
-			pj_bool_t versiones_incompatibles = PJ_FALSE;
-			pjsip_endpt_Neg_ED137Version_from_rdata(tsx->endpt, event->body.rx_msg.rdata, WG67_version_value_buf, sizeof(WG67_version_value_buf), &negED137RadVer, &negED137PhoneVer);
-			pjsip_generic_string_hdr* wg67hdr = pjsip_tsx_get_WG67_version(tsx);
-			if (wg67hdr != NULL)
+			char radio_version = 0;
+			char phone_version = 0;
+			char WG67_version_value_buf[32];
+
+			if (pjsip_endpt_Neg_ED137Version_from_msg(tsx->endpt, tsx->last_tx->msg, event->body.rx_msg.rdata->msg_info.msg, &radio_version, &phone_version,
+				WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
 			{
-				if (pj_strnicmp2(&wg67hdr->hvalue, "phone", 5) == 0)
+				if (pj_ansi_strlen(WG67_version_value_buf) > 0)
 				{
-					if (negED137RadVer != 0 && negED137PhoneVer == 0) versiones_incompatibles = PJ_TRUE;
-				}
-				else if (pj_strnicmp2(&wg67hdr->hvalue, "radio", 5) == 0)
-				{
-					if (negED137RadVer == 0 && negED137PhoneVer != 0) versiones_incompatibles = PJ_TRUE;
+					pjsip_tsx_set_WG67_version(tsx, WG67_version_value_buf);
 				}
 			}
-
-			if (!versiones_incompatibles && pj_ansi_strlen(WG67_version_value_buf) > 0) pjsip_tsx_set_WG67_version(tsx, WG67_version_value_buf);
 
 			status = pjsip_endpt_create_ack( tsx->endpt, tsx->last_tx, 
 				event->body.rx_msg.rdata,

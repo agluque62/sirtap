@@ -761,35 +761,36 @@ int SoundDevHw::VolumeDevByItem(int captureType, unsigned int item, unsigned int
 			if (voltype != only_get_volume_range && hr == S_OK)
 			{
 				float current_vol;
-				int tries = 200;
+				int tries = 200;				
 				if (voltype == scalar)
 				{
+					float incremento_minimo = 0.00001f;
 					hr = endpointVolume->GetChannelVolumeLevelScalar(channel, &current_vol);
 					if (current_vol < volume && hr == S_OK)
 					{
-						while (current_vol < (volume - 0.001f))
+						while (current_vol < (volume - incremento_minimo))
 						{
 							float inc = ((volume - current_vol) * 5.0f) / 6.0f;
-							if (inc < 0.001f) inc = 0.001f;
+							if (inc < incremento_minimo) inc = incremento_minimo;
 							current_vol += inc;
 							if (current_vol > 1.0f) current_vol = 1.0f;
 							hr = endpointVolume->SetChannelVolumeLevelScalar(channel, current_vol, NULL);
-							if (hr != S_OK) break;
-							hr = endpointVolume->GetChannelVolumeLevelScalar(channel, &current_vol);
+							if (hr != S_OK) break;							
+							hr = endpointVolume->GetChannelVolumeLevelScalar(channel, &current_vol);							
 							if (hr != S_OK) break;
 							if (--tries < 0)
 							{
 								hr = S_FALSE;
 								break;
 							}
-						}
+						}						
 					}
 					else
 					{
-						while ((current_vol > (volume + 0.001f)) && hr == S_OK)
+						while ((current_vol > (volume + incremento_minimo)) && hr == S_OK)
 						{
 							float inc = ((current_vol - volume) * 5.0f) / 6.0f;
-							if (inc < 0.001f) inc = 0.001f;
+							if (inc < incremento_minimo) inc = incremento_minimo;
 							current_vol -= inc;
 							if (current_vol < 0.0f) current_vol = 0.0f;
 							hr = endpointVolume->SetChannelVolumeLevelScalar(channel, current_vol, NULL);
@@ -803,6 +804,14 @@ int SoundDevHw::VolumeDevByItem(int captureType, unsigned int item, unsigned int
 							}
 						}
 					}
+
+					//Finalmente actualizamos el volumen con el requerido
+					pj_thread_sleep(11);
+					if (hr == S_OK) hr = endpointVolume->SetChannelVolumeLevelScalar(channel, volume, NULL);					
+					if (hr == S_OK) hr = endpointVolume->GetChannelVolumeLevelScalar(channel, &current_vol);
+
+					float vdbs;
+					endpointVolume->GetChannelVolumeLevel(channel, &vdbs);
 				}
 				else if (voltype == dB)
 				{

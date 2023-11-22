@@ -133,6 +133,22 @@ CORESIP_API int	CORESIP_Set_Ed137_version(char ED137Radioversion, char ED137Phon
 }
 
 /**
+ *	CORESIP_Force_Ed137_version_header
+ */
+CORESIP_API int	CORESIP_Force_Ed137_version_header(int force, char* ED137Radioversion, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	Try
+	{
+		SipAgent::Force_Ed137_version_header(force, ED137Radioversion);
+	}
+	catch_all;
+
+	return ret;
+}
+
+/**
  *	CORESIP_Get_Ed137_version
  */
 CORESIP_API int	CORESIP_Get_Ed137_version(char *ED137Radioversion, char *ED137Phoneversion, CORESIP_Error* error)

@@ -938,6 +938,18 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 							final_qidx_value = external_qidx_value;
 						}
 
+						if (SipAgent::Coresip_Local_Config._Simular_menor_Qidx_rama_mas_lenta)
+						{
+							if (sipCall->Retardo == 0)
+							{
+								final_qidx_value = 0;
+							}
+							else
+							{
+								final_qidx_value = 30;
+							}
+						}
+
 						if (in_window)
 						{
 							//Solo si estoy en la ventana de decision y si es un squelch de avion, me guardo los valores del qidx 
@@ -974,10 +986,14 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 
 					if (sipCall->squ_event)
 					{
-						//Se a�aden tantos silencios como valor de Retardo
+						//Se agregan tantos silencios como valor de Retardo
 						pjmedia_circ_buf_reset(sipCall->p_retbuff);
 						while (pj_sem_trywait(sipCall->sem_out_circbuff) == PJ_SUCCESS);
 						sipCall->wait_sem_out_circbuff = PJ_TRUE;
+						if (SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
+						{
+							PJ_LOG(3, (__FILE__, "Dynamic Delay Compensation: receptor %s. Retardo a aplicar %u ms\n", sipCall->DstUri, sipCall->Retardo/8));
+						}
 						for (pj_uint32_t i = 0; i < sipCall->Retardo; i++)
 						{
 							pjmedia_circ_buf_write(sipCall->p_retbuff, (pj_int16_t*)sipCall->zerobuf, 1);
@@ -998,7 +1014,7 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 			}
 			else if ((st == PJ_SUCCESS) && (frame_out.size != (SAMPLES_PER_FRAME / 2) * sizeof(pj_int16_t)))
 			{
-				PJ_LOG(5, (__FILE__, "TRAZA: PAquete diferente de 80\n"));
+				PJ_LOG(5, (__FILE__, "Warning: PAquete diferente de 80\n"));
 			}
 		}
 		else
@@ -1116,11 +1132,13 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 			unsigned int Tid_ms;
 			unsigned int Tsd_ms;
 			unsigned int Ts2_ms;
+			unsigned int Tn2_ms;
 			pj_uint32_t Tn1;
 			pj_uint32_t Tj1;
 			pj_uint32_t Tid;
 			pj_uint32_t Tsd;
 			pj_uint32_t Ts2;
+			pj_uint32_t Tn2;
 			CORESIP_CLD_CALCULATE_METHOD requested_climax_method = Relative;
 			CORESIP_CLD_CALCULATE_METHOD used_climax_method = Relative;
 			int ret = 0;
@@ -1139,15 +1157,15 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 			if (ret >= 0 || etm_no_radio_call || radio_grs)
 			{
 				ret = SipAgent::_FrecDesp->CalcTimeDelay((pjmedia_stream*)stream, pextinfo, length,
-					Tn1_ms, Tj1_ms, Tid_ms, Tsd_ms, Ts2_ms,
-					Tn1, Tj1, Tid, Tsd, Ts2,
+					Tn1_ms, Tj1_ms, Tid_ms, Tsd_ms, Ts2_ms, Tn2_ms,
+					Tn1, Tj1, Tid, Tsd, Ts2, Tn2,
 					requested_climax_method, used_climax_method, &request_MAM);
 
 				if (ret >= 0 && !request_MAM)
 				{
 					PJ_LOG(5, (__FILE__, "CLIMAX: SetTimeDelay  radio uri %s", sipCall->DstUri));
 					ret = SipAgent::_FrecDesp->SetTimeDelay(sipCall->_Index_group, sipCall->_Index_sess,
-						Tn1, Tj1, Tid, Tsd, used_climax_method);
+						Tn1, Tj1, Tid, Tsd, Ts2, Tn2, used_climax_method);
 				}
 			}			
 
@@ -1444,9 +1462,12 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 			processor_init(&sipCall->PdataQidx, 0);
 
 			int nsqus = SipAgent::_FrecDesp->SetSquSt(sipCall->_Index_group, sipCall->_Index_sess, PJ_TRUE, NULL);
-			Ret = SipAgent::_FrecDesp->GetRetToApply(sipCall->_Index_group, sipCall->_Index_sess);
+			Ret = SipAgent::_FrecDesp->GetRxDelayToApply(sipCall->_Index_group, sipCall->_Index_sess);
 
-			PJ_LOG(5, (__FILE__, "BSS: SQU ON RdDestId %s %s Ret %d ms GROUP %d SESS %d", sipCall->_IdDestino, sipCall->DstUri, (Ret * 125) / 1000, sipCall->_Index_group, sipCall->_Index_sess));
+			if (SipAgent::Coresip_Local_Config._Debug_BSS)
+			{
+				PJ_LOG(3, (__FILE__, "BSS: SQU ON RdDestId %s %s Ret %d ms GROUP %d SESS %d", sipCall->_IdDestino, sipCall->DstUri, (Ret * 125) / 1000, sipCall->_Index_group, sipCall->_Index_sess));
+			}
 
 			if (nsqus == 1)
 			{
@@ -1472,7 +1493,8 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 					{
 						//Se activa el envio por multicast de esta sesion
 						SipAgent::_FrecDesp->EnableMulticast(sipCall, PJ_TRUE, PJ_FALSE);
-						if (SipAgent::Coresip_Local_Config._Debug_BSS)
+						if (SipAgent::Coresip_Local_Config._Debug_BSS ||
+							SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
 							PJ_LOG(3, (__FILE__, "BSS: SQU ON. ID DESTINO %s Fr %s uri %s PRE-SELECCIONADO", sipCall->_IdDestino, sipCall->_RdFr, sipCall->DstUri));
 					}
 					else
@@ -1522,11 +1544,17 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 
 				//Al llegar el squelch de la primera radio del grupo, reiniciamos los qidx almacenados en todas las radios del grupo
 				SipAgent::_FrecDesp->Clear_SyncBss_In_Group(sipCall->_Index_group);
-			}			
+			}	
 
-			if (!sipCall->_Info.AudioSync)
+			pj_bool_t every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
+			if (SipAgent::_FrecDesp->GetSessionsCountInGroup(sipCall->_Index_group, NULL, NULL, &every_receiver_and_transceiver_supports_ED137C) < 0)
 			{
-				//Se fuerza que el retardo a aplicar en la recepcion de audio sea 0
+				every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
+			}
+
+			if (every_receiver_and_transceiver_supports_ED137C == PJ_FALSE)
+			{
+				//Si algun receptor o transceptor del grupo no soporta ED137C se fuerza retardo cero
 				Ret = 0;
 			}
 
@@ -1794,7 +1822,7 @@ int SipCall::Out_circbuff_Th(void* proc)
 		{
 			wp->squoff_event_mcast = PJ_FALSE;
 			wp->wait_sem_out_circbuff = PJ_FALSE;
-			continue;
+			//continue;
 		}
 
 		pj_bool_t packet_present = PJ_FALSE;
@@ -1838,56 +1866,11 @@ int SipCall::Out_circbuff_Th(void* proc)
 		{
 			if (wp->last_received_squ_status == SQU_ON)
 			{
-				PJ_LOG(5, (__FILE__, "TRAZA: Multicast_clock_cb SIN MUESTRAS"));
+				PJ_LOG(5, (__FILE__, "Warning: Multicast_clock_cb SIN MUESTRAS"));
 			}
 		}
 		else
 		{
-#if 0
-			if ((wp->Retardo > 0) && wp->wait_sem_out_circbuff)
-			{
-				pj_uint32_t umbral_l, umbral_h;
-				if (wp->Retardo > size_packet / 2)
-				{
-					umbral_l = wp->Retardo - size_packet / 2;
-					umbral_h = wp->Retardo + size_packet / 2;
-				}
-				else
-				{
-					umbral_l = cbuf_len;
-					umbral_h = cbuf_len;
-				}
-
-				if (cbuf_len < umbral_l)
-				{
-					PJ_LOG(5, (__FILE__, "TRAZA: RETARDO MENOR antes cbuf_len %u Retardo %u\n", cbuf_len, wp->Retardo));
-					//pjmedia_circ_buf_write(wp->p_retbuff, (pj_int16_t *) wp->zerobuf, size_packet/2);
-					while (cbuf_len < wp->Retardo)
-					{
-						pjmedia_circ_buf_write(wp->p_retbuff, (pj_int16_t*)wp->zerobuf, 1);
-						cbuf_len = pjmedia_circ_buf_get_len(wp->p_retbuff);
-					}
-					//cbuf_len = pjmedia_circ_buf_get_len(wp->p_retbuff);
-					PJ_LOG(5, (__FILE__, "TRAZA: RETARDO MENOR despues cbuf_len %u Retardo %u\n", cbuf_len, wp->Retardo));
-				}
-				else if (cbuf_len > umbral_h)
-				{
-					PJ_LOG(5, (__FILE__, "TRAZA: RETARDO MAYOR antes cbuf_len %u Retardo %u\n", cbuf_len, wp->Retardo));
-					//pjmedia_circ_buf_read(wp->p_retbuff, (pj_int16_t *) wp->zerobuf, size_packet/2);
-					while (cbuf_len > umbral_h)
-					{
-						pj_int16_t nullc;
-						pjmedia_circ_buf_read(wp->p_retbuff, (pj_int16_t*)&nullc, 1);
-						cbuf_len = pjmedia_circ_buf_get_len(wp->p_retbuff);
-					}
-					//cbuf_len = pjmedia_circ_buf_get_len(wp->p_retbuff);
-					PJ_LOG(5, (__FILE__, "TRAZA: RETARDO MAYOR despues cbuf_len %u Retardo %u\n", cbuf_len, wp->Retardo));
-				}
-				else;
-			}
-#endif
-
-
 			pjmedia_circ_buf_read(wp->p_retbuff, (pj_int16_t*)buf_out, size_packet / 2);
 			pj_mutex_unlock(wp->circ_buff_mutex);
 
@@ -1958,7 +1941,9 @@ void SipCall::Check_CLD_timer_cb(pj_timer_heap_t* th, pj_timer_entry* te)
 		session = pjsua_call_get_media_session(wp->_Id);
 		int nsession_rx_only = 0;
 		int nsession_tx_only = 0;
-		int nsessions_in_group = SipAgent::_FrecDesp->GetSessionsCountInGroup(wp->_Index_group, &nsession_rx_only, &nsession_tx_only);
+		pj_bool_t every_receiver_and_transceiver_supports_ED137C = PJ_FALSE;
+		int nsessions_in_group = SipAgent::_FrecDesp->GetSessionsCountInGroup(wp->_Index_group, &nsession_rx_only, &nsession_tx_only,
+			&every_receiver_and_transceiver_supports_ED137C);
 
 		if ((session != NULL) && (SipAgent::ETM == PJ_TRUE))
 		{
@@ -1981,10 +1966,10 @@ void SipCall::Check_CLD_timer_cb(pj_timer_heap_t* th, pj_timer_entry* te)
 				pertenece_a_grupo_con_varias_ramas_del_mismo_tipo_que_esta = PJ_TRUE;
 			}
 
-			if ((wp->_Info.CallFlags & CORESIP_CALL_RD_RXONLY) && (!wp->_Info.AudioSync))
+			if ((wp->_Info.CallFlags & CORESIP_CALL_RD_RXONLY) && (every_receiver_and_transceiver_supports_ED137C == PJ_FALSE))
 			{
-				//Si no se desea sincronizar el audio de recepcion de las distintas ramas para los receptores entonces 
-				//se fuerza a que no se haga calculo de retardo al receptor
+				//Somos un receptor y alguno de los receptores o transmisores del grupo no soporta ED137C
+				//Entonces no hay calculo de retardo
 				calc_ret = PJ_FALSE;
 			}
 			else
@@ -2568,7 +2553,7 @@ void SipCall::GetRdQidx(int call, int* Qidx)
 	pjsip_dlg_dec_lock(dlg);
 }
 
-//Retorna el Bss teniendo en cuenta el retardo aplicado para la sincronizaci�n en la ventana de decision
+//Retorna el Bss teniendo en cuenta el retardo aplicado para la sincronizacion en la ventana de decision
 int SipCall::GetSyncBss()
 {
 #if 0
@@ -2587,8 +2572,15 @@ int SipCall::GetSyncBss()
 		pj_mutex_lock(bss_rx_mutex);
 		if (index_bss_rx_w > 0)
 		{
-			//Se ha recibido alg�n bss
+			//Se ha recibido algun bss
+
 			bss = bss_rx[index_bss_rx_w - 1];
+
+			if (SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
+			{
+				if (SipAgent::_FrecDesp->GetInWindow(this->_Index_group) != NULL)
+					PJ_LOG(3, (__FILE__, "Dynamic Delay Compensation: GetSyncBss %s qidx devuelto %d Retardo %u ms", this->DstUri, bss, this->Retardo/8));
+			}
 		}
 		pj_mutex_unlock(bss_rx_mutex);
 		return bss;
@@ -2603,10 +2595,26 @@ int SipCall::GetSyncBss()
 	if ((index_bss_rx_w - 1) > dif_index_bss)
 	{
 		bss = bss_rx[(index_bss_rx_w - 1) - dif_index_bss];
+
+		if (SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
+		{
+			if (SipAgent::_FrecDesp->GetInWindow(this->_Index_group) != NULL)
+			{
+				PJ_LOG(3, (__FILE__, "Dynamic Delay Compensation: GetSyncBss %s qidx devuelto %d ultimo qidx obtenido %d Retardo %u ms", this->DstUri, bss, bss_rx[index_bss_rx_w - 1], this->Retardo/8));
+			}
+		}
 	}
 	else
 	{
 		bss = bss_rx[0];
+
+		if (SipAgent::Coresip_Local_Config._Test_ED137C_Dynamic_Delay_Compensation)
+		{
+			if (SipAgent::_FrecDesp->GetInWindow(this->_Index_group) != NULL)
+			{
+				PJ_LOG(3, (__FILE__, "Dynamic Delay Compensation: GetSyncBss %s qidx devuelto %d Retardo %u ms", this->DstUri, bss, this->Retardo/8));
+			}
+		}
 	}
 	pj_mutex_unlock(bss_rx_mutex);
 

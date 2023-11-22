@@ -18,8 +18,9 @@ pj_str_t SipCall::gWG67VersionRadioValue = {"radio.01", 8};
 pj_str_t SipCall::gWG67VersionTelefValue = {"phone.01", 8};
 pj_str_t SipCall::gWG67VersionRadioValueC = { "radio.02", 8 };
 pj_str_t SipCall::gWG67VersionTelefValueC = { "phone.02", 8 };
-pj_str_t SipCall::gWG67VersionRadioValueBC = { "radio.01, radio.02", 18 };
-pj_str_t SipCall::gWG67VersionTelefValueBC = { "phone.01, phone.02", 18 };
+pj_str_t SipCall::gWG67VersionRadioValueBC = { "radio.02,radio.01", 17 };
+pj_str_t SipCall::gWG67VersionTelefValueBC = { "phone.02,phone.01", 17 };
+pj_str_t SipCall::gWG67VersionTelefIAValueBC = { "phone.add03.02,phone.01", 23 };
 /** Reason Header */
 
 static pj_str_t gWG67ReasonName = {"Reason", 6};
@@ -35,6 +36,7 @@ static pj_str_t gWG67Reason2008 = {"WG-67; cause=2008; text=\"limit exceeded\"",
 static pj_str_t gWG67Reason2009 = {"WG-67; cause=2009; text=\"linked session clear command\"", 54};
 static pj_str_t gWG67Reason2010 = {"WG-67; cause=2010; text=\"linked session disabled\"", 49};
 static pj_str_t gWG67Reason1001 = {"WG-67; cause=1001; text=\"Emergency - Forced Release\"", 52 };
+static pj_str_t gWG67Reason1005 = { "WG-67; cause=1005; text=\"WG67-Version Not Implemented\"", 54 };
 /** */
 
 /** */
@@ -78,7 +80,8 @@ pj_str_t *getWG67ReasonContent()
 		WG67Reason==2008 ? (pj_str_t *) &gWG67Reason2008 :
 		WG67Reason==2009 ? (pj_str_t *) &gWG67Reason2009 :
 		WG67Reason==2010 ? (pj_str_t *) &gWG67Reason2010 :
-		WG67Reason==1001 ? (pj_str_t *) &gWG67Reason1001 : (pj_str_t*)NULL;
+		WG67Reason==1001 ? (pj_str_t *) &gWG67Reason1001 :
+		WG67Reason==1005 ? (pj_str_t *) &gWG67Reason1005 : (pj_str_t*)NULL;
 }
 
 /** */
@@ -94,7 +97,9 @@ pj_str_t* getWG67ReasonContent2(int WG67Reason)
 		WG67Reason == 2007 ? (pj_str_t*)&gWG67Reason2007 :
 		WG67Reason == 2008 ? (pj_str_t*)&gWG67Reason2008 :
 		WG67Reason == 2009 ? (pj_str_t*)&gWG67Reason2009 :
-		WG67Reason == 2010 ? (pj_str_t*)&gWG67Reason2010 : (pj_str_t*)NULL;
+		WG67Reason == 2010 ? (pj_str_t*)&gWG67Reason2010 :
+		WG67Reason == 1001 ? (pj_str_t*)&gWG67Reason1001 :
+		WG67Reason == 1005 ? (pj_str_t*)&gWG67Reason1005 : (pj_str_t*)NULL;
 }
 
 
@@ -272,6 +277,7 @@ SipCall::SipCall(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 	GRS_Td1 = 0;
 	_IdDestino[0] = '\0';
 	CallFlags_prev_reinvite = 0;
+	remote_grs_supports_ED137C_Selcal = PJ_FALSE;
 
 	valid_sess = PJ_FALSE;
 	_Id = PJSUA_INVALID_ID;
@@ -352,9 +358,12 @@ SipCall::SipCall(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 				_R2SKeepAliveMultiplier = 10;
 			}
 		}
-
-		pj_memcpy(&_Info, info, sizeof(CORESIP_CallInfo));
+		
+		pj_memcpy(&_Info, info, sizeof(CORESIP_CallInfo));		
 		CallFlags_prev_reinvite = _Info.CallFlags;
+
+		//Forzamos la no sincronizacion del audio en recepcion por defecto. Esta opcion estaba en antiguas versiones de la aplicacion de configuracion de Ulises.
+		_Info.AudioSync = PJ_FALSE;								
 
 		if (info->CallFlags & CORESIP_CALL_NO_TXRXMODE)
 		{
@@ -485,7 +494,7 @@ SipCall::SipCall(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 
 		if (info->Type == CORESIP_CALL_RD)
 		{
-			//Ponemos aqui la cabecera WG75-version para radio
+			//Ponemos aqui la cabecera WG67-version para radio
 			if (ED137Radioversion_ == 'C')
 				pjsip_generic_string_hdr_init2(&make_call_params.wg67ver, &gWG67VersionName, &gWG67VersionRadioValueBC);
 			else
@@ -533,8 +542,13 @@ SipCall::SipCall(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 		else
 		{
 			//Ponemos aqui la cabecera WG67-version para phone
-			if (ED137Radioversion_ == 'C')
-				pjsip_generic_string_hdr_init2(&make_call_params.wg67ver, &gWG67VersionName, &gWG67VersionTelefValueBC);
+			if (ED137Phoneversion_ == 'C')
+			{
+				if (info->Type == CORESIP_CALL_IA)
+					pjsip_generic_string_hdr_init2(&make_call_params.wg67ver, &gWG67VersionName, &gWG67VersionTelefIAValueBC);
+				else
+					pjsip_generic_string_hdr_init2(&make_call_params.wg67ver, &gWG67VersionName, &gWG67VersionTelefValueBC);
+			}
 			else
 				pjsip_generic_string_hdr_init2(&make_call_params.wg67ver, &gWG67VersionName, &gWG67VersionTelefValue);
 			pj_list_push_back(&make_call_params.msg_data.hdr_list, &make_call_params.wg67ver);
@@ -638,6 +652,7 @@ SipCall::SipCall(pjsua_call_id call_id, const CORESIP_CallInfo * info)
 	SelcalSupported = PJ_FALSE;
 	GRS_Td1 = 0;
 	CallFlags_prev_reinvite = 0;
+	remote_grs_supports_ED137C_Selcal = PJ_FALSE;
 
 	_R2SKeepAlivePeriod = 200;
 	_R2SKeepAliveMultiplier = 10;
@@ -2036,6 +2051,7 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 	}
 
 	CORESIP_CallStateInfo stateInfo = { (CORESIP_CallState)callInfo.state, (CORESIP_CallRole)callInfo.role };
+	stateInfo.remote_grs_supports_ED137C_Selcal = call->remote_grs_supports_ED137C_Selcal;
 
 	if (call->_HangUp)
 	{
@@ -2091,8 +2107,9 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 			// Debe mandarse al cliente info de la desconexi�n de la llamada
 			pjsua_call_set_user_data(call_id, (void *) NULL);  //Este call id deja de tener un SipCall asociado	
 			stateInfo.isRadReinvite = 0;
-			stateInfo.radReinvite_accepted = 0;
+			stateInfo.radReinvite_accepted = 0;			
 			stateInfo.radRreinviteCallFlags = call->_Info.CallFlags;
+			stateInfo.remote_grs_supports_ED137C_Selcal = call->remote_grs_supports_ED137C_Selcal;
 			SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &call->_Info, &stateInfo);				
 
 			if (call->assigned_pttid != 0)
@@ -2140,29 +2157,22 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 		pjmedia_session * sess = pjsua_call_get_media_session(call_id);
 		if (callInfo.state == PJSIP_INV_STATE_CONFIRMED)
 		{
-			char neg_wg67version[64];
-			char negED137RadVer, negED137PhoneVer;
-			pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, e->body.rx_msg.rdata, neg_wg67version, sizeof(neg_wg67version), &negED137RadVer, &negED137PhoneVer);
-			if (call->_Info.Type == CORESIP_CALL_RD)
+			char radio_version = 0;
+			char phone_version = 0;
+			char WG67_version_value_buf[32];
+
+			//Cuando pasa por aqui ya se ha enviado el ACK y sirve para comprobar que las versiones son correctas y compatibles y que no hay que enviar un BYE con reason 1005
+			if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, e->body.tsx_state.tsx->last_tx->msg, e->body.rx_msg.rdata->msg_info.msg, &radio_version, &phone_version,
+				WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_FALSE)
 			{
-				if (negED137RadVer == 0 && negED137PhoneVer != 0)
-				{
-					//Versiones incompatibles. 
-					PJ_LOG(3, (__FILE__, "INFO: OnStatechanged WG67-version recibida es incompatible"));
-					call->Hangup(call_id, 0);
-					return;
-				}
+				//Versiones incompatibles. 
+				PJ_LOG(3, (__FILE__, "INFO: OnStatechanged WG67-version recibida es incompatible"));
+				call->Hangup(call_id, 1005);
+				return;
 			}
-			else
-			{
-				if (negED137PhoneVer == 0 && negED137RadVer != 0)
-				{
-					//Versiones incompatibles. 
-					PJ_LOG(3, (__FILE__, "INFO: OnStatechanged WG67-version recibida es incompatible"));
-					call->Hangup(call_id, 0);
-					return;
-				}
-			}
+
+			if (call->_Info.Type == CORESIP_CALL_RD) call->ED137Version = radio_version;
+			else call->ED137Version = phone_version;
 
 			if (call->_Info.Type == CORESIP_CALL_RD)
 			{
@@ -2254,6 +2264,25 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 					{
 						call->assigned_pttid = assigned_pttid;
 					}
+				}
+
+				//Buscamos la cabecera Receive-info:selcal. Para notificar si se soporta selcal
+				pjsip_generic_string_hdr* receive_info_hdr =
+					(pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(e->body.rx_msg.rdata->msg_info.msg, &pj_str("Receive-info"), NULL);
+				if (receive_info_hdr != NULL)
+				{
+					if (pj_stricmp(&receive_info_hdr->hvalue, &pj_str("selcal")) == 0)
+					{
+						call->remote_grs_supports_ED137C_Selcal = PJ_TRUE;
+					}
+					else
+					{
+						call->remote_grs_supports_ED137C_Selcal = PJ_FALSE;
+					}
+				}
+				else
+				{
+					call->remote_grs_supports_ED137C_Selcal = PJ_FALSE;
 				}
 			}		
 		}
@@ -2436,6 +2465,7 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 	stateInfo.isRadReinvite = 0;
 	stateInfo.radReinvite_accepted = 0;
 	stateInfo.radRreinviteCallFlags = call->_Info.CallFlags;
+	stateInfo.remote_grs_supports_ED137C_Selcal = call->remote_grs_supports_ED137C_Selcal;
 
 	SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &call->_Info, &stateInfo);
 
@@ -2788,9 +2818,24 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
 	pj_bool_t radio_grs = (SipAgent::_Radio_UA != 0 || rdAccount == PJ_TRUE);
 
-	char neg_wg67version[64];
-	char negED137RadVer, negED137PhoneVer;
-	pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, rdata, neg_wg67version, sizeof(neg_wg67version), &negED137RadVer, &negED137PhoneVer);
+	char radio_version = 0;
+	char phone_version = 0;
+	char WG67_version_value_buf[32];
+
+	if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, NULL, rdata->msg_info.msg, &radio_version, &phone_version,
+		WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_FALSE)
+	{
+		//Versiones incompatibles. 
+		pjsua_msg_data msg_data;
+		pjsua_msg_data_init(&msg_data);
+		pjsip_generic_string_hdr reason_hdr;
+		pj_str_t reason = pj_str("Reason");
+		pjsip_generic_string_hdr_init2(&reason_hdr, &reason, &gWG67Reason1005);
+		pj_list_push_back(&msg_data.hdr_list, &reason_hdr);
+		pjsua_call_answer(call_id, PJSIP_SC_NOT_IMPLEMENTED, NULL, &msg_data);
+		return;
+	}
+
 	pjsua_call* pjcall;
 	pjsip_dialog* dlg;
 	st = acquire_call("OnIncommingCall()", call_id, &pjcall, &dlg);
@@ -2800,9 +2845,9 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 		return;
 	}
 
-	if (pj_ansi_strlen(neg_wg67version) > 0)
+	if (pj_ansi_strlen(WG67_version_value_buf) > 0)
 	{
-		pjsip_dlg_set_WG67_version(dlg, neg_wg67version, PJ_TRUE);
+		pjsip_dlg_set_WG67_version(dlg, WG67_version_value_buf, PJ_TRUE);
 	}
 	pjsip_dlg_dec_lock(dlg);
 
@@ -3030,28 +3075,11 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
 		if (sipcall->_Info.Type == CORESIP_CALL_RD)
 		{
-			if (negED137RadVer == 0 && negED137PhoneVer != 0)
-			{
-				//Versiones incompatibles. 
-				PJ_LOG(3, (__FILE__, "INFO: OnIncommingCall WG67-version recibida es incompatible"));
-				pjsua_msg_data msg_data;
-				pjsua_msg_data_init(&msg_data);
-				pjsua_call_answer(call_id, PJSIP_SC_NOT_IMPLEMENTED, NULL, &msg_data);
-				return;
-			}
+			sipcall->ED137Version = radio_version;
 		}
 		else
 		{
-			if (negED137PhoneVer == 0 && negED137RadVer != 0)
-			{
-				//Versiones incompatibles. 
-				PJ_LOG(3, (__FILE__, "INFO: OnIncommingCall WG67-version recibida es incompatible"));
-				pjsua_msg_data msg_data;
-				pjsua_msg_data_init(&msg_data);
-				pjsua_call_answer(call_id, PJSIP_SC_NOT_IMPLEMENTED, NULL, &msg_data);
-				return;
-			}
-			sipcall->ED137Version = negED137PhoneVer;
+			sipcall->ED137Version = phone_version;
 		}
 
 		st = acquire_call("OnIncommingCall()", call_id, &pjcall, &dlg);
@@ -3471,6 +3499,7 @@ void SipCall::OnMediaStateChanged(pjsua_call_id call_id, int *returned_code)
 				stateInfo.isRadReinvite = 1;
 				stateInfo.radReinvite_accepted = 1;
 				stateInfo.radRreinviteCallFlags = sipcall->_Info.CallFlags;
+				stateInfo.remote_grs_supports_ED137C_Selcal = sipcall->remote_grs_supports_ED137C_Selcal;
 
 				SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &sipcall->_Info, &stateInfo);
 
@@ -3807,6 +3836,7 @@ void SipCall::OnReinviteReceived(pjsua_call_id call_id, const pjsip_event* e, pj
 						stateInfo.isRadReinvite = 1;
 						stateInfo.radReinvite_accepted = 1;
 						stateInfo.radRreinviteCallFlags = sipcall->_Info.CallFlags;
+						stateInfo.remote_grs_supports_ED137C_Selcal = sipcall->remote_grs_supports_ED137C_Selcal;
 
 						SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &sipcall->_Info, &stateInfo);
 					}
@@ -3942,13 +3972,13 @@ void SipCall::OnTransferStatusChanged(pjsua_call_id based_call_id, int st_code, 
 * Trata cambios genericos en el estado de una llamada.
 * http://www.pjsip.org/docs/latest-1/pjsip/docs/html/structpjsua__callback.htm#acec485ed428d48a6ca0d28027e5cccde
 */
-void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, pjsip_event *e)
+void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, pjsip_event* e)
 {
 	const pjsip_method info_method = { PJSIP_OTHER_METHOD, { "INFO", 4 } };
-	
+
 	static pj_str_t _gSubjectHdr = { "Reason", 6 };
 
-	SipCall *sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
+	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 
 	if (sipcall && sipcall->_Dlg != NULL && tsx->role == PJSIP_ROLE_UAC && e->type == PJSIP_EVENT_TSX_STATE && e->body.tsx_state.type == PJSIP_EVENT_RX_MSG)
 	{
@@ -3958,25 +3988,22 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 			//Es una respuesta 1xx que no requiere la cabecera WG67-version
 			//No hacemos nada
 		}
-		else if (pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
-		{		
-			char WG67_version_value_buf[64];
-			char negED137RadVer, negED137PhoneVer;
-			pj_bool_t versiones_incompatibles = PJ_FALSE;
-			pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, e->body.rx_msg.rdata, WG67_version_value_buf, sizeof(WG67_version_value_buf), &negED137RadVer, &negED137PhoneVer);
-			if (sipcall->_Info.Type == CORESIP_CALL_RD)
-			{
-				if (negED137RadVer == 0 && negED137PhoneVer != 0) versiones_incompatibles = PJ_TRUE;
-			}
-			else
-			{
-				if (negED137PhoneVer == 0 && negED137RadVer != 0) versiones_incompatibles = PJ_TRUE;
-			}
+		else if (e->body.rx_msg.rdata->msg_info.msg->type == PJSIP_RESPONSE_MSG && pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
+		{
+			char radio_version = 0;
+			char phone_version = 0;
+			char WG67_version_value_buf[32];
 
-			if (!versiones_incompatibles && pj_ansi_strlen(WG67_version_value_buf) > 0)
+			if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, tsx->last_tx->msg, e->body.rx_msg.rdata->msg_info.msg, &radio_version, &phone_version,
+				WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
 			{
-				pjsip_dlg_set_WG67_version(sipcall->_Dlg, WG67_version_value_buf, PJ_TRUE);
-				pjsip_tsx_set_WG67_version(e->body.tsx_state.tsx, WG67_version_value_buf);
+				if (pj_ansi_strlen(WG67_version_value_buf) > 0)
+				{
+					pjsip_dlg_set_WG67_version(sipcall->_Dlg, WG67_version_value_buf, PJ_TRUE);
+					pjsip_tsx_set_WG67_version(e->body.tsx_state.tsx, WG67_version_value_buf);
+				}
+				if (sipcall->_Info.Type == CORESIP_CALL_RD) sipcall->ED137Version = radio_version;
+				else sipcall->ED137Version = phone_version;
 			}
 		}
 	}
@@ -4100,6 +4127,7 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 					stateInfo.isRadReinvite = 1;
 					stateInfo.radReinvite_accepted = 0;
 					stateInfo.radRreinviteCallFlags = reinvitecallflags;
+					stateInfo.remote_grs_supports_ED137C_Selcal = sipcall->remote_grs_supports_ED137C_Selcal;
 
 					SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &sipcall->_Info, &stateInfo);
 				}
@@ -4110,24 +4138,24 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 	}
 
 	if ((tsx->role == PJSIP_ROLE_UAS) && (tsx->state == PJSIP_TSX_STATE_TRYING) &&
-		 (pjsip_method_cmp(&tsx->method, pjsip_get_cancel_method()) == 0)) 		
+		(pjsip_method_cmp(&tsx->method, pjsip_get_cancel_method()) == 0))
 	{
 		//Se ha recibido un CANCEL
 
 		pjsua_call_info callInfo;
 		if (pjsua_call_get_info(call_id, &callInfo) == PJ_SUCCESS)
-		{	
+		{
 			if (e->body.rx_msg.rdata != NULL)
 			{
 				if (e->body.rx_msg.rdata->msg_info.msg != NULL)
 				{
-					pjsip_subject_hdr * subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(e->body.rx_msg.rdata->msg_info.msg, &_gSubjectHdr, NULL);
+					pjsip_subject_hdr* subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(e->body.rx_msg.rdata->msg_info.msg, &_gSubjectHdr, NULL);
 					if (subject != NULL)
 					{
-						SipCall * sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
+						SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 						if (sipcall)
 						{
-							pj_ansi_snprintf(sipcall->LastReason, sizeof(sipcall->LastReason) - 1, "%.*s", 
+							pj_ansi_snprintf(sipcall->LastReason, sizeof(sipcall->LastReason) - 1, "%.*s",
 								subject->hvalue.slen, subject->hvalue.ptr);
 						}
 					}
@@ -4153,15 +4181,15 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 				SipAgent::Cb.TransferStatusCb(call_id | CORESIP_CALL_ID, code);
 			}
 		}
-	}	
+	}
 	else if ((tsx->role == PJSIP_ROLE_UAS) && (tsx->state == PJSIP_TSX_STATE_TRYING) &&
 		(pjsip_method_cmp(&tsx->method, pjsip_get_subscribe_method()) == 0))
 	{
 
-		pjsip_rx_data * rdata = e->body.tsx_state.src.rdata;
+		pjsip_rx_data* rdata = e->body.tsx_state.src.rdata;
 
-		pjsip_event_hdr * event = (pjsip_event_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &STR_EVENT, NULL);
-		pjsip_expires_hdr *expires = (pjsip_expires_hdr*)pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_EXPIRES, NULL);
+		pjsip_event_hdr* event = (pjsip_event_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &STR_EVENT, NULL);
+		pjsip_expires_hdr* expires = (pjsip_expires_hdr*)pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_EXPIRES, NULL);
 
 		if (event && (pj_stricmp(&event->event_type, &STR_WG67KEY_IN) == 0) && expires->ivalue != 0)
 		{
@@ -4173,68 +4201,68 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 		}
 		else if (event && (pj_stricmp(&event->event_type, &STR_CONFERENCE) == 0) && expires->ivalue != 0)
 		{
-			pjsip_dialog * dlg = pjsip_tsx_get_dlg(tsx);
+			pjsip_dialog* dlg = pjsip_tsx_get_dlg(tsx);
 			if (dlg == NULL)
 				return;
 
-			SipCall * call = (SipCall*)pjsua_call_get_user_data(call_id);
+			SipCall* call = (SipCall*)pjsua_call_get_user_data(call_id);
 			pj_status_t st;
 
-if (call && dlg->local.contact->focus)
-{
-	if (call->_ConfInfoSrvEvSub)
-	{
-		PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Recibe conference SUBSCRIBE STATE %s", pjsip_evsub_get_state_name(call->_ConfInfoSrvEvSub)));
-	}
+			if (call && dlg->local.contact->focus)
+			{
+				if (call->_ConfInfoSrvEvSub)
+				{
+					PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Recibe conference SUBSCRIBE STATE %s", pjsip_evsub_get_state_name(call->_ConfInfoSrvEvSub)));
+				}
 
-	if (!call->_ConfInfoSrvEvSub)
-	{
-		st = pjsip_conf_create_uas(dlg, &call->_ConfInfoSrvCb, rdata, &call->_ConfInfoSrvEvSub);
-		if (st != PJ_SUCCESS)
-		{
-			pjsua_perror("sipcall.cpp", "ERROR creando servidor de subscripcion a conferencia", st);
-			goto subscription_error;
-		}
-		//pjsip_evsub_set_mod_data(call->_ConfInfoSrvEvSub, pjsua_var.mod.id, call);	
-		pjsip_evsub_set_user_data(call->_ConfInfoSrvEvSub, (void*)call);
+				if (!call->_ConfInfoSrvEvSub)
+				{
+					st = pjsip_conf_create_uas(dlg, &call->_ConfInfoSrvCb, rdata, &call->_ConfInfoSrvEvSub);
+					if (st != PJ_SUCCESS)
+					{
+						pjsua_perror("sipcall.cpp", "ERROR creando servidor de subscripcion a conferencia", st);
+						goto subscription_error;
+					}
+					//pjsip_evsub_set_mod_data(call->_ConfInfoSrvEvSub, pjsua_var.mod.id, call);	
+					pjsip_evsub_set_user_data(call->_ConfInfoSrvEvSub, (void*)call);
 
-		PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Servidor SUBSCRIBE creado"));
+					PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Servidor SUBSCRIBE creado"));
 
-		st = pjsip_conf_accept(call->_ConfInfoSrvEvSub, rdata, PJSIP_SC_OK, NULL);
-		if (st != PJ_SUCCESS)
-		{
-			pjsua_perror("sipcall.cpp", "ERROR aceptando subscripcion a conferencia", st);
-			goto subscription_error;
-		}
+					st = pjsip_conf_accept(call->_ConfInfoSrvEvSub, rdata, PJSIP_SC_OK, NULL);
+					if (st != PJ_SUCCESS)
+					{
+						pjsua_perror("sipcall.cpp", "ERROR aceptando subscripcion a conferencia", st);
+						goto subscription_error;
+					}
 
-		pjsip_evsub_set_state(call->_ConfInfoSrvEvSub, PJSIP_EVSUB_STATE_ACCEPTED);
+					pjsip_evsub_set_state(call->_ConfInfoSrvEvSub, PJSIP_EVSUB_STATE_ACCEPTED);
 
-		pjsua_call_info info;
-		st = pjsua_call_get_info(call_id, &info);
-		if (st == PJ_SUCCESS && SipAgent::Cb.IncomingSubscribeConfCb)
-		{
-			SipAgent::Cb.IncomingSubscribeConfCb(call_id | CORESIP_CALL_ID, (const char*)info.remote_info.ptr, (const int)info.remote_info.slen);
-		}
-	}
-}
+					pjsua_call_info info;
+					st = pjsua_call_get_info(call_id, &info);
+					if (st == PJ_SUCCESS && SipAgent::Cb.IncomingSubscribeConfCb)
+					{
+						SipAgent::Cb.IncomingSubscribeConfCb(call_id | CORESIP_CALL_ID, (const char*)info.remote_info.ptr, (const int)info.remote_info.slen);
+					}
+				}
+			}
 
-return;
+			return;
 
-subscription_error:
-pjsip_tx_data* tdata;
-st = pjsip_dlg_create_response(dlg, rdata, PJSIP_SC_INTERNAL_SERVER_ERROR, NULL, &tdata);
-if (st != PJ_SUCCESS)
-{
-	pjsua_perror("sipcall.cpp", "Unable to create error response to conference subscription", st);
-	return;
-}
+		subscription_error:
+			pjsip_tx_data* tdata;
+			st = pjsip_dlg_create_response(dlg, rdata, PJSIP_SC_INTERNAL_SERVER_ERROR, NULL, &tdata);
+			if (st != PJ_SUCCESS)
+			{
+				pjsua_perror("sipcall.cpp", "Unable to create error response to conference subscription", st);
+				return;
+			}
 
-st = pjsip_dlg_send_response(dlg, tsx, tdata);
-if (st != PJ_SUCCESS)
-{
-	pjsua_perror("sipcall.cpp", "Unable to send error response to conference subscription", st);
-	return;
-}
+			st = pjsip_dlg_send_response(dlg, tsx, tdata);
+			if (st != PJ_SUCCESS)
+			{
+				pjsua_perror("sipcall.cpp", "Unable to send error response to conference subscription", st);
+				return;
+			}
 		}
 	}
 }
@@ -4284,22 +4312,21 @@ pj_status_t SipCall::OnSendACK(pjsua_call_id call_id, pjsip_inv_session* inv, pj
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 	if (sipcall && sipcall->_Dlg != NULL && pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
 	{
-		char WG67_version_value_buf[64];
-		char negED137RadVer, negED137PhoneVer;
-		pj_bool_t versiones_incompatibles = PJ_FALSE;
-		pjsip_endpt_Neg_ED137Version_from_rdata(pjsua_var.endpt, rdata, WG67_version_value_buf, sizeof(WG67_version_value_buf), &negED137RadVer, &negED137PhoneVer);
-		if (sipcall->_Info.Type == CORESIP_CALL_RD)
+		char radio_version = 0;
+		char phone_version = 0;
+		char WG67_version_value_buf[32];
+		
+		if (pjsip_endpt_Neg_ED137Version_from_msg(pjsua_var.endpt, e->body.tsx_state.tsx->last_tx->msg, rdata->msg_info.msg, 
+			&radio_version, &phone_version,
+			WG67_version_value_buf, sizeof(WG67_version_value_buf)) == PJ_TRUE)
 		{
-			if (negED137RadVer == 0 && negED137PhoneVer != 0) versiones_incompatibles = PJ_TRUE;
-		}
-		else
-		{
-			if (negED137RadVer != 0 && negED137PhoneVer == 0) versiones_incompatibles = PJ_TRUE;
-		}
-		if (!versiones_incompatibles && pj_ansi_strlen(WG67_version_value_buf) > 0)
-		{
-			pjsip_dlg_set_WG67_version(sipcall->_Dlg, WG67_version_value_buf, PJ_TRUE);
-			pjsip_tsx_set_WG67_version(e->body.tsx_state.tsx, WG67_version_value_buf);
+			if (pj_ansi_strlen(WG67_version_value_buf) > 0)
+			{
+				pjsip_dlg_set_WG67_version(sipcall->_Dlg, WG67_version_value_buf, PJ_TRUE);
+				pjsip_tsx_set_WG67_version(e->body.tsx_state.tsx, WG67_version_value_buf);
+			}
+			if (sipcall->_Info.Type == CORESIP_CALL_RD) sipcall->ED137Version = radio_version;
+			else sipcall->ED137Version = phone_version;
 		}
 	}
 
@@ -4467,7 +4494,7 @@ pj_bool_t SipCall::OnTxRequest(pjsip_tx_data *txdata)
 	}
 
 #if 0
-	pj_str_t wg67version = { "WG67-version", 12 };
+	pj_str_t wg67version = { "WG67-Version", 12 };
 	pjsip_hdr* hdr = (pjsip_hdr *) pjsip_msg_find_hdr_by_name(msg, &wg67version, NULL);
 	if (hdr)
 	{
@@ -4482,7 +4509,7 @@ pj_bool_t SipCall::OnTxRequest(pjsip_tx_data *txdata)
 
 #if 1
 
-	pj_str_t wg67version = { "WG67-version", 12 };
+	pj_str_t wg67version = { "WG67-Version", 12 };
 	pjsip_generic_string_hdr* wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(msg, &wg67version, NULL);
 
 	if (txdata->msg->type == PJSIP_RESPONSE_MSG && (txdata->msg->line.status.code / 100) == 1)
@@ -4496,7 +4523,34 @@ pj_bool_t SipCall::OnTxRequest(pjsip_tx_data *txdata)
 	}
 	else
 	{		
-		if (wg67version_hdr == NULL)
+		int force_wg67v;
+		char ForcedED137Radioversion[128];
+		pjsip_endpt_Get_Force_Ed137_version_header(pjsua_var.endpt, &force_wg67v, ForcedED137Radioversion, sizeof(ForcedED137Radioversion));
+		if (force_wg67v)
+		{
+			pjsip_generic_string_hdr* wg67version_hdr = (pjsip_generic_string_hdr * ) pjsip_msg_find_hdr_by_name(txdata->msg, &pj_str("WG67-Version"), NULL);
+			if (wg67version_hdr == NULL)
+			{
+				if (pj_ansi_strlen(ForcedED137Radioversion) > 0)
+				{
+					pjsip_generic_string_hdr* pWg67version = pjsip_generic_string_hdr_create(txdata->pool, &gWG67VersionName, &pj_str(ForcedED137Radioversion));
+					pj_list_push_back(&txdata->msg->hdr, pWg67version);
+				}
+			}
+			else
+			{
+				if (pj_ansi_strlen(ForcedED137Radioversion) > 0)
+				{
+					pj_strdup(txdata->pool, &wg67version_hdr->hvalue, &pj_str(ForcedED137Radioversion));
+				}
+				else
+				{
+					pjsip_hdr* hdr = (pjsip_hdr*)wg67version_hdr;
+					pj_list_erase(hdr);
+				}
+			}
+		}
+		else if (wg67version_hdr == NULL)
 		{
 			//No lleva la cabecera WG67-version. La añadimos
 			if (SipAgent::_IsRadioServerNodebox || SipAgent::_Radio_UA)

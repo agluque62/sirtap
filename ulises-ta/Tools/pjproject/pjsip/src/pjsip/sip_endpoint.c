@@ -90,6 +90,9 @@ struct pjsip_endpoint
     char ED137RadioVersion;		//Vale 'B' para ED137B y 'C' para ED137C
     char ED137PhoneVersion;		//Vale 'B' para ED137B y 'C' para ED137C
 
+    int ForceWg67VersionHeader; //Si vale 0 no se fuerza el valor de la cabecera, is vale distinto de cero se fuerza que el valor sea ForcedWG67VersionHeaderValue
+    char ForcedWG67VersionHeaderValue[128];
+
     /* Other configurations*/
     int options_answer_code;    //Es el codigo de la respuesta para todos los siguientes mensajes OPTIONS. 
                                 //Si vale 0 entonces no hay respuesta. 
@@ -595,6 +598,8 @@ PJ_DEF(pj_status_t) pjsip_endpt_create(pj_pool_factory *pf,
 
     endpt->ED137PhoneVersion = 'B';
     endpt->ED137RadioVersion = 'B';
+    endpt->ForceWg67VersionHeader = 0;
+    endpt->ForcedWG67VersionHeaderValue[0] = 0;
 
     /* Done. */
     *p_endpt = endpt;
@@ -1265,30 +1270,64 @@ PJ_DEF(void) pjsip_endpt_Get_Ed137_version(pjsip_endpoint* endpt, char* ED137Rad
 }
 
 /**
-* Negocia la version de la ED137
-* @param local_version	version local
-* @param remote_version	version remota
-* return Version resultante 'B' o 'C'
+* Fuerza la cabecera de WG67-version
+* @param endpt	pjsip endpoint
+* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
 */
-PJ_DEF(char) pjsip_endpt_Negocia_ED137Version(char local_version, char remote_version)
+PJ_DEF(void) pjsip_endpt_Force_Ed137_version_header(pjsip_endpoint* endpt, int force, char* ED137Radioversion)
 {
-    if (local_version <= remote_version)
-    {
-        return local_version;
-    }
-    if (remote_version <= 'B') return 'B';		//La version mas baja que manejamos es la 'B'
-    else return remote_version;					//Se ajusta a la version del remoto
+    endpt->ForceWg67VersionHeader = force;
+    pj_ansi_strncpy(endpt->ForcedWG67VersionHeaderValue, ED137Radioversion, sizeof(endpt->ForcedWG67VersionHeaderValue));
+    endpt->ForcedWG67VersionHeaderValue[sizeof(endpt->ForcedWG67VersionHeaderValue) - 1] = '\0';
+}
+
+/**
+* Retorna si se Fuerza la cabecera de WG67-version
+* @param endpt	pjsip endpoint
+* @param force. Si el valor es 0 entonces no se fuerza el valor de la cabecera
+* @param ED137Radioversion	Valor que se fuerza a la cabecera WG67-version, en caso de que force sea 1
+* @param ED137Radioversion_size Longitud del buffer ED137Radioversion
+*/
+PJ_DEF(void) pjsip_endpt_Get_Force_Ed137_version_header(pjsip_endpoint* endpt, int* force, char* ED137Radioversion, int ED137Radioversion_size)
+{
+    *force = endpt->ForceWg67VersionHeader;
+    pj_ansi_strncpy(ED137Radioversion, endpt->ForcedWG67VersionHeaderValue, ED137Radioversion_size);
+    ED137Radioversion[ED137Radioversion_size - 1] = '\0';
 }
 
 /**
 * Busca la version de la ED137 en un mensaje
-* @param msg	mensaje
+* @param rx_msg	mensaje recibido del remoto
+* @param tx_msg	mensaje transmitido. Este puede ser NULL
 * @param radio_version	Retorna 'C' si en el mensaje hay una cabecera WG67-Version con radio.02. retorna 'B' si solo encuentra radio.01, y 0 si no encuentra ninguno
 * @param phone_version	Retorna 'C' si en el mensaje hay una cabecera WG67-Version con phone.02. retorna 'B' si solo encuentra phone.01, y 0 si no encuentra ninguno
+* @param WG67_version_value_buf     Buffer donde se deja el string del valor de la cabecera, despues de la negociacion
+* @param WG67_version_value_size    Capacidad del buffer
+* @Return   PJ_TRUE Si la version obtenida es correcta. PJ_FALSE Si la versión no es soportada.
 */
-PJ_DEF(void) pjsip_endpt_Get_ED137Version_from_msg(const pjsip_msg* msg, char *radio_version, char *phone_version)
+PJ_DEF(pj_bool_t) pjsip_endpt_Neg_ED137Version_from_msg(pjsip_endpoint *endpt, const pjsip_msg* tx_msg, const pjsip_msg* rx_msg, char *radio_version, char *phone_version,
+    char* WG67_version_value_buf, int WG67_version_value_size)
 {
-    pj_str_t wg67version = { "WG67-version", 12 };
+    pj_str_t wg67version = { "WG67-Version", 12 };
+    pj_str_t subjectHdrName = { "Subject", 7 };
+    char localED137Radioversion;
+    char localED137Phoneversion;
+    pj_bool_t remED137Radioversion_01_received = 0;
+    pj_bool_t remED137Radioversion_02_received = 0;
+    pj_bool_t rem_is_phone_01 = PJ_FALSE;
+    pj_bool_t rem_is_phone_02 = PJ_FALSE;
+    pj_bool_t rem_is_phone_add03_02 = PJ_FALSE;
+    pj_bool_t version_is_supported = PJ_TRUE;
+    int version_unrecognized = 0;
+    pjsip_generic_string_hdr* rem_subjectHdr = NULL;
+    pjsip_generic_string_hdr* rem_wg67version_hdr = NULL;
+    pjsip_generic_string_hdr* local_subjectHdr = NULL;
+    pjsip_generic_string_hdr* local_wg67version_hdr = NULL;
+    pj_bool_t rem_wg67version_hdr_presented = PJ_FALSE;
+    
+    pjsip_endpt_Get_Ed137_version(endpt, &localED137Radioversion, &localED137Phoneversion);
+    
     *radio_version = 0;
     *phone_version = 0;
 #define Pjsip_endpt_Get_msg_ED137Version_MAXVER (32)
@@ -1297,107 +1336,235 @@ PJ_DEF(void) pjsip_endpt_Get_ED137Version_from_msg(const pjsip_msg* msg, char *r
     pj_memset(versions, 0, sizeof(versions));
     int versions_i = 0;
     int versions_j = 0;
-    pjsip_generic_string_hdr* wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(msg, &wg67version, NULL);
-    while (wg67version_hdr != NULL && versions_i < Pjsip_endpt_Get_msg_ED137Version_MAXVER)
+
+    rem_subjectHdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(rx_msg, &subjectHdrName, NULL);
+    rem_wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(rx_msg, &wg67version, NULL);
+    if (rem_wg67version_hdr != NULL) rem_wg67version_hdr_presented = PJ_TRUE;
+
+    if (tx_msg != NULL)
     {
-        for (int i = 0; i < wg67version_hdr->hvalue.slen; i++)
+        local_subjectHdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(tx_msg, &subjectHdrName, NULL);
+        local_wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(tx_msg, &wg67version, NULL);
+
+        if (local_subjectHdr != NULL)
         {
-            if (wg67version_hdr->hvalue.ptr[i] == ' ') continue;
-            if (wg67version_hdr->hvalue.ptr[i] == ',' || wg67version_hdr->hvalue.ptr[i] == ';')
+            if (pj_stricmp2(&local_subjectHdr->hvalue, "radio") == 0)
+            {
+                localED137Phoneversion = 0;
+            }
+            else
+            {
+                localED137Radioversion = 0;
+            }
+        }
+        else if (local_wg67version_hdr != NULL)
+        {
+            if (pj_strnicmp2(&local_wg67version_hdr->hvalue, "radio", 5) == 0)
+            {
+                localED137Phoneversion = 0;
+            }
+            else
+            {
+                localED137Radioversion = 0;
+            }
+        }
+    }
+    
+
+    //Ponemos en el array versions las versiones encontradas. Se ignoran los espacios en blanco al principio de la version
+    //En cada elemento se incluyen los parametros de la version. Es decir, lo que va destras del ;
+    while (rem_wg67version_hdr != NULL && versions_i < Pjsip_endpt_Get_msg_ED137Version_MAXVER)
+    {
+        for (int i = 0; i < rem_wg67version_hdr->hvalue.slen; i++)
+        {
+            if (versions_j == 0 && rem_wg67version_hdr->hvalue.ptr[i] == ' ') continue;
+            if (rem_wg67version_hdr->hvalue.ptr[i] == ',')
             {
                 if (versions_i < Pjsip_endpt_Get_msg_ED137Version_MAXVER) versions_i++;
-                if (versions_i == 16) break;
+                if (versions_i == Pjsip_endpt_Get_msg_ED137Version_MAXVER) break;
                 versions_j = 0;
             }
             else
             {
-                versions[versions_i][versions_j] = wg67version_hdr->hvalue.ptr[i];
+                versions[versions_i][versions_j] = rem_wg67version_hdr->hvalue.ptr[i];
                 if (versions_j < Pjsip_endpt_Get_msg_ED137Version_MAXVERSIZE - 1) versions_j++;
             }
         }
         if (versions_i < Pjsip_endpt_Get_msg_ED137Version_MAXVER) versions_i++;
         versions_j = 0;
 
-        wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(msg, &wg67version, wg67version_hdr->next);
+        rem_wg67version_hdr = (pjsip_generic_string_hdr*)pjsip_msg_find_hdr_by_name(rx_msg, &wg67version, rem_wg67version_hdr->next);
     }
+
     for (int i = 0; i < versions_i; i++)
     {
-        if (stricmp(versions[i], "radio.01") == 0)
+        //Quitamos parametros y los espacios en blanco del final
+        for (unsigned int j = 0; j < strlen(versions[i]); j++)
         {
-            if (*radio_version < 'B') *radio_version = 'B';
+            if (versions[i][j] == ';')
+            {
+                versions[i][j] = '\0';
+                break;
+            }
+        }
+        if (strlen(versions[i]) > 0)
+        {
+            for (int j = (strlen(versions[i]) - 1); j >= 0 && versions[i][j] == ' '; j--)
+            {
+                versions[i][j] = '\0';
+            }
+        }
+
+        if (stricmp(versions[i], "radio.01") == 0) 
+        {
+            remED137Radioversion_01_received = PJ_TRUE;
         }
         else if (stricmp(versions[i], "radio.02") == 0)
         {
-            if (*radio_version < 'C') *radio_version = 'C';
+            remED137Radioversion_02_received = PJ_TRUE;
         }
         else if (stricmp(versions[i], "phone.01") == 0 || stricmp(versions[i], "legacy-eu.01") == 0)
-        {
-            if (*phone_version < 'B') *phone_version = 'B';
+        {            
+            rem_is_phone_01 = PJ_TRUE;
         }
-        else if (stricmp(versions[i], "phone.02") == 0 || stricmp(versions[i], "legacy-eu.02") == 0)
+        else if (stricmp(versions[i], "phone.02") == 0 || stricmp(versions[i], "legacy-eu.02") == 0 ||
+            stricmp(versions[i], "phone.add01.02") == 0 || stricmp(versions[i], "phone.add02.02") == 0 ||
+            stricmp(versions[i], "phone.add06.02") == 0)
         {
-            if (*phone_version < 'C') *phone_version = 'C';
+            rem_is_phone_02 = PJ_TRUE;
         }
-        else if (strnicmp(versions[i], "phone.add", 9) == 0 &&
-            versions[i][9] >= '0' && versions[i][9] <= '9' &&
-            versions[i][10] >= '0' && versions[i][10] <= '9' &&
-            versions[i][11] == '.' && versions[i][12] == '0' && versions[i][13] == '1')
+        else if (strnicmp(versions[i], "phone.add03.02", 14) == 0)
         {
-            //phone.addxx.01
-            if (*phone_version < 'B') *phone_version = 'B';
+            rem_is_phone_add03_02 = PJ_TRUE;
         }
-        else if (strnicmp(versions[i], "phone.add", 9) == 0 &&
-            versions[i][9] >= '0' && versions[i][9] <= '9' &&
-            versions[i][10] >= '0' && versions[i][10] <= '9' &&
-            versions[i][11] == '.' && versions[i][12] == '0' && versions[i][13] == '2')
+        else if (stricmp(versions[i], "phone.add04.02") == 0 || stricmp(versions[i], "phone.add05.02") == 0 ||
+            stricmp(versions[i], "phone.add07.02") == 0 || stricmp(versions[i], "phone.add08.02") == 0)
         {
-            //phone.addxx.02
-            if (*phone_version < 'C') *phone_version = 'C';
+            version_unrecognized++;
+        }
+        else
+        {
+            version_unrecognized++;
         }
     }
-}
 
-/**
-* Negocia la cabecera WG67-version y se obtiene el valor de la cabecera para enviar los paquetes
-* @param endpt  Endpoint
-* @param rdata	paquete recibido
-* @param WG67_version_value_buf     Buffer donde se deja el string del valor de la cabecera
-* @param WG67_version_value_size    Capacidad del buffer
-* @param negED137RadVer. Retorna la version negociada, respecto a radio
-* @param negED137PhoneVer. Retorna la version negociada, respecto a phone
-*/
-PJ_DEF(void) pjsip_endpt_Neg_ED137Version_from_rdata(pjsip_endpoint* endpt, const pjsip_rx_data* rdata, char *WG67_version_value_buf, int WG67_version_value_size,
-    char *negED137RadVer, char *negED137PhoneVer)
-{
-    char localED137Radioversion = 0;
-    char localED137Phoneversion = 0;
-    char remED137Radioversion = 0;
-    char remED137Phoneversion = 0;
-    char negED137Radioversion = 0;
-    char negED137Phoneversion = 0;   
-    char WG67_version_val[64];
-    pjsip_endpt_Get_Ed137_version(endpt, &localED137Radioversion, &localED137Phoneversion);
-    pjsip_endpt_Get_ED137Version_from_msg(rdata->msg_info.msg, &remED137Radioversion, &remED137Phoneversion);
-    if (remED137Radioversion != 0) negED137Radioversion = pjsip_endpt_Negocia_ED137Version(localED137Radioversion, remED137Radioversion);
-    if (remED137Phoneversion != 0) negED137Phoneversion = pjsip_endpt_Negocia_ED137Version(localED137Phoneversion, remED137Phoneversion);
-    WG67_version_val[0] = '\0';
-    if (negED137Radioversion == 'B') pj_ansi_strcat(WG67_version_val, "radio.01,");
-    if (negED137Radioversion == 'C') pj_ansi_strcat(WG67_version_val, "radio.02,");
-    if (negED137Phoneversion == 'B') pj_ansi_strcat(WG67_version_val, "phone.01,");
-    if (negED137Phoneversion == 'C') pj_ansi_strcat(WG67_version_val, "phone.02,");
-    if (pj_ansi_strlen(WG67_version_val) > 0) WG67_version_val[pj_ansi_strlen(WG67_version_val) - 1] = '\0';	//Quitamos la coma
+    if (WG67_version_value_buf != NULL) WG67_version_value_buf[0] = '\0';
 
-    if (negED137RadVer != NULL) *negED137RadVer = negED137Radioversion;
-    if (negED137PhoneVer != NULL) *negED137PhoneVer = negED137Phoneversion;
+    if (!version_is_supported) return version_is_supported;
 
-    WG67_version_value_buf[0] = '\0';
-    if (WG67_version_value_size > 0)
+    if (version_unrecognized > 0)
     {
-        pj_ansi_strncpy(WG67_version_value_buf, WG67_version_val, WG67_version_value_size);
+        if (!rem_is_phone_01 && !rem_is_phone_02 && !rem_is_phone_add03_02 &&
+            !remED137Radioversion_01_received && !remED137Radioversion_02_received)
+        {
+            //Solo se han recibido versiones no reconocidas
+            version_is_supported = PJ_FALSE;
+            return version_is_supported;
+        }
+    }
+
+    if (local_subjectHdr == NULL && local_wg67version_hdr == NULL)
+    {
+        //No hemos enviado nosotros el request con el WG67-version
+        if ((remED137Radioversion_01_received || remED137Radioversion_02_received))
+        {
+            //Consideramos es una sesion radio
+            localED137Phoneversion = 0;
+        }
+        else
+        {
+            localED137Radioversion = 0;
+        }
+    }
+
+    if (localED137Radioversion == 'C')
+    {
+        if (remED137Radioversion_02_received) *radio_version = 'C';
+        else if (remED137Radioversion_01_received) *radio_version = 'B';
+        else if (!rem_wg67version_hdr_presented) *phone_version = 'B';
+        else version_is_supported = PJ_FALSE;
+    }
+    else if (localED137Radioversion == 'B')
+    {
+        if (remED137Radioversion_01_received) *radio_version = 'B';
+        else if (!rem_wg67version_hdr_presented) *phone_version = 'B';
+        else version_is_supported = PJ_FALSE;
+    }
+    if (!version_is_supported) return version_is_supported;
+
+    if (localED137Phoneversion == 'C')
+    {
+        pj_bool_t is_ia_call = PJ_FALSE;
+
+        if (rem_subjectHdr != NULL)
+        {
+            if (pj_strnicmp2(&rem_subjectHdr->hvalue, "IA call", 5) == 0) is_ia_call = PJ_TRUE;
+        }
+
+        if (local_subjectHdr != NULL)
+        {
+            if (pj_strnicmp2(&local_subjectHdr->hvalue, "IA call", 5) == 0) is_ia_call = PJ_TRUE;
+        }
+
+        if (is_ia_call)
+        {
+            if (rem_is_phone_add03_02) *phone_version = 'C';
+            else if (rem_is_phone_02) *phone_version = 'C';
+            else if (rem_is_phone_01) *phone_version = 'B'; 
+            else if (!rem_wg67version_hdr_presented) *phone_version = 'B';
+            else version_is_supported = PJ_FALSE;
+        }
+        else
+        {
+            rem_is_phone_add03_02 = PJ_FALSE;
+            if (rem_is_phone_02) *phone_version = 'C';
+            else if (rem_is_phone_01) *phone_version = 'B';
+            else if (!rem_wg67version_hdr_presented) *phone_version = 'B';
+            else version_is_supported = PJ_FALSE;
+        }
+    }
+    else if (localED137Phoneversion == 'B')
+    {
+        if (rem_is_phone_01) *phone_version = 'B';
+        else if (!rem_wg67version_hdr_presented) *phone_version = 'B';
+        else version_is_supported = PJ_FALSE;
+    }
+
+    if (!version_is_supported) return version_is_supported;
+    
+    if (WG67_version_value_buf != NULL && WG67_version_value_size > 0)
+    {
+        if (*radio_version != 0)
+        {
+            if (*radio_version == 'C')
+            {
+                pj_ansi_strncpy(WG67_version_value_buf, "radio.02", WG67_version_value_size);
+            }
+            else
+            {
+                pj_ansi_strncpy(WG67_version_value_buf, "radio.01", WG67_version_value_size);
+            }
+        }
+
+        if (*phone_version != 0)
+        {
+            if (*phone_version == 'C')
+            {
+                if (rem_is_phone_add03_02)
+                    pj_ansi_strncpy(WG67_version_value_buf, "phone.add03.02", WG67_version_value_size);
+                else
+                    pj_ansi_strncpy(WG67_version_value_buf, "phone.02", WG67_version_value_size);
+            }
+            else
+            {
+                pj_ansi_strncpy(WG67_version_value_buf, "phone.01", WG67_version_value_size);
+            }
+        }
         WG67_version_value_buf[WG67_version_value_size - 1] = '\0';
     }
-}
 
+    return version_is_supported;
+}
 
 PJ_DEF(void) pjsip_endpt_Set_ETM(pjsip_endpoint* endpt, pj_bool_t isETM)
 {
