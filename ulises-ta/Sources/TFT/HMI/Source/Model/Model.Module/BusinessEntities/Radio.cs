@@ -1136,6 +1136,25 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			return -1;
 		}
+		public int GetNumberOfPagesRd()
+		{
+			int numpag = NumDestinations / PageSize;
+			int pagconf = 0;
+			for (int i = 0; i < numpag; i++)
+			{
+				for (int j = 0; j < PageSize; j++)
+				{
+					int pos = i * PageSize + j;
+					if (_Dst[pos].IsConfigurated)
+					{
+						pagconf++;
+						break;
+					}
+				}
+			}
+			return pagconf;
+		}
+
 
 	}
 }

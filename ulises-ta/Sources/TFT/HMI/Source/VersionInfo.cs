@@ -1,6 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 // La información general sobre un ensamblado de la solucion se controla mediante el siguiente conjunto de atributos. 
 // Cambie estos atributos para modificar la información asociada con un ensamblado.
@@ -9,7 +7,7 @@ using System.Runtime.InteropServices;
 #if DEBUG
  [assembly: AssemblyConfiguration("Debug")]
 #else
- [assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyConfiguration("Release")]
 #endif
 [assembly: AssemblyCompany("Grupo Amper")]
 [assembly: AssemblyProduct("Ulises V 5000 I")]

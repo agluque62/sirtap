@@ -103,8 +103,12 @@ namespace HMI.Model.Module.UI
 		private ContentAlignment _ImageAlign = ContentAlignment.MiddleCenter;
 		private GraphicsPath[] _ImgPaths = { null, null, null, null };
 		private Rectangle[] _ImgRects = new Rectangle[(int)BtnState.MaxBtnStates];
+		// LALM Modo Nocturno 210129 
+		public bool _modoNocturno = VisualStyle.ModoNocturno;
+        public Color _aspaColor = VisualStyle.AspaColor;
+        public Color _textoRadioColor = VisualStyle.TextoRadioColor;
 
-		public Rectangle Rect
+        public Rectangle Rect
 		{
 			get { return _Rect; }
 			set 
@@ -304,6 +308,7 @@ namespace HMI.Model.Module.UI
 					else if ((_BackColors[(int)BtnState.Normal] != null) && (_BackColors[(int)BtnState.Normal] != VisualStyle.ButtonColor))
 					{
 						backColor = _BackColors[(int)BtnState.Normal].Value;
+
 					}
 					else
 					{
@@ -341,9 +346,14 @@ namespace HMI.Model.Module.UI
 				case BtnState.Pushed:
 					foreColor = _ForeColors[(int)st] ?? GetForeColor(BtnState.Normal);
 					break;
-				default:
-					foreColor = _ForeColors[(int)st] ?? Color.Black;
-					break;
+                default:
+					//LALM 210203 Color de letra en hmibutons. Lo cambio para todos
+					// en funcion color letra para radio.
+					if (!VisualStyle.ModoNocturno)
+						foreColor = _ForeColors[(int)st] ?? Color.Black;
+                    else
+						foreColor = _ForeColors[(int)st] ?? VisualStyle.TextoRadioColor;
+                    break;
 			}
 
 			return foreColor;
@@ -597,17 +607,30 @@ namespace HMI.Model.Module.UI
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-            DrawBackground(g, info.Rect, info.Style, info.State, info.CornerRadius,
+			
+			DrawBackground(g, info.Rect, info.Style, info.State, info.CornerRadius,
                 info.BorderColor, info.InnerBorderColor, info.BackColor, info.Blend);
 
             // Dibuja un aspa
             if (crossed)
             {
-                using (Pen p = new Pen(Color.Red, 5))
+                // LALM: 210129 Aspa configurable.
+                if (!VisualStyle.ModoNocturno)
                 {
-                    g.DrawLine(p, 6, 6, info.Rect.Width - 6, info.Rect.Height - 6);
-                    g.DrawLine(p, info.Rect.Width - 6, 6, 6, info.Rect.Height - 6);
+                    using (Pen p = new Pen(Color.Red, 5))
+	                {
+		                g.DrawLine(p, 6, 6, info.Rect.Width - 6, info.Rect.Height - 6);
+			            g.DrawLine(p, info.Rect.Width - 6, 6, 6, info.Rect.Height - 6);
+				    }
+                }
+                else
+                {
+                    using (Pen p = new Pen(VisualStyle.AspaColor, 5))
+                    {
+                        g.DrawLine(p, 6, 6, info.Rect.Width - 6, info.Rect.Height - 6);
+                        g.DrawLine(p, info.Rect.Width - 6, 6, 6, info.Rect.Height - 6);
+                    }
+
                 }
             }
 

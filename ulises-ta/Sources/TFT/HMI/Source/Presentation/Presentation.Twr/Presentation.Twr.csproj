@@ -132,6 +132,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\ColorProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\ControlRecord.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -189,6 +192,7 @@
     <Compile Include="Views\HeaderView.Designer.cs">
       <DependentUpon>HeaderView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\HMIConfigHelper.cs" />
     <Compile Include="Views\LcView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -344,14 +348,18 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Properties\DataSources\HMI.Model.Module.BusinessEntities.Tlf.datasource" />
-    <None Include="Properties\DataSources\HMI.Presentation.Twr.Views.TlfFunctionsView.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\matahmi.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\reinicio.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SplitRdLc.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -487,6 +495,34 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\play_no_disponibeN.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\play_reproduccion_disponibleN.png" />
+    <Content Include="restart\trabajando.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\trabajando.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SplitLcTfNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SplitOffNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SplitRdLcNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\logo_AENANocturno.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\JackOffNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\JackOnNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\logo_AENA_URV-7.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -494,6 +530,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\play.png" />
+    <None Include="Resources\TlfPageNocturno.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <SplashScreen Include="restart\matahmi.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </SplashScreen>
+    <None Include="restart\reinicio.bat" />
+    <None Include="UI\play_no_disponibleN.png" />
     <None Include="Resources\Tecla verde.png" />
     <None Include="Resources\play_no_disponible.png" />
     <None Include="Resources\play_reproduccion_disponible.png" />
@@ -576,6 +620,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
     <Folder Include="Resources\Services\" />
   </ItemGroup>
   <ItemGroup>
@@ -606,5 +651,9 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

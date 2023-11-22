@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--<OutputType>WinExe</OutputType>-->
+    <TargetFramework>net6.0-windows7.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<OutputType>Exe</OutputType>
+<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+<GenerateDocumentationFile>false</GenerateDocumentationFile>
+<NoWin32Manifest>true</NoWin32Manifest>
+<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+<Platforms>AnyCPU;x64</Platforms>
+<Configurations>Debug;Release;Release_exe</Configurations>
+<IsPublishable>False</IsPublishable>
+<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_exe|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_exe|x64'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo &quot;compilacion finalizada, copio en cd40 resultado.&quot;&#xD;&#xA;mkdir ..\..\..\sources\cd40\lib\PictureBox&#xD;&#xA;copy $(projectdir)bin\release ..\..\..\sources\cd40\lib\PictureBox&#xD;&#xA;" />
+  </Target>
+
+</Project>

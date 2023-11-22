@@ -697,8 +697,23 @@ namespace HMI.Presentation.Asecna.Views
 				}
 			}
 		}
+        private void OnChgMode(object sender, bool mode)
+        {
+            if (mode != VisualStyle.ModoNocturno)//230804
+            {
+                string str = string.Format("Cambio a Modo {0}.\n El sistema se reinicará de nuevo en menos de un minuto.", (mode) ? "Nocturno" : "Diurno");
+                NotifMsg msg = new NotifMsg("Cambio de Modo", "Estado", str, 0, MessageType.Information, MessageButtons.Ok);
+                _StateManager.ShowUIMessage(msg);
+            }
+            else
+            {
+                string str = string.Format("El cambio de modo no se puede efectuar en este momento.");
+                NotifMsg msg = new NotifMsg("Error Cambio de Modo", "Estado", str, 0, MessageType.Information, MessageButtons.Ok);
+                _StateManager.ShowUIMessage(msg);
+            }
+        }
 
-		private void OnKeypadClear(object sender)
+        private void OnKeypadClear(object sender)
 		{
 			try
 			{

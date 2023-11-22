@@ -54,8 +54,11 @@ namespace HMI.Model.Module.Services
         [EventPublication(EventTopicNames.DeleteSessionGlp, PublicationScope.Global)]
         public event EventHandler DeleteSessionGlp;
 
-		//LALM 210224 Errores #4755 confirmación de cambio de página radio
-		[EventPublication(EventTopicNames.CambioPaginaRadioUp, PublicationScope.Global)]
+        [EventPublication(EventTopicNames.ReinicioAppUI, PublicationScope.Global)]
+        public event EventHandler ReinicioAppUI;
+
+        //LALM 210224 Errores #4755 confirmación de cambio de página radio
+        [EventPublication(EventTopicNames.CambioPaginaRadioUp, PublicationScope.Global)]
 		public event EventHandler CambioPaginaRadioUp;
 		[EventPublication(EventTopicNames.CambioPaginaRadioDown, PublicationScope.Global)]
 		public event EventHandler CambioPaginaRadioDown;
@@ -168,7 +171,18 @@ namespace HMI.Model.Module.Services
 					// se queda igual
 				}
 			}
-		}
+            else if (msg.Id == "Cambio de Modo")
+            {
+                if (response == NotifMsgResponse.Ok)
+                {
+                    General.SafeLaunchEvent(ReinicioAppUI, this);
+                }
+                else
+                {
+                    // voy a intentar llegar al otro reset
+                }
+            }
+        }
 
 		public void ShowSplitModeSelection()
 		{

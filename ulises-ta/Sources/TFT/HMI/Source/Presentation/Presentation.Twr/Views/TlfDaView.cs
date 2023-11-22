@@ -58,7 +58,35 @@ namespace HMI.Presentation.Twr.Views
 		public TlfDaView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
 		{
 			InitializeComponent();
-            if (global::HMI.Presentation.Twr.Properties.Settings.Default.BigFonts)
+			if (!VisualStyle.ModoNocturno)
+			{
+
+			}
+			else
+			{
+				this._TlfDaTLP.BackColor = VisualStyle.ButtonColorN;//System.Drawing.Color.Black;
+				this._TlfButtonsTLP.BackColor = VisualStyle.ButtonColorN;//System.Drawing.Color.Black;
+				this._TlfDaTLP.ForeColor = VisualStyle.TextoTfColorN;// System.Drawing.Color.White;
+				this._TlfButtonsTLP.ForeColor = VisualStyle.TextoTfColorN;// System.Drawing.Color.White;
+				double scaleFactor = 0.7; // 70%
+
+				Bitmap originalImage = global::HMI.Presentation.Twr.Properties.Resources.TlfPageNocturno;
+				int newWidth = (int)(originalImage.Width * scaleFactor);
+				int newHeight = (int)(originalImage.Height * scaleFactor);
+				Bitmap resizedImage = new Bitmap(newWidth, newHeight);
+
+				using (Graphics graphics = Graphics.FromImage(resizedImage))
+				{
+					graphics.DrawImage(originalImage, new Rectangle(0, 0, newWidth, newHeight));
+				}
+
+				this._TlfPageFirstBT.ImageNormal = resizedImage;
+				this._TlfPageSecondBT.ImageNormal = resizedImage;
+				this._TlfPageConfBT.ImageNormal = resizedImage;
+
+
+			}
+			if (global::HMI.Presentation.Twr.Properties.Settings.Default.BigFonts)
             {
                 this._TlfButtonsTLP.Font = new System.Drawing.Font("Trebuchet MS", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             }
@@ -650,54 +678,81 @@ namespace HMI.Presentation.Twr.Views
 					_SlowBlinkTimer.Enabled = true;
 					break;
 				case TlfState.Out:
-					backColor = VisualStyle.Colors.Blue;
+					if (!VisualStyle.ModoNocturno)
+						backColor = VisualStyle.Colors.Blue;
+					else
+						backColor = VisualStyle.Color_TlfStateOut;
 					break;
 				case TlfState.Set:
 				case TlfState.Conf:
 				case TlfState.ConfPreprogramada:
-					backColor = VisualStyle.Colors.Green;
+					// backColor = VisualStyle.Colors.Green;
+					// LALM 210204: En conversacion pongo el correspondiente configurado.
+					backColor = VisualStyle.FondoColorConversacion;
 					break;
 				case TlfState.Busy:
 				case TlfState.OutOfService:
-					backColor = VisualStyle.Colors.Red;
+					// backColor = VisualStyle.Colors.Red;
+					// LALM 210204: en caso de fuera de servicio o bloqueo
+					backColor = VisualStyle.FondoColorBloqueo;
 					break;
 				case TlfState.Mem:
-					backColor = VisualStyle.Colors.Orange;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = VisualStyle.Colors.Orange;
+					backColor = VisualStyle.FondoColorMemorizada;
 					break;
 				case TlfState.RemoteMem:
-					backColor = VisualStyle.Colors.DarkGray;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = VisualStyle.Colors.DarkGray;
+					backColor = VisualStyle.FondoColorRemoteMem;
 					break;
 				case TlfState.Hold:
 				case TlfState.RemoteHold:
-					backColor = _SlowBlinkOn ? VisualStyle.Colors.Green : VisualStyle.ButtonColor;
-					_SlowBlinkList[bt] = VisualStyle.Colors.Green;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = _SlowBlinkOn ? VisualStyle.Colors.Green : VisualStyle.ButtonColor;
+					// _SlowBlinkList[bt] = VisualStyle.Colors.Green;
+					backColor = _SlowBlinkOn ? VisualStyle.FondoColorHold : VisualStyle.ButtonColor;
+					_SlowBlinkList[bt] = VisualStyle.FondoColorHold;
 					_SlowBlinkTimer.Enabled = true;
 					break;
 				case TlfState.RemoteIn:
-					backColor = _SlowBlinkOn ? VisualStyle.Colors.DarkGray : VisualStyle.ButtonColor;
-					_SlowBlinkList[bt] = VisualStyle.Colors.DarkGray;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = _SlowBlinkOn ? VisualStyle.Colors.DarkGray : VisualStyle.ButtonColor;
+					// _SlowBlinkList[bt] = VisualStyle.Colors.DarkGray;
+					backColor = _SlowBlinkOn ? VisualStyle.FondoColorRemoteIn : VisualStyle.ButtonColor;
+					_SlowBlinkList[bt] = VisualStyle.FondoColorRemoteIn;
 					_SlowBlinkTimer.Enabled = true;
 					break;
 				case TlfState.Congestion:
-					backColor = _SlowBlinkOn ? VisualStyle.Colors.Red : VisualStyle.ButtonColor;
-					_SlowBlinkList[bt] = VisualStyle.Colors.Red;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = _SlowBlinkOn ? VisualStyle.Colors.Red : VisualStyle.ButtonColor;
+					// _SlowBlinkList[bt] = VisualStyle.Colors.Red;
+					backColor = _SlowBlinkOn ? VisualStyle.FondoColorCongestion : VisualStyle.ButtonColor;
+					_SlowBlinkList[bt] = VisualStyle.FondoColorCongestion;
 					_SlowBlinkTimer.Enabled = true;
 					break;
 				case TlfState.InPrio:
-					backColor = _FastBlinkOn ? VisualStyle.Colors.Orange : VisualStyle.ButtonColor;
-					_FastBlinkList[bt] = VisualStyle.Colors.Orange;
+					// LALM 210204: Cambio colores por nombre de estados.
+					backColor = _FastBlinkOn ? VisualStyle.FondoColorInPrio : VisualStyle.ButtonColor;
+					_FastBlinkList[bt] = VisualStyle.FondoColorInPrio;
 					_FastBlinkTimer.Enabled = true;
 					break;
 				case TlfState.NotAllowed:
-					backColor = _FastBlinkOn ? VisualStyle.Colors.Yellow : VisualStyle.ButtonColor;
-					_SlowBlinkList[bt] = VisualStyle.Colors.Yellow;
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = _FastBlinkOn ? VisualStyle.Colors.Yellow : VisualStyle.ButtonColor;
+					// _SlowBlinkList[bt] = VisualStyle.Colors.Yellow;
+					backColor = _FastBlinkOn ? VisualStyle.FondoColorNotAllowed : VisualStyle.ButtonColor;
+					_SlowBlinkList[bt] = VisualStyle.FondoColorNotAllowed;
 					_SlowBlinkTimer.Enabled = true;
 					break;
-                case TlfState.InProcess:
-                    backColor = VisualStyle.Colors.Yellow;
-                    break;
+				case TlfState.InProcess:
+					// LALM 210204: Cambio colores por nombre de estados.
+					// backColor = VisualStyle.Colors.Yellow;
+					backColor = VisualStyle.FondoColorInProcess;
+					break;
 				case TlfState.offhook://#2855 220713
-					backColor = VisualStyle.Colors.Yellow;
+					//backColor = VisualStyle.Colors.Yellow;
+					backColor = VisualStyle.FondoColorInProcess;
 					break;
 
 			}
