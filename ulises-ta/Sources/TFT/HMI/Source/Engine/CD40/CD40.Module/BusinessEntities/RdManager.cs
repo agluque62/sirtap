@@ -330,9 +330,18 @@ namespace HMI.CD40.Module.BusinessEntities
                     if ((Top.Tlf.Activity() && !Top.Tlf.PriorityCall && Top.Mixer.SplitMode == SplitMode.Off) ||
                         Top.Lc.HoldedTlf)
                     {
-                        _HoldedByPtt = true;
-                        General.SafeLaunchEvent(HoldTlfCall, this, new StateMsg<bool>(_HoldedByPtt));
-                        System.Threading.Thread.Sleep(50);
+                        bool pttsinretener = Settings.Default.PttSinRetener;
+                        _Logger.Debug("pttsinretener: {0}", pttsinretener);
+                        if (pttsinretener)
+                        {
+                            ;
+                        }
+                        else
+                        {
+                            _HoldedByPtt = true;
+                            General.SafeLaunchEvent(HoldTlfCall, this, new StateMsg<bool>(_HoldedByPtt));
+                            System.Threading.Thread.Sleep(50);
+                        }
                     }
 #else
 					if (Top.Tlf.Activity() && Top.Mixer.SplitMode == SplitMode.Off)
