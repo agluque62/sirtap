@@ -16,47 +16,21 @@ using Utilities;
 
 namespace U5kManServer.WebAppServer
 {
-    /// <summary>
-    /// Clase General...
-    /// </summary>
     public class U5kManWebAppData : BaseCode
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        // protected static Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         static public string JSerialize<JObject>(JObject obj)
         {
             return JsonConvert.SerializeObject(obj);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="JObject"></typeparam>
-        /// <param name="strData"></param>
-        /// <returns></returns>
         static public JObject JDeserialize<JObject>(string strData)
         {
             return JsonConvert.DeserializeObject<JObject>(strData);
         }
     }
-
-    /// <summary>
-    /// Resultado Genérico de una operación.
-    /// </summary>
     class U5kManWADResultado : U5kManWebAppData
     {
         public string res { get; set; }
     }
-
-    /// <summary>
-    /// Lista de Incidencias Pendientes.
-    /// </summary>
     public class U5kManWADInci : U5kManWebAppData
     {
         public class InciData
@@ -65,50 +39,39 @@ namespace U5kManServer.WebAppServer
             public string inci { get; set; }
             public int id { get; set; }
         }
-
         public class InciRec
         {
             public string user { get; set; }
             public InciData inci { get; set; }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public List<InciData> lista = new List<InciData>();
         public int HashCode { get; set; }
         public string lang { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADInci(bool bGenerate = false)
         {
             if (bGenerate)
             {
                 lock (U5kManService._last_inci)
                 {
-                    foreach (U5kManLastInciList.eListaInci inci in U5kManService._last_inci._lista)
+                    SafeExecute("listinc", () =>
                     {
-                        lista.Add(new InciData() 
-                        { 
-                            time = inci._fecha.ToString(),
-                            inci = /*EncryptionHelper.CAE_cifrar(inci._desc)*/inci._desc, 
-                            id = (int)inci._id 
-                        });
-                    }
-                    // La Lista ya debe estar ordenada...
-                    // HashCode = lista.GetHashCode();
-                    HashCode = HashCodeGet();
-                    lang = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.Idioma;
+                        foreach (U5kManLastInciList.eListaInci inci in U5kManService._last_inci._lista)
+                        {
+                            lista.Add(new InciData()
+                            {
+                                time = inci._fecha.ToString(),
+                                inci = /*EncryptionHelper.CAE_cifrar(inci._desc)*/inci._desc,
+                                id = (int)inci._id
+                            });
+                        }
+                        // La Lista ya debe estar ordenada...
+                        // HashCode = lista.GetHashCode();
+                        HashCode = HashCodeGet();
+                        lang = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.Idioma;
+                    });
                 }
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         private int HashCodeGet()
         {
             int hash = 0;
@@ -119,20 +82,15 @@ namespace U5kManServer.WebAppServer
             }
             return hash;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         static public void Reconoce(string jStrInci)
         {
-            InciRec inci = JDeserialize<InciRec>(jStrInci);
-            U5kManService.stReconoceAlarma(inci.user, DateTime.Parse(inci.inci.time), inci.inci.inci);
+            SafeExecute("inci_ack", () =>
+            {
+                InciRec inci = JDeserialize<InciRec>(jStrInci);
+                U5kManService.stReconoceAlarma(inci.user, DateTime.Parse(inci.inci.time), inci.inci.inci);
+            });
         }
     }
-
-    /// <summary>
-    /// Estado General.
-    /// </summary>
     class U5kManWADStd : U5kManWebAppData
     {
         public class itemData
@@ -144,10 +102,6 @@ namespace U5kManServer.WebAppServer
             public string url { get; set; }
             public string ntp { get; set; }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public string version { get; set; }
         public string cfg { get; set; }
         public int hf { get; set; }
@@ -156,9 +110,6 @@ namespace U5kManServer.WebAppServer
         public itemData sv2 { get; set; }
         public itemData cwp { get; set; }
         public itemData gws { get; set; }
-#if _HAY_NODEBOX__
-        public itemData nbx { get; set; }
-#endif
         public itemData pbx { get; set; }
         public itemData ntp { get; set; }
         public bool sactaservicerunning { get; set; }
@@ -166,246 +117,133 @@ namespace U5kManServer.WebAppServer
         public itemData sct1 { get; set;}
         public itemData sct2 { get; set; }
         public itemData ext { get; set; }
-#if _HAY_NODEBOX__
-#if _LISTANBX_V0
-        public class itemNbx
-        {
-            public string name { get; set; }
-            public string modo { get; set; }
-        }
-#elif _LISTANBX_
-        public class itemNbx
-        {
-            public string name { get; set; }                // Para compatibilidad con el anterior.
-            public string modo { get; set; }
-
-            public string url { get; set; }
-            public int CfgService { get; set; }
-            public int RadioService { get; set; }
-            public int TifxService { get; set; }
-            public int PresenceService { get; set; }
-            public bool Running { get; set; }
-        }
-        public List<itemNbx> nbxs = new List<itemNbx>();
-#endif
-#else
         public dynamic csi { get; set; }
-#endif
         public string lang { get; set; }
         public int rd_status { get; set; }
         public int tf_status { get; set; }
         public string igmp_status { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public U5kManWADStd(U5kManStdData gdt, string user ="false", bool bGenerate = false)
+        public U5kManWADStd(U5kManStdData gdt, string user = "false", bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                U5KStdGeneral stdg = U5kManService._std._gen;
-                lock (U5kManService._std._gen)
-#else
                 U5KStdGeneral stdg = gdt.STDG;
-#endif
+
+                version = SafeExecute<string>("version", () => U5kGenericos.Version);
+                cfg = SafeExecute<string>("cfg", () => stdg.CfgId);
+                hf = SafeExecute<int>("hf", () => U5kManService.cfgSettings.HayAltavozHF ? 1 : 0);
+                recw = SafeExecute<int>("recw", () => U5kManService.cfgSettings.OpcOpeCableGrabacion ? 1 : 0);
+
+                sv1 = SafeExecute<itemData>("sv1", () => new itemData()
                 {
-                    version = U5kGenericos.Version;
-                    cfg = stdg.CfgId;                // .cfgVersion;
-                    hf = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.HayAltavozHF ? 1 : 0;
-                    recw = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.OpcOpeCableGrabacion ? 1 : 0;
-                    sv1 = new itemData()
-                    {
-                        name = stdg.stdServ1.name,
-                        enable = 1,
-                        std = (int)stdg.stdServ1.Estado,
-                        sel = (int)stdg.stdServ1.Seleccionado,
-                        url = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.ServidorDual ?
-                                String.Format("http://{0}/UlisesV5000/U5kCfg/Cluster/Default.aspx", U5kManServer.Properties.u5kManServer.Default.MySqlServer) : "",
-                        ntp = stdg.stdServ1.NtpInfo.GlobalStatus
-                    };
-                    sv2 = new itemData()
-                    {
-                        name = stdg.stdServ2.name,
-                        enable = stdg.bDualServ ? 1 : 0,
-                        std = (int)stdg.stdServ2.Estado,
-                        sel = (int)stdg.stdServ2.Seleccionado,
-                        url = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.ServidorDual ?
-                                String.Format("http://{0}/UlisesV5000/U5kCfg/Cluster/Default.aspx", U5kManServer.Properties.u5kManServer.Default.MySqlServer) : "",
-                        ntp = stdg.stdServ2.NtpInfo.GlobalStatus
-                    };
-                    cwp = new itemData()
-                    {
-                        name = idiomas.strings.WAP_MSG_003 /* "Puestos de Operador"*/,
-                        enable = 1,
-                        std = (int)stdg.stdGlobalPos,
-                        sel = 0,
-                        url = ""
-                    };
-                    gws = new itemData()
-                    {
-                        name = idiomas.strings.WAP_MSG_004 /* "Pasarelas"*/,
-                        enable = 1,
-                        std = (int)stdg.stdScv1.Estado,
-                        sel = 0,
-                        url = ""
-                    };
-
-#if _HAY_NODEBOX__
-
-#if _LISTANBX_V0
-                    /** Busco el Master en la lista */
-                    int nbx_count = U5kManService._std._gen.lstNbx.Count;
-                    StdServ masternbx = U5kManService._std._gen.lstNbx.Find(x => x.Seleccionado == sel.Seleccionado);
-                    List<StdServ> nbx_master_list = masternbx != null ? U5kManService._std._gen.lstNbx.Where(x => x.Seleccionado == sel.Seleccionado).ToList() : null;
-#elif _LISTANBX_
-                    /** Busco el Master en la lista */
-                    int nbx_count = stdg.lstNbx.Count;
-                    U5KStdGeneral.StdNbx masternbx = stdg.lstNbx.Find(x => x.CfgService==U5KStdGeneral.NbxServiceState.Master);
-                    List<U5KStdGeneral.StdNbx> nbx_master_list = masternbx != null ? stdg.lstNbx.Where(x => x.CfgService == U5KStdGeneral.NbxServiceState.Master).ToList() : null;
-#endif
-                    nbx = new itemData()
-                    {
-#if _LISTANBX_V0
-                        name = masternbx != null ? masternbx.name : "???",
-                        enable = 1,
-                        std = (int)(masternbx != null ? (nbx_master_list.Count > 1 ? std.Error :
-                                                         nbx_count > 1 ? masternbx.Estado : std.Aviso) : std.NoInfo),
-                        sel = 0,
-                        url = masternbx != null ? U5kGenericos.NodeboxUrl(masternbx.name) : "???"
-#elif _LISTANBX_
-                        name = masternbx != null ? masternbx.ip : "Unknown",
-                        enable = 1,
-                        std = (int)(masternbx != null ? (nbx_master_list.Count > 1 ? std.Error :
-                                                         nbx_count > 1 ? std.Ok : std.Aviso) : std.NoInfo),
-                        sel = 0,
-                        url = masternbx != null ? "http://" + masternbx.ip + ":" + masternbx.webport.ToString() + "/" : "???"
-#else
-                    name = U5kManService._std._gen.stdNbx.name,
+                    name = stdg.stdServ1.name,
                     enable = 1,
-                    std = (int)U5kManService._std._gen.stdNbx.Estado,
+                    std = (int)stdg.stdServ1.Estado,
+                    sel = (int)stdg.stdServ1.Seleccionado,
+                    url = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.ServidorDual ?
+                            String.Format("http://{0}/UlisesV5000/U5kCfg/Cluster/Default.aspx", U5kManServer.Properties.u5kManServer.Default.MySqlServer) : "",
+                    ntp = SafeExecute<string>("sv1.ntp", () => stdg.stdServ1.NtpInfo.GlobalStatus)
+                });
+                sv2 = SafeExecute<itemData>("sv2", () => new itemData()
+                {
+                    name = stdg.stdServ2.name,
+                    enable = stdg.bDualServ ? 1 : 0,
+                    std = (int)stdg.stdServ2.Estado,
+                    sel = (int)stdg.stdServ2.Seleccionado,
+                    url = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.ServidorDual ?
+                            String.Format("http://{0}/UlisesV5000/U5kCfg/Cluster/Default.aspx", U5kManServer.Properties.u5kManServer.Default.MySqlServer) : "",
+                    ntp = SafeExecute<string>("sv2.ntp", () => stdg.stdServ2.NtpInfo.GlobalStatus)
+                });
+
+                cwp = SafeExecute<itemData>("cwp", () => new itemData()
+                {
+                    name = idiomas.strings.WAP_MSG_003 /* "Puestos de Operador"*/,
+                    enable = 1,
+                    std = (int)stdg.stdGlobalPos,
                     sel = 0,
-                    url = U5kGenericos.NodeboxUrl(U5kManService._std._gen.stdNbx.name)
-#endif
-                    };
-#else
+                    url = ""
+                });
+
+                gws = SafeExecute<itemData>("gws", () => new itemData()
+                {
+                    name = idiomas.strings.WAP_MSG_004 /* "Pasarelas"*/,
+                    enable = 1,
+                    std = (int)stdg.stdScv1.Estado,
+                    sel = 0,
+                    url = ""
+                });
+
+                SafeExecute("nbx", () =>
+                {
                     Services.CentralServicesMonitor.Monitor.DataGetForWebServer((csid) =>
                     {
                         csi = csid;
                     });
-#endif
-                    pbx = new itemData()
-                    {
-                        name = stdg.stdPabx.name,
-                        enable = stdg.HayPbx ? 1 : 0,
-                        std = (int)stdg.stdPabx.Estado,
-                        sel = 0,
-                        url = U5kGenericos.PabxUrl(stdg.stdPabx.name)
-                    };
-                    ntp = new itemData()
-                    {
-                        name = stdg.stdClock.name,
-                        enable = stdg.HayReloj ? 1 : 0,
-                        std = (int)stdg.stdClock.Estado,
-                        sel = 0,
-                        url = ""
-                    };
-                    sactaservicerunning = stdg.SactaService == std.Ok;
-                    sactaserviceenabled = stdg.SactaServiceEnabled;
-                    sct1 = new itemData()
-                    {
-                        name = "SACTA-1",
-                        enable = stdg.HaySacta ? 1 : 0,
-                        std = (int)stdg.stdSacta1,
-                        sel = 0,
-                        url = ""
-                    };
-                    sct2 = new itemData()
-                    {
-                        name = "SACTA-2",
-                        enable = stdg.HaySacta ? 1 : 0,
-                        std = (int)stdg.stdSacta2,
-                        sel = 0,
-                        url = ""
-                    };
-#if _HAY_NODEBOX__
+                });
 
-#if _LISTANBX_V0
-                    nbxs.Clear();
-                    foreach (StdServ nodebox in U5kManService._std._gen.lstNbx)
-                    {
-                        nbxs.Add(new itemNbx() { name = nodebox.name, modo = nodebox.Seleccionado == sel.Seleccionado ? "Master" : "Slave" });
-                    }
-#elif _LISTANBX_
-                    nbxs.Clear();
-                    foreach (U5KStdGeneral.StdNbx nodebox in stdg.lstNbx)
-                    {
-                        nbxs.Add(new itemNbx() 
-                        {
-                            name = nodebox.ip,
-                            modo = nodebox.CfgService == U5KStdGeneral.NbxServiceState.Master ? "Master" : "Slave",
-                            CfgService = (int )nodebox.CfgService,
-                            RadioService = (int )nodebox.RadioService,
-                            TifxService = (int)nodebox.TifxService,
-                            PresenceService = (int)nodebox.PresenceService,
-                            url = "http://" + nodebox.ip + ":" + nodebox.webport.ToString() + "/",
-                            Running = nodebox.Running
-                        });
-                    }
-#endif
-#else
-                    // TODO...
-#endif
-                    ext = new itemData()
-                    {
-                        name = idiomas.strings.EquiposExternos,
-                        enable = 1,
-                        std = (int)stdg.stdGlobalExt,
-                        sel = 0,
-                        url = ""
-                    };
-                    lang = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.Idioma;
-                    /** Estado Global Radio */
-#if _HAY_NODEBOX__
-                    var fr = U5kManService._sessions_data.Count();                              // Frecuencias Configuradas.
-                    var fa = U5kManService._sessions_data.Where(f => f.fstd == 0).Count();      // Frecuencias No disponibles
-                    var fd = U5kManService._sessions_data.Where(f => f.fstd == 2).Count();      // Frecuencias Degradadas.
-                    rd_status = fr==0 ? -1 /** No INFO */ : fa > 0 ? 2 /** Alarma */ : fd > 0 ? 1 /** Warning */: 0; /** OK */
+                pbx = SafeExecute<itemData>("pbx", () => new itemData()
+                {
+                    name = stdg.stdPabx.name,
+                    enable = stdg.HayPbx ? 1 : 0,
+                    std = (int)stdg.stdPabx.Estado,
+                    sel = 0,
+                    url = U5kGenericos.PabxUrl(stdg.stdPabx.name)
+                });
 
-                    /** Estado Global Telefonia: 0=>OK, 1=>Con PROXY ALT, 2=>Emergencia */
-                    tf_status = U5kManService.tlf_mode;
+                ntp = SafeExecute<itemData>("ntp", () => new itemData()
+                {
+                    name = stdg.stdClock.name,
+                    enable = stdg.HayReloj ? 1 : 0,
+                    std = (int)stdg.stdClock.Estado,
+                    sel = 0,
+                    url = ""
+                });
 
-#else
-                    //var sessions_data = JsonConvert.DeserializeObject<List<U5kManService.radioSessionData>>(Services.CentralServicesMonitor.Monitor.RadioSessionsString);
-                    //var fr = sessions_data.Count();                              // Frecuencias Configuradas.
-                    //var fa = sessions_data.Where(f => f.fstd == 0).Count();      // Frecuencias No disponibles
-                    //var fd = sessions_data.Where(f => f.fstd == 2).Count();      // Frecuencias Degradadas.
-                    //rd_status = fr == 0 ? -1 /** No INFO */ : fa > 0 ? 2 /** Alarma */ : fd > 0 ? 1 /** Warning */: 0; /** OK */
+                sactaservicerunning = SafeExecute<bool>("sactaservicerunning", () => stdg.SactaService == std.Ok);
+                sactaserviceenabled = SafeExecute<bool>("sactaserviceenabled", () => stdg.SactaServiceEnabled);
+                sct1 = SafeExecute<itemData>("sct1", () => new itemData()
+                {
+                    name = "SACTA-1",
+                    enable = stdg.HaySacta ? 1 : 0,
+                    std = (int)stdg.stdSacta1,
+                    sel = 0,
+                    url = ""
+                });
+
+                sct2 = SafeExecute<itemData>("sct2", () => new itemData()
+                {
+                    name = "SACTA-2",
+                    enable = stdg.HaySacta ? 1 : 0,
+                    std = (int)stdg.stdSacta2,
+                    sel = 0,
+                    url = ""
+                });
+
+                ext = SafeExecute<itemData>("ext", () => new itemData()
+                {
+                    name = idiomas.strings.EquiposExternos,
+                    enable = 1,
+                    std = (int)stdg.stdGlobalExt,
+                    sel = 0,
+                    url = ""
+                });
+
+                lang = SafeExecute<string>("lang", () => U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.Idioma);
+                rd_status = SafeExecute<int>("rd_status", () =>
+                {
                     var rs = Services.CentralServicesMonitor.Monitor.GlobalRadioStatus;
-                    rd_status = rs == std.NoInfo ? -1 : rs == std.Alarma ? 2 : rs == std.Aviso ? 1 : 0;
+                    return rs == std.NoInfo ? -1 : rs == std.Alarma ? 2 : rs == std.Aviso ? 1 : 0;
+                });
 
-                    ///** 20181010. De los datos obtenemos el estado de emergencia */
-                    //JArray grps = JsonHelper.SafeJArrayParse(Services.CentralServicesMonitor.Monitor.PresenceDataString);
-                    //JObject prx_grp = grps == null ? null :
-                    //    grps.Where(u => u.Value<int>("tp") == 4).FirstOrDefault() as JObject;
-                    //JProperty prx_prop = prx_grp == null ? null : prx_grp.Property("res");
-                    //JArray proxies = prx_prop == null ? null : prx_prop.Value as JArray;
-                    //int ppal = proxies == null ? 0 : proxies.Where(u => u.Value<int>("tp") == 5 && u.Value<int>("std") == 0).Count();
-                    //int alt = proxies == null ? 0 : proxies.Where(u => u.Value<int>("tp") == 6 && u.Value<int>("std") == 0).Count();
-                    //tf_status = ppal > 0 ? 0 /** OK */ : alt > 0 ? 1 /** DEG */ : 2 /** EMG */;
-
+                ///** 20181010. De los datos obtenemos el estado de emergencia */
+                tf_status = SafeExecute<int>("tf_status", () =>
+                {
                     var tfs = Services.CentralServicesMonitor.Monitor.GlobalPhoneStatus;
-                    tf_status = tfs == std.Ok ? 0 /** OK */ : tfs==std.Aviso ? 1 /** DEG */ : 2 /** EMG */;
-#endif
-                    igmp_status = Services.IgmpMonitor.Status;
-                }
+                    return tfs == std.Ok ? 0 /** OK */ : tfs == std.Aviso ? 1 /** DEG */ : 2 /** EMG */;
+                });
+                igmp_status = SafeExecute<string>("igmp_status", () => Services.IgmpMonitor.Status);
             }
         }
     }
-
-    /// <summary>
-    /// Estado de Operadores.
-    /// </summary>
     class U5kManWADCwps : U5kManWebAppData
     {
         public class CWPData
@@ -426,23 +264,15 @@ namespace U5kManServer.WebAppServer
             public string sect { get; set; }
             public string ntp { get; set; }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public List<CWPData> lista = new List<CWPData>();
-
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADCwps(U5kManStdData gdt, bool bGenerate)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std.stdpos)
+                List<stdPos> stdpos = gdt.STDTOPS;
+                foreach (stdPos pos in stdpos)
                 {
-                    foreach (stdPos pos in U5kManService._std.stdpos)
+                    SafeExecute($"CWP-{pos.name}", () =>
                     {
                         lista.Add(new CWPData()
                         {
@@ -456,40 +286,18 @@ namespace U5kManServer.WebAppServer
                             alt_t = pos.alt_t == std.Ok ? 1 : 0,
                             lan1 = pos.lan1 == std.Ok ? 1 : pos.lan1 == std.Error ? 2 : 0,
                             lan2 = pos.lan2 == std.Ok ? 1 : pos.lan2 == std.Error ? 2 : 0,
-                            alt_hf = Properties.u5kManServer.Default.HayAltavozHF ? (pos.alt_hf == std.Ok ? 1 : 0) : -1,
-                            rec_w = pos.rec_w == std.Ok ? 1 : 0
+                            alt_hf = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.HayAltavozHF ? (pos.alt_hf == std.Ok ? 1 : 0) : -1,
+                            rec_w = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.OpcOpeCableGrabacion ? (pos.rec_w == std.Ok ? 1 : 0) : -1,
+                            uris = pos.uris,
+                            sect = NormalizeSectId(pos.SectorOnPos, 16),
+                            ntp = pos.NtpInfo.GlobalStatus
                         });
-                    }
-                }
-#else
-                List<stdPos> stdpos = gdt.STDTOPS;
-                foreach (stdPos pos in stdpos)
-                {
-                    lista.Add(new CWPData()
-                    {
-                        name = pos.name,
-                        ip = pos.ip,
-                        std = (int)pos.stdg,
-                        panel = pos.panel == std.Ok ? 1 : 0,
-                        jack_exe = pos.jack_exe == std.Ok ? 1 : 0,
-                        jack_ayu = pos.jack_ayu == std.Ok ? 1 : 0,
-                        alt_r = pos.alt_r == std.Ok ? 1 : 0,
-                        alt_t = pos.alt_t == std.Ok ? 1 : 0,
-                        lan1 = pos.lan1 == std.Ok ? 1 : pos.lan1 == std.Error ? 2 : 0,
-                        lan2 = pos.lan2 == std.Ok ? 1 : pos.lan2 == std.Error ? 2 : 0,
-                        alt_hf = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.HayAltavozHF ? (pos.alt_hf == std.Ok ? 1 : 0) : -1,
-                        rec_w = U5kManService.cfgSettings/*Properties.u5kManServer.Default*/.OpcOpeCableGrabacion ? (pos.rec_w == std.Ok ? 1 : 0) : -1,
-                        uris = pos.uris,
-                        sect = NormalizeSectId(pos.SectorOnPos, 16),
-                        ntp = pos.NtpInfo.GlobalStatus
                     });
                 }
-#endif
             }
         }
-        //LALM 210618
         // Funcion Que limita el numero maximo de caracteres de una agrupacion a 16.
-        private String NormalizeSectId(String sectId, int longmax = 16)
+        String NormalizeSectId(String sectId, int longmax = 16)
         {
             String IdAgrupacion = sectId;
             int len = sectId.Length;
@@ -501,15 +309,8 @@ namespace U5kManServer.WebAppServer
             return IdAgrupacion;
         }
     }
-
-    /// <summary>
-    /// Estado de Pasarelas
-    /// </summary>
     class U5kManWADGws : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class GWData
         {
             public string name { get; set; }
@@ -524,24 +325,16 @@ namespace U5kManServer.WebAppServer
             public int cpu0 { get; set; }   // 0 NP, 1: Main, 2 Standby
             public int cpu1 { get; set; }   // 0 NP, 1: Main, 2 Standby
         };
-
-        /// <summary>
-        /// 
-        /// </summary>
         public List<GWData> lista = new List<GWData>();
-
         public int gdt { get; set; }
-
         public U5kManWADGws(U5kManStdData gdata, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std.stdgws)
-                {
-                    foreach (stdGw gw in U5kManService._std.stdgws)
-                    {
-                        lista.Add(new GWData()
+                List<stdGw> stdgws = gdata.STDGWS;
+                lista = stdgws
+                    .Select(gw => SafeExecute<GWData>($"CGW-{gw.name}", () =>
+                        new GWData()
                         {
                             name = gw.name,
                             ip = gw.ip,
@@ -549,55 +342,28 @@ namespace U5kManServer.WebAppServer
                             std = (int)gw.std,
                             main = gw.Dual == false ? 0 : gw.gwA.Seleccionada ? 0 : gw.gwB.Seleccionada ? 1 : -1,
                             lan1 = (gw.Dual == false || gw.gwA.Seleccionada) ? (gw.gwA.lan1 == std.Ok ? 1 : 0) : (gw.gwB.lan1 == std.Ok ? 1 : 0),
-                            lan2 = (gw.Dual == false || gw.gwA.Seleccionada) ? (gw.gwA.lan2 == std.Ok ? 1 : 0) : (gw.gwB.lan2 == std.Ok ? 1 : 0)
-                        });
-                    }
-                }
-#else
-                List<stdGw> stdgws = gdata.STDGWS;
-                lista = stdgws.Select(gw => new GWData()
-                {
-                    name = gw.name,
-                    ip = gw.ip,
-                    tipo = gw.Dual ? 1 : 0,
-                    std = (int)gw.std,
-                    main = gw.Dual == false ? 0 : gw.gwA.Seleccionada ? 0 : gw.gwB.Seleccionada ? 1 : -1,
-                    lan1 = (gw.Dual == false || gw.gwA.Seleccionada) ? (gw.gwA.lan1 == std.Ok ? 1 : 0) : (gw.gwB.lan1 == std.Ok ? 1 : 0),
-                    lan2 = (gw.Dual == false || gw.gwA.Seleccionada) ? (gw.gwA.lan2 == std.Ok ? 1 : 0) : (gw.gwB.lan2 == std.Ok ? 1 : 0),
-                    ntp = gw.cpu_activa.NtpInfo.GlobalStatus,
-                    cpu0 = gw.Dual == false ? (gw.gwA.presente ? 1 : 0) : (gw.gwA.presente ? (gw.gwA.Seleccionada ? 1 : 2) : (0)),
-                    cpu1 = gw.Dual == false ? (0) : (gw.gwB.presente ? (gw.gwB.Seleccionada ? 1 : 2) : (0))
-                }).ToList();
-
+                            lan2 = (gw.Dual == false || gw.gwA.Seleccionada) ? (gw.gwA.lan2 == std.Ok ? 1 : 0) : (gw.gwB.lan2 == std.Ok ? 1 : 0),
+                            ntp = gw.cpu_activa.NtpInfo.GlobalStatus,
+                            cpu0 = gw.Dual == false ? (gw.gwA.presente ? 1 : 0) : (gw.gwA.presente ? (gw.gwA.Seleccionada ? 1 : 2) : (0)),
+                            cpu1 = gw.Dual == false ? (0) : (gw.gwB.presente ? (gw.gwB.Seleccionada ? 1 : 2) : (0))
+                        })
+                    )
+                    .ToList();
                 gdt = Properties.u5kManServer.Default.GatewaysDualityType;
-#endif
             }
         }
     }
-
-    /// <summary>
-    /// Detalle de Pasarela
-    /// </summary>
     class U5kManWADGwData : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemVersion
         {
             public string line { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemTar
         {
             public int cfg { get; set; }
             public int not { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemRec
         {
             public string name { get; set; }
@@ -605,9 +371,6 @@ namespace U5kManServer.WebAppServer
             public int not { get; set; }
             public int std { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemCpu
         {
             public string ip { get; set; }
@@ -616,12 +379,10 @@ namespace U5kManServer.WebAppServer
             public int lan2 { get; set; }
             public List<itemTar> tars { get; set; }
             public List<itemRec> recs = new List<itemRec>();
-#if GW_STD_V1
             public int sipMod { get; set; }
             public int snmpMod { get; set; }
             public int cfgMod { get; set; }
             public int fa { get; set; }
-#endif
         }
 
         public string name { get; set; }
@@ -630,140 +391,60 @@ namespace U5kManServer.WebAppServer
         public int std { get; set; }
         public int main { get; set; }
         public int fa { get; set; }
-#if _GETVER_UNIFI_V0
-        public List<itemVersion> versiones = new List<itemVersion>();
-#else
         public string versiones { get; set; }
-#endif
         public List<itemCpu> cpus = new List<itemCpu>();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
         public U5kManWADGwData(U5kManStdData gdata, string Name, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std.stdgws)
-                {
-                    foreach (stdGw gw in U5kManService._std.stdgws)
-                    {
-                        if (gw.name == Name)
-                        {
-                            /** Parametros Generales */
-                            name = gw.name;
-                            ip = gw.ip;
-                            tipo = gw.Dual ? 1 : 0;
-                            std = (int)gw.std;
-                            main = gw.Dual == false ? 0 : gw.gwA.Seleccionada ? 0 : gw.gwB.Seleccionada ? 1 : -1;
-                            fa = std == 0 ? 0 : 1;
-
-                            /** Versiones */
-                            versiones = FormatVersiones((gw.Dual == false || gw.gwA.Seleccionada) ? gw.gwA.version : gw.gwB.version);
-
-                            /** Datos de Interfaces CPU 0/1 */
-                            for (int cpu = 0; cpu < 2; cpu++)
-                            {
-                                stdPhGw pgw = cpu == 0 ? gw.gwA : gw.gwB;
-                                cpus.Add(new itemCpu()
-                                {
-                                    ip = pgw.ip,
-                                    ntp = 0,
-                                    lan1 = pgw.lan1 == U5kManServer.std.Ok ? 1 : 0,
-                                    lan2 = pgw.lan2 == U5kManServer.std.Ok ? 1 : 0,
-                                    tars = PhysicalGwTars(pgw),
-                                    recs = PhysicalGwResources(pgw)
-                                });
-                            }
-                            return;
-                        }
-                    }
-                }
-#else
                 List<stdGw> stdgws = gdata.STDGWS;
                 stdGw gw = stdgws.Where(i => i.name == Name).FirstOrDefault();
                 if (gw != null)
                 {
                     /** Parametros Generales */
-                    name = gw.name;
-                    ip = gw.ip;
-                    tipo = gw.Dual ? 1 : 0;
-                    std = (int)gw.std;
-                    main = gw.Dual == false ? 0 : gw.gwA.Seleccionada ? 0 : gw.gwB.Seleccionada ? 1 : -1;
+                    name = SafeExecute<string>($"CGW-name", () => gw.name);
+                    ip = SafeExecute<string>($"CGW-{gw.name}-ip", () => gw.ip);
+                    tipo = SafeExecute<int>($"CGW-{gw.name}-tipo", () => gw.Dual ? 1 : 0);
+                    std = SafeExecute<int>($"CGW-{gw.name}-std", () => (int)gw.std);
+                    main = SafeExecute<int>($"CGW-{gw.name}-main", () => gw.Dual == false ? 0 : gw.gwA.Seleccionada ? 0 : gw.gwB.Seleccionada ? 1 : -1);
 
                     /** Versiones */
-                    versiones = FormatVersiones((gw.Dual == false || gw.gwA.Seleccionada) ? gw.gwA.version : gw.gwB.version);
+                    versiones = SafeExecute<string>($"CGW-{gw.name}-version", () => FormatVersiones((gw.Dual == false || gw.gwA.Seleccionada) ? gw.gwA.version : gw.gwB.version));
 
                     /** Datos de Interfaces CPU 0/1 */
                     for (int cpu = 0; cpu < 2; cpu++)
                     {
                         stdPhGw pgw = cpu == 0 ? gw.gwA : gw.gwB;
-                        cpus.Add(new itemCpu()
+                        SafeExecute($"CGW-{gw.name}-cpu {cpu}", () =>
                         {
-                            ip = pgw.ip,
-                            ntp = pgw.NtpInfo.GlobalStatus,
-                            lan1 = pgw.lan1 == U5kManServer.std.Ok ? 1 : 0,
-                            lan2 = pgw.lan2 == U5kManServer.std.Ok ? 1 : 0,
-                            tars = PhysicalGwTars(pgw),
-                            recs = PhysicalGwResources(pgw)
-#if GW_STD_V1
-                            , cfgMod = pgw.CfgMod.Std == U5kManServer.std.Ok ? 1 : 0
-                            , sipMod = pgw.SipMod.Std == U5kManServer.std.Ok ? 1 : 0
-                            , snmpMod = pgw.SnmpMod.Std == U5kManServer.std.Ok ? 1 : 0
-                            , fa = pgw.stdFA == U5kManServer.std.Ok ? 1 : 0
-#endif
+                            cpus.Add(new itemCpu()
+                            {
+                                ip = pgw.ip,
+                                ntp = pgw.NtpInfo.GlobalStatus,
+                                lan1 = pgw.lan1 == U5kManServer.std.Ok ? 1 : 0,
+                                lan2 = pgw.lan2 == U5kManServer.std.Ok ? 1 : 0,
+                                tars = PhysicalGwTars(pgw),
+                                recs = PhysicalGwResources(pgw),
+                                cfgMod = pgw.CfgMod.Std == U5kManServer.std.Ok ? 1 : 0,
+                                sipMod = pgw.SipMod.Std == U5kManServer.std.Ok ? 1 : 0,
+                                snmpMod = pgw.SnmpMod.Std == U5kManServer.std.Ok ? 1 : 0,
+                                fa = pgw.stdFA == U5kManServer.std.Ok ? 1 : 0
+                            });
+
                         });
                     }
-                    fa = gw.gwA.stdFA == U5kManServer.std.Ok || gw.gwB.stdFA == U5kManServer.std.Ok ? 1 : 0;
+                    fa = SafeExecute<int>($"CGW-{gw.name}-main", () => gw.gwA.stdFA == U5kManServer.std.Ok || gw.gwB.stdFA == U5kManServer.std.Ok ? 1 : 0);
                 }
-#endif
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public static void MainStandByChange(string name)
         {
-            U5kManService.stMainStandbyChange(name, 0);
+            SafeExecute($"M/S on {name}", () => U5kManService.stMainStandbyChange(name, 0));
         }
-
-#if _GETVER_UNIFI_V0
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="strVer"></param>
-        /// <returns></returns>
-        protected List<itemVersion> FormatVersiones(string strVer)
-        {
-            List<itemVersion> version = new List<itemVersion>();
-            // strVer = U5kGenericos.CleanInput(strVer);
-            using (StringReader reader = new StringReader(strVer))
-            {
-                string rline;
-                while ((rline = reader.ReadLine()) != null)
-                {
-                    // rline = U5kGenericos.CleanInput(rline);
-                    version.Add(new itemVersion() { line = rline });
-                }
-            }
-
-            return version;
-        }
-#else
         protected string FormatVersiones(string strVer)
         {
             return strVer;
         }
-#endif
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pgw"></param>
-        /// <returns></returns>
         protected List<itemRec> PhysicalGwResources(stdPhGw pgw)
         {
             List<itemRec> recursos = new List<itemRec>();
@@ -784,12 +465,6 @@ namespace U5kManServer.WebAppServer
 
             return recursos;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pgw"></param>
-        /// <returns></returns>
         protected List<itemTar> PhysicalGwTars(stdPhGw pgw)
         {
             List<itemTar> tars = new List<itemTar>();
@@ -800,15 +475,8 @@ namespace U5kManServer.WebAppServer
             return tars;
         }
     }
-
-    /// <summary>
-    /// Estado Equipos Externos.
-    /// </summary>
     class U5kManWADExtEqu : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemEqu
         {
             public string equipo { get; set; }
@@ -831,38 +499,14 @@ namespace U5kManServer.WebAppServer
             }
             public string hash => EncryptionHelper.StringMd5Hash(ToString());
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<itemEqu> lista = new List<itemEqu>();
         public string hash { get; set; } = string.Empty;
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADExtEqu(U5kManStdData gdata, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                foreach (U5kManStdEquiposEurocae.EquipoEurocae equipo in U5kManService._std.stdeqeu.Equipos)
-                {
-                    lista.Add(new itemEqu()
-                    {
-                        name = equipo.sip_user ?? equipo.Id,
-                        ip1 = equipo.Ip1,
-                        ip2 = equipo.Ip2,
-                        std = (int )equipo.EstadoGeneral,
-                        tipo = equipo.Tipo,
-                        modelo = equipo.Modelo,
-                        txrx = equipo.RxTx,
-                        lan1 = (int)equipo.EstadoRed1,
-                        lan2 = (int)equipo.EstadoRed2,
-                        std_sip = (int)equipo.EstadoSip,
-                        uri = String.Format("sip:{0}@{1}:{2}",equipo.sip_user, equipo.Ip1, equipo.sip_port)
-                    });
-                }
-#else
-                lista = gdata.STDEQS.Select(equipo => new itemEqu()
+                lista = gdata.STDEQS.Select(equipo => SafeExecute<itemEqu>($"EXEQ-{equipo.Id}-{equipo.sip_user}", () =>
+                new itemEqu()
                     {
                         equipo = equipo.Id,
                         name = equipo.sip_user ?? equipo.Id,
@@ -877,30 +521,13 @@ namespace U5kManServer.WebAppServer
                         std_sip = (int)equipo.EstadoSip,
                         uri = String.Format("sip:{0}@{1}:{2}", equipo.sip_user, equipo.Ip1, equipo.sip_port),
                         lor = equipo.LastOptionsResponse
-                    }).ToList();
+                    })                
+                ).ToList();
                 hash = EncryptionHelper.StringMd5Hash(lista.Select(i => i.hash).Aggregate("", (p, s) => p + s));
-#endif
             }
         }
-
-        //private int std_global(std lan1, std lan2, std sip)
-        //{
-        //    if (lan1 == std.Ok || lan2 == std.Ok)
-        //    {
-        //        if (sip != std.Ok)
-        //            return (int)std.Error;
-        //        return (int)std.Ok;
-        //    }
-        //    else if (lan1 == std.NoInfo && lan2 == std.NoInfo)
-        //    {
-        //        return (int )std.NoInfo;
-        //    }
-        //    return (int )std.Aviso;
-        //}
     }
-
-
-    class U5kManWADExtAtsDst : U5kManWebAppData
+    class U5kManWADExtAtsDst : U5kManWebAppData // No se utiliza el REST asociado en el cliente
     {
         public class itemDst
         {
@@ -910,7 +537,6 @@ namespace U5kManServer.WebAppServer
             public string ip2 { get; set; }
             public string ats { get; set; }
             public string uri { get; set; }
-
             public int std { get; set; }
             public int lan1 { get; set; }
             public int lan2 { get; set; }
@@ -940,82 +566,35 @@ namespace U5kManServer.WebAppServer
             }
         }
     }
-
-    /// <summary>
-    /// Estado abonados PBX
-    /// </summary>
     class U5kManWADPbx : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemPabx
         {
             public string name { get; set; }
             public int std { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<itemPabx> lista = new List<itemPabx>();
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADPbx(U5kManStdData gdata, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                foreach (Uv5kManDestinosPabx.DestinoPabx destino in U5kManService._std.pabxdest.Destinos)
-                {
-                    lista.Add(new itemPabx()
-                    {
-                        name = destino.Id,
-                        std = (int)destino.Estado
-                    });
-                }
-#else
-                lista = gdata.STDPBXS.Select(d => new itemPabx() { name = d.Id, std = (int)d.Estado }).ToList();
-#endif
+                lista = gdata.STDPBXS
+                    .Select(d => SafeExecute<itemPabx>($"pbxsub-{d.Id}", () => new itemPabx() { name = d.Id, std = (int)d.Estado }))
+                    .ToList();
             }
         }
     }
-
-    /// <summary>
-    /// Lista de Operadores.
-    /// </summary>
     class U5kManWADDbCwps : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemDbCWP
         {
             public string id { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<itemDbCWP> lista = new List<itemDbCWP>();
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADDbCwps(U5kManStdData gdata, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std.stdpos)
-                {
-                    foreach (stdPos pos in U5kManService._std.stdpos)
-                    {
-                        lista.Add(new itemDbCWP()
-                        {
-                            id = pos.name
-                        });
-                    }
-                }
-#else
                 List<stdPos> stdpos = gdata.STDTOPS;
                 foreach (stdPos pos in stdpos)
                 {
@@ -1024,53 +603,25 @@ namespace U5kManServer.WebAppServer
                         id = pos.name
                     });
                 }
-#endif
             }
         }
     }
-
-    /// <summary>
-    /// Lista de Pasarelas.
-    /// </summary>
     class U5kManWADDbGws : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemDbGW
         {
             public string id { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<itemDbGW> lista = new List<itemDbGW>();
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADDbGws(U5kManStdData gdata, bool bGenerate)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std.stdgws)
-                {
-                    foreach (stdGw gw in U5kManService._std.stdgws)
-                    {
-                        lista.Add(new itemDbGW()
-                        {
-                            id = gw.name
-                        });
-                    }
-                }
-#else
                 List<stdGw> stdgws = gdata.STDGWS;
                 lista = stdgws.Select(gw => new itemDbGW() { id = gw.name }).ToList();
-#endif
             }
         }
     }
-
     class U5kManAllhard : U5kManWebAppData
     {
         public class itemHard
@@ -1082,79 +633,26 @@ namespace U5kManServer.WebAppServer
         public U5kManAllhard(U5kManStdData gdata )
         {
             items = new List<itemHard>();
-#if STD_ACCESS_V0
-            /** Añado los Operadores */
-            lock (U5kManService._std.stdpos)
-            {
-                foreach (stdPos pos in U5kManService._std.stdpos)
-                {
-                    items.Add(new itemHard()
-                    {
-                        Id = pos.name, tipo = 0
-                    });
-                }
-            }
-            /** Añado las Pasarelas */
-            lock (U5kManService._std.stdgws)
-            {
-                foreach (stdGw gw in U5kManService._std.stdgws)
-                {
-                    items.Add(new itemHard()
-                    {
-                        Id = gw.name, tipo = 1
-                    });
-                }
-            }
-            /** Añado los equipos*/
-            lock (U5kManService._std.stdeqeu.Equipos)
-            {
-                foreach (U5kManStdEquiposEurocae.EquipoEurocae equipo in U5kManService._std.stdeqeu.Equipos)
-                {
-                    items.Add(new itemHard()
-                    {
-                        Id = equipo.sip_user ?? equipo.Id,
-                        tipo = equipo.Tipo
-                    });
-                }
-            }
-#else
             /** Añado los Operadores */
             items.AddRange(gdata.STDTOPS.Select(item => new itemHard() {Id = item.name, tipo = 0 }).ToList()); 
-
             /** Añado las Pasarelas */
             items.AddRange(gdata.STDGWS.Select(gw => new itemHard() { Id = gw.name, tipo = 1 }).ToList());
-
             /** Añado los equipos*/
             items.AddRange(gdata.STDEQS.Select(eq => new itemHard() { Id = eq.sip_user ?? eq.Id, tipo = eq.Tipo }).ToList());
-
-#endif
         }
     }
-
-    /// <summary>
-    /// Lista de ITEMS MN
-    /// </summary>
     class U5kManWADDbMNItems : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemDb
         {
             public string id { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<itemDb> lista = new List<itemDb>();
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADDbMNItems(bool bGenerate)
         {
             if (bGenerate)
             {
-                List<string> _lista = U5kManService.bdtListaItemsMN();
+                List<string> _lista = SafeExecute<List<string>>("DB-MN-LIST", () => U5kManService.bdtListaItemsMN());
                 foreach (String str in _lista)
                 {
                     lista.Add(new itemDb() { id = str });
@@ -1162,26 +660,18 @@ namespace U5kManServer.WebAppServer
             }
         }
     }
-
-    /// <summary>
-    /// Configuracion de Tipo de Incidencias.
-    /// </summary>
     class U5kManWADDbInci : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public List<U5kIncidenciaDescr> lista = new List<U5kIncidenciaDescr>();
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADDbInci(bool bGenerate = false)
         {
             if (bGenerate)
             {
                 try
                 {
-                    lista = U5kManService.stListaIncidencias((idioma)=> { LogDebug<U5kManWADDbInci>("Lista de Incidencias en " + idioma); });
+                    lista = SafeExecute<List<U5kIncidenciaDescr>>("DB-INCI-LIST",
+                        () => U5kManService.stListaIncidencias((idioma) => { LogDebug<U5kManWADDbInci>("Lista de Incidencias en " + idioma); })
+                        );
                 }
                 catch (Exception x)
                 {
@@ -1210,15 +700,8 @@ namespace U5kManServer.WebAppServer
             U5kGenericos.ResetService = true;
         }
     }
-
-    /// <summary>
-    /// Consulta de Historico
-    /// </summary>
     class U5kManWADDbHist : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class Filtro
         {
             public DateTime dtDesde { get; set; }
@@ -1229,10 +712,6 @@ namespace U5kManServer.WebAppServer
             public string limit { get; set; }
             public List<string> Inci { get; set; }
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
             public string SqlQuery
             {
                 get
@@ -1248,20 +727,10 @@ namespace U5kManServer.WebAppServer
                     return strConsulta;
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="desde"></param>
-            /// <param name="hasta"></param>
-            /// <returns></returns>
             protected string FiltroFechas
             {
                 get
                 {
-                    //dtHasta += new TimeSpan(1, 0, 0, 0);
-                    //string filtro2 = string.Format("(  FECHAHORA BETWEEN '{0:yyyy-MM-dd}' AND '{1:yyyy-MM-dd}')",
-                    //                dtDesde, dtHasta);
                     DateTime dtDesdeF = dtDesde.ToLocalTime();    // new DateTime(dtDesde.Year, dtDesde.Month, dtDesde.Day);
                     DateTime dtHastaF = dtHasta.ToLocalTime();    // new DateTime(dtHasta.Year, dtHasta.Month, dtHasta.Day, 23, 59, 59);
                     string filtro2 = string.Format("(  FECHAHORA BETWEEN '{0:yyyy-MM-dd HH:mm}' AND '{1:yyyy-MM-dd HH:mm}')",
@@ -1269,10 +738,6 @@ namespace U5kManServer.WebAppServer
                     return filtro2;
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
             protected string FiltroTipoHardware
             {
                 get
@@ -1293,29 +758,17 @@ namespace U5kManServer.WebAppServer
                     return strFiltro;
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
             protected string FiltroIdHardware
             {
                 get
                 {
-                    if (/*tpMat == 0 || */
-                        /*tpMat == 3 || */
-                        /*tpMat == 4 || */
-                        /*tpMat == 5 || */
-                        Mat == "" ||
+                    if (Mat == "" ||
                         Mat == idiomas.strings.WAP_MSG_005 /* Todas */ ||
                         Mat == idiomas.strings.WAP_MSG_014 /* Todos */)
                         return "";
                     return string.Format(" AND (IDHW LIKE '{0}%')", Mat);
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
             protected string FiltroGrupoIncidencias
             {
                 get
@@ -1354,11 +807,6 @@ namespace U5kManServer.WebAppServer
                     return strFiltro;
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
             protected string FiltroIncidencias()
             {
                 if (Inci.Count > 0)
@@ -1377,26 +825,6 @@ namespace U5kManServer.WebAppServer
                 // Si no hay incidencias Seleccionadas o Se ha seleccionado 'todas'... Retorna Grupo de Incidencias..
                 return FiltroGrupoIncidencias;
             }
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
-            protected string FiltroTexto_1
-            {
-                get
-                {
-                    string strFiltro = "";                    
-                    if (txt != null && txt != string.Empty)
-                    {
-                        strFiltro = " AND (Descripcion LIKE '%" + txt + "%')";
-                    }
-                    return strFiltro;
-                }
-            }
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
             protected string FiltroTexto
             {
                 get
@@ -1415,9 +843,6 @@ namespace U5kManServer.WebAppServer
                     return strFiltro;
                 }
             }
-            /// <summary>
-            /// 
-            /// </summary>
             protected string FiltroRegexpTexto
             {
                 get
@@ -1430,11 +855,6 @@ namespace U5kManServer.WebAppServer
                     return strFiltro;
                 }
             }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
             protected string FiltroRegexpTextoExt
             {
                 get
@@ -1454,27 +874,16 @@ namespace U5kManServer.WebAppServer
                 }
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<U5kHistLine> lista = null;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="jFiltro"></param>
         public U5kManWADDbHist(string jFiltro)
         {
             Filtro f = JDeserialize<Filtro>(jFiltro);
             string strQuery = f.SqlQuery;
 
-            lista = U5kManService.bdtConsultaHistorico(strQuery);
+            lista = SafeExecute<List<U5kHistLine>>("HIS-QUERY", () => U5kManService.bdtConsultaHistorico(strQuery));
             LogDebug<U5kManWADDbHist>("HistQuery: " + strQuery);
         }
     }
-
-    /// <summary>
-    /// Consulta de Estadistica
-    /// </summary>
     class U5kManWADDbEstadistica : U5kManWebAppData
     {
         class Filtro
@@ -1493,30 +902,20 @@ namespace U5kManServer.WebAppServer
                     hasta = desde;
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kEstadisticaResultado res = null;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="jfiltro"></param>
         public U5kManWADDbEstadistica(string jfiltro)
         {
-            Filtro f = JDeserialize<Filtro>(jfiltro);
-            f.Normalize();
-            res = U5kEstadisticaProc.Estadisticas.Calcula(f.desde, f.hasta, f.tipo, f.elementos);
+            SafeExecute("STAT-PRE", () =>
+            {
+                Filtro f = JDeserialize<Filtro>(jfiltro);
+                f.Normalize();
+                res = SafeExecute<U5kEstadisticaResultado>("STAT-EXE", 
+                    () => U5kEstadisticaProc.Estadisticas.Calcula(f.desde, f.hasta, f.tipo, f.elementos));
+            });
         }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
     class U5kManWADSnmpOptions : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class snmpOption
         {
             public string id { get; set; }
@@ -1526,9 +925,6 @@ namespace U5kManServer.WebAppServer
             public string key { get; set; }
             public int show { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public List<snmpOption> snmpOptions = new List<snmpOption>()
         {
             new snmpOption()
@@ -1594,30 +990,28 @@ namespace U5kManServer.WebAppServer
         {
             if (bGenerate)
             {
-                foreach (snmpOption item in snmpOptions)
+                SafeExecute("SnmpOptGet", () =>
                 {
-                    item.val = PropertyGet(item.key);
-                }
+                    foreach (snmpOption item in snmpOptions)
+                    {
+                        item.val = PropertyGet(item.key);
+                    }
+                });
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public void Save()
         {
-            foreach (snmpOption opt in snmpOptions)
+            SafeExecute("", () =>
             {
-                PropertySet(opt.key, opt.val);
-            }
-            U5kManServer.Properties.u5kManServer.Default.Save();
+                foreach (snmpOption opt in snmpOptions)
+                {
+                    PropertySet(opt.key, opt.val);
+                }
+                U5kManServer.Properties.u5kManServer.Default.Save();
+            });
             // Hay que Reiniciar el Servicio Temporizadamente...
             U5kGenericos.ResetService = true;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         protected object PropertyGet(string key)
         {
             U5kManServer.Properties.u5kManServer Prop = U5kManServer.Properties.u5kManServer.Default;
@@ -1638,11 +1032,6 @@ namespace U5kManServer.WebAppServer
             }
             return "";
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="val"></param>
         protected void PropertySet(string key, object val)
         {
             U5kManServer.Properties.u5kManServer Prop = U5kManServer.Properties.u5kManServer.Default;
@@ -1671,15 +1060,8 @@ namespace U5kManServer.WebAppServer
             }
         }
     }
-
-    /// <summary>
-    /// Configuracion de Opciones.
-    /// </summary>
     class U5kManWADOptions : U5kManWebAppData
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public class itemOptions
         {
             public string id { get; set; }
@@ -1688,25 +1070,15 @@ namespace U5kManServer.WebAppServer
             public List<string> opt { get; set; }
             public string key { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         public string version { get; set; }
         public string bdt { get; set; }
         public List<itemOptions> lconf = new List<itemOptions>();
-
-        /// <summary>
-        /// 
-        /// </summary>
         class itemProperty
         {
             public string id { get; set; }
             public int tp { get; set; }
             public List<string> opt { get; set; }
         }
-        /// <summary>
-        /// 
-        /// </summary>
         Dictionary<string, itemProperty> prop = new Dictionary<string, itemProperty>()
         {
             {
@@ -1914,173 +1286,116 @@ namespace U5kManServer.WebAppServer
                 }
             },
         };
-
-        /// <summary>
-        /// 
-        /// </summary>
         public U5kManWADOptions(U5kManStdData gdata, bool bGenerate = false)
         {
             if (bGenerate)
             {
-#if STD_ACCESS_V0
-                lock (U5kManService._std._gen)
+                SafeExecute("GENOPT-GET", () =>
                 {
                     version = U5kGenericos.Version;
-                    bdt = U5kManService._std._gen.CfgId;        // .cfgVersion;
-                }
-#else
-                version = U5kGenericos.Version;
-                bdt = gdata.STDG.CfgId;        // .cfgVersion;
-#endif
-                foreach (KeyValuePair<string, itemProperty> p in prop)
-                {
-                    lconf.Add(new itemOptions()
+                    bdt = gdata.STDG.CfgId;        // .cfgVersion;
+                    foreach (KeyValuePair<string, itemProperty> p in prop)
                     {
-                        key = p.Key,
-                        id = p.Value.id,
-                        tp = p.Value.tp,
-                        opt = p.Value.opt,
-                        val = PropertyGet(p.Key)    // U5kManServer.Properties.u5kManServer.Default.
-                    });
-                }
+                        lconf.Add(new itemOptions()
+                        {
+                            key = p.Key,
+                            id = p.Value.id,
+                            tp = p.Value.tp,
+                            opt = p.Value.opt,
+                            val = PropertyGet(p.Key)    // U5kManServer.Properties.u5kManServer.Default.
+                        });
+                    }
+                });
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public void Save()
         {
-            foreach (itemOptions opt in lconf)
+            SafeExecute("GENOPT-SET", () =>
             {
-                PropertySet(opt.key, opt.val);
-            }
-            //U5kManServer.Properties.u5kManServer.Default.Save();
-            U5kManService.cfgSettings.Save();
+                foreach (itemOptions opt in lconf)
+                {
+                    PropertySet(opt.key, opt.val);
+                }
+                U5kManService.cfgSettings.Save();
+            });
             // Hay que Reiniciar el Servicio Temporizadamente...
             U5kGenericos.ResetService = true;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         protected string PropertyGet(string key)
         {
-            // U5kManServer.Properties.u5kManServer Prop = U5kManServer.Properties.u5kManServer.Default;
             var Prop = U5kManService.cfgSettings;
             switch (key)
             {
                 case "Idioma":
                     return Prop.Idioma == "es" ? "0" : Prop.Idioma == "fr" ? "1" : "2";
-
                 case "ServidorDual":
                     return Prop.ServidorDual ? "1" : "0";
-
                 case "HayReloj":
                     return Prop.HayReloj ? "1" : "0";
-
-                //case "HayPabx":
-                //    return Prop.HayPabx ? "1" : "0";
-
                 case "HaySacta":
                     return Prop.HaySacta ? "1" : "0";
-
                 case "HaySactaProxy":
                     return Prop.HaySactaProxy ? "1" : "0";
-
                 case "HayAltavozHF":
                     return Prop.HayAltavozHF ? "1" : "0";
-
                 case "OpcOpCableGrabacion":
                     return Prop.OpcOpeCableGrabacion ? "1" : "0";
-
                 case "SonidoAlarmas":
                     return Prop.SonidoAlarmas ? "1" : "0";
-
                 case "GenerarHistorico":
                     return Prop.GenerarHistoricos ? "1" : "0";
-
                 case "DiasEnHistorico":
                     return Prop.DiasEnHistorico <= 7 ? "0" :
                         Prop.DiasEnHistorico <= 14 ? "1" :
                         Prop.DiasEnHistorico <= 30 ? "2" :
                         Prop.DiasEnHistorico <= 92 ? "3" :
                         Prop.DiasEnHistorico <= 184 ? "4" : "5";
-
                 case "LineasIncidencias":
                     return Prop.LineasIncidencias <= 8 ? "0" :
                         Prop.LineasIncidencias <= 16 ? "1" :
                         Prop.LineasIncidencias <= 32 ? "2" : "3";
-
-                //case "GwsUnificadas":
-                //    return Prop.GwsUnificadas == false ? "0" : "1";
-
                 case "PttAndSqhOnBdt":
                     return Prop.Historico_PttSqhOnBdt == false ? "0" : "1";
-
                 case "WebInactivityTimeout":
                     return Prop.WebInactivityTimeout <= 5 ? "0" :
                         Prop.WebInactivityTimeout <= 15 ? "1" :
                         Prop.WebInactivityTimeout <= 30 ? "2" : "3";
-
                 default:
                     return "0";
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="val"></param>
         protected void PropertySet(string key, string val)
         {
-            //U5kManServer.Properties.u5kManServer Prop = U5kManServer.Properties.u5kManServer.Default;
             var Prop = U5kManService.cfgSettings;
             switch (key)
             {
                 case "Idioma":
                     Prop.Idioma = val == "0" ? "es" : val == "1" ? "fr" : "en";
                     break;
-
                 case "ServidorDual":
                     Prop.ServidorDual = (val == "1");
                     break;
-
                 case "HayReloj":
                     Prop.HayReloj = (val == "1");
                     break;
-
-                //case "HayPabx":
-                //    Prop.HayPabx = (val == "1");
-                //    break;
-
                 case "HaySacta":
                     Prop.HaySacta = (val == "1");
                     break;
-
                 case "HaySactaProxy":
                     Prop.HaySactaProxy = (val == "1");
                     break;
-
                 case "HayAltavozHF":
                     Prop.HayAltavozHF = (val == "1");
                     break;
-
                 case "OpcOpCableGrabacion":
                     Prop.OpcOpeCableGrabacion = (val == "1");
                     break;
-
                 case "SonidoAlarmas":
                     Prop.SonidoAlarmas = (val == "1");
                     break;
-
                 case "GenerarHistorico":
                     Prop.GenerarHistoricos = (val == "1");
                     break;
-
                 case "DiasEnHistorico":
                     Prop.DiasEnHistorico = val == "0" ? 7 :
                         val == "1" ? 14 :
@@ -2088,17 +1403,14 @@ namespace U5kManServer.WebAppServer
                         val == "3" ? 92 :
                         val == "4" ? 184 : 365;
                     break;
-
                 case "LineasIncidencias":
                     Prop.LineasIncidencias = val == "0" ? 8 :
                         val == "1" ? 16 :
                         val == "2" ? 32 : 64;
                     break;
-
                 case "PttAndSqhOnBdt":
                     Prop.Historico_PttSqhOnBdt = val == "1";
                     break;
-
                 case "WebInactivityTimeout":
                     Prop.WebInactivityTimeout =
                         val == "0" ? 5 :
@@ -2108,11 +1420,7 @@ namespace U5kManServer.WebAppServer
             }
         }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    class UG5kVersion : U5kManWebAppData
+    class UG5kVersion : U5kManWebAppData // No utilizada
     {
         public class Linea
         {
@@ -2135,21 +1443,13 @@ namespace U5kManServer.WebAppServer
 
             return sb.ToString();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public string version { get; set; }
         public string cfgsver { get; set; }
         public string snmpver { get; set; }
         public string recsver { get; set; }
         public List<Linea> lines { get; set; }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    class UG5KExtVersion : U5kManWebAppData
+    class UG5KExtVersion : U5kManWebAppData // No utilizada
     {
         public class Component
         {
@@ -2160,20 +1460,13 @@ namespace U5kManServer.WebAppServer
                 public string Size { get; set; }
                 public int Modo { get; set; }
             }
-
             public string Name { get; set; }
             public string Id { get; set; }
             public List<FileDesc> Files { get; set; }
         }
-
         public string Version { get; set; }
         public string Fecha { get; set; }
         public List<Component> Components { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             StringWriter strWriter = new StringWriter();
@@ -2191,7 +1484,6 @@ namespace U5kManServer.WebAppServer
             return strWriter.ToString();
         }
     }
-
     public class SactaConfig : U5kManWebAppData
     {
         /* Estructura de la configuracion.
