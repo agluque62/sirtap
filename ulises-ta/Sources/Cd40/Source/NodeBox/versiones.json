@@ -1,6 +1,6 @@
 {
-	"Version" : "3.0.0.1",
-	"Fecha": "05-06-2023",
+	"Version" : "3.0.0.3",
+	"Fecha": "23-11-2023",
 	"Components" : [
 		{
 			"Name": "UV5K-MCAST",
