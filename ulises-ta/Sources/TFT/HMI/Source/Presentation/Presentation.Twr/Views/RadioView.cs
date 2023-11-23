@@ -646,18 +646,20 @@ namespace HMI.Presentation.Twr.Views
                 if (jacks.LeftJack || jacks.RightJack)
                 {
                     _StateManager.PlayBt.EstadoJacks = true;
-                    //_PlayBT.Habilitado(_StateManager.PlayBt.Estado);
                     _PlayBT.CambiaJacks(true);
                 }
                 else
                 {
-                    //if (_StateManager.PlayBt.Estado == PlayState.estados.Visto)
-                     //_PlayBT.Habilitado(false);
                     _StateManager.PlayBt.EstadoJacks = false;
-                    //_PlayBT.Habilitado(_StateManager.PlayBt.Estado);
                     _PlayBT.CambiaJacks(false);
                 }
             }
+            //231104
+            // Cuando no hay IAO, es necesario habilitar los jacks este visible o no el control _PlayBT
+            else
+            {
+                _PlayBT.Jacks = _StateManager.Jacks.LeftJack || _StateManager.Jacks.RightJack;
+        }
         }
 
         /* VMG 04/09/2018 */
@@ -1222,7 +1224,7 @@ namespace HMI.Presentation.Twr.Views
             TimeSpan tick = new TimeSpan(0, 0, 10);//10 segundos
             int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
             bool confirma = global::HMI.Presentation.Twr.Properties.Settings.Default.ConfCambioPagRad;
-            if (confirma && numero_paginas_radio>1)
+            if (confirma && _StateManager.Radio.GetNumPages()>1)
             {
                 TimeSpan elapsed = DateTime.Now - last;
                 // Si ha pasado mas de 10 segundos pide confirmación
@@ -1243,7 +1245,7 @@ namespace HMI.Presentation.Twr.Views
             TimeSpan tick = new TimeSpan(0, 0, 10);//10 segundos
             int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
             bool confirma = global::HMI.Presentation.Twr.Properties.Settings.Default.ConfCambioPagRad;
-            if (confirma && numero_paginas_radio > 1) 
+            if (confirma && _StateManager.Radio.GetNumPages() > 1)
             {
                 TimeSpan elapsed = DateTime.Now - last;
                 // Si ha pasado mas de 10 segundos pide confirmación

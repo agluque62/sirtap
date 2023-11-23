@@ -659,6 +659,17 @@ namespace HMI.Model.Module.UI
 			Font fontToUse = _NameFrecuency.Length > 7 ? _SmallFontBold1 : _MediumFontBold;
             if (global::HMI.Model.Module.Properties.Settings.Default.BigFonts)
                 fontToUse = _BigFont;
+
+			string fr_presentar = _Alias;
+			if (Multifrecuencia)
+				fr_presentar = _defaultfrecuency;
+			string Lit_presentar = _NameFrecuency;
+			if ((fr_presentar == Lit_presentar) || (fr_presentar == ""))
+			{
+				fr_presentar = Lit_presentar;
+				Lit_presentar = "";
+			}
+
             // RQF 35 cambio esta linea por la siguiente
             //BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _Frecuency, fontToUse, ContentAlignment.TopCenter, ForeColor);
             if (!VisualStyle.ModoNocturno) 
@@ -677,14 +688,17 @@ namespace HMI.Model.Module.UI
                 textRect.Offset(0, 13);
                 fontToUse = _SmallFont;
             }
+			// 231116 Arriba siempre la frecuencia, abajo el nombre si existe.
             if (Multifrecuencia)
             {
                 textRect.Offset(0, +2);
-                BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _defaultfrecuency, fontToUse, ContentAlignment.TopCenter, ForeColor);
+				//BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _defaultfrecuency, fontToUse, ContentAlignment.TopCenter, ForeColor);
+				BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, Lit_presentar, fontToUse, ContentAlignment.TopCenter, ForeColor);
             }
 			else
 			{
-                BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _Alias, fontToUse, ContentAlignment.TopCenter, ForeColor);
+				//BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _Alias, fontToUse, ContentAlignment.TopCenter, ForeColor);
+				BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, Lit_presentar, fontToUse, ContentAlignment.TopCenter, ForeColor);
 
             }
 

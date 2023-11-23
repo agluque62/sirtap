@@ -1155,6 +1155,33 @@ namespace HMI.Model.Module.BusinessEntities
 			return pagconf;
 		}
 
+		public int GetNumFrconfigurated(int from, int count)
+		{
+			Debug.Assert(from + count <= NumDestinations);
 
+			int numAva = 0;
+
+			for (int i = 0; i < count; i++)
+			{
+				RdDst dst = _Dst[i + from];
+				if (dst!=null && dst.IsConfigurated)
+				{
+					numAva++;
+				}
+			}
+
+			return numAva;
+		}
+		public int GetNumPages()
+        {
+
+			int numero_paginas = 0;
+			for (int from = 0, to = NumDestinations- PageSize-1; from < to; from+=PageSize)
+			{
+				if (GetNumFrconfigurated(from, PageSize) > 0)
+					numero_paginas += 1;
+			}
+			return numero_paginas;
+		}
 	}
 }

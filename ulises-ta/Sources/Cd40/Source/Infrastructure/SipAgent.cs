@@ -873,6 +873,53 @@ namespace U5ki.Infrastructure
 #endif
             return dev;
 		}
+
+       public static Dictionary<string, int> tablawav = null;
+
+        static int GetTablaWav( string cadena)
+        {
+            // Verificar si la cadena ya existe en la tabla
+            if (tablawav == null) tablawav = new Dictionary<string, int>();
+            if (tablawav.ContainsKey(cadena))
+            {
+                int idExistente = tablawav[cadena];
+                Console.WriteLine($"La cadena '{cadena}' ya existe en la tabla. ID existente: {idExistente}");
+                return idExistente;
+            }
+            return 0;
+        }
+
+        static int InsertaTablaWav( string cadena, int nuevoId)
+        {
+            // Verificar si la cadena ya existe en la tabla
+            if (tablawav.ContainsKey(cadena))
+            {
+                return 0;
+            }
+            else
+            {
+
+                // Almacenar la cadena y su nuevo ID en la tabla
+                tablawav.Add(cadena, nuevoId);
+                return nuevoId;
+            }
+        }
+        static int BorraEnTablaWav(string cadena)
+        {
+            // Verificar si la cadena ya existe en la tabla
+            if (tablawav.ContainsKey(cadena))
+            {
+                int idExistente = tablawav[cadena];
+                Console.WriteLine($"La cadena '{cadena}' ya existe en la tabla. ID existente: {idExistente}");
+                tablawav.Remove(cadena);
+                return idExistente;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -885,9 +932,17 @@ namespace U5ki.Infrastructure
 			CORESIP_Error err;
 #if _TRACEAGENT_
             _Logger.Debug("Entrando en SipAgent.CreateWavPlayer {0}, {1}", file, loop);
-#endif
 
-			if (CORESIP_CreateWavPlayer(file, loop ? 1 : 0, out wavPlayer, out err) != 0)
+#endif
+            // Si ya esta creado lo borro
+            int idwav = GetTablaWav(file);
+            if (idwav > 0)
+            { 
+                DestroyWavPlayer(idwav);
+                BorraEnTablaWav(file);
+            }
+
+            if (CORESIP_CreateWavPlayer(file, loop ? 1 : 0, out wavPlayer, out err) != 0)
 			{
 				throw new Exception(err.Info);
 			}
@@ -895,6 +950,7 @@ namespace U5ki.Infrastructure
 #if _TRACEAGENT_
             _Logger.Debug("Saliendo de SipAgent.CreateWavPlayer");
 #endif
+            InsertaTablaWav(file, wavPlayer);
             return wavPlayer;
 		}
         /// <summary>

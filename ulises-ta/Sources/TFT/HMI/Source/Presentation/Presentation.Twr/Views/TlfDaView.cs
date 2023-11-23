@@ -132,6 +132,8 @@ namespace HMI.Presentation.Twr.Views
 					bt.Dock = DockStyle.Fill;
 					bt.Name = "_TlfButton" + pos;
 					bt.Visible = false;
+					bt.IsButtonTlf = true;//incidencia 10970 teclas de telefonia
+					
 					bt.Id = pos == _NumPositionsByPage ? Tlf.IaMappedPosition : pos;
 
 					bt.Click += TlfButton_Click;

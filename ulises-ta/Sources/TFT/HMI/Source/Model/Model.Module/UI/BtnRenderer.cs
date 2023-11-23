@@ -55,7 +55,7 @@ namespace HMI.Model.Module.UI
 		public BtnStateInfo(Rectangle rect, BtnState state, BtnStyle style,
 			int cornerRadius, Color borderColor, Color innerBorderColor, Color backColor, ColorBlend blend,
 			string text, Font font, StringFormat textFormat, Color foreColor, Rectangle textRect,
-			Image image, ContentAlignment imageAlign, GraphicsPath imgPath, Rectangle imgRect)
+			Image image, ContentAlignment imageAlign, GraphicsPath imgPath, Rectangle imgRect,bool IsButtonTlf)
 		{
 			Rect = rect;
 			State = state;
@@ -65,11 +65,16 @@ namespace HMI.Model.Module.UI
 			InnerBorderColor = innerBorderColor;
 			BackColor = backColor;
 			Blend = blend;
-			
-			//Text = text.Length > 20 ? text.Substring(0,17) + "..." : text;
-			Text = GenIdAgrupacion(text);
 
-			Font = font;
+			//Text = text.Length > 20 ? text.Substring(0,17) + "..." : text;
+			//Text = GenIdAgrupacion(text);
+			if (IsButtonTlf)
+				Text = text;
+			else
+				Text = GenIdAgrupacion(text) ;
+			Text = Text.Length > 32 ? Text.Substring(0, 32) : Text;
+			
+            Font = font;
 			TextFormat = textFormat;
 			ForeColor = foreColor;
 			TextRect = textRect;
@@ -90,6 +95,7 @@ namespace HMI.Model.Module.UI
 		private Color?[] _BackColors = { null, null, null, null };
 		private ColorBlend[] _Blends = { new ColorBlend(), new ColorBlend(), new ColorBlend(), new ColorBlend() };
 		private string _Text = "";
+		private bool _IsButtonTlf = false;// 231116 Botn de telefonia
 		private Font _Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
 		private ContentAlignment _TextAlign = ContentAlignment.MiddleCenter;
 		private Color?[] _ForeColors = { null, null, null, null };
@@ -182,7 +188,11 @@ namespace HMI.Model.Module.UI
 			}
 		}
 
-		public BtnStateInfo this[BtnState st]
+        public bool IsButtonTlf
+		{ get => _IsButtonTlf;
+			set => _IsButtonTlf = value; }
+
+        public BtnStateInfo this[BtnState st]
 		{
 			get
 			{
@@ -217,11 +227,13 @@ namespace HMI.Model.Module.UI
 							break;
 					}
 				}
+                Type tipo = base.GetType();
+
 
 				return new BtnStateInfo(_Rect, st, _Style,
 					CornerRadius, borderColor, innerBorderColor, backColor, blend,
 					_Text, _Font, _TextFormat, foreColor, _TextRects[(int)st],
-					img, _ImageAlign, imgPath, imgRect);
+					img, _ImageAlign, imgPath, imgRect, IsButtonTlf);
 			}
 		}
 

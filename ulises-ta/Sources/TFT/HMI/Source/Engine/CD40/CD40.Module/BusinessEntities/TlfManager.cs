@@ -1517,6 +1517,91 @@ namespace HMI.CD40.Module.BusinessEntities
             }
             return null;
         }
+
+        public void AsignaRing()
+        {
+#if SIN_USAR_RINGDEVICE
+            if (Top.Hw.LCSpeaker)
+            {
+                Top.Mixer.setringdevice(MixerDev.SpkLc);
+            }
+            else if (Top.Hw.AlumnJack)
+            {
+                Top.Mixer.setringdevice(MixerDev.MhpRd);
+            }
+            else if (Top.Hw.InstructorJack)
+            {
+                Top.Mixer.setringdevice(MixerDev.MhpLc);
+            }
+            else if (Top.Hw.RdSpeaker)
+            {
+                Top.Mixer.setringdevice(MixerDev.SpkRd);
+            }
+#endif
+            //Usando el parametro Settings.Default.RingDevice
+            switch (Settings.Default.RingDevice)
+            {
+                case 0:
+                    if ((Top.Hw.InstructorJack) || (Top.Hw.AlumnJack))
+                    {
+                        Top.Mixer.setringdevice(MixerDev.MhpTlf);
+                    }
+                    else if (Top.Hw.LCSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkLc);
+                    }
+                    else if (Top.Hw.RdSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkRd);
+                    }
+                    break;
+                case 2:
+                    if ((Top.Hw.InstructorJack) || (Top.Hw.AlumnJack))
+                    {
+                        Top.Mixer.setringdevice(MixerDev.MhpRd);
+                    }
+                    else if (Top.Hw.LCSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkLc);
+                    }
+                    else if (Top.Hw.RdSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkRd);
+                    }
+                    break;
+                case 4:
+                    if (Top.Hw.RdSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkRd);
+                    }
+                    else if (Top.Hw.LCSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkLc);
+                    }
+                    else if ((Top.Hw.InstructorJack) || (Top.Hw.AlumnJack))
+                    {
+                        Top.Mixer.setringdevice(MixerDev.MhpTlf);
+                    }
+                    break;
+                default:
+                    if (Top.Hw.LCSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkLc);
+                    }
+                    else if ((Top.Hw.InstructorJack) || (Top.Hw.AlumnJack))
+                    {
+                        Top.Mixer.setringdevice(MixerDev.MhpTlf);
+                    }
+                    else if (Top.Hw.RdSpeaker)
+                    {
+                        Top.Mixer.setringdevice(MixerDev.SpkRd);
+                    }
+                    break;
+            }
+
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -1530,6 +1615,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		{
 			TlfPosition replace = null;
              _Logger.Debug("OnIncomingCall: " + inInfo.SrcId);
+            AsignaRing();
             if (_Forward.State == FunctionState.Executing)
             {
                 answer.Value = SipAgent.SIP_MOVED_TEMPORARILY;

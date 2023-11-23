@@ -2991,5 +2991,9 @@ namespace HMI.CD40.Module.BusinessEntities
         }
 
         public int VolumeTones { get => _VolumeTones; set => _VolumeTones = value; }
+        public void setringdevice(MixerDev ringdevice)
+        {
+            _RingDev = ringdevice;
+        }
     }
 }
