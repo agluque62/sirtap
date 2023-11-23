@@ -47,6 +47,7 @@ namespace HMI.Presentation.Twr.Views
 		private StateManagerService _StateManager;
 		private Keypad _Keypad;
 		private MemUC _Mem;
+		private SeleccionRing _SeleccionRing;
 		private Dictionary<HMIButton, Color> _SlowBlinkList;
 
 		private bool _SlowBlinkOn = true;
@@ -225,8 +226,10 @@ namespace HMI.Presentation.Twr.Views
 
 			_Keypad = _WorkItem.SmartParts.AddNew<Keypad>(ViewNames.KeypadView);
 			_Mem = _WorkItem.SmartParts.AddNew<MemUC>(ViewNames.MemView);
-
-			_Keypad.NewKey += OnKeypadNewKey;
+			_SeleccionRing = _WorkItem.SmartParts.AddNew<SeleccionRing>(ViewNames.SeleccionRingView);
+			_SeleccionRing.Setup(_StateManager,_CmdManager);
+          
+            _Keypad.NewKey += OnKeypadNewKey;
 			_Keypad.ClearClick += OnKeypadClear;
             _Keypad.ChgMode += OnChgMode;
             _Mem.OkClick += OnMemOkClick;
@@ -589,9 +592,37 @@ namespace HMI.Presentation.Twr.Views
 			_CallTimestamp = Environment.TickCount;
 		}
 
+		private void ShowSeleccionRing(bool show)
+		{
+			if (_SeleccionRing.Visible)
+			{
+				_SeleccionRing.Hide();
+				_SeleccionRing.Show();
+			}
+			else
+            {
+				_SeleccionRing.Show();
+				_SeleccionRing.Hide();
+			}
+			bool seleccionringShowed = _WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].ActiveSmartPart == _SeleccionRing;
+			bool keypadShowed = _WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].ActiveSmartPart == _Keypad;
+
+			if (show && !seleccionringShowed)
+			{
+				//_SeleccionRing.Reset();
+				_MemBT.ButtonColor = VisualStyle.Colors.Yellow;
+				_WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].Show(_SeleccionRing);
+			}
+			else if (!show && !keypadShowed)
+			{
+				_MemBT.ButtonColor = VisualStyle.ButtonColor;
+				_WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].Show(_Keypad);
+			}
+		}
+
 		private void ShowAgenda(bool show)
 		{
-			bool memShowed = _WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].ActiveSmartPart == _Mem;
+			bool memShowed =    _WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].ActiveSmartPart == _Mem;
 			bool keypadShowed = _WorkItem.Workspaces[WorkspaceNames.IaToolsWorkspace].ActiveSmartPart == _Keypad;
 
 			if (show && !memShowed)
@@ -736,7 +767,19 @@ namespace HMI.Presentation.Twr.Views
 				(dst1.Length > 2 && dst1.StartsWith("06")) ||
 				(dst1.Length > 2 && dst1.StartsWith("07")) ||
 				(dst1.Length > 2 && dst1.StartsWith("08")) ||
-				(dst1.Length > 2 && dst1.StartsWith("09"))
+                (dst1.Length > 2 && dst1.StartsWith("09")) ||
+                (dst1.Length > 2 && dst1.StartsWith("10")) ||
+                (dst1.Length > 2 && dst1.StartsWith("11")) ||
+                (dst1.Length > 2 && dst1.StartsWith("12")) ||
+                (dst1.Length > 2 && dst1.StartsWith("13")) ||
+                (dst1.Length > 2 && dst1.StartsWith("14")) ||
+                (dst1.Length > 2 && dst1.StartsWith("15")) ||
+                (dst1.Length > 2 && dst1.StartsWith("16")) ||
+                (dst1.Length > 2 && dst1.StartsWith("17")) ||
+                (dst1.Length > 2 && dst1.StartsWith("18")) ||
+                (dst1.Length > 2 && dst1.StartsWith("19")) 
+
+
 				 )
 				return true;
 			return false;
@@ -918,13 +961,28 @@ namespace HMI.Presentation.Twr.Views
 			}
 		}
 
+		private void ChangeName(string name)
+		{
+            _MemBT.Text = name;
+        }
+
+        static int cont = 0;
 		private void _MemBT_Click(object sender, EventArgs e)
 		{
-			bool show = _MemBT.ButtonColor != VisualStyle.Colors.Yellow;
-
-			try
-			{
-				ShowAgenda(show);
+            bool show = _MemBT.ButtonColor != VisualStyle.Colors.Yellow;
+            cont++;
+            try
+            {
+                if (cont % 4 <2)
+                {
+                    ShowAgenda(show);
+                    ChangeName("MEM");
+                }
+                else if (cont % 4 >= 2)
+                {
+                    ShowSeleccionRing(show);
+                    ChangeName("RING");
+                }
 			}
 			catch (Exception ex)
 			{
@@ -987,7 +1045,7 @@ namespace HMI.Presentation.Twr.Views
 			else*/
 			{
 				_TickUltimoDigito = Environment.TickCount;//#2855
-				_DescolgarTimer.Enabled = true;//#2855
+				_DescolgarTimer.Enabled = true;//#2855 
 				try
 				{
 					_CallBT.Enabled = _CallEnabled;

@@ -118,8 +118,6 @@ namespace HMI.Presentation.Twr.Views
             this._TlfPageFirstBT.DrawX = false;
             this._TlfPageFirstBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._TlfPageFirstBT.ImageNormal = global::HMI.Presentation.Twr.Properties.Resources.TlfPage;
-
-            
             this._TlfPageFirstBT.IsConferencePreprogramada = false;
             this._TlfPageFirstBT.Location = new System.Drawing.Point(310, 3);
             this._TlfPageFirstBT.Name = "_TlfPageFirstBT";

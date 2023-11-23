@@ -694,6 +694,12 @@ namespace HMI.Presentation.Twr.Views
 
 		private void _BuzzerUDB_LongClick(object sender, EventArgs e)
 		{
+#if SELECCION_SONIDO_AD
+			if (!_StateManager.Buzzer.Enabled)
+            {
+				_CmdManager.SeleccionSonidoClick();
+			}
+#endif
 			bool enabled = !_StateManager.Buzzer.Enabled;
 
 			try

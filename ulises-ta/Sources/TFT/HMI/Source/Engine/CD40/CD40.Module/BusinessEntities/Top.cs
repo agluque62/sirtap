@@ -816,7 +816,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
 
         #region pruebas
-
+       
         static void test1()
         {
             try

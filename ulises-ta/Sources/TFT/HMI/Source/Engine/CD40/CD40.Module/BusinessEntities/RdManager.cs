@@ -1035,7 +1035,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 {
                     //Solo puede haber una posicion con Tx seleccionado y con el PTT activado
                     uint prior = IsPttRtx ? (uint)CORESIP_PttType.CORESIP_PTT_COUPLING : rd.GetPttPriority();
-                    if (_PttSource == U5ki.Infrastructure.PttSource.Hmi)
+                    if (_PttSource == U5ki.Infrastructure.PttSource.Hmi || _PttSource == U5ki.Infrastructure.PttSource.SelCal)//230703 pongo tamnbien selcal
                     {
                         //_Logger.Trace("Starting recording PTT:{0} Frequency:{1} Device: {2}", rd.Ptt, rd.Literal, Top.Mixer.AlumnDev);
                         SipAgent.RdPttEvent(true, rd.DescDestino, Top.Mixer.AlumnDev, prior);
@@ -1282,10 +1282,10 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         }
 #endif
-        /// <summary>
-        /// Envío de tonos SELCAL con mensaje INFO
-        /// </summary>
-        /// <param name="tones"></param>
+    /// <summary>
+    /// Envío de tonos SELCAL con mensaje INFO
+    /// </summary>
+    /// <param name="tones"></param>
         private void SendSelCalTonesMessagingInfo(string tones)
         {
             /** AGL. Poner como fuente SELCAL <Estaba Instructor> */

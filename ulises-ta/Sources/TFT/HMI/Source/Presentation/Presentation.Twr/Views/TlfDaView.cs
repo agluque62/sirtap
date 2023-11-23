@@ -430,16 +430,16 @@ namespace HMI.Presentation.Twr.Views
 							OcultaPaticipantes();
 
 						}
-						else if (dst.State == TlfState.Set)
+						else if (dst.State == TlfState.Set && dst.PrevState == TlfState.Out)
 						{
                             string sala = _CmdManager.GetSala(i - FirstButtoConf);
 							OcultaVisibiliza(i, sala);
 						}
                         Reset(bt, dst);
 					}
-					else if (i<absFirstBtPageBegin)
+					else if (i < absConfBtPageBegin)
 					{
-                        HMIButton bt = _TlfButtons[i];
+						HMIButton bt = _TlfButtons[i % _NumPositionsByPage];
                         TlfDst dst = _StateManager.Tlf[i];
                         Reset(bt, dst);
                     }
@@ -899,8 +899,10 @@ namespace HMI.Presentation.Twr.Views
 		bool EsIzda(int numero) { return (numero + 3) % 4 < 2; }
 		private void GetBotonesAd(int pag,out List<int>izda,out List <int>dcha)
         {
-			/*List<int> */dcha = new List<int>();// { 47, 48, 51, 52, 55, 56, 59, };
-			/*List<int> */izda = new List<int>();// { 45, 46, 49, 50, 53, 54, 57, 58, };
+			/*List<int> */
+			dcha = new List<int>();// { 47, 48, 51, 52, 55, 56, 59, };
+			/*List<int> */
+			izda = new List<int>();// { 45, 46, 49, 50, 53, 54, 57, 58, };
 			int numero = FirstButtoConf;
 			int mumero = pag * _NumPositionsByPage;
 			int maxbuttonsdcha=(_TlfButtonsTLP.ColumnCount * _TlfButtonsTLP.RowCount) / 2 - 1;
@@ -1001,7 +1003,8 @@ namespace HMI.Presentation.Twr.Views
 						else
 							b.Visible = true ? (_StateManager.Tlf[b.Id].Dst.Length > 0) : false;
 				}
-				/*else*/if (dcha.Contains(id))
+				/*else*/
+				if (dcha.Contains(id))
 				{
 					if (izda.Contains(b.Id))
 					{
@@ -1177,6 +1180,68 @@ namespace HMI.Presentation.Twr.Views
                 //_CmdManager.RefrescaListaParticipantesConf(sala);
             }
         }
+		public class DialogForm : Form
+		{
+			public DialogForm()
+			{
+				// Configurar propiedades del formulario
+				this.Text = "Diálogo Independiente";
+				this.StartPosition = FormStartPosition.CenterScreen;
+				this.FormBorderStyle = FormBorderStyle.FixedDialog;
+				this.MaximizeBox = false;
+
+				// Crear controles en el formulario
+				Label label = new Label();
+				label.Text = "Este es un diálogo independiente.";
+				label.AutoSize = true;
+				label.Location = new System.Drawing.Point(20, 20);
+
+				Button button = new Button();
+				button.Text = "Cerrar";
+				button.Location = new System.Drawing.Point(100, 50);
+				button.Click += (sender, e) => this.Close();
+
+				// Agregar controles al formulario
+				this.Controls.Add(label);
+				this.Controls.Add(button);
+	}
+}
+
+
+
+#if SELECCION_SONIDO_AD
+		private void MainForm_MessageSent(object sender, MessageEventArgs e)
+		{
+			string mensaje = e.Message;
+		}
+		[EventSubscription(EventTopicNames.SeleccionSonido, ThreadOption.Publisher)]
+		public void OnSeleccionSonido(object sender, EventArgs e)
+		{
+			if (false)
+			{
+				DialogForm dialogForm = new DialogForm();
+
+				// Mostrar el formulario de diálogo de manera independiente
+				dialogForm.Show();
+
+				Console.WriteLine("La aplicación principal sigue ejecutándose.");
+
+			}
+			else
+			{
+
+				CSeleccionSonido dlg = new CSeleccionSonido();
+				dlg.MessageSent += MainForm_MessageSent;
+				dlg.setup(_CmdManager, _StateManager);
+				dlg.Width = this.Width;
+				dlg.Height = this.Height;
+				dlg.Size = new Size(this.Width, this.Height);
+				dlg.Location = new Point(700, 700/*this.Location.Y*/);
+				dlg.Show();
+				;// _RdPageBT_DownClick_Confirmada(sender);
+			}
+		}
+#endif
 	}
 }
 

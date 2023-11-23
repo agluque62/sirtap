@@ -752,7 +752,7 @@ namespace HMI.Model.Module.UI
 					// return horizontal capsule 
 					int diameter = baseRect.Height;
 					Rectangle arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
-					
+
 					path.AddArc(arc, 90, 180);
 					arc.X = baseRect.Right - diameter;
 					path.AddArc(arc, 270, 180);
@@ -762,10 +762,14 @@ namespace HMI.Model.Module.UI
 					// return vertical capsule 
 					int diameter = baseRect.Width;
 					Rectangle arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
-
-					path.AddArc(arc, 180, 180);
-					arc.Y = baseRect.Bottom - diameter;
-					path.AddArc(arc, 0, 180);
+					if (diameter <= 0)
+						return path;
+					{
+						path.AddArc(arc, 180, 180);
+						arc.Y = baseRect.Bottom - diameter;
+						path.AddArc(arc, 0, 180);
+					}
+				
 				}
 				else
 				{
@@ -846,7 +850,7 @@ namespace HMI.Model.Module.UI
 			int cornerRadius, Color borderColor, Color innerBorderColor, Color backColor, ColorBlend blend)
 		{
 			Rectangle rr = new Rectangle(rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
-			if (rr.Height<=1)//230529
+			if ((rr.Width <= 1)|| (rr.Height <= 1))//230529
 			{
 				return;
 			}

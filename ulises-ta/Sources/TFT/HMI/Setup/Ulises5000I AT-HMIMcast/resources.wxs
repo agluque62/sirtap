@@ -292,6 +292,9 @@
             <Component Id="cmp3E11057F64062E0D756AF36C65A09857" Directory="dirC142AAC0964B0B323DA41FCB5AFA837A" Guid="*">
                 <File Id="fil372372A22376C6A22D2B80DBA500606C" KeyPath="yes" Source="$(var.SourcePath)\Warning.png" />
             </Component>
+            <Component Id="cmpDC44FC2CEA9648F04CC1DB682B6F475E" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="filF4C2706BE47E1E5DEA7B77AD4710447B" KeyPath="yes" Source="$(var.SourcePath)\Tones\-Ring10.wav" />
+            </Component>
             <Component Id="cmpD992AACBF3FBF5011A3725608C67B4E5" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
                 <File Id="filF270DB0C2C0FF789FD4D9A19C482346E" KeyPath="yes" Source="$(var.SourcePath)\Tones\BadOperation.wav" />
             </Component>
@@ -333,6 +336,36 @@
             </Component>
             <Component Id="cmpD9699E6F06A899383FC0DD9E9570DCC2" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
                 <File Id="fil78820D819F6508F00CAF44B0D5124936" KeyPath="yes" Source="$(var.SourcePath)\Tones\ring.wav" />
+            </Component>
+            <Component Id="cmp2EAB48D2A2C60F59731AD7EABF577EE0" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil06F7EA175A6DB1848E01370E809433C2" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring01.wav" />
+            </Component>
+            <Component Id="cmpBC69F71E88F5C73BBD9174AE196EACD3" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil5656E8A1866932C9F70581AC2CB1B2A1" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring02.wav" />
+            </Component>
+            <Component Id="cmp4C4E2FC0A1EB0D2BC85FF3F7A368FCF7" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="filA9267C0D7D65BBE69ED61826CA97E8FA" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring03.wav" />
+            </Component>
+            <Component Id="cmpC15C545FBF09002FF1A3A229648125C3" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil930A637C890C87809FA3F7465D482A29" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring04.wav" />
+            </Component>
+            <Component Id="cmpBE0853346BF258D029EF3BB3679B5B82" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="filA624D5E0EF1B0B037E4E63A2B0DFAE12" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring05.wav" />
+            </Component>
+            <Component Id="cmp714BFBBB40657ECDD2C0C04AA08171A6" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil6F2FDDCBB7DB5BD90B17B8B5F72E0DF5" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring06.wav" />
+            </Component>
+            <Component Id="cmpC872506012FF5FA7FCFE18A8C1AAABE8" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil5FF76EE39EFF70A0E4BAEBCC61D06933" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring07.wav" />
+            </Component>
+            <Component Id="cmp8C23ACF24FB3B3405354B3E2E9CE5296" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil52AFE53765DCF78D52F669803BFE7AE3" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring08.wav" />
+            </Component>
+            <Component Id="cmpC00D5DB56DC352FE8302617BFDC1AD81" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="filC3C5D16DA8B2F2877A0926DAF12DA34F" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring09.wav" />
+            </Component>
+            <Component Id="cmp6AAB708BAC5CCFE35A8B0A4EED08D5DF" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
+                <File Id="fil84DE6EB8F9C964E55716B5A847355815" KeyPath="yes" Source="$(var.SourcePath)\Tones\Ring10.wav" />
             </Component>
             <Component Id="cmpB3E0C4908B4D67A7CCEB8DF5A4B300B5" Directory="dirE98B07650B376F75E85124D5E1E267D6" Guid="*">
                 <File Id="fil60FF028904D655DDB16B57ABBD27CE4C" KeyPath="yes" Source="$(var.SourcePath)\Tones\RingNoIntrusivo.wav" />
