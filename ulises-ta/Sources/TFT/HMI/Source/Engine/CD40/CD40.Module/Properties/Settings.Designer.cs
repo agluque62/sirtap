@@ -948,5 +948,17 @@ namespace HMI.CD40.Module.Properties {
                 return ((bool)(this["PttSinRetener"]));
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".1.3.6.1.4.1.7916.8.2.3.10.0")]
+        public string RxDesasignadoOid {
+            get {
+                return ((string)(this["RxDesasignadoOid"]));
+            }
+            set {
+                this["RxDesasignadoOid"] = value;
+            }
+        }
     }
 }

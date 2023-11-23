@@ -321,6 +321,7 @@ namespace HMI.CD40.Module.Services
 #if _HF_GLOBAL_STATUS_
                     Top.Rd.HFGlobalStatus += OnHfGlobalStatus;
 #endif
+                    Top.Rd.SendSnmpTrapString += OnSendSnmpTrapString;
                 }
                 if (Top.Hw != null) Top.Hw.SetSnmpInt += OnSetSnmpInt;
                 if (Top.Recorder != null) Top.Recorder.SetSnmpString += OnSetSnmpString;
