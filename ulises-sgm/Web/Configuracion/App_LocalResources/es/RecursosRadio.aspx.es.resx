@@ -1611,7 +1611,10 @@
   <data name="PnlMarcaModeloResource.GroupingText" xml:space="preserve">
     <value>Marca/Modelo</value>
   </data>
-  <data name="RVTxtGRSDelayResource1.ErrorMessage" xml:space="preserve">
+  <data name="RVTxtTXGRSDelayResource1.ErrorMessage" xml:space="preserve">
+    <value>El valor GRS Delay debe estar comprendido entre 0 y 500 ms</value>
+  </data>
+  <data name="RVTxtRXGRSDelayResource1.ErrorMessage" xml:space="preserve">
     <value>El valor GRS Delay debe estar comprendido entre 0 y 500 ms</value>
   </data>
   <data name="RangeValidatorFrequencyResource.ErrorMessage" xml:space="preserve">
@@ -1639,8 +1642,11 @@
     <value>*</value>
   </data>
   <data name="Label34Resource1.Text" xml:space="preserve">
-    <value>GRS Delay (ms):</value>
+    <value>TX GRS Delay (ms):</value>
   </data>
+  <data name="Label50Resource1.Text" xml:space="preserve">
+    <value>RX GRS Delay (ms):</value>
+  </data>  
   <data name="LabelIDTablaCalidadResource.Text" xml:space="preserve">
     <value>Tabla de Conversión a Índices RSSI:</value>
   </data>

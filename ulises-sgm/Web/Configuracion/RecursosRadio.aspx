@@ -967,25 +967,25 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                         Type="Integer" Style="left: 89px; position: relative"
                         meta:resourcekey="CompareValidator7Resource1">*</asp:CompareValidator>
 
-                    <asp:Label ID="LabelGRS" runat="server" Text="GRS Delay (ms):" ForeColor="Black" Style="z-index: auto; left: 15px; position: absolute; top: 70px"
+                    <asp:Label ID="LabelTXGRS" runat="server" Text="TX GRS Delay (ms):" ForeColor="Black" Style="z-index: auto; left: 15px; position: absolute; top: 70px"
                         meta:resourcekey="Label34Resource1"></asp:Label>
                    
-                       <asp:TextBox ID="TxtGRSDelay" runat="server" Width="40px" Enabled="False" Style="left: 15px; top: 90px; position: absolute" 
-                        meta:resourcekey="TxtGRSDelayResource1"></asp:TextBox>
+                       <asp:TextBox ID="TxtTXGRSDelay" runat="server" Width="40px" Enabled="False" Style="left: 15px; top: 90px; position: absolute" 
+                        meta:resourcekey="TxtTXGRSDelayResource1"></asp:TextBox>
                      
-                     <asp:RequiredFieldValidator ID="RequiredFieldValidator17" runat="server" ControlToValidate="TxtGRSDelay"
-                        ErrorMessage="El campo GRS Delay  no puede estar vacio y debe tomar un valor entre 0 y 500 ms." Style=" left: 60px; position: absolute; top: 95px"
+                     <asp:RequiredFieldValidator ID="RequiredFieldValidator17" runat="server" ControlToValidate="TxtTXGRSDelay"
+                        ErrorMessage="El campo TX GRS Delay  no puede estar vacio y debe tomar un valor entre 0 y 500 ms." Style=" left: 60px; position: absolute; top: 95px"
                         meta:resourcekey="RequiredFieldValidator17Resource1">*</asp:RequiredFieldValidator>
 
-                     <asp:CompareValidator ID="CompareValidator14" runat="server" ControlToValidate="TxtGRSDelay"
-                        ErrorMessage="El campo GRS Delay debe ser numérico." Operator="DataTypeCheck"
+                     <asp:CompareValidator ID="CompareValidator14" runat="server" ControlToValidate="TxtTXGRSDelay"
+                        ErrorMessage="El campo TX GRS Delay debe ser numérico." Operator="DataTypeCheck"
                           Style="z-index: 207; left: 60px; position: absolute; top: 95px"
                         Type="Integer" meta:resourcekey="CompareValidator14Resource1">*</asp:CompareValidator>
 
-                    <asp:RangeValidator ID="RVTxtGRSDelay" runat="server" ControlToValidate="TxtGRSDelay"
+                    <asp:RangeValidator ID="RVTxtTXGRSDelay" runat="server" ControlToValidate="TxtTXGRSDelay"
 					    ErrorMessage="El valor debe estar comprendido entre 0 y 500 ms" MaximumValue="500"
 					    MinimumValue="-0" Style="z-index: 207; left: 60px; position: absolute; top: 95px"
-					    Type="Double" meta:resourcekey="RVTxtGRSDelayResource1">*</asp:RangeValidator>
+					    Type="Double" meta:resourcekey="RVTxtTXGRSDelayResource1">*</asp:RangeValidator>
 
                     <br /><br /> <br /> <br /><br />
                 </asp:Panel>
@@ -1030,7 +1030,27 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                         Type="Integer" Style="left: 2px; position: relative"
                         meta:resourcekey="CompareValidator6Resource1">*</asp:CompareValidator>
 
-                     <asp:CheckBox ID="CheckGrabacionEd137" runat="server" Enabled="False" Text="Grabación ED137" Style="z-index: auto; left: 15px; position: absolute; top: 85px"
+                    <asp:Label ID="LabelRXGRS" runat="server" Text="RX GRS Delay (ms):" ForeColor="Black" Style="z-index: auto; left: 15px; position: absolute; top: 70px"
+                        meta:resourcekey="Label50Resource1"></asp:Label>
+                   
+                       <asp:TextBox ID="TxtRXGRSDelay" runat="server" Width="40px" Enabled="False" Style="left: 15px; top: 90px; position: absolute" 
+                        meta:resourcekey="TxtRXGRSDelayResource1"></asp:TextBox>
+                     
+                     <asp:RequiredFieldValidator ID="RequiredFieldValidator20" runat="server" ControlToValidate="TxtRXGRSDelay"
+                        ErrorMessage="El campo RX GRS Delay  no puede estar vacio y debe tomar un valor entre 0 y 500 ms." Style=" left: 60px; position: absolute; top: 95px"
+                        meta:resourcekey="RequiredFieldValidator17Resource1">*</asp:RequiredFieldValidator>
+
+                     <asp:CompareValidator ID="CompareValidator13" runat="server" ControlToValidate="TxtRXGRSDelay"
+                        ErrorMessage="El campo RX GRS Delay debe ser numérico." Operator="DataTypeCheck"
+                          Style="z-index: 207; left: 60px; position: absolute; top: 95px"
+                        Type="Integer" meta:resourcekey="CompareValidator14Resource1">*</asp:CompareValidator>
+
+                    <asp:RangeValidator ID="RangeValidator8" runat="server" ControlToValidate="TxtRXGRSDelay"
+					    ErrorMessage="El valor debe estar comprendido entre 0 y 500 ms" MaximumValue="500"
+					    MinimumValue="-0" Style="z-index: 207; left: 60px; position: absolute; top: 95px"
+					    Type="Double" meta:resourcekey="RVTxtRXGRSDelayResource1">*</asp:RangeValidator>
+
+                     <asp:CheckBox ID="CheckGrabacionEd137" runat="server" Enabled="False" Text="Grabación ED137" Style="z-index: auto; left: 11px; position: absolute; top: 115px"
                         Width="160px" ForeColor="Black" meta:resourcekey="CheckGrabacionEd137Resource1" />                        
                     <br /><br /> <br /> <br /><br />
                 </asp:Panel>

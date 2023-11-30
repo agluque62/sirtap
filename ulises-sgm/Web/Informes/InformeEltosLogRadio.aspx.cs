@@ -152,7 +152,7 @@ public partial class InformeEltosLogRadio : System.Web.UI.Page
             strConsulta.Clear();
 
             //Consulta de obtención de recursos radio asociados a los destinos radio junto a los parámetros HF y M+N si aplica
-            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss,");
+            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss, rp.GrsDelayRx,");
             strConsulta.Append("pr.GananciaAGCTX, pr.GananciaAGCTXdBm, pr.GananciaAGCRX, pr.GananciaAGCRXdBm, pr.UmbralAGCTXdBm, pr.UmbralAGCRXdBm, pr.TamRTP, pr.TipoEM, pr.GrabacionEd137, z.Nombre AS NameZona,");  
             strConsulta.Append("rec.Tipo, tb.name AS TablaBSS, mb.name AS NameBss, rec.IdTIFX AS rec_idTIFX, rec.idEquipos, rec.SlotPasarela, rec.NumDispositivoSlot, pr.Codec,");
             strConsulta.Append("pr.SupresionSilencio, r.IdDestino, r.TipoDestino, r.IdSistema, r.zonas_idZonas, r.tabla_bss_idtabla_bss, r.SQ, r.PTT, r.TiempoPTT, r.UmbralVAD, r.BSS, "); 
@@ -176,7 +176,7 @@ public partial class InformeEltosLogRadio : System.Web.UI.Page
             strConsulta.Clear();
 
             //Consulta de obtención de recursos radio sin destino asociados que son M+N de tipo N (tipomodo=1) o HF
-            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss,");
+            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss, rp.GrsDelayRx,");
             strConsulta.Append("pr.GananciaAGCTX, pr.GananciaAGCTXdBm, pr.GananciaAGCRX, pr.GananciaAGCRXdBm, pr.UmbralAGCTXdBm, pr.UmbralAGCRXdBm, pr.TamRTP, pr.TipoEM, pr.GrabacionEd137, z.Nombre AS NameZona,");
             strConsulta.Append("rec.Tipo, tb.name AS TablaBSS, mb.name AS NameBss, rec.IdTIFX AS rec_idTIFX, rec.idEquipos, rec.SlotPasarela, rec.NumDispositivoSlot, pr.Codec,");
             strConsulta.Append("pr.SupresionSilencio, r.IdDestino, r.TipoDestino, r.IdSistema, r.zonas_idZonas, r.tabla_bss_idtabla_bss, r.SQ, r.PTT, r.TiempoPTT, r.UmbralVAD, r.BSS, ");
@@ -200,7 +200,7 @@ public partial class InformeEltosLogRadio : System.Web.UI.Page
             strConsulta.Clear();
 
             //Consulta de obtención de recursos radio sin destino asociados que no son M+N de tipo N, ni HF
-            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss,");
+            strConsulta.Append("SELECT r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss,rp.GrsDelayRx,");
             strConsulta.Append("pr.GananciaAGCTX, pr.GananciaAGCTXdBm, pr.GananciaAGCRX, pr.GananciaAGCRXdBm, pr.UmbralAGCTXdBm, pr.UmbralAGCRXdBm, pr.TamRTP, pr.TipoEM, pr.GrabacionEd137, z.Nombre AS NameZona,");
             strConsulta.Append("rec.Tipo, tb.name AS TablaBSS, mb.name AS NameBss, rec.IdTIFX AS rec_idTIFX, rec.idEquipos, rec.SlotPasarela, rec.NumDispositivoSlot, pr.Codec,");
             strConsulta.Append("pr.SupresionSilencio, r.IdDestino, r.TipoDestino, r.IdSistema, r.zonas_idZonas, r.tabla_bss_idtabla_bss, r.SQ, r.PTT, r.TiempoPTT, r.UmbralVAD, r.BSS, ");

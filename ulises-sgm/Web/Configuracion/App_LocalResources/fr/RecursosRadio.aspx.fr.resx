@@ -1617,9 +1617,12 @@
   <data name="RVTxtCLDResource1.ErrorMessage" xml:space="preserve">
     <value>La valeur doit être comprise entre 1 et 60</value>
   </data>
-  <data name="RVTxtGRSDelayResource1.ErrorMessage" xml:space="preserve">
+  <data name="RVTxtTXGRSDelayResource1.ErrorMessage" xml:space="preserve">
     <value>La valeur GRS Delay doit être comprise entre 0 et 500 ms</value>
   </data>
+  <data name="RVTxtRXGRSDelayResource1.ErrorMessage" xml:space="preserve">
+    <value>La valeur GRS Delay doit être comprise entre 0 et 500 ms</value>
+  </data>  
   <data name="RVTxtGananciaTxResource1.ErrorMessage" xml:space="preserve">
     <value>Gain AD: La valeur doit être comprise entre -13,4 et 1,2</value>
   </data>
@@ -1657,7 +1660,10 @@
     <value>*</value>
   </data>
   <data name="Label34Resource1.Text" xml:space="preserve">
-    <value>GRS Delay (ms) :</value>
+    <value>TX GRS Delay (ms) :</value>
+  </data>
+  <data name="Label50Resource1.Text" xml:space="preserve">
+    <value>RX GRS Delay (ms) :</value>
   </data>
   <data name="RequiredFieldValidator17Resource1.ErrorMessage" xml:space="preserve">
     <value>Le champ GRS Delay doit être renseigné et sa valeur doit être comprise entre 0 et 500 ms</value>

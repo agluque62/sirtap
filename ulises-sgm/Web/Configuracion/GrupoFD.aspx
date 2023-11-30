@@ -28,11 +28,11 @@
                 Style="left: 172px; position: absolute; top: 42px" Enabled="False"
                 meta:resourcekey="RequiredFieldIdentificadorResource1">*</asp:RequiredFieldValidator>
 
-          <asp:CheckBox ID="CheckFrecNoDesasignable" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 140px"
+          <asp:CheckBox ID="CheckFrecNoDesasignable" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 139px"
                 Text="Frec. no desasignable" TextAlign="Left" Width="153px"
                 Visible="True" meta:resourcekey="CheckFrecNoDesasignableResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
 
-          <asp:CheckBox ID="CheckPasivoRetransmision" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 160px"
+          <asp:CheckBox ID="CheckPasivoRetransmision" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 184px"
                 Text="Pasivo Retrans." TextAlign="Left" Width="153px"
                 Visible="True" meta:resourcekey="CheckPasivoRetransmisionResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
 
@@ -122,9 +122,9 @@
                 </asp:TableRow>
             </asp:Table>
 
-            <asp:Label ID="LbModoTransmision" runat="server" Style="z-index: 101; left: 188px; position: absolute; top: 128px"
+            <asp:Label ID="LbModoTransmision" runat="server" Style="z-index: 101; left: 188px; position: absolute; top: 165px"
                 Text="Modo de Transmisión:" Visible="True" meta:resourcekey="LbModoTransmisionResource"></asp:Label>
-            <asp:DropDownList ID="DListModoTransmision" runat="server" Style="z-index: 105; left: 188px; height: 22px; position: absolute; top: 147px"
+            <asp:DropDownList ID="DListModoTransmision" runat="server" Style="z-index: 105; left: 188px; height: 22px; position: absolute; top: 183px"
                 Width="145px" Visible="True" OnSelectedIndexChanged="DListModoTransmision_SelectedIndexChanged" AutoPostBack="True"
                 meta:resourcekey="DListModoTransmisionRes" class="select">
                 <asp:ListItem Value="C" meta:resourcekey="ListItemModoTransmisionClimaxRes">Climax</asp:ListItem>
@@ -132,18 +132,18 @@
                 <%--<asp:ListItem Value="M" meta:resourcekey="ListItemModoTransmisionManualRes">Manual</asp:ListItem>  --%> 
             </asp:DropDownList>
 
-            <asp:Label ID="LbEmplazamientoDefecto" runat="server" Style="z-index: 101; left: 363px; position: absolute; top: 128px"
+            <asp:Label ID="LbEmplazamientoDefecto" runat="server" Style="z-index: 101; left: 363px; position: absolute; top: 165px"
                 Text="Emplazamiento por Defecto:" Visible="False" meta:resourcekey="LbEmplazamientoDefectoResource"></asp:Label>
-            <asp:DropDownList ID="DListEmplazamientoDefecto" runat="server" Style="z-index: 105; left: 363px; height: 22px; position: absolute; top: 147px"
+            <asp:DropDownList ID="DListEmplazamientoDefecto" runat="server" Style="z-index: 105; left: 363px; height: 22px; position: absolute; top: 183px"
                 Width="200px" Visible="False" OnSelectedIndexChanged="DListEmplazamientoDefecto_SelectedIndexChanged" 
                 meta:resourcekey="DListEmplazamientoDefectoRes" class="select" AutoPostBack="True">
                 <asp:ListItem Value="0" meta:resourcekey="ListItemEmplDefNinguno">Ninguno</asp:ListItem>
             </asp:DropDownList>
 
-            <asp:Label ID="LbTiempoVueltaADefecto" runat="server" Text="Tiempo Vuelta a Defecto" Style="left:604px; top:128px; position:absolute; width:auto"
+            <asp:Label ID="LbTiempoVueltaADefecto" runat="server" Text="Tiempo Vuelta a Defecto" Style="left:604px; top:165px; position:absolute; width:auto"
                 Visible="False" meta:resourcekey="LbTiempoVueltaADefectoResource"></asp:Label>
 
-            <asp:TextBox ID="TxtTiempoVueltaADefecto" runat="server" Width="88px" Style="z-index: auto; top: 147px; left: 604px; position: absolute;"
+            <asp:TextBox ID="TxtTiempoVueltaADefecto" runat="server" Width="88px" Style="z-index: auto; top: 183px; left: 604px; position: absolute;"
                 Visible="False" meta:resourcekey="TxtTiempoVueltaADefectoResource">0</asp:TextBox>
 
              <asp:RequiredFieldValidator ID="RFV_TBTunedFrequency" runat="server" ControlToValidate="TBTunedFrequency"
@@ -244,9 +244,9 @@
                    meta:resourcekey="CheckBox1SquelchResource1" Visible="False" />
 
 
-            <asp:Label ID="Label44" runat="server" Text="Periodo Cálculo CLD (s):" Style="left:190px; top:75px; position:absolute; width:auto"
+            <asp:Label ID="Label44" runat="server" Text="Periodo cálculo de retardo (s):" Style="left:382px; top:129px; position:absolute; width:auto"
                 meta:resourcekey="Label44Resource1"></asp:Label>
-                <asp:TextBox ID="TextBoxCLD" runat="server" Width="88px" Style="z-index: auto; top: 94px; left: 190px; position: absolute;"
+                <asp:TextBox ID="TextBoxCLD" runat="server" Width="88px" Style="z-index: auto; top: 129px; left: 610px; position: absolute;"
                 meta:resourcekey="TxtTiempoCLDResource1">1</asp:TextBox>
             <asp:RequiredFieldValidator ID="RequiredFieldValidator18" runat="server" ControlToValidate="TextBoxCLD" Style="z-index: auto; top: 98px; left: 280px; position: absolute;"
             ErrorMessage="El periodo de cálculo CLD debe estar comprendido entre 0 y 60 segundos."

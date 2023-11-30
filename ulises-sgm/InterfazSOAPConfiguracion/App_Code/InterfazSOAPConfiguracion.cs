@@ -412,7 +412,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
                 // Modificacion para sacar el puerto sip de la ip del encaminamiento (equiposeu)
                 if (((Recursos)listaRecursos[i]).TipoRecurso == 1)
                 {
-                    int position = (((Recursos)listaRecursos[i]).IpRed1).IndexOf(":");
+                    int position = (((Recursos)listaRecursos[i]).IpRed1).IndexOf(":");// OJOOO NULL 20230720
 
                     if (position == -1)
                     {
@@ -847,7 +847,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
                                 // Obtiene el valor de telemando
                                 // RQF 8422
                                 cfgRecurso.Telemando = ((RecursosRadio)listaRecursosEnlace[j]).Telemando;
-
+                                cfgRecurso.GrsDelayRx = ((RecursosRadio)listaRecursosEnlace[j]).GrsDelayRx;
                                 ObjEnlace.ListaRecursos.Add(cfgRecurso);
                             }
 

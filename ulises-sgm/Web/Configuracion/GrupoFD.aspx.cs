@@ -271,7 +271,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = true;
 
             //El campo Tiempo CLD sólo es visible para las FD 
-            Label44.Visible=TextBoxCLD.Visible = true;
+            //Label44.Visible=TextBoxCLD.Visible = true; //20230718
+            PresentaCalculoDeRetardo();
             TextBoxCLD.Text = "1"; // Por defecto, se configura a 1 segundo
             //Se hace visible el campo Modo de Transmisión
             LbModoTransmision.Visible = DListModoTransmision.Visible = true;
@@ -296,7 +297,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
             TextVentanaBSS.Enabled = true;
             Label9.Visible = DListMetodoClimax.Visible = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20230718
+            PresentaCalculoDeRetardo();
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             //20200728 #4546
             TextVentanaBSS.Text = "500";
@@ -310,7 +312,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         {
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible =  false;
             Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled =  false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20230718
+            PresentaCalculoDeRetardo();
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             // 20211210 JOI  #2857 Analisis centralizado QIDX
             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = false;
@@ -635,14 +638,15 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                     lbItem.Text = strTexto.ToString();
                     ListRecursos.Items.Add(lbItem);
                 }
-        //20200520 JOI Errores #4425
+                //20200520 JOI Errores #4425
                 if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_NORMAL && bRedundancia)
                 {
                     //Se hacen visibles las opciones de MODO_NORMAL Y REDUNDANCIA
                     Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
                     TextVentanaBSS.Enabled = true;
                     Label9.Visible = DListMetodoClimax.Visible = false;
-                    Label44.Visible = TextBoxCLD.Visible = false;
+                    //Label44.Visible = TextBoxCLD.Visible = false; //20230718
+                    PresentaCalculoDeRetardo();
                     LbModoTransmision.Visible = DListModoTransmision.Visible = false;
                     // 20211210 JOI  #2857 Analisis centralizado QIDX
                     if (DDLMetodosBssOfrecidos.SelectedValue == "3")
@@ -690,7 +694,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         DListEmplazamientoDefecto.SelectedValue = empDefecto;
                         TxtTiempoVueltaADefecto.Text = tVueltaDefecto;
                     }
-                    Label44.Visible = TextBoxCLD.Visible = false;
+                    //Label44.Visible = TextBoxCLD.Visible = false;
                     TextBoxCLD.Text = "0";
                 }
                 //20200611 JOI #3994
@@ -698,7 +702,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                 if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD &&
                     DListModoTransmision.SelectedValue == MODO_TRANSMISION_CLIMAX)
                 {
-                    Label44.Visible = TextBoxCLD.Visible = true;
+                    //Label44.Visible = TextBoxCLD.Visible = true; //20230718
                     LbModoTransmision.Visible = DListModoTransmision.Visible = true;
                     LbEmplazamientoDefecto.Visible = false;
                     DListEmplazamientoDefecto.Visible = false;
@@ -714,6 +718,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                 else
                     LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
             }
+            PresentaCalculoDeRetardo();
         }
         catch (Exception e)
         {
@@ -863,7 +868,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         LbModoTransmision.Visible = DListModoTransmision.Visible = true;
                         DListModoTransmision.SelectedValue=((ServiciosCD40.DestinosRadio)datos[i]).ModoTransmision;
 
-                        //Solo mostramos si en FD y Modo Ultima Transmisión ;)
+                        //Solo mostramos si en FD y Modo Ultima Transmisión
                         if (DListModoTransmision.SelectedValue == MODO_TRANSMISION_ULTIMA_RECEPCION)
                         {
                             LbEmplazamientoDefecto.Visible = true;
@@ -876,9 +881,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         //Solo mostramos si en FD y Modo CLIMAX)
                         if (DListModoTransmision.SelectedValue == MODO_TRANSMISION_CLIMAX)
                         {
-                            Label44.Visible = TextBoxCLD.Visible = true;
+                            //Label44.Visible = TextBoxCLD.Visible = true; //20230718
                             Label9.Visible = DListMetodoClimax.Visible = true;
                         }
+                        PresentaCalculoDeRetardo();
                     }
                     //20200520 JOI Errores #4425
                     else if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_NORMAL && bRedundancia)
@@ -887,7 +893,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
                         TextVentanaBSS.Enabled = true;
                         Label9.Visible = DListMetodoClimax.Visible = false;
-                        Label44.Visible = TextBoxCLD.Visible = false;
+                        //Label44.Visible = TextBoxCLD.Visible = false; //20230718
                         LbModoTransmision.Visible = DListModoTransmision.Visible = false;
                         TextVentanaBSS.Text = (((ServiciosCD40.DestinosRadio)datos[i]).VentanaSeleccionBss).ToString();
                         // 20211210 JOI  #2857 Analisis centralizado QIDX
@@ -903,12 +909,13 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         {
                             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
                         }
+                        PresentaCalculoDeRetardo();
                     }
                     else
                     {
                         Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible =  false;
                         CheckBox1Squelch.Visible = Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled =  false;
-                        Label44.Visible = TextBoxCLD.Visible = false;
+                        //Label44.Visible = TextBoxCLD.Visible = false; //20230718
                         LbModoTransmision.Visible = DListModoTransmision.Visible = false;
                         // 20211210 JOI  #2857 Analisis centralizado QIDX
                         LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
@@ -939,6 +946,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         CheckFrecNoDesasignable.Visible = true;
                         InicializaDatosMultifrecuencia();
                     }
+                    PresentaCalculoDeRetardo();
                     CargarRecursos();
                     if (bRecargarRecursosLibres)
                         CargarRecursosSinAsignar();
@@ -1613,15 +1621,18 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
 
         if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD)
         {
+            // RQF 8422
+            CheckMultiFrecuencia.Checked = false;
+            CheckMultiFrecuencia.Enabled = false;
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = true;
-            Label44.Visible = TextBoxCLD.Visible = true;
+            //Label44.Visible = TextBoxCLD.Visible = true;
             //Se hace visible el campo Modo de Transmisión
             LbModoTransmision.Visible = DListModoTransmision.Visible = true;
             //20200611 JOI #3994
             //Si el modo es FD y el modo de transmisión es CLIMAX
             if (DListModoTransmision.SelectedValue == MODO_TRANSMISION_CLIMAX)
             {
-                Label44.Visible = TextBoxCLD.Visible = true;
+                //Label44.Visible = TextBoxCLD.Visible = true;
                 LbEmplazamientoDefecto.Visible = false;
                 DListEmplazamientoDefecto.Visible = false;
                 LbTiempoVueltaADefecto.Visible = false;
@@ -1629,7 +1640,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             }
             else
             {
-                Label44.Visible = TextBoxCLD.Visible = false;
+                //Label44.Visible = TextBoxCLD.Visible = false;
                 LbEmplazamientoDefecto.Visible = true;
                 DListEmplazamientoDefecto.Visible = true;
                 LbTiempoVueltaADefecto.Visible = true;
@@ -1644,7 +1655,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
             TextVentanaBSS.Enabled = true;
             Label9.Visible = DListMetodoClimax.Visible = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20230718
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             // 20211210 JOI  #2857 Analisis centralizado QIDX
             if (DDLMetodosBssOfrecidos.SelectedValue == "3")
@@ -1653,15 +1664,14 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         else
         {
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false;
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             // 20211210 JOI  #2857 Analisis centralizado QIDX
             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = DLPorcentajeRSSI.Enabled = false;
         }
-
+        PresentaCalculoDeRetardo();
         //MVO: el tipo de frecuencia no se puede modificar, porque el formato del identificador depende de la frecuencia y este no se puede cambiar.
         DListTipo.Enabled = false;
-
         Panel1.Enabled = true;
         errores.Visible = true;
         ListBox1.Enabled = false;
@@ -2835,6 +2845,11 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
 
     protected void DListTipo_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD && DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF)
+        {
+            //Por defecto
+            DListTipo.SelectedValue = DESTINORADIO_TIPOFRECUENCIA_VHF;
+        }
 
         if (DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF)
         {
@@ -2855,10 +2870,20 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             // RQF 8422
             CheckMultiFrecuencia.Checked = false;
             CheckMultiFrecuencia.Enabled = false;
-            VisualizaCamposMultifrecuencia(CheckMultiFrecuencia.Checked);
+            InicializaDatosMultifrecuencia();
+            VisualizaCamposMultifrecuencia(false);
+            PresentaModoTransmision();
+            CheckBoxRedundancia.Checked = false;
+            CheckBoxRedundancia.Enabled = false;
+            Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = false;
+            LBPorCentral.Visible = DLPorcentajeRSSI.Visible = false;
+            Label44.Visible = TextBoxCLD.Visible = false;
+            TblTunedFreq.Visible = true;
+
         }
         else
         {
+            CheckBoxRedundancia.Enabled = true;
             LblTunedFreq.Visible = TBTunedFrequency.Visible = Label10.Visible = false;
             TblTunedFreq.Visible = false;
             RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = false;
@@ -2882,10 +2907,15 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
 
     protected void DListModoDestino_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF && DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD)
+        {
+            DListModoDestino.SelectedValue = DESTINORADIO_MODO_NORMAL;
+            return;
+        }
         if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD)
         {
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible =  Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled= true;
-            Label44.Visible = TextBoxCLD.Visible = true;
+            //Label44.Visible = TextBoxCLD.Visible = true; //20230718
             LbModoTransmision.Visible = DListModoTransmision.Visible = true;
             LblTunedFreq.Visible = TBTunedFrequency.Visible = Label10.Visible = false;
 
@@ -2909,10 +2939,11 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
             TextVentanaBSS.Enabled = true;
             Label9.Visible = DListMetodoClimax.Visible = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20220718
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             if (btnNuevo)
             {
+                TextBoxCLD.Text = "1"; // Por defecto, se configura a 1 segundo
                 AsignaValoresDefectoQIDX();
                 btnNuevo = false;
             }
@@ -2923,7 +2954,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         else
         {
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20230718
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             AsignaValoresDefectoModoNormal();
             if(DListTipo.SelectedIndex==2)
@@ -2935,7 +2966,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         }
        TblTunedFreq.Visible = DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF ? true : false;
        RFV_TBTunedFrequency.Enabled = RFV_TBTunedFrequency.Visible = TblTunedFreq.Visible;
-       
+       PresentaCalculoDeRetardo();
+       PresentaModoTransmision();
         // RQF 8422
        AnalizaGestionMultifrecuencia();
     }
@@ -2998,18 +3030,19 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             }
             DListEmplazamientoDefecto.SelectedValue = "0";
             //20200611 JOI #3994
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false; //20230718
             Label9.Visible = DListMetodoClimax.Visible = false;
         }
         else //20200611 JOI #3994
         {
             Label9.Visible = DListMetodoClimax.Visible = true;
-            Label44.Visible = TextBoxCLD.Visible = true;
+            //Label44.Visible = TextBoxCLD.Visible = true; //20230718
             LbEmplazamientoDefecto.Visible = false;
             DListEmplazamientoDefecto.Visible = false;
             LbTiempoVueltaADefecto.Visible = false;
             TxtTiempoVueltaADefecto.Visible = false;
         }
+        PresentaCalculoDeRetardo();
     }
 
     ///VMG 18/02/2019                           
@@ -3035,7 +3068,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = true;
             TextVentanaBSS.Enabled = true;
             Label9.Visible = DListMetodoClimax.Visible = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false;//20230718
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             //20201204 #4686
             if (DDLMetodosBssOfrecidos.SelectedValue == METODO_BSS_NINGUNO)
@@ -3057,7 +3090,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         {
             Label11.Visible = TextVentanaBSS.Visible = Label12.Visible = DDLMetodosBssOfrecidos.Visible = false;
             Label9.Visible = DListMetodoClimax.Visible = TextVentanaBSS.Enabled = false;
-            Label44.Visible = TextBoxCLD.Visible = false;
+            //Label44.Visible = TextBoxCLD.Visible = false;//20230718
             LbModoTransmision.Visible = DListModoTransmision.Visible = false;
             //Se le asignan los valores por defecto a los campos Metodo climax, Tiempo CLD, Ventana BSS y Metodo BSS para el modo Normal
             //20201204 #4686 AsignaValores... estaba comentada.
@@ -3065,6 +3098,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             LBPorCentral.Visible = DLPorcentajeRSSI.Visible = false;
             AsignaValoresDefectoModoNormal();
         }
+        PresentaCalculoDeRetardo();
     }
 
     // RQF 8422
@@ -3415,6 +3449,52 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             }
         }
         return retorno;
+    }
+
+    private void PresentaCalculoDeRetardo()
+    {
+        if ((DListModoDestino.SelectedValue == DESTINORADIO_MODO_NORMAL && bRedundancia) ||
+            DListModoDestino.SelectedValue == DESTINORADIO_MODO_FD)
+            Label44.Visible = TextBoxCLD.Visible = true;
+        else 
+            Label44.Visible = TextBoxCLD.Visible = false;
+    }
+
+    private void PresentaModoTransmision()
+    {
+        bool presenta = false;
+        bool presenta_UltimaRX = false;
+        bool presenta_MetodoClimax = false;
+        if (DListModoDestino.SelectedValue == DESTINORADIO_MODO_NORMAL || DListTipo.SelectedValue == DESTINORADIO_TIPOFRECUENCIA_HF)
+        {
+            presenta_MetodoClimax = presenta_UltimaRX = presenta = false;
+        }
+        else
+        {
+            presenta = true;
+            if (DListModoTransmision.SelectedValue == MODO_TRANSMISION_ULTIMA_RECEPCION)
+            {
+                presenta_UltimaRX = true;
+                presenta_MetodoClimax = false;
+            }
+            else
+            {
+                presenta_UltimaRX = false;
+                presenta_MetodoClimax = true;
+            }
+        }
+
+        Label9.Visible = DListMetodoClimax.Visible = presenta_MetodoClimax;
+        
+        
+        LbEmplazamientoDefecto.Visible = presenta_UltimaRX;
+        DListEmplazamientoDefecto.Visible = presenta_UltimaRX;
+        LbTiempoVueltaADefecto.Visible = presenta_UltimaRX;
+        TxtTiempoVueltaADefecto.Visible = presenta_UltimaRX;
+
+        DListModoTransmision.Visible = presenta;
+        LbModoTransmision.Visible = presenta;
+        DListModoTransmision.Visible = presenta;
     }
 
 }

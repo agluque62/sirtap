@@ -50,6 +50,12 @@ namespace CD40.BD.Entidades
             set { _Metodos_bss_idmetodos_bss = value; }
         }
 
+        private int _GrsDelayRx;
+        public int GrsDelayRx
+        {
+            get { return _GrsDelayRx; }
+            set { _GrsDelayRx = value; }
+        }
         #endregion
 
 
@@ -96,7 +102,8 @@ namespace CD40.BD.Entidades
                         pr.EnableEventPttSq = (bool)dr["EnableEventPttSq"];
                     if (dr["metodos_bss_idmetodos_bss"] != System.DBNull.Value)
                         pr.Metodos_bss_idmetodos_bss = (int)dr["metodos_bss_idmetodos_bss"];
-
+                    if (dr["GrsDelayRx"] != System.DBNull.Value)
+                        pr.GrsDelayRx = (int)dr["GrsDelayRx"];
                     ListaResultado.Add(pr);
                 }
             }
@@ -108,11 +115,12 @@ namespace CD40.BD.Entidades
             string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO Radio_Param (GrsDelay,OffSetFrequency,EnableEventPttSq,metodos_bss_idmetodos_bss)" +
+            Consulta.Append("INSERT INTO Radio_Param (GrsDelay,OffSetFrequency,EnableEventPttSq,metodos_bss_idmetodos_bss,GrsDelayRx)" +
                             " VALUES (" + GrsDelay + "," +
                                             OffSetFrequency + "," +
                                             EnableEventPttSq + "," +
-                                            Metodos_bss_idmetodos_bss + ")");
+                                            Metodos_bss_idmetodos_bss + "," +
+                                            GrsDelayRx + ")");
 
             consulta[0] = Consulta.ToString();
             consulta[1] = ReplaceSQL(null, "Radio_Param");
@@ -128,7 +136,8 @@ namespace CD40.BD.Entidades
             Consulta.Append("UPDATE Radio_Param SET GrsDelay=" + GrsDelay + "," +
                                             "OffSetFrequency=" + OffSetFrequency + "," +
                                             "EnableEventPttSq=" + EnableEventPttSq + "," +
-                                            "metodos_bss_idmetodos_bss=" + Metodos_bss_idmetodos_bss + " " +
+                                            "metodos_bss_idmetodos_bss=" + Metodos_bss_idmetodos_bss + "," +
+                                            "GrsDelayRx=" + GrsDelayRx + " " +
                                             "WHERE idradio_param=" + IdRadio_Param);
 
             consulta[0] = Consulta.ToString();

@@ -97,7 +97,7 @@ public partial class TIFX_Cfg : PageBaseCD40.PageCD40	// System.Web.UI.Page
 			string perfil = ident.Ticket.UserData;
 			if (perfil == "0")
 			{
-				Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO",false); // 20230214
+				Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO");
 				return;
 			}
 

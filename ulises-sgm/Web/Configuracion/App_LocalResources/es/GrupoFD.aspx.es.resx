@@ -379,7 +379,7 @@
     <value>Métodos BSS ofrecidos</value>
   </data>
   <data name="Label44Resource1.Text" xml:space="preserve">
-    <value>Periodo Cálc. CLD (s):</value>
+    <value>Periodo cálculo de retardo (s):</value>
   </data>
   <data name="DListMetodoClimaxItemRes1.Text" xml:space="preserve">
     <value>Relativo</value>

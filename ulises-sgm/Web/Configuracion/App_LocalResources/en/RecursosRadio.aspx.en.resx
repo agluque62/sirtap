@@ -1614,7 +1614,10 @@
   <data name="RVTxtCLDResource1.ErrorMessage" xml:space="preserve">
     <value>The value should be between 1 and 60</value>
   </data>
-  <data name="RVTxtGRSDelayResource1.ErrorMessage" xml:space="preserve">
+  <data name="RVTxtTXGRSDelayResource1.ErrorMessage" xml:space="preserve">
+    <value>The GRS Delay value should be between 0 and 500 ms</value>
+  </data>
+  <data name="RVTxtRXGRSDelayResource1.ErrorMessage" xml:space="preserve">
     <value>The GRS Delay value should be between 0 and 500 ms</value>
   </data>
   <data name="RangeValidatorFrequencyResource.ErrorMessage" xml:space="preserve">
@@ -1651,7 +1654,10 @@
     <value />
   </data>
   <data name="Label34Resource1.Text" xml:space="preserve">
-    <value>GRS Delay (ms):</value>
+    <value>TX GRS Delay (ms):</value>
+  </data>
+  <data name="Label50Resource1.Text" xml:space="preserve">
+    <value>RX GRS Delay (ms):</value>
   </data>
   <data name="RequiredFieldValidator17Resource1.ErrorMessage" xml:space="preserve">
     <value>The GRS Delay value is required. It should be between 0 and 500 ms</value>

@@ -379,7 +379,7 @@
     <value>BSS Methods Available</value>
   </data>
   <data name="Label44Resource1.Text" xml:space="preserve">
-    <value>Calc. Period CLD(s)</value>
+    <value>Delay calculation period (s):</value>
   </data>
   <data name="DListMetodoClimaxItemRes1.Text" xml:space="preserve">
     <value>Relative</value>

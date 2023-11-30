@@ -1159,14 +1159,14 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
                             UCS_DesBloquea_Opciones();
                         }
 
-                        //if (serviceServiciosCD40.SectoresManttoEnTop((string)Session["IdSistema"], (string)Session["elemento"], itop.Text))
-                        //{
-                        //    TopIntercambio = 0;
-                        //    UsuarioSeleccionado.Clear();
+                        if (serviceServiciosCD40.SectoresManttoEnTop((string)Session["IdSistema"], (string)Session["elemento"], itop.Text))
+                        {
+                            TopIntercambio = 0;
+                            UsuarioSeleccionado.Clear();
 
-                        //    cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "SectoresManttoSolos"), "SectoresManttoSolos");
-                        //    return;
-                        //}
+                            cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "SectoresManttoSolos"), "SectoresManttoSolos");
+                            return;
+                        }
 
                         Top t = new Top();
                         t.IdSistema = (string)Session["IdSistema"];
@@ -2544,7 +2544,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 
                 // Los sectores de mantenimiento no se pueden agrupar con ningun otro sector
                 // 20230321 
-                /*
+                
 				if ((DataSetSectoresLibres.Tables[0].Rows[LBoxSectores.SelectedIndex][1].ToString() == "M" && ListaUsuariosEnTop[NumTopSeleccionada - 1].Count > 0))
 				{
 					TopIntercambio = 0;
@@ -2555,7 +2555,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 					cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "SectoresManttoSolos"), "SectoresManttoSolos");
 					return;
 				}
-                */
+                
 
                 // Si se pretende asignar un sector en una top que tiene asignado un sector de mantenimiento, este debe eliminarse de la top
                 if (serviceServiciosCD40.SectoresManttoEnTop((string)Session["IdSistema"], (string)Session["elemento"], (string)ViewState["IdTop"]) &&

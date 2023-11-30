@@ -1028,6 +1028,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="DestRad_tipoFrec" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="Telemando" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1326,6 +1327,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="OffSetFrequency" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="EnableEventPttSq" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="Metodos_bss_idmetodos_bss" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>

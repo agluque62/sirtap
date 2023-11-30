@@ -20,19 +20,18 @@ namespace GeneraSectorizacionDll
 {
 	public enum PrefixType : byte { LCI, LCE, INT, ATS, PUB, PABX, MW, ADMIN, PPAB, PP=32, FREE = 0xFF }
     public enum SectorizationResult : byte
-   {
-      Ok, Error, OtherSectReceived, EmptySectorization,
-      TwoMaintenanceSectors, MissingRealSectors, MultiNucleoWithoutGroup,
-		IOLError, TimeOutError, NotPrincipalIOL, DuplicateSectors, GroupingCoreSectorsTop, InProgress = 0xFF
-   };
-	public enum Tipo_Sectorizacion { Sectorizacion_Completa, Sectorizacion_Radio, Sectorizacion_Telefonia };
+    {
+        Ok, Error, OtherSectReceived, EmptySectorization,
+        TwoMaintenanceSectors, MissingRealSectors, MultiNucleoWithoutGroup,
+        IOLError, TimeOutError, NotPrincipalIOL, DuplicateSectors, GroupingCoreSectorsTop, InProgress = 0xFF
+    }
+    public enum Tipo_Sectorizacion { Sectorizacion_Completa, Sectorizacion_Radio, Sectorizacion_Telefonia };
     /// <summary>
     /// 
     /// </summary>
 	public class SectorizationException : Exception
 	{
 		public SectorizationResult Result;
-
 		public SectorizationException(SectorizationResult result, string msg)
 			 : base(msg)
 		{
@@ -202,7 +201,6 @@ namespace GeneraSectorizacionDll
         // RQF-36
         public bool PermisoRTXSQ;
         public bool PermisoRTXSect;
-
 		public List<StAbonado> PublicNumbers = new List<StAbonado>();
 		public List<int> ATSNumbers = new List<int>();
 //		public List<string> MergedUsers = new List<string>();
@@ -374,14 +372,14 @@ namespace GeneraSectorizacionDll
 							_LceGroupsPriority[ep.Group] = ep.Priority;
 
                             //LOG_TECLAS_DA_IA
-                            RegLC(false, "MergeUser", "ep.Priority->" + ep.Priority, ep);
+                            //RegLC(false, "MergeUser", "ep.Priority->" + ep.Priority, ep);
 						}
 						else
 						{
 							_LceGroupsPriority[ep.Group] = Math.Min(lceGroupPriority, ep.Priority);
                             
                             //LOG_TECLAS_DA_IA
-                            RegLC(false, "MergeUser", "Math.Min->" + Math.Min(lceGroupPriority, ep.Priority), ep);
+                            //RegLC(false, "MergeUser", "Math.Min->" + Math.Min(lceGroupPriority, ep.Priority), ep);
                         }
 					}
 				}
@@ -426,7 +424,7 @@ namespace GeneraSectorizacionDll
 							_InternalDstInOPE.ContainsKey(dstUser.Top.ToString() + ep.Prefix)) // || !sct.ListOfDominantUsers.Contains(dstUser.Sector.IdSector))
 						{
                             //LOG_TECLAS_DA_IA
-                            RegTLF(false, "MergeColateralsTf", "ep.Position Sale por continue de  PrefixType.INT..", ep);
+                            //RegTLF(false, "MergeColateralsTf", "ep.Position Sale por continue de  PrefixType.INT..", ep);
 							continue;
 						}
 
@@ -450,7 +448,7 @@ namespace GeneraSectorizacionDll
                             if (ep.Position >= LCEndPoints.Length) Array.Resize(ref LCEndPoints, (int)(ep.Position + 1));
                         }
                         //LOG_TECLAS_DA_IA
-                        RegTLF(false, "MergeColateralsTf", "ep.Position->" + ep.Position, ep);
+                        //RegTLF(false, "MergeColateralsTf", "ep.Position->" + ep.Position, ep);
                     }
 
 					ep.Position = GetTlfPosition(ep);
@@ -480,7 +478,7 @@ namespace GeneraSectorizacionDll
                     else
                     {
                         //LOG_TECLAS_DA_IA
-                        RegTLF(true, "MergeColateralsLc", "**NO** fuera de rango...", ep); 
+                        //RegTLF(true, "MergeColateralsLc", "**NO** fuera de rango...", ep); 
                     }
 
 				}
@@ -530,7 +528,7 @@ namespace GeneraSectorizacionDll
                     if (ep.Position > NumEnlacesAI)
                     {
                         //LOG_TECLAS_DA_IA
-                        RegLC(true, "MergeColateralsLc", "**ATENCION** ep.Position > NumEnlacesAI...", ep);                      
+                        //RegLC(true, "MergeColateralsLc", "**ATENCION** ep.Position > NumEnlacesAI...", ep);                      
                         continue;
                     }
 
@@ -540,7 +538,7 @@ namespace GeneraSectorizacionDll
 							_InternalDstInOPE.ContainsKey(dstUser.Top.ToString() + ep.Prefix))
 						{
                             //LOG_TECLAS_DA_IA
-                            RegLC(false, "MergeColateralsLc", "ep.Position Sale por continue de  PrefixType.LCI..", ep);  
+                            //RegLC(false, "MergeColateralsLc", "ep.Position Sale por continue de  PrefixType.LCI..", ep);  
 							continue;
 						}
 
@@ -577,7 +575,7 @@ namespace GeneraSectorizacionDll
                                 LCEndPoints[ep.Position] = ep;
                                 _LcEndPointsByName[epId] = ep;
                                 //LOG_TECLAS_DA_IA
-                                RegLC(false, "MergeColateralsLc", "Findall  LCE (Literal y posicion) Mueve ep a LCEndPoints y _LcEndPointsByName .", ep);
+                                //RegLC(false, "MergeColateralsLc", "Findall  LCE (Literal y posicion) Mueve ep a LCEndPoints y _LcEndPointsByName .", ep);
                                 
                                 continue;
                                 //for (ep.Position = idx.End; ep.Position < LCEndPoints.Length && LCEndPoints[ep.Position] != null; ep.Position++) ;
@@ -588,7 +586,7 @@ namespace GeneraSectorizacionDll
                                 LCEndPoints[ep.Position] = ep;
                                 _LcEndPointsByName[epId] = ep;
                                 //LOG_TECLAS_DA_IA
-                                RegLC(false, "MergeColateralsLc", "Findall(false) LCE Mueve ep a LCEndPoints y _LcEndPointsByName .", ep);
+                                //RegLC(false, "MergeColateralsLc", "Findall(false) LCE Mueve ep a LCEndPoints y _LcEndPointsByName .", ep);
                                 continue;
                             }
                         }
@@ -626,7 +624,7 @@ namespace GeneraSectorizacionDll
                                 _LcEndPointsATSWithLCEN.Add(epId, objList);
 
                                 //LOG_TECLAS_DA_IA
-                                RegLC(false, "MergeColateralsLc", "FIsNullOrWhiteSpace ATS !_LcEndPointsATSWithLCEN .", epLCEN);
+                                //RegLC(false, "MergeColateralsLc", "FIsNullOrWhiteSpace ATS !_LcEndPointsATSWithLCEN .", epLCEN);
                             }
                             else
                             {
@@ -635,7 +633,7 @@ namespace GeneraSectorizacionDll
                                 {
                                     ((List<TLFEndPoint>)_LcEndPointsATSWithLCEN[epId]).Add(epLCEN);
                                     //LOG_TECLAS_DA_IA
-                                    RegLC(false, "MergeColateralsLc", "_LcEndPointsATSWithLCEN ATS ", epLCEN);                                   
+                                    //RegLC(false, "MergeColateralsLc", "_LcEndPointsATSWithLCEN ATS ", epLCEN);                                   
                                 }
                             }
                         }
@@ -667,7 +665,7 @@ namespace GeneraSectorizacionDll
 						LCEndPoints[ep.Position] = ep;
 						_LcEndPointsByName[epId] = ep;
                         //LOG_TECLAS_DA_IA
-                        RegLC(false, "MergeColateralsLc", "ep.Position ATS ", ep); 
+                        //RegLC(false, "MergeColateralsLc", "ep.Position ATS ", ep); 
 					}
 				}
 				else
@@ -712,7 +710,7 @@ namespace GeneraSectorizacionDll
 
                         ep.Origin = ATSNumbers[ATSNumbers.Count - 1].ToString();  // ATSNumbers está ordenada de mayor a menor -> Se coge el menor
                         //LOG_TECLAS_DA_IA
-                        RegLC(false, "MergeColateralsLc", "!_LcEndPointsByName ATS ", ep);
+                        //RegLC(false, "MergeColateralsLc", "!_LcEndPointsByName ATS ", ep);
                     }
 
 					//if (ep.Prefix == PrefixType.ATS)
@@ -795,7 +793,7 @@ namespace GeneraSectorizacionDll
                                     objList[i].Group = strGrupo.ToString();
 
                                     //LOG_TECLAS_DA_IA
-                                    RegLC(false, "PanelLC_AsociaDestinosATSyLCEN", "Asigno Mismo Grupo ", objList[i]);                                  
+                                    //RegLC(false, "PanelLC_AsociaDestinosATSyLCEN", "Asigno Mismo Grupo ", objList[i]);                                  
                                 }
                             }
                         }
@@ -909,7 +907,7 @@ namespace GeneraSectorizacionDll
 
 						ep.PriorityR2 = Math.Min(ep.PriorityR2, user.R2Priority);
                         //LOG_TECLAS_DA_IA
-                        RegLC(false, "MergeColateralsAg", " ep.Position ", ep);
+                        //RegLC(false, "MergeColateralsAg", " ep.Position ", ep);
 					}
 				}
 			}
@@ -989,7 +987,7 @@ namespace GeneraSectorizacionDll
 							{
 								ep.Position = idx.Last++;
                                 //LOG_TECLAS_DA_IA
-                                RegTLF(false, "GetTlfPosition", " case DA break ", ep);
+                                //RegTLF(false, "GetTlfPosition", " case DA break ", ep);
 								break;
 							}
 						}
@@ -1003,7 +1001,7 @@ namespace GeneraSectorizacionDll
 									priority = TlfEndPoints[i].Priority;
 									ep.Position = i;
                                     //LOG_TECLAS_DA_IA
-                                    RegTLF(false, "GetTlfPosition", " case DA ep.Position ", ep);
+                                    //RegTLF(false, "GetTlfPosition", " case DA ep.Position ", ep);
 								}
 							}
 						}
@@ -1022,7 +1020,7 @@ namespace GeneraSectorizacionDll
 							{
 								ep.Position = idx.Last++;
                                 //LOG_TECLAS_DA_IA
-                                RegLC(false, "GetTlfPosition", " case IA break ", ep);
+                                //RegLC(false, "GetTlfPosition", " case IA break ", ep);
 								break;
 							}
 						}
@@ -1036,7 +1034,7 @@ namespace GeneraSectorizacionDll
 									priority = LCEndPoints[i].Priority;
 									ep.Position = i;
                                     //LOG_TECLAS_DA_IA
-                                    RegLC(false, "GetTlfPosition", " case IA ep.Position ", ep);
+                                    //RegLC(false, "GetTlfPosition", " case IA ep.Position ", ep);
 								}
 							}
 						}
@@ -1143,7 +1141,7 @@ namespace GeneraSectorizacionDll
                                     Log(true, "GeneraDestinosTelefoniaSectorizados", strMsg.ToString());
                                 }
                                 //LOG_TECLAS_DA_IA
-                                RegTLF(true, "GeneraDestinosTelefoniaSectorizados", " Literal " + Literal, tf);
+                                //RegTLF(true, "GeneraDestinosTelefoniaSectorizados", " Literal " + Literal, tf);
                             }
                             else
                             {
@@ -1158,7 +1156,7 @@ namespace GeneraSectorizacionDll
                                     Log(true, "GeneraDestinosTelefoniaSectorizados", strMsg.ToString());
                                 }
                                 //LOG_TECLAS_DA_IA
-                                RegTLF(false, "GeneraDestinosTelefoniaSectorizados", " Literal " + Literal, tf);
+                                //RegTLF(false, "GeneraDestinosTelefoniaSectorizados", " Literal " + Literal, tf);
                             }
                         }
                         catch (System.Data.SqlClient.SqlException objEx)
@@ -1489,7 +1487,7 @@ namespace GeneraSectorizacionDll
                                     iNumInternos++;
                                 }
                                 //LOG_TECLAS_DA_IA
-                                RegLC(true, "GeneraDestinosLCSectorizados" , "IdSector in " + IdSectorizacion, tf);
+                                //RegLC(true, "GeneraDestinosLCSectorizados" , "IdSector in " + IdSectorizacion, tf);
                             }
                             else
                             {
@@ -1497,7 +1495,7 @@ namespace GeneraSectorizacionDll
                                 {
                                     iNumExternos++;
                                     //LOG_TECLAS_DA_IA
-                                    RegLC(true, "GeneraDestinosLCSectorizados", "Idsector ex" + IdSectorizacion, tf);
+                                    //RegLC(true, "GeneraDestinosLCSectorizados", "Idsector ex" + IdSectorizacion, tf);
                                     if (tf.Prefix == PrefixType.ATS)
                                     {
                                         //Se verifica si el destino ATS tiene asociados recursos LCEN para insertarlos
@@ -1513,7 +1511,7 @@ namespace GeneraSectorizacionDll
                                                     if (InsertaDestinoExterno(cmd, IdSistema, IdSectorizacion, IdNucleo, Literal, objList[i]))
                                                     {
                                                         iNumExternos++;
-                                                        RegLC(false, "GeneraDestinosLCSectorizados", "InsertaDestinoExterno ATS LCEN ", objList[i]);
+                                                        //RegLC(false, "GeneraDestinosLCSectorizados", "InsertaDestinoExterno ATS LCEN ", objList[i]);
                                                     }
                                                 }
                                             }
@@ -2374,34 +2372,34 @@ namespace GeneraSectorizacionDll
     /// <summary>
     /// 
     /// </summary>
-	public class Sectorization
-	{
+    public class Sectorization
+    {
         private string STR_SECTOR_FS = "**FS**";
         private const int INT_SECTOR_FS = 20000;
 
-		public string Name;
-		private string IdSistema;
-		private bool HacerComprobacionTodosSectoresReales;
+        public string Name;
+        private string IdSistema;
+        private bool HacerComprobacionTodosSectoresReales;
 
-		private StringBuilder StringSectores = new StringBuilder();
-        
+        private StringBuilder StringSectores = new StringBuilder();
+
         private StringBuilder StringSectoresNucleo = new StringBuilder();
 
-		// Ucs, sectores, usuarios, ATSNumbers y PublicNumbers involucrados en la sectorización
-		internal Dictionary<int, UcsInfo> ListOfUcs = new Dictionary<int, UcsInfo>();
-		internal Dictionary<int, SectorInfo> ListOfSectors = new Dictionary<int, SectorInfo>();
-		internal List<int> ListOfDominantUsers = new List<int>();
-		internal Dictionary<string, UserInfo> ListOfUsersByName = new Dictionary<string, UserInfo>();
-		internal Dictionary<string, int> ListOfDestinations = new Dictionary<string, int>();
+        // Ucs, sectores, usuarios, ATSNumbers y PublicNumbers involucrados en la sectorización
+        internal Dictionary<int, UcsInfo> ListOfUcs = new Dictionary<int, UcsInfo>();
+        internal Dictionary<int, SectorInfo> ListOfSectors = new Dictionary<int, SectorInfo>();
+        internal List<int> ListOfDominantUsers = new List<int>();
+        internal Dictionary<string, UserInfo> ListOfUsersByName = new Dictionary<string, UserInfo>();
+        internal Dictionary<string, int> ListOfDestinations = new Dictionary<string, int>();
 
-		// Nombre de todas las agrupaciones definidas
-		internal Dictionary<string, SectorGroupInfo> ListOfGroups = new Dictionary<string, SectorGroupInfo>();
+        // Nombre de todas las agrupaciones definidas
+        internal Dictionary<string, SectorGroupInfo> ListOfGroups = new Dictionary<string, SectorGroupInfo>();
 
-		// Nombre + ConfigId de todos los usuarios definidos
-		public List<string> ListOfAllUserNames = new List<string>();
+        // Nombre + ConfigId de todos los usuarios definidos
+        public List<string> ListOfAllUserNames = new List<string>();
 
-		// Fecha y hora de creación de la sectorización. Sólo se usa en las sectorizaciones desde SACTA
-		DateTime FechaActivacion = new DateTime();
+        // Fecha y hora de creación de la sectorización. Sólo se usa en las sectorizaciones desde SACTA
+        DateTime FechaActivacion = new DateTime();
 
         Dictionary<string, int> _LceGroupsResourcesCount = new Dictionary<string, int>();
         public Dictionary<string, int> LceGroupsResourcesCount
@@ -2413,68 +2411,114 @@ namespace GeneraSectorizacionDll
         public char CaracterEjecutivo;
         public char CaracterPlanificador;
 
-        public string StrSectorFs 
+        public string StrSectorFs
         {
             get { return STR_SECTOR_FS; }
         }
 
-		public void EliminaInternosSectorizados(DbCommand cmd)
-		{
-			// Eliminar los internos para este sector
-			cmd.CommandText = "DELETE FROM Internos WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
-			cmd.ExecuteNonQuery();
-		}
+        public void EliminaInternosSectorizados(DbCommand cmd)
+        {
+            // Eliminar los internos para este sector
+            cmd.CommandText = "DELETE FROM Internos WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
+            cmd.ExecuteNonQuery();
+        }
 
-		public void EliminaExternosSectorizados(DbCommand cmd)
-		{
-			// Eliminar los internos para este sector
-			cmd.CommandText = "DELETE FROM Externos WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
-			cmd.ExecuteNonQuery();
-		}
+        public void EliminaExternosSectorizados(DbCommand cmd)
+        {
+            // Eliminar los internos para este sector
+            cmd.CommandText = "DELETE FROM Externos WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
+            cmd.ExecuteNonQuery();
+        }
 
-		public void EliminaRadioSectorizados(DbCommand cmd)
-		{
-			// Eliminar los internos para este sector
-			cmd.CommandText = "DELETE FROM Radio WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
-			cmd.ExecuteNonQuery();
-		}
+        public void EliminaRadioSectorizados(DbCommand cmd)
+        {
+            // Eliminar los internos para este sector
+            cmd.CommandText = "DELETE FROM Radio WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='" + Name + "'";
+            cmd.ExecuteNonQuery();
+        }
 
-		public Sectorization(DbCommand cmd, string idSistema, string name, string data, char extE, char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, bool comprobarTodosLosReales)
-		{
+        public Sectorization(DbCommand cmd, string idSistema, string name, string data, char extE, char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, bool comprobarTodosLosReales)
+        {
             string strModulo = "Sectoritation.Sectorizacion";
-			Name = name;
-			IdSistema = idSistema;
-			CaracterEjecutivo = extE;
-			CaracterPlanificador = extP;
-			FechaActivacion = fechaActivacion;
-			HacerComprobacionTodosSectoresReales = comprobarTodosLosReales;
-
+            Name = name;
+            IdSistema = idSistema;
+            CaracterEjecutivo = extE;
+            CaracterPlanificador = extP;
+            FechaActivacion = fechaActivacion;
+            HacerComprobacionTodosSectoresReales = comprobarTodosLosReales;
             Log(false, strModulo, "Entrando Data={0} Sectorization name={1} ...", data, Name);
             string[] sectorUcs = data.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-			Debug.Assert(sectorUcs.Length % 2 == 0);
+            Debug.Assert(sectorUcs.Length % 2 == 0);
+            if (sectorUcs.Length == 0)
+            {
+                throw new SectorizationException(SectorizationResult.EmptySectorization, Resources.EmptySectError);
+            }
 
-			if (sectorUcs.Length == 0)
-			{
-				throw new SectorizationException(SectorizationResult.EmptySectorization, Resources.EmptySectError);
-			}
+            if (name == "SACTA")
+            {
+                #region Obtención datos sectorización activa.
+                //20230825 Gestión SACTA NUCLEOS-SECTORES
+                Log(false, strModulo, "Control de datos Nucleos-Configuracion Activa Mensaje SACTA...");
+                Estado_Sectorizacion retornoOSA;
+                bool retornoONS = false;
+                retornoOSA = ObtenSectorizacionActiva(idSistema, cmd);
+                retornoONS = ObtenNucleosSistema(idSistema, cmd);
 
-			#region Parseo de datos de entrada y obtencion de ucs y sectores
+                if (Estado_Sectorizacion.ERROR_GENERICO == retornoOSA || Estado_Sectorizacion.ERROR_SQL == retornoOSA)
+                {
+                    throw new SectorizationException(SectorizationResult.Error, Resources.MergeConfiguracionActivaError);
+                }
+                if (!retornoONS)
+                {
+                    throw new SectorizationException(SectorizationResult.Error, Resources.MergeConfiguracionActivaErrorNucleosSistema);
+                }
+                if (Estado_Sectorizacion.ACTIVA == retornoOSA)
+                {
+                    NucleosAfectados.Clear();
+                    for (int i = 0, total = sectorUcs.Length; i < total; i += 2)
+                    {
+                        int sector = Int32.Parse(sectorUcs[i]);
+                        ControlNucleoSector(sector.ToString());
+                    }
+                    if (NucleosAfectados.Count == 1 || NucleosAfectados.Count == DameNumeroNucleosOperativos(idSistema, cmd))
+                    {
+                        EliminaSectoresConfiguracionActiva();
+                    }
+                    else
+                    {
+                        throw new SectorizationException(SectorizationResult.Error, Resources.MergeConfiguracionActivaErrorNucleosUnoTodos);
+                    }
+                    List<string> sectoresUcsTemp = new List<string>();
+                    sectoresUcsTemp = ActualizaSectorUcs(sectorUcs);
+                    if (sectoresUcsTemp.Count > 0)
+                    {
+                        sectorUcs = sectoresUcsTemp.ToArray();
+                    }
+                    else
+                    {
+                        throw new SectorizationException(SectorizationResult.Error, Resources.MergeConfiguracionActivaErrorResultadoSectorizacionVacia);
+                    }
+                }
+            }
+            #endregion
+
+            #region Parseo de datos de entrada y obtencion de ucs y sectores
 
             Log(false, strModulo, "Parseo de datos de entrada y obtencion de ucs y sectores...");
             for (int i = 0, total = sectorUcs.Length; i < total; i += 2)
-			{
-				int ucsId = Int32.Parse(sectorUcs[i + 1]);
-				UcsInfo ucs = null;
+            {
+                int ucsId = Int32.Parse(sectorUcs[i + 1]);
+                UcsInfo ucs = null;
 
-				if (!ListOfUcs.TryGetValue(ucsId, out ucs))
-				{
-					ucs = new UcsInfo(idSistema);
-					ListOfUcs[ucsId] = ucs;
+                if (!ListOfUcs.TryGetValue(ucsId, out ucs))
+                {
+                    ucs = new UcsInfo(idSistema);
+                    ListOfUcs[ucsId] = ucs;
                     ListOfDominantUsers.Add(Int32.Parse(sectorUcs[i]));
-				}
+                }
 
-				int sectorId = Int32.Parse(sectorUcs[i]);
-				SectorInfo sector = new SectorInfo(ucs, sectorId);
+                int sectorId = Int32.Parse(sectorUcs[i]);
+                SectorInfo sector = new SectorInfo(ucs, sectorId);
 
                 // #6473
                 if (ListOfSectors.ContainsKey(sectorId))
@@ -2486,28 +2530,21 @@ namespace GeneraSectorizacionDll
                 Debug.Assert(!ListOfSectors.ContainsKey(sectorId));
                 ListOfSectors[sectorId] = sector;
 
-				ucs.Sectors.Add(sector);
+                ucs.Sectors.Add(sector);
 
-				// Componer lista de idSector para consultas
-				StringSectores.AppendFormat("{0}{1}", sectorId, ",");
+                // Componer lista de idSector para consultas
+                StringSectores.AppendFormat("{0}{1}", sectorId, ",");
 
-			}
+            }
+            #endregion
 
-            // Crear UCS virtual y sector para posiciones fuera de sectorización
-            //UcsInfo ucsFS = new UcsInfo(idSistema);
-            //ListOfUcs[0] = ucsFS;
-            //SectorInfo sectorFS = new SectorInfo(ucsFS, INT_SECTOR_FS);
-            //ListOfSectors[INT_SECTOR_FS] = sectorFS;
-            //ucsFS.Sectors.Add(sectorFS);
-			#endregion
+            // Eliminar última coma de StringSectores
+            StringSectores.Remove(StringSectores.Length - 1, 1);
 
-			// Eliminar última coma de StringSectores
-			StringSectores.Remove(StringSectores.Length - 1, 1);
+            #region Obtención de información desde la base de datos
 
-			#region Obtención de información desde la base de datos
-            
             Log(false, strModulo, "Obtención de información desde la base de datos StringSectores={0}...", StringSectores);
-            
+
             // RQF-4
             if (!TodosLosSectoresAsignadosANucleosOK(cmd, StringSectores))
             {
@@ -2525,34 +2562,34 @@ namespace GeneraSectorizacionDll
 
             //Se obtiene la lista de agrupaciones y la lista de sectores que componen cada agrupación
             GetGroupsInfo(cmd);
-			GetUcsInfo(cmd);
-			GetSectorsInfo(cmd);
+            GetUcsInfo(cmd);
+            GetSectorsInfo(cmd);
 
             // Recoger informacion de los grupos de LC y obtener el número de destinos que componen cada grupo en _LceGroupsResourcesCount
             GetInfoLCGroups(cmd);
 
-			// Eliminar los sectores de mantto. mezclados con los sectores reales o virtuales. 
-			// 2023/03/21 Se permite tener sectores de mantenimiento y un máximo de dos en UCS
-            //if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa)
-		    // RemoveMantSectors();
+            // Eliminar los sectores de mantto. mezclados con los sectores reales o virtuales. 
+            // 2023/03/21 Se permite tener sectores de mantenimiento y un máximo de dos en UCS ERROR OJOOOO
+            if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa)
+                RemoveMantSectors();
 
             //De todos los sectores simples que forman parte de la sectorización, se recupera de cada sector:
             //los parámetros, sus destinos externos e internos de telefonía, la agenda y los destinos radio
             //Además, en sector FS, se añaden todos los destinos radios configurados en los distintos sectores.
-			GetUsersInfo(cmd);
-			#endregion
+            GetUsersInfo(cmd);
+            #endregion
 
-			#region Eliminar sectorización anterior
-            
+            #region Eliminar sectorización anterior
+
             Log(false, strModulo, "Eliminar sectorización anterior...");
             if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa || tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Telefonia)
-			{
-				EliminaExternosSectorizados(cmd);
-				EliminaInternosSectorizados(cmd);
-			}
-			if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa || tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Radio)
-				EliminaRadioSectorizados(cmd);
-			#endregion
+            {
+                EliminaExternosSectorizados(cmd);
+                EliminaInternosSectorizados(cmd);
+            }
+            if (tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Completa || tipoSectorizacion == Tipo_Sectorizacion.Sectorizacion_Radio)
+                EliminaRadioSectorizados(cmd);
+            #endregion
 
             if (Name == "SACTA")
             {
@@ -2562,10 +2599,10 @@ namespace GeneraSectorizacionDll
             }
 
             Log(false, strModulo, "foreach (UcsInfo ucs in ListOfUcs.Values) ucs.MergeUsers...");
-			foreach (UcsInfo ucs in ListOfUcs.Values)
-			{
+            foreach (UcsInfo ucs in ListOfUcs.Values)
+            {
                 ucs.MergeUsers(this, cmd, extE, extP);
-                
+
                 //CreaSectores(cmd, ucs);
                 if (Name == "SACTA")
                 {
@@ -2581,9 +2618,9 @@ namespace GeneraSectorizacionDll
             //Para cada puesto de operador (ucs) de la sectorización, se generan los colaterales
             Log(false, strModulo, "foreach (UcsInfo ucs in ListOfUcs.Values) ucs.MergeColaterals...");
             foreach (UcsInfo ucs in ListOfUcs.Values)
-			{
+            {
                 Log(false, strModulo, "ucs.MergeColaterals ucs= " + ucs.TopE);
-				ucs.MergeColaterals(this, cmd, tipoSectorizacion);
+                ucs.MergeColaterals(this, cmd, tipoSectorizacion);
 #if DEBUG1
                 System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(0.5)).Wait();
 #endif
@@ -2592,58 +2629,58 @@ namespace GeneraSectorizacionDll
             Log(false, strModulo, "Saliendo...");
         }
 
-		private void CreaSactaEnSectoresSectorizaciones(DbCommand cmd, UcsInfo ucs)
-		{
-			string nomAgrupacion = ucs.UserE.Literal;
-			string idNucleo = ucs.Sectors[0].UserE.IdNucleo;
-			string idTop = ucs.TopE;
+        private void CreaSactaEnSectoresSectorizaciones(DbCommand cmd, UcsInfo ucs)
+        {
+            string nomAgrupacion = ucs.UserE.Literal;
+            string idNucleo = ucs.Sectors[0].UserE.IdNucleo;
+            string idTop = ucs.TopE;
 
-			cmd.CommandText = "REPLACE INTO SectoresSectorizacion (IdSistema,IdSectorizacion,IdNucleo,IdSector,IdTop)" +
-								" VALUES ('" + IdSistema + "','" +
-											 "SACTA" + "','" +
-											 idNucleo + "','" +
-											 nomAgrupacion + "','" +
-											 idTop + "')";
-			cmd.ExecuteNonQuery();
-		}
+            cmd.CommandText = "REPLACE INTO SectoresSectorizacion (IdSistema,IdSectorizacion,IdNucleo,IdSector,IdTop)" +
+                                " VALUES ('" + IdSistema + "','" +
+                                             "SACTA" + "','" +
+                                             idNucleo + "','" +
+                                             nomAgrupacion + "','" +
+                                             idTop + "')";
+            cmd.ExecuteNonQuery();
+        }
 
-		private void CreaSactaEnSectorizaciones(DbCommand cmd)
-		{
-			bool insertar = false;
-			// Crear registro con IdSectorizacion='SACTA' si es que no existe
-			cmd.CommandText = "SELECT * FROM Sectorizaciones " +
-								"WHERE IdSistema='" + IdSistema + "' AND " +
-										"IdSectorizacion='SACTA'";
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				insertar = !dr.HasRows;
-			}
+        private void CreaSactaEnSectorizaciones(DbCommand cmd)
+        {
+            bool insertar = false;
+            // Crear registro con IdSectorizacion='SACTA' si es que no existe
+            cmd.CommandText = "SELECT * FROM Sectorizaciones " +
+                                "WHERE IdSistema='" + IdSistema + "' AND " +
+                                        "IdSectorizacion='SACTA'";
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                insertar = !dr.HasRows;
+            }
 
-			if (insertar)
-			{
+            if (insertar)
+            {
 
-				cmd.CommandText = "INSERT INTO Sectorizaciones (IdSistema,IdSectorizacion,Activa,FechaActivacion)" +
-								" VALUES ('" + IdSistema + "','" +
-											 "SACTA" + "'," +
-											 false + "," +
-											 "STR_TO_DATE('" + FechaActivacion.ToString("dd/MM/yyyy HH:mm:ss") + "','%d/%m/%Y %H:%i:%s')" +
-											   " )";
-				cmd.ExecuteNonQuery();
-			}
+                cmd.CommandText = "INSERT INTO Sectorizaciones (IdSistema,IdSectorizacion,Activa,FechaActivacion)" +
+                                " VALUES ('" + IdSistema + "','" +
+                                             "SACTA" + "'," +
+                                             false + "," +
+                                             "STR_TO_DATE('" + FechaActivacion.ToString("dd/MM/yyyy HH:mm:ss") + "','%d/%m/%Y %H:%i:%s')" +
+                                               " )";
+                cmd.ExecuteNonQuery();
+            }
 
-			// Eliminar la anterior asignación de sectores a Ucs
-			cmd.CommandText = "DELETE FROM SectoresSectorizacion " +
-								"WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='SACTA'";
-			cmd.ExecuteNonQuery();
-		}
+            // Eliminar la anterior asignación de sectores a Ucs
+            cmd.CommandText = "DELETE FROM SectoresSectorizacion " +
+                                "WHERE IdSistema='" + IdSistema + "' AND IdSectorizacion='SACTA'";
+            cmd.ExecuteNonQuery();
+        }
 
-		#region Private
+        #region Private
 
         void GetInfoLCGroups(DbCommand cmd)
         {
             cmd.CommandText = "SELECT dt.IdGrupo,COUNT(*) FROM destinostelefonia dt " +
-	                                "INNER JOIN grupostelefonia gt ON gt.idgrupo=dt.idgrupo " +
-	                                "where dt.idgrupo IS NOT NULL GROUP BY dt.idgrupo";
+                                    "INNER JOIN grupostelefonia gt ON gt.idgrupo=dt.idgrupo " +
+                                    "where dt.idgrupo IS NOT NULL GROUP BY dt.idgrupo";
             using (DbDataReader dr = cmd.ExecuteReader())
             {
                 while (dr.Read())
@@ -2653,146 +2690,146 @@ namespace GeneraSectorizacionDll
             }
         }
 
-		void GetGroupsInfo(DbCommand cmd)
-		{
-			#region Obtenemos las agrupaciones
-			cmd.CommandText = "SELECT sa.IdAgrupacion, s.NumSacta FROM SectoresAgrupacion sa, sectores s " +
-								"WHERE sa.IdSistema='" + IdSistema + "' AND " +
-										"s.IdSistema=sa.IdSistema AND " +
-										"sa.IdSector=s.IdSector " +
-								"ORDER BY sa.IdAgrupacion";
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					string groupId = dr.GetString(0);
-					SectorGroupInfo group = null;
+        void GetGroupsInfo(DbCommand cmd)
+        {
+            #region Obtenemos las agrupaciones
+            cmd.CommandText = "SELECT sa.IdAgrupacion, s.NumSacta FROM SectoresAgrupacion sa, sectores s " +
+                                "WHERE sa.IdSistema='" + IdSistema + "' AND " +
+                                        "s.IdSistema=sa.IdSistema AND " +
+                                        "sa.IdSector=s.IdSector " +
+                                "ORDER BY sa.IdAgrupacion";
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    string groupId = dr.GetString(0);
+                    SectorGroupInfo group = null;
 
-					if (!ListOfGroups.TryGetValue(groupId, out group))
-					{
-						group = new SectorGroupInfo();
-						group.Name = groupId;
-						ListOfGroups[groupId] = group;
-						//group.Especial = dr.IsDBNull(2) || (dr.GetInt32(2) == 0) ? false : true;
-					}
+                    if (!ListOfGroups.TryGetValue(groupId, out group))
+                    {
+                        group = new SectorGroupInfo();
+                        group.Name = groupId;
+                        ListOfGroups[groupId] = group;
+                        //group.Especial = dr.IsDBNull(2) || (dr.GetInt32(2) == 0) ? false : true;
+                    }
 
-					group.Sectors.Add(dr.GetInt32(1));
-				}
-			}
-			#endregion
+                    group.Sectors.Add(dr.GetInt32(1));
+                }
+            }
+            #endregion
 
-			foreach (SectorGroupInfo group in ListOfGroups.Values)
-			{
-				group.Sectors.Sort();
+            foreach (SectorGroupInfo group in ListOfGroups.Values)
+            {
+                group.Sectors.Sort();
 
-				if (group.Especial)
-				{
-					#region Obtenemos los colaterales asociados al grupo especial
-					//Dictionary<string, string> publicNumbers = new Dictionary<string, string>();
-					//group.TlfEndPointsE = new TLFEndPoint[67];
-					//group.TlfEndPointsP = new TLFEndPoint[67];
+                if (group.Especial)
+                {
+                    #region Obtenemos los colaterales asociados al grupo especial
+                    //Dictionary<string, string> publicNumbers = new Dictionary<string, string>();
+                    //group.TlfEndPointsE = new TLFEndPoint[67];
+                    //group.TlfEndPointsP = new TLFEndPoint[67];
 
-					//// Los destinos ATS ademas de número R2 pueden tener número RTB (Público = 4)
-					//cmd.CommandText = "SELECT Destino, Numero FROM Destinos WHERE PrefijoRed = 4";
-					//using (DbDataReader dr = cmd.ExecuteReader())
-					//{
-					//    while (dr.Read())
-					//    {
-					//        string dst = dr.GetString(0);
+                    //// Los destinos ATS ademas de número R2 pueden tener número RTB (Público = 4)
+                    //cmd.CommandText = "SELECT Destino, Numero FROM Destinos WHERE PrefijoRed = 4";
+                    //using (DbDataReader dr = cmd.ExecuteReader())
+                    //{
+                    //    while (dr.Read())
+                    //    {
+                    //        string dst = dr.GetString(0);
 
-					//        Debug.Assert(!publicNumbers.ContainsKey(dst));
-					//        publicNumbers[dst] = dr.GetString(1);
-					//    }
-					//}
+                    //        Debug.Assert(!publicNumbers.ContainsKey(dst));
+                    //        publicNumbers[dst] = dr.GetString(1);
+                    //    }
+                    //}
 
-					//cmd.CommandText = "SELECT COUNT(*) FROM DestinosLargos";
-					//object objCount = cmd.ExecuteScalar();
-					//if ((objCount != null) && (Int32.Parse(objCount.ToString()) > 0))
-					//{
-					//    cmd.CommandText = "SELECT DISTINCT A.Origen, A.Ring, A.Prioridad, B.Destino, B.Numero, B.PrefijoRed, D.PosFinal, D.TipoPosicion " +
-					//                        "FROM ColateralTF A, Destinos B, DestinosLargos C, PanelAgrupacion D " +
-					//                        "WHERE D.NomAgrupacion = '" + group.Name + "' AND D.NumUsuario = 55 AND A.IdConfig = D.IdConfig " +
-					//                        "AND A.NumUsuario = D.NumUsuario AND A.IdPanel = D.IdPanel AND A.Posicion = D.Posicion " +
-					//                        "AND ((A.Destino = B.Destino) OR (RTRIM(A.Destino) = C.DestinoLargo AND C.DestinoCorto = RTRIM(B.Destino) And C.Tipo = B.PrefijoRed)) " +
-					//                        "AND ((A.PrefijoRed = B.PrefijoRed) OR (A.PrefijoRed = 2 AND B.PrefijoRed = 7)) ORDER BY A.IdConfig, A.NumUsuario, A.Posicion";
-					//}
-					//else
-					//{
-					//    cmd.CommandText = "SELECT DISTINCT A.Origen, A.Ring, A.Prioridad, B.Destino, B.Numero, B.PrefijoRed, D.PosFinal, D.TipoPosicion " +
-					//                            "FROM ColateralTF A, Destinos B, PanelAgrupacion D " +
-					//                            "WHERE D.NomAgrupacion = '" + group.Name + "' AND D.NumUsuario = 55 AND A.IdConfig = D.IdConfig " +
-					//                            "AND A.NumUsuario = D.NumUsuario AND A.IdPanel = D.IdPanel AND A.Posicion = D.Posicion " +
-					//                            "AND A.Destino = B.Destino AND ((A.PrefijoRed = B.PrefijoRed) OR (A.PrefijoRed = 2 AND B.PrefijoRed = 7)) " +
-					//                                "ORDER BY A.IdConfig, A.NumUsuario, A.Posicion";
-					//}
+                    //cmd.CommandText = "SELECT COUNT(*) FROM DestinosLargos";
+                    //object objCount = cmd.ExecuteScalar();
+                    //if ((objCount != null) && (Int32.Parse(objCount.ToString()) > 0))
+                    //{
+                    //    cmd.CommandText = "SELECT DISTINCT A.Origen, A.Ring, A.Prioridad, B.Destino, B.Numero, B.PrefijoRed, D.PosFinal, D.TipoPosicion " +
+                    //                        "FROM ColateralTF A, Destinos B, DestinosLargos C, PanelAgrupacion D " +
+                    //                        "WHERE D.NomAgrupacion = '" + group.Name + "' AND D.NumUsuario = 55 AND A.IdConfig = D.IdConfig " +
+                    //                        "AND A.NumUsuario = D.NumUsuario AND A.IdPanel = D.IdPanel AND A.Posicion = D.Posicion " +
+                    //                        "AND ((A.Destino = B.Destino) OR (RTRIM(A.Destino) = C.DestinoLargo AND C.DestinoCorto = RTRIM(B.Destino) And C.Tipo = B.PrefijoRed)) " +
+                    //                        "AND ((A.PrefijoRed = B.PrefijoRed) OR (A.PrefijoRed = 2 AND B.PrefijoRed = 7)) ORDER BY A.IdConfig, A.NumUsuario, A.Posicion";
+                    //}
+                    //else
+                    //{
+                    //    cmd.CommandText = "SELECT DISTINCT A.Origen, A.Ring, A.Prioridad, B.Destino, B.Numero, B.PrefijoRed, D.PosFinal, D.TipoPosicion " +
+                    //                            "FROM ColateralTF A, Destinos B, PanelAgrupacion D " +
+                    //                            "WHERE D.NomAgrupacion = '" + group.Name + "' AND D.NumUsuario = 55 AND A.IdConfig = D.IdConfig " +
+                    //                            "AND A.NumUsuario = D.NumUsuario AND A.IdPanel = D.IdPanel AND A.Posicion = D.Posicion " +
+                    //                            "AND A.Destino = B.Destino AND ((A.PrefijoRed = B.PrefijoRed) OR (A.PrefijoRed = 2 AND B.PrefijoRed = 7)) " +
+                    //                                "ORDER BY A.IdConfig, A.NumUsuario, A.Posicion";
+                    //}
 
-					//using (DbDataReader dr = cmd.ExecuteReader())
-					//{
-					//    while (dr.Read())
-					//    {
-					//        TLFEndPoint ep = new TLFEndPoint();
-					//        string type = dr.GetString(7);
+                    //using (DbDataReader dr = cmd.ExecuteReader())
+                    //{
+                    //    while (dr.Read())
+                    //    {
+                    //        TLFEndPoint ep = new TLFEndPoint();
+                    //        string type = dr.GetString(7);
 
-					//        ep.Group = dr.GetInt32(0);
-					//        ep.Ring = dr.GetInt32(1);
-					//        ep.Priority = dr.GetInt32(2);
-					//        ep.Name = dr.GetString(3);
-					//        ep.Number = dr.GetString(4);
-					//        ep.Prefix = (PrefixType)dr.GetInt32(5);
-					//        ep.Position = dr.GetInt32(6);
+                    //        ep.Group = dr.GetInt32(0);
+                    //        ep.Ring = dr.GetInt32(1);
+                    //        ep.Priority = dr.GetInt32(2);
+                    //        ep.Name = dr.GetString(3);
+                    //        ep.Number = dr.GetString(4);
+                    //        ep.Prefix = (PrefixType)dr.GetInt32(5);
+                    //        ep.Position = dr.GetInt32(6);
 
-					//        if (type == "E")
-					//        {
-					//            if (ep.Position >= group.TlfEndPointsE.Length)
-					//                {
-					//                Array.Resize(ref group.TlfEndPointsE, ep.Position + 1);
-					//                }
-					//            group.TlfEndPointsE[ep.Position] = ep;
-					//        }
-					//        else
-					//        {
-					//            if (ep.Position >= group.TlfEndPointsP.Length)
-					//            {
-					//                Array.Resize(ref group.TlfEndPointsP, ep.Position + 1);
-					//            }
-					//            group.TlfEndPointsP[ep.Position] = ep;
-					//        }
+                    //        if (type == "E")
+                    //        {
+                    //            if (ep.Position >= group.TlfEndPointsE.Length)
+                    //                {
+                    //                Array.Resize(ref group.TlfEndPointsE, ep.Position + 1);
+                    //                }
+                    //            group.TlfEndPointsE[ep.Position] = ep;
+                    //        }
+                    //        else
+                    //        {
+                    //            if (ep.Position >= group.TlfEndPointsP.Length)
+                    //            {
+                    //                Array.Resize(ref group.TlfEndPointsP, ep.Position + 1);
+                    //            }
+                    //            group.TlfEndPointsP[ep.Position] = ep;
+                    //        }
 
-					//        if (ep.Prefix == PrefixType.ATS)
-					//        {
-					//            publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
-					//        }
-					//    }
-					//}
-					#endregion
-				}
-			}
-		}
+                    //        if (ep.Prefix == PrefixType.ATS)
+                    //        {
+                    //            publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
+                    //        }
+                    //    }
+                    //}
+                    #endregion
+                }
+            }
+        }
 
-		void GetUcsInfo(DbCommand cmd)
-		{
-			cmd.CommandText = "SELECT IdTop,PosicionSacta FROM Top WHERE IdSistema='" + IdSistema + "'";
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					int ucsId = dr.GetInt32(1);
-					UcsInfo ucs = null;
+        void GetUcsInfo(DbCommand cmd)
+        {
+            cmd.CommandText = "SELECT IdTop,PosicionSacta FROM Top WHERE IdSistema='" + IdSistema + "'";
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    int ucsId = dr.GetInt32(1);
+                    UcsInfo ucs = null;
 
-					if (ListOfUcs.TryGetValue(ucsId, out ucs))
-					{
-						// De momento todas las sectorizaciones son con UCS monousuario
-						ucs.TopE = dr.GetString(0);
-						//string top = dr.GetString(0);
-						//if (dr.GetString(2) == "E")
-						//{
-						//    ucs.TopE = top;
-						//}
-						//else
-						//{
-						//    ucs.TopP = top;
-						//}
-	               }
+                    if (ListOfUcs.TryGetValue(ucsId, out ucs))
+                    {
+                        // De momento todas las sectorizaciones son con UCS monousuario
+                        ucs.TopE = dr.GetString(0);
+                        //string top = dr.GetString(0);
+                        //if (dr.GetString(2) == "E")
+                        //{
+                        //    ucs.TopE = top;
+                        //}
+                        //else
+                        //{
+                        //    ucs.TopP = top;
+                        //}
+                    }
                     else
                     {
                         UcsInfo ucsFS = new UcsInfo(IdSistema);
@@ -2802,16 +2839,16 @@ namespace GeneraSectorizacionDll
                         //ListOfSectors[INT_SECTOR_FS] = sectorFS;
                         //ucsFS.Sectors.Add(sectorFS);
                     }
-				}
-			}
-		}
+                }
+            }
+        }
 
-		void GetSectorsInfo(DbCommand cmd)
-		{
+        void GetSectorsInfo(DbCommand cmd)
+        {
             string idNucleo = string.Empty;
 
-            cmd.CommandText = "SELECT DISTINCT(IdNucleo) FROM SectoresSectorizacion WHERE IdSistema='" + IdSistema + 
-                                "' AND IdSectorizacion='" + Name +"'";
+            cmd.CommandText = "SELECT DISTINCT(IdNucleo) FROM SectoresSectorizacion WHERE IdSistema='" + IdSistema +
+                                "' AND IdSectorizacion='" + Name + "'";
             using (DbDataReader dr = cmd.ExecuteReader())
             {
                 if (dr.Read())
@@ -2831,19 +2868,19 @@ namespace GeneraSectorizacionDll
                                 "FROM sectores WHERE IdSistema='" + IdSistema + "' AND " +
                                     "SectorSimple";
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				Dictionary<string, int> realSectorsByNucleo = new Dictionary<string, int>();
-				Dictionary<string, int> realSectorsByNucleoInSect = new Dictionary<string, int>();
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                Dictionary<string, int> realSectorsByNucleo = new Dictionary<string, int>();
+                Dictionary<string, int> realSectorsByNucleoInSect = new Dictionary<string, int>();
 
-				while (dr.Read())
-				{
+                while (dr.Read())
+                {
                     //if (idNucleo != string.Empty && dr.GetString(0) != idNucleo)
                     //    continue;
 
-					int sectorId = dr.GetInt32(3);
-					string type = dr.GetString(2);
-					SectorInfo sector = null;
+                    int sectorId = dr.GetInt32(3);
+                    string type = dr.GetString(2);
+                    SectorInfo sector = null;
 
                     if (ListOfSectors.TryGetValue(sectorId, out sector))
                     {
@@ -2913,7 +2950,7 @@ namespace GeneraSectorizacionDll
                             realSectorsByNucleo[dr.GetString(0)] = ++numRealSectorsByNucleo;
                         }
                     }
-				}
+                }
 
                 // Añadir el usuario "Fuera de sectorización"
                 AnadeUsuarioFueraSectorizacion(idNucleo);
@@ -2935,15 +2972,15 @@ namespace GeneraSectorizacionDll
                         }
                     }
                 }
-			}
-		}
+            }
+        }
 
         private bool TodosLosSectoresAsignadosANucleosOK(DbCommand cmd, StringBuilder SectoresenSectorizacion)
         {
             ArrayList topNucleo = new ArrayList();
             bool todosAsignados = true;
-		    // Nombre nucleos en configuracion 
-		    List<string> ListOfAllNucleos = new List<string>();
+            // Nombre nucleos en configuracion 
+            List<string> ListOfAllNucleos = new List<string>();
             cmd.CommandText = "SELECT DISTINCT(IdNucleo) FROM Sectores WHERE IdSistema='" + IdSistema +
                                 "' AND SectorSimple AND	Tipo = 'R' AND NumSacta IN (" + StringSectores.ToString() + ");";
             using (DbDataReader dr = cmd.ExecuteReader())
@@ -2952,7 +2989,7 @@ namespace GeneraSectorizacionDll
                 {
                     if (dr["IdNucleo"] != System.DBNull.Value)
                     {
-                        ListOfAllNucleos.Add ((string)dr["IdNucleo"]);
+                        ListOfAllNucleos.Add((string)dr["IdNucleo"]);
                     }
                 }
             }
@@ -2962,7 +2999,7 @@ namespace GeneraSectorizacionDll
                 foreach (string snucleo in ListOfAllNucleos)
                 {
                     cmd.CommandText = "SELECT COUNT(*) FROM Sectores WHERE IdSistema='" + IdSistema + "' AND " +
-                                      " IdNucleo = '" + snucleo + "' AND SectorSimple AND	Tipo = 'R' AND NumSacta NOT IN (" + StringSectores.ToString() + ");";                                    
+                                      " IdNucleo = '" + snucleo + "' AND SectorSimple AND	Tipo = 'R' AND NumSacta NOT IN (" + StringSectores.ToString() + ");";
                     using (DbDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
@@ -2988,7 +3025,7 @@ namespace GeneraSectorizacionDll
             // Pendiente NUCLEOS ESPECIALES.
             Dictionary<int, string> _TopNucleo = new Dictionary<int, string>();
             Dictionary<int, string> _SactaNucleo = new Dictionary<int, string>();
-            cmd.CommandText = "select numsacta, idnucleo from sectores where IdSistema = '" + IdSistema +"' and sectorsimple = 1 and ( tipo = 'R' or tipo = 'V')";
+            cmd.CommandText = "select numsacta, idnucleo from sectores where IdSistema = '" + IdSistema + "' and sectorsimple = 1 and ( tipo = 'R' or tipo = 'V')";
             using (DbDataReader dr = cmd.ExecuteReader())
             {
                 while (dr.Read())
@@ -3023,7 +3060,7 @@ namespace GeneraSectorizacionDll
 
         private void AnadeUsuarioFueraSectorizacion(string idNucleo)
         {
-            foreach (KeyValuePair<int,UcsInfo> ucsFS in ListOfUcs)
+            foreach (KeyValuePair<int, UcsInfo> ucsFS in ListOfUcs)
             {
                 if (ucsFS.Value.Sectors.Count == 0 || ucsFS.Value.Sectors[0].IdSector == INT_SECTOR_FS)
                 {
@@ -3052,21 +3089,21 @@ namespace GeneraSectorizacionDll
 
                     sector.IdNucleo = idNucleo;
                     sector.Name = STR_SECTOR_FS;
-					sector.Type = "R";
-					sector.IdSistema = IdSistema;
+                    sector.Type = "R";
+                    sector.IdSistema = IdSistema;
 
                     sector.UserE = user;
                 }
             }
         }
 
-		void GetUsersInfo(DbCommand cmd)
-		{
+        void GetUsersInfo(DbCommand cmd)
+        {
             // Sector FS
             SectorInfo usrFS = null;
             ListOfSectors.TryGetValue(INT_SECTOR_FS, out usrFS);
 
-			#region Obtención de información básica
+            #region Obtención de información básica
 
             cmd.CommandText = "SELECT ts.idsector, ps.*, " +
                                     "ts.TransConConsultaPrev,ts.TransDirecta,ts.Conferencia,ts.Escucha,ts.Retener,ts.Captura,ts.Redireccion,ts.RepeticionUltLlamada,ts.RellamadaAut," +
@@ -3077,33 +3114,33 @@ namespace GeneraSectorizacionDll
                                         "ps.IdSistema=s.IdSistema AND ps.IdNucleo=s.IdNucleo AND ps.IdSector=s.IdSector AND " +
                                         "ts.IdSistema=s.IdSistema AND ts.IdNucleo=s.IdNucleo AND ts.IdSector=s.IdSector";
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					string userName = (string)dr["IdSector"];
-					UserInfo user = null;
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    string userName = (string)dr["IdSector"];
+                    UserInfo user = null;
 
-					if (ListOfUsersByName.TryGetValue(userName, out user))
-					{
-						if (dr["NumLlamadasEntrantesIDA"] != System.DBNull.Value)
-							user.NumLLamadasEntrantesIDA = (uint)dr["NumLlamadasEntrantesIDA"];
-						if (dr["NumLlamadasEnIDA"] != System.DBNull.Value)
-							user.NumLlamadasEnIDA = (uint)dr["NumLlamadasEnIDA"];
-						if (dr["NumFreqPagina"] != System.DBNull.Value)
-							user.NumFreqPagina = (uint)dr["NumFreqPagina"];
-						if (dr["NumPagFreq"] != System.DBNull.Value)
-							user.NumPagFreq = (uint)dr["NumPagFreq"];
-						if (dr["NumDestinosInternosPag"] != System.DBNull.Value)
-							user.NumDestinosInternosPag = (uint)dr["NumDestinosInternosPag"];
-						if (dr["NumPagDestinosInt"] != System.DBNull.Value)
-							user.NumPagDestinosInt = (uint)dr["NumPagDestinosInt"];
-						if (dr["Intrusion"] != System.DBNull.Value)
-							user.Intrusion = (bool)dr["Intrusion"];
-						if (dr["Intruido"] != System.DBNull.Value)
-							user.Intruido = (bool)dr["Intruido"];
-						if (dr["KeepAlivePeriod"] != System.DBNull.Value)
-							user.KAP = (uint)dr["KeepAlivePeriod"];
+                    if (ListOfUsersByName.TryGetValue(userName, out user))
+                    {
+                        if (dr["NumLlamadasEntrantesIDA"] != System.DBNull.Value)
+                            user.NumLLamadasEntrantesIDA = (uint)dr["NumLlamadasEntrantesIDA"];
+                        if (dr["NumLlamadasEnIDA"] != System.DBNull.Value)
+                            user.NumLlamadasEnIDA = (uint)dr["NumLlamadasEnIDA"];
+                        if (dr["NumFreqPagina"] != System.DBNull.Value)
+                            user.NumFreqPagina = (uint)dr["NumFreqPagina"];
+                        if (dr["NumPagFreq"] != System.DBNull.Value)
+                            user.NumPagFreq = (uint)dr["NumPagFreq"];
+                        if (dr["NumDestinosInternosPag"] != System.DBNull.Value)
+                            user.NumDestinosInternosPag = (uint)dr["NumDestinosInternosPag"];
+                        if (dr["NumPagDestinosInt"] != System.DBNull.Value)
+                            user.NumPagDestinosInt = (uint)dr["NumPagDestinosInt"];
+                        if (dr["Intrusion"] != System.DBNull.Value)
+                            user.Intrusion = (bool)dr["Intrusion"];
+                        if (dr["Intruido"] != System.DBNull.Value)
+                            user.Intruido = (bool)dr["Intruido"];
+                        if (dr["KeepAlivePeriod"] != System.DBNull.Value)
+                            user.KAP = (uint)dr["KeepAlivePeriod"];
                         if (dr["KeepAliveMultiplier"] != System.DBNull.Value)
                             user.KAM = (uint)dr["KeepAliveMultiplier"];
                         if (dr["NumEnlacesAI"] != System.DBNull.Value)
@@ -3158,10 +3195,10 @@ namespace GeneraSectorizacionDll
                             user.PermisoRTXSect = (bool)dr["PermisoRTXSect"];
 
 
-						user.TlfEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
-						user.LCEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
-						user.AgEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
-						user.RdEndPoints = new RDEndPoint[user.NumFreqPagina * user.NumPagFreq];
+                        user.TlfEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
+                        user.LCEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
+                        user.AgEndPoints = new TLFEndPoint[user.NumDestinosInternosPag * user.NumPagDestinosInt];
+                        user.RdEndPoints = new RDEndPoint[user.NumFreqPagina * user.NumPagFreq];
 
                         if (usrFS != null)
                         {
@@ -3173,10 +3210,10 @@ namespace GeneraSectorizacionDll
                             usrFS.UserE.NumPagFreq = user.NumPagFreq > usrFS.UserE.NumPagFreq ? user.NumPagFreq : usrFS.UserE.NumPagFreq;
                             usrFS.UserE.NumEnlacesAI = user.NumEnlacesAI > usrFS.UserE.NumEnlacesAI ? user.NumEnlacesAI : usrFS.UserE.NumEnlacesAI;
                         }
-					}
-				}
-			}
-         #endregion
+                    }
+                }
+            }
+            #endregion
 
 
             #region Obtención permisos sobre las redes
@@ -3231,120 +3268,120 @@ namespace GeneraSectorizacionDll
             #endregion
 
             ListOfAllUserNames.Sort();
-			GetUsersNumbers(cmd);
-			GetUsersTlfColaterals(cmd);
-			GetUsersTlfAgenda(cmd);
-			GetUsersRdColaterals(cmd);
-		}
+            GetUsersNumbers(cmd);
+            GetUsersTlfColaterals(cmd);
+            GetUsersTlfAgenda(cmd);
+            GetUsersRdColaterals(cmd);
+        }
 
-		void GetUsersNumbers(DbCommand cmd)
-		{
-			cmd.CommandText = "SELECT ua.IdSector,ua.IdPrefijo,ua.IdAbonado FROM usuariosAbonados ua, sectores s " +
-									"WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
-									"s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
-									"ua.IdSistema=s.IdSistema AND ua.IdNucleo=s.IdNucleo AND " +
-									"ua.IdSector=s.IdSector";
+        void GetUsersNumbers(DbCommand cmd)
+        {
+            cmd.CommandText = "SELECT ua.IdSector,ua.IdPrefijo,ua.IdAbonado FROM usuariosAbonados ua, sectores s " +
+                                    "WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
+                                    "s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
+                                    "ua.IdSistema=s.IdSistema AND ua.IdNucleo=s.IdNucleo AND " +
+                                    "ua.IdSector=s.IdSector";
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					if ((uint)dr["IdPrefijo"] == 3)	// ATS
-					{
-						string number = dr.GetString(2);
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    if ((uint)dr["IdPrefijo"] == 3)	// ATS
+                    {
+                        string number = dr.GetString(2);
 
-						if (number.Length > 0)
-						{
-							UserInfo user = null;
+                        if (number.Length > 0)
+                        {
+                            UserInfo user = null;
 
-							if (ListOfUsersByName.TryGetValue(dr.GetString(0), out user))
-							{
-								user.ATSNumbers.Add(Int32.Parse(number));
-							}
-						}
-					}
-					else if (dr["IdAbonado"] != System.DBNull.Value)	// Publico
-					{
-						UserInfo user = null;
+                            if (ListOfUsersByName.TryGetValue(dr.GetString(0), out user))
+                            {
+                                user.ATSNumbers.Add(Int32.Parse(number));
+                            }
+                        }
+                    }
+                    else if (dr["IdAbonado"] != System.DBNull.Value)	// Publico
+                    {
+                        UserInfo user = null;
 
-						if (ListOfUsersByName.TryGetValue(dr.GetString(0), out user))
-						{
-							UserInfo.StAbonado abonado;
-							abonado.Prefijo = (uint)dr["IdPrefijo"];
-							abonado.Numero = (string)dr["IdAbonado"];
-							user.PublicNumbers.Add(abonado);
-						}
-					}
-				}
-			}
-		}
+                        if (ListOfUsersByName.TryGetValue(dr.GetString(0), out user))
+                        {
+                            UserInfo.StAbonado abonado;
+                            abonado.Prefijo = (uint)dr["IdPrefijo"];
+                            abonado.Numero = (string)dr["IdAbonado"];
+                            user.PublicNumbers.Add(abonado);
+                        }
+                    }
+                }
+            }
+        }
 
-		void GetUsersTlfColaterals(DbCommand cmd)
-		{
-			Dictionary<string, string> publicNumbers = new Dictionary<string, string>();
+        void GetUsersTlfColaterals(DbCommand cmd)
+        {
+            Dictionary<string, string> publicNumbers = new Dictionary<string, string>();
 
-			// Los destinos ATS ademas de número R2 pueden tener número RTB (Público = 4)
-			cmd.CommandText = "SELECT b.IdDestino,b.IdAbonado FROM DestinosTelefonia a,DestinosExternos b " +
-								"WHERE a.IdSistema='" + IdSistema + "' AND a.IdSistema=b.IdSistema AND a.IdPrefijo=3 " +
-								"AND a.IdDestino=b.IdDestino AND b.IdPrefijo<>3";
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					string dst = dr.GetString(0);
+            // Los destinos ATS ademas de número R2 pueden tener número RTB (Público = 4)
+            cmd.CommandText = "SELECT b.IdDestino,b.IdAbonado FROM DestinosTelefonia a,DestinosExternos b " +
+                                "WHERE a.IdSistema='" + IdSistema + "' AND a.IdSistema=b.IdSistema AND a.IdPrefijo=3 " +
+                                "AND a.IdDestino=b.IdDestino AND b.IdPrefijo<>3";
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    string dst = dr.GetString(0);
 
-					Debug.Assert(!publicNumbers.ContainsKey(dst));
-					publicNumbers[dst] = dr.GetString(1);
-				}
-			}
+                    Debug.Assert(!publicNumbers.ContainsKey(dst));
+                    publicNumbers[dst] = dr.GetString(1);
+                }
+            }
 
-			#region Destinos Externos de telefonía
-			// Destinos de telefonía externos
-			//cmd.CommandText = "SELECT a.* FROM DestinosExternosSector a, SectoresSectorizacion ss, SectoresSector s " +
-			//                    "WHERE ss.IdSistema='" + IdSistema + "' AND ss.IdSectorizacion='" + Name + "' " +
-			//                    "AND s.IdSistema=ss.IdSistema AND s.IdSector=ss.IdSector AND s.IdNucleo=ss.IdNucleo " +
-			//                    "AND a.IdSistema=s.IdSistema AND a.IdSector=s.IdSectorOriginal " +
-			//                    "AND a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
+            #region Destinos Externos de telefonía
+            // Destinos de telefonía externos
+            //cmd.CommandText = "SELECT a.* FROM DestinosExternosSector a, SectoresSectorizacion ss, SectoresSector s " +
+            //                    "WHERE ss.IdSistema='" + IdSistema + "' AND ss.IdSectorizacion='" + Name + "' " +
+            //                    "AND s.IdSistema=ss.IdSistema AND s.IdSector=ss.IdSector AND s.IdNucleo=ss.IdNucleo " +
+            //                    "AND a.IdSistema=s.IdSistema AND a.IdSector=s.IdSectorOriginal " +
+            //                    "AND a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
             cmd.CommandText = "SELECT a.*, d.IdGrupo FROM DestinosExternosSector a, Sectores s, DestinosTelefonia d " +
-								"WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
-										"s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
-										"a.IdSistema=s.IdSistema AND " +
+                                "WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
+                                        "s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
+                                        "a.IdSistema=s.IdSistema AND " +
                                         "d.IdSistema = a.IdSistema AND " +
                                         "d.IdDestino = a.IdDestino AND " +
                                         "d.TipoDestino = a.TipoDestino AND " +
                                         "d.IdPrefijo = a.IdPrefijo AND " +
                                         "a.IdSector=s.IdSector AND " +
-										"a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
-         
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					UserInfo user = null;
+                                        "a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
 
-					if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
-					{
-						TLFEndPoint ep = new TLFEndPoint();
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    UserInfo user = null;
 
-						ep.Position = (int)(uint)dr["PosHMI"];
+                    if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
+                    {
+                        TLFEndPoint ep = new TLFEndPoint();
+
+                        ep.Position = (int)(uint)dr["PosHMI"];
                         ep.Origin = (string)dr["OrigenR2"];     //user.ATSNumbers[0].ToString(); // (string)dr["OrigenR2"];
-						ep.PriorityR2 = (int)((uint)dr["PrioridadSIP"]);
-						ep.Priority = (int)((uint)dr["Prioridad"]);
-						ep.Name = (string)dr["IdDestino"];
-						ep.Literal = (string)dr["Literal"];
-						ep.Prefix = (PrefixType)((uint)dr["IdPrefijo"]);
-						ep.IdDestino = (string)dr["IdDestino"];
-						ep.TipoDestino = (uint)dr["TipoDestino"];
-						ep.TipoAcceso = (string)dr["TipoAcceso"];
+                        ep.PriorityR2 = (int)((uint)dr["PrioridadSIP"]);
+                        ep.Priority = (int)((uint)dr["Prioridad"]);
+                        ep.Name = (string)dr["IdDestino"];
+                        ep.Literal = (string)dr["Literal"];
+                        ep.Prefix = (PrefixType)((uint)dr["IdPrefijo"]);
+                        ep.IdDestino = (string)dr["IdDestino"];
+                        ep.TipoDestino = (uint)dr["TipoDestino"];
+                        ep.TipoAcceso = (string)dr["TipoAcceso"];
 
-						if (ep.TipoAcceso == "DA")
-						{
-							if (ep.Position >= user.TlfEndPoints.Length)
-								Array.Resize(ref user.TlfEndPoints, (int)(ep.Position + 1));
-							user.TlfEndPoints[ep.Position] = ep;
-						}
-						else if (ep.TipoAcceso == "IA")
-						{
+                        if (ep.TipoAcceso == "DA")
+                        {
+                            if (ep.Position >= user.TlfEndPoints.Length)
+                                Array.Resize(ref user.TlfEndPoints, (int)(ep.Position + 1));
+                            user.TlfEndPoints[ep.Position] = ep;
+                        }
+                        else if (ep.TipoAcceso == "IA")
+                        {
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 ep.Group = (string)dr["IdGrupo"];
 
@@ -3352,132 +3389,132 @@ namespace GeneraSectorizacionDll
                             //comprobamos si el destino ATS, tiene asociado un recurso LCEN
 
                             if ((dr["IdDestinoLCEN"] != System.DBNull.Value) && (dr["IdPrefijoDestinoLCEN"] != System.DBNull.Value)
-                                 &&  ((uint)dr["IdPrefijoDestinoLCEN"]== 1))
+                                 && ((uint)dr["IdPrefijoDestinoLCEN"] == 1))
                             {
-                                ep.strIdDestinoLCEN= (string) dr["IdDestinoLCEN"];
+                                ep.strIdDestinoLCEN = (string)dr["IdDestinoLCEN"];
                             }
 
                             if (ep.Position >= user.LCEndPoints.Length)
-								Array.Resize(ref user.LCEndPoints, (int)(ep.Position + 1));
-							user.LCEndPoints[ep.Position] = ep;
-						}
-						else if (ep.TipoAcceso == "AG")
-						{
-							if (ep.Position >= user.AgEndPoints.Length)
-								Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
-							user.AgEndPoints[ep.Position] = ep;
-						}
+                                Array.Resize(ref user.LCEndPoints, (int)(ep.Position + 1));
+                            user.LCEndPoints[ep.Position] = ep;
+                        }
+                        else if (ep.TipoAcceso == "AG")
+                        {
+                            if (ep.Position >= user.AgEndPoints.Length)
+                                Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
+                            user.AgEndPoints[ep.Position] = ep;
+                        }
 
-						if (ep.Prefix == PrefixType.ATS)
-						{
-							publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
-						}
-					}
-				}
-			}
-			#endregion	
+                        if (ep.Prefix == PrefixType.ATS)
+                        {
+                            publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
+                        }
+                    }
+                }
+            }
+            #endregion
 
-			#region Destinos internos de telefonía
-			// Destinos de telefonía internos
-			//cmd.CommandText = "SELECT a.* FROM DestinosInternosSector a, SectoresSectorizacion ss, SectoresSector s " +
-			//                    "WHERE ss.IdSistema='" + IdSistema + "' AND ss.IdSectorizacion='" + Name + "' " +
-			//                    "AND s.IdSistema=ss.IdSistema AND s.IdSector=ss.IdSector AND s.IdNucleo=ss.IdNucleo " +
-			//                    "AND a.IdSistema=s.IdSistema AND a.IdSector=s.IdSectorOriginal " +
-			//                    "AND a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
-			cmd.CommandText = "SELECT a.* FROM DestinosInternosSector a, Sectores s " +
-								"WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
-										"s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
-										"a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
-										"a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
+            #region Destinos internos de telefonía
+            // Destinos de telefonía internos
+            //cmd.CommandText = "SELECT a.* FROM DestinosInternosSector a, SectoresSectorizacion ss, SectoresSector s " +
+            //                    "WHERE ss.IdSistema='" + IdSistema + "' AND ss.IdSectorizacion='" + Name + "' " +
+            //                    "AND s.IdSistema=ss.IdSistema AND s.IdSector=ss.IdSector AND s.IdNucleo=ss.IdNucleo " +
+            //                    "AND a.IdSistema=s.IdSistema AND a.IdSector=s.IdSectorOriginal " +
+            //                    "AND a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
+            cmd.CommandText = "SELECT a.* FROM DestinosInternosSector a, Sectores s " +
+                                "WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
+                                        "s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
+                                        "a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
+                                        "a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					UserInfo user = null;
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    UserInfo user = null;
 
-					if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
-					{
-						TLFEndPoint ep = new TLFEndPoint();
+                    if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
+                    {
+                        TLFEndPoint ep = new TLFEndPoint();
 
-						ep.Position = (int)((uint)dr["PosHMI"]);
+                        ep.Position = (int)((uint)dr["PosHMI"]);
                         ep.Origin = user.ATSNumbers[0].ToString(); //(string)dr["OrigenR2"];
-						ep.PriorityR2 = (int)((uint)dr["PrioridadSIP"]);
-						ep.Priority = (int)((uint)dr["Prioridad"]);
-						ep.Name = (string)dr["IdDestino"];
-						ep.Literal = (string)dr["Literal"];
-						ep.Prefix = (PrefixType)((uint)dr["IdPrefijo"]);
-						ep.IdDestino = (string)dr["IdDestino"];
-						ep.TipoDestino = (uint)dr["TipoDestino"];
-						ep.TipoAcceso = (string)dr["TipoAcceso"];
-						if (ep.TipoAcceso == "DA")
-						{
-							if (ep.Position >= user.TlfEndPoints.Length)
-								Array.Resize(ref user.TlfEndPoints, (int)(ep.Position + 1));
-							user.TlfEndPoints[ep.Position] = ep;
-						}
-						else if (ep.TipoAcceso == "IA")
-						{
-							if (ep.Position >= user.LCEndPoints.Length)
-								Array.Resize(ref user.LCEndPoints, (int)(ep.Position + 1));
-							user.LCEndPoints[ep.Position] = ep;
-						}
-						else if (ep.TipoAcceso == "AG")
-						{
-							if (ep.Position >= user.AgEndPoints.Length)
-								Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
-							user.AgEndPoints[ep.Position] = ep;
-						}
+                        ep.PriorityR2 = (int)((uint)dr["PrioridadSIP"]);
+                        ep.Priority = (int)((uint)dr["Prioridad"]);
+                        ep.Name = (string)dr["IdDestino"];
+                        ep.Literal = (string)dr["Literal"];
+                        ep.Prefix = (PrefixType)((uint)dr["IdPrefijo"]);
+                        ep.IdDestino = (string)dr["IdDestino"];
+                        ep.TipoDestino = (uint)dr["TipoDestino"];
+                        ep.TipoAcceso = (string)dr["TipoAcceso"];
+                        if (ep.TipoAcceso == "DA")
+                        {
+                            if (ep.Position >= user.TlfEndPoints.Length)
+                                Array.Resize(ref user.TlfEndPoints, (int)(ep.Position + 1));
+                            user.TlfEndPoints[ep.Position] = ep;
+                        }
+                        else if (ep.TipoAcceso == "IA")
+                        {
+                            if (ep.Position >= user.LCEndPoints.Length)
+                                Array.Resize(ref user.LCEndPoints, (int)(ep.Position + 1));
+                            user.LCEndPoints[ep.Position] = ep;
+                        }
+                        else if (ep.TipoAcceso == "AG")
+                        {
+                            if (ep.Position >= user.AgEndPoints.Length)
+                                Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
+                            user.AgEndPoints[ep.Position] = ep;
+                        }
 
-						if (ep.Prefix == PrefixType.ATS)
-						{
-							publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
-						}
-					}
-				}
-			}
-			#endregion
-		}
+                        if (ep.Prefix == PrefixType.ATS)
+                        {
+                            publicNumbers.TryGetValue(ep.Name, out ep.PublicNumber);
+                        }
+                    }
+                }
+            }
+            #endregion
+        }
 
-		private void GetUsersTlfAgenda(DbCommand cmd)
-		{
-			int posAgenda = 1;
-			#region Agenda de telefonía
-			cmd.CommandText = "SELECT a.* FROM Agenda a, Sectores s " +
-								"WHERE a.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
-										"s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
-										"a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
-										"a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,a.Nombre";
+        private void GetUsersTlfAgenda(DbCommand cmd)
+        {
+            int posAgenda = 1;
+            #region Agenda de telefonía
+            cmd.CommandText = "SELECT a.* FROM Agenda a, Sectores s " +
+                                "WHERE a.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
+                                        "s.NumSacta IN (" + StringSectores.ToString() + ") AND " +
+                                        "a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
+                                        "a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,a.Nombre";
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					UserInfo user = null;
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    UserInfo user = null;
 
-					if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
-					{
-						TLFEndPoint ep = new TLFEndPoint();
+                    if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
+                    {
+                        TLFEndPoint ep = new TLFEndPoint();
 
-						ep.Position = posAgenda++;
-						ep.Origin = (string)dr["IdSector"];
-						ep.Name = (string)dr["Nombre"];
-						ep.Literal = (string)dr["Nombre"];
-						ep.Prefix = (PrefixType)((uint)dr["Prefijo"]);
-						ep.IdDestino = (string)dr["Nombre"];
-						ep.TipoAcceso = "AG";
+                        ep.Position = posAgenda++;
+                        ep.Origin = (string)dr["IdSector"];
+                        ep.Name = (string)dr["Nombre"];
+                        ep.Literal = (string)dr["Nombre"];
+                        ep.Prefix = (PrefixType)((uint)dr["Prefijo"]);
+                        ep.IdDestino = (string)dr["Nombre"];
+                        ep.TipoAcceso = "AG";
 
-						if (ep.Position >= user.AgEndPoints.Length)
-							Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
-						user.AgEndPoints[ep.Position] = ep;
-					}
-				}
-			}
-			#endregion
-		}
+                        if (ep.Position >= user.AgEndPoints.Length)
+                            Array.Resize(ref user.AgEndPoints, (int)(ep.Position + 1));
+                        user.AgEndPoints[ep.Position] = ep;
+                    }
+                }
+            }
+            #endregion
+        }
 
-		void GetUsersRdColaterals(DbCommand cmd)
-		{
+        void GetUsersRdColaterals(DbCommand cmd)
+        {
             // Localizar usuario fuera de sectorización (si lo hay)
             // para asignar los colaterales radio UNION del resto de usuarios.
             UserInfo userFS = null;
@@ -3497,20 +3534,20 @@ namespace GeneraSectorizacionDll
                 object objCountslf = cmd.ExecuteScalar();
                 if ((objCountslf != null) && (Int32.Parse(objCountslf.ToString()) > 0))
                 {
-                   
+
                     //Si hay sector seleccionado, pero no tiene asignaciones radio se deja la opción **FS** origen
                     cmd.CommandText = "SELECT a.* FROM DestinosRadioSector a, Sectores s " +
                     "WHERE s.IdSistema='" + IdSistema + "' AND s.SectorSimple AND " +
                             "s.SeleccionadoFS = TRUE AND " +
                             "a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
                             "a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
-				    using (DbDataReader drsfs = cmd.ExecuteReader())
-				    {
+                    using (DbDataReader drsfs = cmd.ExecuteReader())
+                    {
                         haySeleccionadoFS = drsfs.HasRows;
                         drsfs.Close();
                         drsfs.Dispose();
-				    }  
-                }              
+                    }
+                }
                 //20200911 JOI #4591 FIN
                 // Destinos de Radio
                 cmd.CommandText = "SELECT a.* FROM DestinosRadioSector a, Sectores s " +
@@ -3519,30 +3556,30 @@ namespace GeneraSectorizacionDll
                                             "a.IdSistema=s.IdSistema AND a.IdSector=s.IdSector AND " +
                                             "a.IdNucleo=s.IdNucleo ORDER BY a.IdNucleo,a.IdSector,-a.PosHMI";
 
-			    using (DbDataReader dr = cmd.ExecuteReader())
-			    {
-				    while (dr.Read())
-				    {
-					    UserInfo user = null;
+                using (DbDataReader dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        UserInfo user = null;
 
-					    if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
-					    {
-						    RDEndPoint ep = new RDEndPoint();
+                        if (ListOfUsersByName.TryGetValue((string)dr["IdSector"], out user))
+                        {
+                            RDEndPoint ep = new RDEndPoint();
 
-						    ep.Position = (int)((uint)dr["PosHMI"]);
-						    ep.Frecuency = (string)dr["IdDestino"];
-						    ep.Literal = (string)dr["Literal"];
-						    ep.Priority = (int)((uint)dr["Prioridad"]);
-						    ep.PrioridadSIP=(int)((uint)dr["PrioridadSIP"]);
-						    ep.EstadoAsignacion = (string)dr["ModoOperacion"];
+                            ep.Position = (int)((uint)dr["PosHMI"]);
+                            ep.Frecuency = (string)dr["IdDestino"];
+                            ep.Literal = (string)dr["Literal"];
+                            ep.Priority = (int)((uint)dr["Prioridad"]);
+                            ep.PrioridadSIP = (int)((uint)dr["PrioridadSIP"]);
+                            ep.EstadoAsignacion = (string)dr["ModoOperacion"];
                             ep.SupervisionPortadora = dr["SupervisionPortadora"] != System.DBNull.Value ? (bool)dr["SupervisionPortadora"] : false;
                             ep.DescDestino = (string)dr["DescDestino"];
                             ep.DestinoId = (string)dr["IdDestino"];
-						    if (ep.Position >= user.RdEndPoints.Length)
-						    {
-							    Array.Resize(ref user.RdEndPoints, (int)(ep.Position + 1));
-						    }
-						    user.RdEndPoints[ep.Position] = ep;
+                            if (ep.Position >= user.RdEndPoints.Length)
+                            {
+                                Array.Resize(ref user.RdEndPoints, (int)(ep.Position + 1));
+                            }
+                            user.RdEndPoints[ep.Position] = ep;
 
                             if (hayUsuarioFS && !haySeleccionadoFS)
                             {
@@ -3550,16 +3587,16 @@ namespace GeneraSectorizacionDll
                                 if (!tlistaDestinosFS.ContainsKey(ep.Frecuency))
                                 {
                                     RDEndPoint epFS = new RDEndPoint();
-                                        iNumRdFS++;
-                                        epFS.Position = iNumRdFS;
-                                        epFS.Frecuency=ep.Frecuency;
-                                        epFS.Literal=ep.Literal;
-                                        epFS.Priority=ep.Priority;
-                                        epFS.PrioridadSIP=ep.PrioridadSIP;
-                                        epFS.EstadoAsignacion=ep.EstadoAsignacion;
-                                        epFS.SupervisionPortadora=ep.SupervisionPortadora;
-                                        epFS.DescDestino = ep.DescDestino;
-                                        epFS.DestinoId = ep.DestinoId;
+                                    iNumRdFS++;
+                                    epFS.Position = iNumRdFS;
+                                    epFS.Frecuency = ep.Frecuency;
+                                    epFS.Literal = ep.Literal;
+                                    epFS.Priority = ep.Priority;
+                                    epFS.PrioridadSIP = ep.PrioridadSIP;
+                                    epFS.EstadoAsignacion = ep.EstadoAsignacion;
+                                    epFS.SupervisionPortadora = ep.SupervisionPortadora;
+                                    epFS.DescDestino = ep.DescDestino;
+                                    epFS.DestinoId = ep.DestinoId;
                                     if (iNumRdFS >= userFS.RdEndPoints.Length)
                                     {
                                         Array.Resize(ref userFS.RdEndPoints, (int)(iNumRdFS + 1));
@@ -3569,9 +3606,9 @@ namespace GeneraSectorizacionDll
                                     tlistaUsuariosDestinosFS.Add(ep.Frecuency, user.IdUsuario);
                                 }
                             }
-					    }
-				    }
-			    }
+                        }
+                    }
+                }
                 //20200911 JOI #4591
                 if (hayUsuarioFS && haySeleccionadoFS)
                 {
@@ -3616,9 +3653,9 @@ namespace GeneraSectorizacionDll
                 }
                 //20200911 JOI #4591 FIN
 
-			    // Obtener el estado de los altavoces de cada posición.
-			    foreach (UserInfo user in ListOfUsersByName.Values)
-			    {
+                // Obtener el estado de los altavoces de cada posición.
+                foreach (UserInfo user in ListOfUsersByName.Values)
+                {
                     if (user.IdUsuario != STR_SECTOR_FS && user.RdEndPoints.Length > 0)
                     {
                         foreach (RDEndPoint rdPosicion in user.RdEndPoints)
@@ -3634,7 +3671,7 @@ namespace GeneraSectorizacionDll
                                     {
                                         if (null != tlistaDestinosFS[rdPosicion.Frecuency])
                                         {
-                                            int iPos = (int) tlistaDestinosFS[rdPosicion.Frecuency];
+                                            int iPos = (int)tlistaDestinosFS[rdPosicion.Frecuency];
                                             string idUsuarioFS = (string)tlistaUsuariosDestinosFS[rdPosicion.Frecuency];
                                             if (null != userFS.RdEndPoints[iPos] && user.IdUsuario == idUsuarioFS)
                                             {
@@ -3647,7 +3684,7 @@ namespace GeneraSectorizacionDll
                             }
                         }
                     }
-			    }
+                }
 
                 if (tlistaDestinosFS.Count > 0)
                     tlistaDestinosFS.Clear();
@@ -3659,85 +3696,85 @@ namespace GeneraSectorizacionDll
             {
                 Log(true, "GetUsersRdColaterals", "Error mysql:" + e.Message.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log(true, "GetUsersRdColaterals", "Error generico:" + ex.Message.ToString());
             }
-		}
+        }
 
-		private Dictionary<string, string> GetEstadoRecursos(string idSistema, string idNucleo, string idSector, uint posHmi, DbCommand cmd)
-		{
-			Dictionary<string, string> estado = new Dictionary<string, string>();
+        private Dictionary<string, string> GetEstadoRecursos(string idSistema, string idNucleo, string idSector, uint posHmi, DbCommand cmd)
+        {
+            Dictionary<string, string> estado = new Dictionary<string, string>();
 
-			cmd.CommandText = "SELECT IdRecurso,Estado FROM EstadosRecursos " +
-								"WHERE IdSistema='" + idSistema + "' AND " +
-										"IdNucleo='" + idNucleo + "' AND " +
-										"IdSector='" + idSector + "' AND " +
-										"PosHMI=" + posHmi;
+            cmd.CommandText = "SELECT IdRecurso,Estado FROM EstadosRecursos " +
+                                "WHERE IdSistema='" + idSistema + "' AND " +
+                                        "IdNucleo='" + idNucleo + "' AND " +
+                                        "IdSector='" + idSector + "' AND " +
+                                        "PosHMI=" + posHmi;
 
-			using (DbDataReader dr = cmd.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					estado.Add((string)dr["IdRecurso"], (string)dr["Estado"]);
-				}
-			}
+            using (DbDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    estado.Add((string)dr["IdRecurso"], (string)dr["Estado"]);
+                }
+            }
 
-			return estado;
-		}
+            return estado;
+        }
 
-		private List<string> GetEstadoAltavoces(string idSistema, string idNucleo, string idDestino, string idSector, uint posHmi, DbCommand comando)
-		{
-			List<string> listaAltavoces=new List<string>();
+        private List<string> GetEstadoAltavoces(string idSistema, string idNucleo, string idDestino, string idSector, uint posHmi, DbCommand comando)
+        {
+            List<string> listaAltavoces = new List<string>();
 
-			comando.CommandText = "SELECT * FROM Altavoces " +
-								"WHERE IdSistema='" + idSistema + "' AND " +
-										"IdNucleo='" + idNucleo + "' AND " +
-										"IdSector='" + idSector + "' AND " +
-										"Estado<>'I' AND " + // Sólo los altavoces en estado de Seleccionado o Activo son sectorizables.
-										"IdDestino='" + idDestino + "' AND " +
-										"PosHMI=" + posHmi + " ORDER BY NumAltavoz";
+            comando.CommandText = "SELECT * FROM Altavoces " +
+                                "WHERE IdSistema='" + idSistema + "' AND " +
+                                        "IdNucleo='" + idNucleo + "' AND " +
+                                        "IdSector='" + idSector + "' AND " +
+                                        "Estado<>'I' AND " + // Sólo los altavoces en estado de Seleccionado o Activo son sectorizables.
+                                        "IdDestino='" + idDestino + "' AND " +
+                                        "PosHMI=" + posHmi + " ORDER BY NumAltavoz";
 
-			using (DbDataReader dr = comando.ExecuteReader())
-			{
-				while (dr.Read())
-				{
-					listaAltavoces.Add((string)dr["Estado"]);
-				}
-			}
+            using (DbDataReader dr = comando.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    listaAltavoces.Add((string)dr["Estado"]);
+                }
+            }
 
-			return listaAltavoces;
-		}
+            return listaAltavoces;
+        }
 
-		void RemoveMantSectors()
-		{
-			foreach (UcsInfo ucs in ListOfUcs.Values)
-			{
-				List<SectorInfo> mantSectors = ucs.Sectors.FindAll(delegate(SectorInfo obj) { return (obj.Type == "M"); });
+        void RemoveMantSectors()
+        {
+            foreach (UcsInfo ucs in ListOfUcs.Values)
+            {
+                List<SectorInfo> mantSectors = ucs.Sectors.FindAll(delegate(SectorInfo obj) { return (obj.Type == "M"); });
 
-				if (mantSectors.Count > 0)
-				{
-					if (mantSectors.Count < ucs.Sectors.Count)
-					{
-						foreach (SectorInfo sector in mantSectors)
-						{
-							ucs.Sectors.Remove(sector);
-							ListOfSectors.Remove(sector.IdSector);
-							if (sector.UserE != null) ListOfUsersByName.Remove(sector.UserE.IdUsuario);
-							if (sector.UserP != null) ListOfUsersByName.Remove(sector.UserP.IdUsuario);
-						}
-					}
-					else if (mantSectors.Count > 1)      // Todos los sectores son de mantenimiento y hay mas de uno
-					{
-						throw new SectorizationException(SectorizationResult.TwoMaintenanceSectors, Resources.MultipleMantSectorError);
-					}
-				}
+                if (mantSectors.Count > 0)
+                {
+                    if (mantSectors.Count < ucs.Sectors.Count)
+                    {
+                        foreach (SectorInfo sector in mantSectors)
+                        {
+                            ucs.Sectors.Remove(sector);
+                            ListOfSectors.Remove(sector.IdSector);
+                            if (sector.UserE != null) ListOfUsersByName.Remove(sector.UserE.IdUsuario);
+                            if (sector.UserP != null) ListOfUsersByName.Remove(sector.UserP.IdUsuario);
+                        }
+                    }
+                    else if (mantSectors.Count > 1)      // Todos los sectores son de mantenimiento y hay mas de uno
+                    {
+                        throw new SectorizationException(SectorizationResult.TwoMaintenanceSectors, Resources.MultipleMantSectorError);
+                    }
+                }
 
-				Debug.Assert(ucs.Sectors.Count > 0);
-			}
-		}
+                Debug.Assert(ucs.Sectors.Count > 0);
+            }
+        }
 
-      #endregion
+        #endregion
 
         /// <summary>
         /// AGL. Para poder seguir la ejecucion....
@@ -3755,6 +3792,291 @@ namespace GeneraSectorizacionDll
                 NLog.LogManager.GetLogger("SactaModule").Info(message, par);
         }
 
-   }
+/// <summary>
+/// 
+/// </summary>
+/// 
+        private const int RANGO_SACTA = 10000;
+        private const int NUM_MAX_TOPS = 40;
+        private enum Estado_Sectorizacion { ACTIVA= 1, NO_ACTIVA = 2, ERROR_GENERICO = 3, ERROR_SQL = 4 }
+        public struct NucleoTop
+        {
+            public string Nucleo;
+            public string Top;
+        }
+        public struct NucleoSectores
+        {
+            public List<string> sector;
+        }
 
+        private Dictionary<string, string> identificadoressactaconfiguracionactiva = new Dictionary<string, string>();
+        Dictionary<string, NucleoSectores> RelacionNucleosSectores = new Dictionary<string, NucleoSectores>();
+        public List<string> NucleosAfectados = new List<string>();
+     
+        private Estado_Sectorizacion ObtenSectorizacionActiva(string idSistema, DbCommand comando)
+        {
+            Dictionary<string, NucleoTop> identificadoresconfiguracionactiva = new Dictionary<string, NucleoTop>();
+            identificadoressactaconfiguracionactiva.Clear();
+            string strNombreSectorizacionActNew = String.Empty;
+            string stridSectorizacionConFechaActiva = String.Empty;
+            try
+            {
+                if (!string.IsNullOrEmpty(idSistema))
+                {
+                    comando.CommandText = "SELECT * FROM Sectorizaciones WHERE IdSistema='" + idSistema + "' AND Activa=true";
+                    using (DbDataReader dr = comando.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            stridSectorizacionConFechaActiva = ((DateTime)dr["FechaActivacion"]).ToString("dd/MM/yyyy HH:mm:ss");
+                        }
+                    }
+                    if (stridSectorizacionConFechaActiva != String.Empty)
+                    {
+                        comando.CommandText = "SELECT IdSistema,IdTop,IdNucleo,IdSector,tipo FROM ViewSectoresEnTops WHERE IdSistema='" + idSistema
+                                              + "' AND (IdSectorizacion='" + stridSectorizacionConFechaActiva + "' OR IdSectorizacion IS null) ORDER BY IdSector";
+                        using (DbDataReader dr = comando.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                if (dr["tipo"] != System.DBNull.Value)
+                                {
+                                    if ((string)dr["IdSector"] != STR_SECTOR_FS && (string)dr["Tipo"] != "M")
+                                    {
+                                        NucleoTop NT;
+                                        NT.Nucleo = (string)dr["IdNucleo"];
+                                        NT.Top = (string)dr["IdTop"];
+                                        identificadoresconfiguracionactiva.Add((string)dr["IdSector"], NT);
+                                    }
+                                }
+                            }
+                        }
+                        if (identificadoresconfiguracionactiva.Count > 0)
+                        {
+                            if (!ObtenIdentificadoresSactaConfiguracionActiva(idSistema, identificadoresconfiguracionactiva, comando))
+                            {
+                                return Estado_Sectorizacion.ERROR_GENERICO;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return Estado_Sectorizacion.NO_ACTIVA;
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Log(true, "ObtenSectorizacionActiva", "Error mysql:" + e.Message.ToString());
+                return Estado_Sectorizacion.ERROR_SQL;
+            }
+            catch (Exception ex)
+            {
+                Log(true, "ObtenSectorizacionActiva", "Error generico:" + ex.Message.ToString());
+                return Estado_Sectorizacion.ERROR_GENERICO;
+            }
+            return Estado_Sectorizacion.ACTIVA;
+        }
+
+        private bool ObtenIdentificadoresSactaConfiguracionActiva(string idSistema,Dictionary<string, NucleoTop> strsactaactiva, DbCommand comando)
+        {
+            bool Correcto = true;
+            uint posicionsactatop = 0;
+            uint posicionsactasector = 0;
+            string idNucleo = String.Empty;
+            List<string> Sectores = new List<string>();
+            try
+            {
+                foreach (KeyValuePair<string, NucleoTop> strsacta in strsactaactiva)
+                {
+                    comando.CommandText = "SELECT PosicionSacta FROM top WHERE IdSistema='" + idSistema + "' AND IdTop='" + strsacta.Value.Top + "'";
+                    using (DbDataReader dr = comando.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            posicionsactatop = (uint)dr["PosicionSacta"];
+                        }
+                    }
+                    comando.CommandText = "SELECT * FROM SectoresSector WHERE IdSistema='" + IdSistema +
+                                            "' AND IdSector='" + strsacta.Key + "' AND IdNucleo='" +
+                                            strsacta.Value.Nucleo + "' ORDER BY IdSectorOriginal";
+                    using (DbDataReader dr = comando.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            Sectores.Add((string)dr["IdSectorOriginal"]);
+                        }
+                    }
+                    if (Sectores.Count > 0)
+                    {
+                        foreach (string sectorsimple in Sectores)
+                        {
+                            comando.CommandText = "SELECT NumSacta FROM Sectores WHERE IdSistema='" + IdSistema + "'" +
+                                                  " AND IdNucleo='" + strsacta.Value.Nucleo + "'" +
+                                                  " AND IdSector='" + sectorsimple + "'" +
+                                                  " AND SectorSimple=true";
+                            using (DbDataReader dr = comando.ExecuteReader())
+                            {
+                                while (dr.Read())
+                                {
+                                    posicionsactasector = (uint)dr["NumSacta"];
+                                    identificadoressactaconfiguracionactiva.Add(posicionsactasector.ToString(),posicionsactatop.ToString());
+                                }
+                            }
+                        }
+                    }
+                    Sectores.Clear();
+                }
+            }
+            catch (MySqlException e)
+            {
+                Log(true, "ObtenIdentificadoresSactaConfiguracionActiva", "Error mysql:" + e.Message.ToString());
+                Correcto = false;
+            }
+            catch (Exception ex)
+            {
+                Log(true, "ObtenIdentificadoresSactaConfiguracionActiva", "Error generico:" + ex.Message.ToString());
+                Correcto = false;
+            }
+            return Correcto;
+        }
+
+        private bool ObtenNucleosSistema(string idSistema, DbCommand comando)
+        {
+            bool Correcto = true;
+            string Nucleo;
+            uint Sector;
+            try
+            {
+                RelacionNucleosSectores.Clear();
+                comando.CommandText = "SELECT * FROM Nucleos WHERE IdSistema='" + idSistema + "'";
+                using (DbDataReader dr = comando.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        Nucleo = (string)dr["IdNucleo"];
+                        NucleoSectores NuSe = new NucleoSectores();
+                        NuSe.sector = new List<string>();
+                        RelacionNucleosSectores.Add(Nucleo, NuSe);
+                    }
+                }
+                if (RelacionNucleosSectores.Count != 0)
+                {
+                    foreach (KeyValuePair<string, NucleoSectores> NS in RelacionNucleosSectores)
+                    {
+                        comando.CommandText = "SELECT NumSacta FROM Sectores WHERE IdSistema='" + 
+                            idSistema + "' AND SectorSimple=true" + " AND IdNucleo='" + NS.Key + "' ORDER BY NumSacta";
+                        using (DbDataReader dr = comando.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                Sector = (uint)dr["NumSacta"];
+                                NS.Value.sector.Add(Sector.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Log(true, "ObtenNucleosSistema", "Error mysql:" + e.Message.ToString());
+                Correcto = false;
+            }
+            catch (Exception ex)
+            {
+                Log(true, "ObtenNucleosSistema", "Error generico:" + ex.Message.ToString());
+                Correcto = false;
+            }
+            return Correcto;
+        }
+
+        private void ControlNucleoSector(string Sector)
+        {
+            foreach (KeyValuePair<string, NucleoSectores> NS in RelacionNucleosSectores)
+            {
+                if (NS.Value.sector.Exists(x => x==Sector))
+                {
+                    if (!NucleosAfectados.Contains(NS.Key))
+                    {
+                        NucleosAfectados.Add(NS.Key);
+                        break;
+                    }
+                }
+            }
+        }
+        private void EliminaSectoresConfiguracionActiva()
+        {
+            NucleoSectores NS;
+            try
+            {
+                foreach (string Nucleo in NucleosAfectados)
+                {
+                    RelacionNucleosSectores.TryGetValue(Nucleo, out NS);
+                    foreach (string sector in NS.sector)
+                    {
+                        identificadoressactaconfiguracionactiva.Remove(sector);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(true, "EliminaSectoresConfiguracionActiva", "Error generico:" + ex.Message.ToString());
+            }
+        }
+
+        private List<string> ActualizaSectorUcs(string[] sectorUcs)
+        {
+            List<string> sectoresUcsList = new List<string>();
+            try
+            {
+                if (identificadoressactaconfiguracionactiva.Count >= 0)
+                {
+                    for (int i = 0, total = sectorUcs.Length; i < total; i += 2)
+                    {
+                        identificadoressactaconfiguracionactiva.Add(sectorUcs[i], sectorUcs[i + 1]);
+                    }
+                    foreach (System.Collections.Generic.KeyValuePair<string, string> ST in identificadoressactaconfiguracionactiva)
+                    {
+                        sectoresUcsList.Add(ST.Key);
+                        sectoresUcsList.Add(ST.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(true, "ActualizaSectorUcs", "Error generico:" + ex.Message.ToString());
+                sectoresUcsList.Clear();
+            }
+            return sectoresUcsList;
+        }
+
+
+        private int DameNumeroNucleosOperativos(string idSistema,DbCommand comando)
+        { 
+            int son = 0;
+            try
+            {
+                comando.CommandText = "SELECT DISTINCT IdNucleo FROM sectores WHERE IdSistema='" + idSistema + "' AND sectorsimple=1";
+                using (DbDataReader dr = comando.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        son++;
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Log(true, "DameNumeroNucleosOperativos", "Error mysql:" + e.Message.ToString());
+                son = 0;
+            }
+            catch (Exception ex)
+            {
+                Log(true, "DameNumeroNucleosOperativos", "Error generico:" + ex.Message.ToString());
+                son = 0;
+            }
+            return son;
+        }
+
+    }
 }

@@ -79,7 +79,7 @@ namespace SectorizacionDll.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a Un mismo sector asociado a distinatas UCS..
+        ///   Busca una cadena traducida similar a Un mismo sector asociado a distintas UCS.
         /// </summary>
         internal static string DuplicateSectorsError {
             get {
@@ -111,6 +111,42 @@ namespace SectorizacionDll.Properties {
         internal static string LoadActiveCfgError {
             get {
                 return ResourceManager.GetString("LoadActiveCfgError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Gestión SACTA-NUCLEOS. Error en obtención datos configuración ACTIVA (SQL-GENÉRICO).
+        /// </summary>
+        internal static string MergeConfiguracionActivaError {
+            get {
+                return ResourceManager.GetString("MergeConfiguracionActivaError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Gestión SACTA-NUCLEOS. ObtenNucleosSistema (SQL-GENÉRICO).
+        /// </summary>
+        internal static string MergeConfiguracionActivaErrorNucleosSistema {
+            get {
+                return ResourceManager.GetString("MergeConfiguracionActivaErrorNucleosSistema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Gestión SACTA-NUCLEOS. Sólo se permite modificar un solo núcleo o todos los existentes.
+        /// </summary>
+        internal static string MergeConfiguracionActivaErrorNucleosUnoTodos {
+            get {
+                return ResourceManager.GetString("MergeConfiguracionActivaErrorNucleosUnoTodos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Gestión SACTA-NUCLEOS. Error de proceso. Resultado sectorización sin ORs a TOPS.
+        /// </summary>
+        internal static string MergeConfiguracionActivaErrorResultadoSectorizacionVacia {
+            get {
+                return ResourceManager.GetString("MergeConfiguracionActivaErrorResultadoSectorizacionVacia", resourceCulture);
             }
         }
         

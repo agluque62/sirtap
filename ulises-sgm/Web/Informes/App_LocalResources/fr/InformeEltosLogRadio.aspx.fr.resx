@@ -262,7 +262,7 @@
     <value>Fonctionnalité:</value>
   </data>
   <data name="SUBINF_FREC_RADIO_GRS" xml:space="preserve">
-    <value>GRS Delay(ms):</value>
+    <value>TX GRS Delay (ms):</value>
   </data>
   <data name="SUBINF_FREC_RADIO_IDESTINO" xml:space="preserve">
     <value>DESTINATION:</value>

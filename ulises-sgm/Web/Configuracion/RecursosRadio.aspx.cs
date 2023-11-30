@@ -365,7 +365,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 		TxtUmbralPTT.Text = "-18";
 		TxtUmbralSQ.Text = "-33";
         //TextBoxCLD.Text = "1";
-        TxtGRSDelay.Text = "0";
+        TxtTXGRSDelay.Text = "0";
+        TxtRXGRSDelay.Text = "0";
         DListTablasCalidad.SelectedIndex = 0;
         //MVO: Por defecto, el tipo de equipo es pasarela
         RBLTipoEquipo.SelectedValue = HW_TIPO_PASARELA;
@@ -618,7 +619,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                     DListModoConfPTT.SelectedValue = r.ModoConfPTT.ToString();
                     DDLOffsetGeneral.SelectedValue = r.OffSetFrequency.ToString();
 
-                    TxtGRSDelay.Text = r.GrsDelay.ToString();
+                    TxtTXGRSDelay.Text = r.GrsDelay.ToString();
+                    TxtRXGRSDelay.Text = r.GrsDelayRx.ToString();
+
                     //TextBoxCLD.Text = r.CldSupervisionTime.ToString();
                     CheckBSS.Checked = r.BSS;
                     CheckGrabacionEd137.Checked = r.GrabacionEd137;
@@ -1748,7 +1751,8 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
             {
                 prRad.Metodos_bss_idmetodos_bss = UInt16.Parse(DListMetodoBSS.SelectedValue);
             }
-            prRad.GrsDelay = UInt16.Parse(TxtGRSDelay.Text);
+            prRad.GrsDelay = UInt16.Parse(TxtTXGRSDelay.Text);
+            prRad.GrsDelayRx = UInt16.Parse(TxtRXGRSDelay.Text);
             //prRad.CldSupervisionTime = Int32.Parse(TextBoxCLD.Text);            
             prRad.BSS = CheckBSS.Checked;
             prRad.GrabacionEd137 = CheckGrabacionEd137.Checked;
@@ -2414,7 +2418,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         TxtActivacionPTT.Enabled = !valor;
         TxtRepSQyBSS.Enabled = !valor;
         TxtUmbralVAD.Enabled = !valor;
-		TxtGRSDelay.Enabled = !valor; //MAF
+		TxtTXGRSDelay.Enabled = !valor;
+        TxtRXGRSDelay.Enabled = !valor; 
+
 		//TxtKAM.Enabled = !valor;
 		//TxtKAP.Enabled = !valor;
 	}

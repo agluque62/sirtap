@@ -49,7 +49,7 @@ ORDER BY DR.CnfTipoFrecuencia, DR.IdDestino</CommandText>
                 <SelectCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="true">
                     <CommandText>
-                      SELECT        r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss,
+                      SELECT        r.IdRecurso, r.TipoRecurso, r.IdEmplazamiento, rp.idradio_param, rp.GrsDelay, rp.OffSetFrequency, rp.EnableEventPttSq, rp.metodos_bss_idmetodos_bss, rp.GrsDelayRx,
                       pr.GananciaAGCTX, pr.GananciaAGCTXdBm, pr.GananciaAGCRX, pr.GananciaAGCRXdBm, pr.UmbralAGCTXdBm, pr.UmbralAGCRXdBm, pr.TamRTP, pr.TipoEM, pr.GrabacionEd137, z.Nombre AS NameZona,
                       rec.Tipo, tb.name AS TablaBSS, mb.name AS NameBss, rec.IdTIFX AS rec_idTIFX, rec.idEquipos, rec.SlotPasarela, rec.NumDispositivoSlot, pr.Codec,
                       pr.SupresionSilencio, r.IdDestino, r.TipoDestino, r.IdSistema, r.zonas_idZonas, r.tabla_bss_idtabla_bss, r.SQ, r.PTT, r.TiempoPTT, r.UmbralVAD, r.BSS,
@@ -80,6 +80,7 @@ ORDER BY DR.CnfTipoFrecuencia, DR.IdDestino</CommandText>
               <Mapping SourceColumn="OffSetFrequency" DataSetColumn="OffSetFrequency" />
               <Mapping SourceColumn="EnableEventPttSq" DataSetColumn="EnableEventPttSq" />
               <Mapping SourceColumn="metodos_bss_idmetodos_bss" DataSetColumn="metodos_bss_idmetodos_bss" />
+              <Mapping SourceColumn="GrsDelayRx" DataSetColumn="GrsDelayRx" />              
               <Mapping SourceColumn="GananciaAGCTX" DataSetColumn="GananciaAGCTX" />
               <Mapping SourceColumn="GananciaAGCTXdBm" DataSetColumn="GananciaAGCTXdBm" />
               <Mapping SourceColumn="GananciaAGCRX" DataSetColumn="GananciaAGCRX" />
@@ -307,6 +308,7 @@ FROM            tabla_bss</CommandText>
               <xs:element name="OffSetFrequency" msprop:Generator_ColumnVarNameInTable="columnOffSetFrequency" msprop:Generator_ColumnPropNameInRow="OffSetFrequency" msprop:Generator_ColumnPropNameInTable="OffSetFrequencyColumn" msprop:Generator_UserColumnName="OffSetFrequency" type="xs:int" minOccurs="0" />
               <xs:element name="EnableEventPttSq" msprop:Generator_ColumnVarNameInTable="columnEnableEventPttSq" msprop:Generator_ColumnPropNameInRow="EnableEventPttSq" msprop:Generator_ColumnPropNameInTable="EnableEventPttSqColumn" msprop:Generator_UserColumnName="EnableEventPttSq" type="xs:boolean" minOccurs="0" />
               <xs:element name="metodos_bss_idmetodos_bss" msprop:Generator_ColumnVarNameInTable="columnmetodos_bss_idmetodos_bss" msprop:Generator_ColumnPropNameInRow="metodos_bss_idmetodos_bss" msprop:Generator_ColumnPropNameInTable="metodos_bss_idmetodos_bssColumn" msprop:Generator_UserColumnName="metodos_bss_idmetodos_bss" type="xs:int" minOccurs="0" />
+              <xs:element name="GrsDelayRx" msprop:Generator_ColumnVarNameInTable="columnGrsDelayRx" msprop:Generator_ColumnPropNameInRow="GrsDelayRx" msprop:Generator_ColumnPropNameInTable="GrsDelayRxColumn" msprop:Generator_UserColumnName="GrsDelayRx" type="xs:int" minOccurs="0" />
               <xs:element name="GananciaAGCTX" msprop:Generator_ColumnVarNameInTable="columnGananciaAGCTX" msprop:Generator_ColumnPropNameInRow="GananciaAGCTX" msprop:Generator_ColumnPropNameInTable="GananciaAGCTXColumn" msprop:Generator_UserColumnName="GananciaAGCTX" type="xs:unsignedInt" minOccurs="0" />
               <xs:element name="GananciaAGCTXdBm" msprop:Generator_ColumnVarNameInTable="columnGananciaAGCTXdBm" msprop:Generator_ColumnPropNameInRow="GananciaAGCTXdBm" msprop:Generator_ColumnPropNameInTable="GananciaAGCTXdBmColumn" msprop:Generator_UserColumnName="GananciaAGCTXdBm" type="xs:float" minOccurs="0" />
               <xs:element name="GananciaAGCRX" msprop:Generator_ColumnVarNameInTable="columnGananciaAGCRX" msprop:Generator_ColumnPropNameInRow="GananciaAGCRX" msprop:Generator_ColumnPropNameInTable="GananciaAGCRXColumn" msprop:Generator_UserColumnName="GananciaAGCRX" type="xs:unsignedInt" minOccurs="0" />

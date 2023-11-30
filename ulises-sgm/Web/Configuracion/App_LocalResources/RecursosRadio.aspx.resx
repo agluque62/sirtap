@@ -1498,9 +1498,12 @@
   <data name="PrioridadResource.Text" xml:space="preserve">
     <value>Prioridad</value>
   </data>
-  <data name="RVTxtGRSDelayResource1.ErrorMessage" xml:space="preserve">
+  <data name="RVTxtTXGRSDelayResource1.ErrorMessage" xml:space="preserve">
     <value>El valor GRS Delay debe estar comprendido entre 0 y 500 ms</value>
   </data>
+  <data name="RVTxtRXGRSDelayResource1.ErrorMessage" xml:space="preserve">
+    <value>El valor GRS Delay debe estar comprendido entre 0 y 500 ms</value>
+  </data>  
   <data name="RVTxtCLDResource1.ErrorMessage" xml:space="preserve">
     <value>El valor debe estar comprendido entre 1 y 60</value>
   </data>
@@ -1517,12 +1520,18 @@
     <value>Grabación ED137</value>
   </data>
   <data name="Label34Resource1.Text" xml:space="preserve">
-    <value>GRS Delay (ms):</value>
+    <value>TX GRS Delay (ms):</value>
+  </data>
+  <data name="Label50Resource1.Text" xml:space="preserve">
+    <value>RX GRS Delay (ms):</value>
   </data>
   <data name="Panel8Resource1.Text" xml:space="preserve">
     <value>Generales</value>
   </data>
-  <data name="TxtGRSDelayResource1.Text" xml:space="preserve">
+  <data name="TxtTXGRSDelayResource1.Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TxtRXGRSDelayResource1.Text" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="TextBoxIP1.Text" xml:space="preserve">

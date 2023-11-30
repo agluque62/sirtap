@@ -124,7 +124,7 @@
     <value>Error en la sectorización: Prefijo de colateral telefónico inválido ({0})</value>
   </data>
   <data name="DuplicateSectorsError" xml:space="preserve">
-    <value>Un mismo sector asociado a distinatas UCS.</value>
+    <value>Un mismo sector asociado a distintas UCS</value>
   </data>
   <data name="EmptySectError" xml:space="preserve">
     <value>Sectorización vacía</value>
@@ -134,6 +134,18 @@
   </data>
   <data name="LoadActiveCfgError" xml:space="preserve">
     <value>Error obteniendo la configuración activa de la base de datos</value>
+  </data>
+  <data name="MergeConfiguracionActivaError" xml:space="preserve">
+    <value>Gestión SACTA-NUCLEOS. Error en obtención datos configuración ACTIVA (SQL-GENÉRICO)</value>
+  </data>
+  <data name="MergeConfiguracionActivaErrorNucleosSistema" xml:space="preserve">
+    <value>Gestión SACTA-NUCLEOS. ObtenNucleosSistema (SQL-GENÉRICO)</value>
+  </data>
+  <data name="MergeConfiguracionActivaErrorNucleosUnoTodos" xml:space="preserve">
+    <value>Gestión SACTA-NUCLEOS. Sólo se permite modificar un solo núcleo o todos los existentes</value>
+  </data>
+  <data name="MergeConfiguracionActivaErrorResultadoSectorizacionVacia" xml:space="preserve">
+    <value>Gestión SACTA-NUCLEOS. Error de proceso. Resultado sectorización sin ORs a TOPS</value>
   </data>
   <data name="MissingRealSectorError" xml:space="preserve">
     <value>No todos los sectores reales participan en la sectorización</value>

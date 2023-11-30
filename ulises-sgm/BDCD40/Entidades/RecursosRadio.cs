@@ -173,8 +173,14 @@ namespace CD40.BD.Entidades
         {
             get { return _Telemando; }
             set { _Telemando = value; }
-        }  
+        }
 
+        private int _GrsDelayRx;
+        public int GrsDelayRx
+        {
+            get { return _GrsDelayRx; }
+            set { _GrsDelayRx = value; }
+        }
 
         #endregion
 
@@ -405,6 +411,8 @@ namespace CD40.BD.Entidades
                     if (dr["Telemando"] != System.DBNull.Value)
                         pr.Telemando = (int)dr["Telemando"];
 
+                    if (dr["GrsDelayRx"] != System.DBNull.Value)
+                        pr.GrsDelayRx = (int)dr["GrsDelayRx"];
                     ListaResultado.Add(pr);
                 }
             }
@@ -419,11 +427,12 @@ namespace CD40.BD.Entidades
 
             Array.Copy(base.InsertSQL(), consulta, 2);
 
-            consulta[2] = "INSERT INTO radio_param (GrsDelay,OffSetFrequency,EnableEventPttSq,metodos_bss_idmetodos_bss) VALUES (" +
+            consulta[2] = "INSERT INTO radio_param (GrsDelay,OffSetFrequency,EnableEventPttSq,metodos_bss_idmetodos_bss,GrsDelayRx) VALUES (" +
                 GrsDelay + "," +
                 OffSetFrequency + "," +
                 EnableEventPttSq + "," +
-                Metodos_bss_idmetodos_bss + ")";
+                Metodos_bss_idmetodos_bss + "," + 
+                GrsDelayRx + ")";
 
              strConsulta.Append("INSERT INTO RecursosRadio (IdSistema,IdRecurso,TipoRecurso,TipoDestino,zonas_idZonas,radio_param_idradio_param,");
              strConsulta.Append("IdDestino,IdEmplazamiento,tabla_bss_idtabla_bss,EM,SQ,PTT,FrqTonoE,UmbralTonoE,");
@@ -486,7 +495,8 @@ namespace CD40.BD.Entidades
             consulta[2] = "UPDATE radio_param set GrsDelay=" + GrsDelay + "," +
                                                 "OffSetFrequency=" + OffSetFrequency + "," +
                                                 "EnableEventPttSq=" + EnableEventPttSq + "," +
-                                                "metodos_bss_idmetodos_bss=" + Metodos_bss_idmetodos_bss +
+                                                "metodos_bss_idmetodos_bss=" + Metodos_bss_idmetodos_bss + "," +
+                                                "GrsDelayRx=" + GrsDelayRx +
                                                 " WHERE idradio_param=" + Radio_param_idradio_param;
 
             strConsulta.Append("UPDATE RecursosRadio SET IdRecurso='" + IdRecurso + "'," +
@@ -814,6 +824,8 @@ namespace CD40.BD.Entidades
                         // RQF 8422
                         if (dr["Telemando"] != System.DBNull.Value)
                             pr.Telemando = (int)dr["Telemando"];
+                        if (dr["GrsDelayRx"] != System.DBNull.Value)
+                            pr.GrsDelayRx = (int)dr["GrsDelayRx"];
                         ListaResultado.Add(pr);
                     }
                     else

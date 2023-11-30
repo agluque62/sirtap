@@ -295,6 +295,8 @@ namespace ConfiguracionElementosHw
         public string RedundanciaRol;
         // Indica si el equipo puede ser telemandado
         public int Telemando;
+        // Parametro GRS Delay
+        public int GrsDelayRx;
     }
 
     public class CfgEnlaceExterno
