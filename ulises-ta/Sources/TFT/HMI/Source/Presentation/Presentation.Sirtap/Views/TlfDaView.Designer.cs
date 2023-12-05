@@ -47,7 +47,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Panel _TlfHeadP;
-            this._RdPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
+            this._TlfPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
             this._TlfPageConfBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageSecondBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageFirstBT = new HMI.Model.Module.UI.HMIButton();
@@ -66,7 +66,7 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // _TlfHeadP
             // 
-            _TlfHeadP.Controls.Add(this._RdPageBT);
+            _TlfHeadP.Controls.Add(this._TlfPageBT);
             _TlfHeadP.Controls.Add(this._TlfPageConfBT);
             _TlfHeadP.Controls.Add(this._TlfPageSecondBT);
             _TlfHeadP.Controls.Add(this._TlfPageFirstBT);
@@ -79,21 +79,21 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfHeadP.Size = new System.Drawing.Size(432, 113);
             _TlfHeadP.TabIndex = 0;
             // 
-            // _RdPageBT
+            // _TlfPageBT
             // 
-            this._RdPageBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this._TlfPageBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._RdPageBT.CornerRadius = 4;
-            this._RdPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
-            this._RdPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
-            this._RdPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._RdPageBT.Location = new System.Drawing.Point(372, 6);
-            this._RdPageBT.Name = "_RdPageBT";
-            this._RdPageBT.Size = new System.Drawing.Size(57, 104);
-            this._RdPageBT.TabIndex = 7;
-            this._RdPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
-            this._RdPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
-            this._RdPageBT.Visible = false;
+            this._TlfPageBT.CornerRadius = 4;
+            this._TlfPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
+            this._TlfPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
+            this._TlfPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._TlfPageBT.Location = new System.Drawing.Point(372, 6);
+            this._TlfPageBT.Name = "_TlfPageBT";
+            this._TlfPageBT.Size = new System.Drawing.Size(57, 104);
+            this._TlfPageBT.TabIndex = 7;
+            this._TlfPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
+            this._TlfPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
+            this._TlfPageBT.Visible = false;
             // 
             // _TlfPageConfBT
             // 
@@ -276,7 +276,7 @@ namespace HMI.Presentation.Sirtap.Views
         private System.Windows.Forms.Timer _SlowBlinkTimer;
         private Model.Module.UI.HMIButton _TlfPageConfBT;
         public UI.ListaDeParticipantes listaDEParticipantes1;
-        private UI.RdPageButton _RdPageBT;
+        private UI.RdPageButton _TlfPageBT;
     }
 }
 

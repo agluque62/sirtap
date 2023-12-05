@@ -257,7 +257,7 @@ namespace HMI.Presentation.Sirtap.Views
 
                 _Page = e.Page;
                 int absPageBegin = _Page * _NumPositionsByPage;
-
+                _TlfPageBT.Text = (e.Page+1).ToString();
                 if (_Page == 0)
                 {
                     _TlfPageFirstBT.Text = "2";
@@ -269,6 +269,8 @@ namespace HMI.Presentation.Sirtap.Views
                     _TlfPageFirstBT.Text = "1";
                     _TlfPageSecondBT.Text = "3";
                     _TlfPageConfBT.Text = "C";
+                    _TlfPageBT.Text = (e.Page + 1).ToString();
+
                 }
                 else if (_Page == 2)
                 {
@@ -619,6 +621,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void ResetBtPage(HMIButton bt)
         {
+            _TlfPageBT.Text = "x";
             if (_FastBlinkList.Remove(bt) && (_FastBlinkList.Count == 0))
             {
                 _FastBlinkTimer.Enabled = false;

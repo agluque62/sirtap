@@ -45,9 +45,9 @@ namespace HMI.Presentation.Sirtap.Views
             System.Windows.Forms.TableLayoutPanel _TlfTLP;
             this._TlfFunctionsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
             this._TlfNumbersWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
-            this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
-            this._RdPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this._TlfPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
+            this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             _TlfTLP = new System.Windows.Forms.TableLayoutPanel();
             _TlfTLP.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -93,6 +93,36 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfNumbersWS.TabIndex = 3;
             this._TlfNumbersWS.Text = "deckWorkspace3";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this._TlfPageBT, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this._TlfHeadPhonesUDB, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(490, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(110, 434);
+            this.tableLayoutPanel1.TabIndex = 5;
+            // 
+            // _TlfPageBT
+            // 
+            this._TlfPageBT.CornerRadius = 4;
+            this._TlfPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
+            this._TlfPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
+            this._TlfPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._TlfPageBT.Location = new System.Drawing.Point(3, 3);
+            this._TlfPageBT.Name = "_TlfPageBT";
+            this._TlfPageBT.Size = new System.Drawing.Size(85, 263);
+            this._TlfPageBT.TabIndex = 8;
+            this._TlfPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
+            this._TlfPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
+            this._TlfPageBT.UpClick += new Utilities.GenericEventHandler(this._TlfPageBT_UpClick);
+            this._TlfPageBT.DownClick += new Utilities.GenericEventHandler(this._TlfPageBT_DownClick);
+            // 
             // _TlfHeadPhonesUDB
             // 
             this._TlfHeadPhonesUDB.BackColor = System.Drawing.Color.Transparent;
@@ -104,34 +134,6 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(85, 139);
             this._TlfHeadPhonesUDB.TabIndex = 9;
             this._TlfHeadPhonesUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesUp;
-            // 
-            // _RdPageBT
-            // 
-            this._RdPageBT.CornerRadius = 4;
-            this._RdPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
-            this._RdPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
-            this._RdPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._RdPageBT.Location = new System.Drawing.Point(3, 3);
-            this._RdPageBT.Name = "_RdPageBT";
-            this._RdPageBT.Size = new System.Drawing.Size(85, 263);
-            this._RdPageBT.TabIndex = 8;
-            this._RdPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
-            this._RdPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this._RdPageBT, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this._TlfHeadPhonesUDB, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(490, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(110, 434);
-            this.tableLayoutPanel1.TabIndex = 5;
             // 
             // TlfView
             // 
@@ -152,7 +154,7 @@ namespace HMI.Presentation.Sirtap.Views
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfFunctionsWS;
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfNumbersWS;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private UI.RdPageButton _RdPageBT;
+        private UI.RdPageButton _TlfPageBT;
         private UI.UpDownButton _TlfHeadPhonesUDB;
     }
 }

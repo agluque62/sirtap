@@ -22,17 +22,46 @@ using Microsoft.Practices.ObjectBuilder;
 using System;
 using System.Windows.Forms;
 
+using HMI.Model.Module.BusinessEntities;
+using HMI.Model.Module.Messages;
+using HMI.Model.Module.Services;
+using HMI.Model.Module.UI;
+using HMI.Presentation.Sirtap.Properties;
+using HMI.Presentation.Sirtap.UI;
+using Microsoft.Practices.CompositeUI;
+using Microsoft.Practices.CompositeUI.EventBroker;
+using NLog;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Interop;
+using Utilities;
+
+
+
 namespace HMI.Presentation.Sirtap.Views
 {
     [SmartPart]
     public partial class TlfView : UserControl
     {
-        public TlfView()
+        private IModelCmdManagerService _CmdManager = null;
+        private StateManagerService _StateManager = null;
+        public TlfView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
         {
+            _CmdManager = cmdManager;
+            _StateManager = stateManager;
             InitializeComponent();
             _TlfNumbersWS.Name = WorkspaceNames.TlfNumbersWorkspace;
             _TlfFunctionsWS.Name = WorkspaceNames.TlfFunctionsWorkspace;
+
         }
+        //public TlfView()
+        //{
+        //    InitializeComponent();
+        //    _TlfNumbersWS.Name = WorkspaceNames.TlfNumbersWorkspace;
+        //    _TlfFunctionsWS.Name = WorkspaceNames.TlfFunctionsWorkspace;
+        //}
 
         private void TlfView_BackColorChanged(object sender, EventArgs e)
         {
@@ -41,6 +70,31 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _TlfTLP_Paint(object sender, PaintEventArgs e)
         {
+
+        }
+
+        private void _TlfPageBT_DownClick(object sender)
+        {
+            bool up = false;
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6;// Radio.GetNumberOfPagesRd();
+            int actualPage = _TlfPageBT.Page;
+            if (actualPage < numero_paginas_tlf)
+                _TlfPageBT.Page = actualPage + 1;
+            else
+                _TlfPageBT.Page = 0;
+            _CmdManager.TlfLoadDaPage(actualPage);
+        }
+
+        private void _TlfPageBT_UpClick(object sender)
+        {
+            bool up = true;
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6;// Radio.GetNumberOfPagesRd();
+            int actualPage = _TlfPageBT.Page;
+            if (actualPage == 0)
+                _TlfPageBT.Page = numero_paginas_tlf - 1;
+            else
+                _TlfPageBT.Page = actualPage - 1;
+            _CmdManager.TlfLoadDaPage(actualPage);
 
         }
     }
