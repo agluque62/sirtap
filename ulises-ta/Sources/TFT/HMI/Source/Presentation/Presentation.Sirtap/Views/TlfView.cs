@@ -47,6 +47,7 @@ namespace HMI.Presentation.Sirtap.Views
     {
         private IModelCmdManagerService _CmdManager = null;
         private StateManagerService _StateManager = null;
+        private static Logger _Logger = LogManager.GetCurrentClassLogger();
         public TlfView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
         {
             _CmdManager = cmdManager;
@@ -111,6 +112,42 @@ namespace HMI.Presentation.Sirtap.Views
                 _TlfPageBT.Page = actualPage - 1;
             actualPage = _TlfPageBT.Page;
             _CmdManager.TlfLoadDaPage(actualPage);
+
+        }
+
+
+        private void _TlfHeadPhonesUDB_LevelDown(object sender, EventArgs e)
+        {
+            int level = _TlfHeadPhonesUDB.Level - 1;
+
+            try
+            {
+                _CmdManager.TlfSetHeadPhonesLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR subiendo el nivel del altavoz LC a " + level, ex);
+            }
+
+        }
+        [EventSubscription(EventTopicNames.TlfHeadPhonesLevelChanged, ThreadOption.Publisher)]
+        public void OnTlfHeadPhonesLevelChanged(object sender, EventArgs e)
+        {
+            _TlfHeadPhonesUDB.Level = _StateManager.TlfHeadPhones.Level;
+        }
+
+        private void _TlfHeadPhonesUDB_LevelUp(object sender, EventArgs e)
+        {
+            int level = _TlfHeadPhonesUDB.Level + 1;
+
+            try
+            {
+                _CmdManager.TlfSetHeadPhonesLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR subiendo el nivel del altavoz LC a " + level, ex);
+            }
 
         }
     }

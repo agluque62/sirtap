@@ -11,6 +11,7 @@
 //----------------------------------------------------------------------------------------
 using HMI.Model.Module.Services;
 using HMI.Model.Module.UI;
+using NLog;
 using System.Drawing;
 
 namespace HMI.Presentation.Sirtap.Views
@@ -21,6 +22,7 @@ namespace HMI.Presentation.Sirtap.Views
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        //private static Logger _Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -246,7 +248,6 @@ namespace HMI.Presentation.Sirtap.Views
         }
 
         #endregion
-
         private HMI.Model.Module.UI.HMIButton _TlfPageFirstBT;
         private HMI.Model.Module.UI.HMIButton _TlfPageSecondBT;
         private HMI.Presentation.Sirtap.UI.UpDownButton _TlfHeadPhonesUDB;

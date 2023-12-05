@@ -94,11 +94,12 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.Location = new System.Drawing.Point(490, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
+            _TlfTLP.SetRowSpan(this.tableLayoutPanel1, 2);
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 107F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 409);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 513);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // _TlfHeadPhonesUDB
@@ -106,12 +107,13 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfHeadPhonesUDB.BackColor = System.Drawing.Color.Transparent;
             this._TlfHeadPhonesUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesDown;
             this._TlfHeadPhonesUDB.DrawX = false;
-            this._TlfHeadPhonesUDB.Enabled = false;
             this._TlfHeadPhonesUDB.Location = new System.Drawing.Point(3, 168);
             this._TlfHeadPhonesUDB.Name = "_TlfHeadPhonesUDB";
             this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(85, 98);
             this._TlfHeadPhonesUDB.TabIndex = 9;
             this._TlfHeadPhonesUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesUp;
+            this._TlfHeadPhonesUDB.LevelDown += new System.EventHandler(this._TlfHeadPhonesUDB_LevelDown);
+            this._TlfHeadPhonesUDB.LevelUp += new System.EventHandler(this._TlfHeadPhonesUDB_LevelUp);
             // 
             // _TlfPageBT
             // 
