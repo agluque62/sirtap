@@ -64,7 +64,7 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 _TlfPageBT.Enabled = false;
             }
-            if (e.Data == ViewNames.TlfDa)
+            else if (e.Data == ViewNames.TlfDa)
             {
                 _TlfPageBT.Enabled = true;
             }
