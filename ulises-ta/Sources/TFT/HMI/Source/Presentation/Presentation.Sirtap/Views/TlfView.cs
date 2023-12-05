@@ -139,7 +139,6 @@ namespace HMI.Presentation.Sirtap.Views
         private void _TlfHeadPhonesUDB_LevelUp(object sender, EventArgs e)
         {
             int level = _TlfHeadPhonesUDB.Level + 1;
-
             try
             {
                 _CmdManager.TlfSetHeadPhonesLevel(level);
@@ -150,6 +149,14 @@ namespace HMI.Presentation.Sirtap.Views
             }
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+             //   _StateManager.ScreenSaver.On = !_StateManager.ScreenSaver.On;
+            loginform dlg = new loginform();
+            DialogResult result = dlg.ShowDialog();
+        }
+
     }
 }
 
