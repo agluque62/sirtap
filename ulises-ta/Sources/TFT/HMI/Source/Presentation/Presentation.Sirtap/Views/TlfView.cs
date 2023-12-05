@@ -56,6 +56,20 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfFunctionsWS.Name = WorkspaceNames.TlfFunctionsWorkspace;
 
         }
+        [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
+        public void OnActiveViewChanging(object sender, EventArgs<string> e)
+        {
+
+            if (e.Data == ViewNames.TlfIa)
+            {
+                _TlfPageBT.Enabled = false;
+            }
+            if (e.Data == ViewNames.TlfDa)
+            {
+                _TlfPageBT.Enabled = true;
+            }
+        }
+
         //public TlfView()
         //{
         //    InitializeComponent();

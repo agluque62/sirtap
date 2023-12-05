@@ -226,6 +226,7 @@ namespace HMI.Presentation.Sirtap.Views
                     _CmdManager.TlfLoadDaPage(page);
                 }
             }
+            
         }
 
         [EventSubscription(EventTopicNames.LcSpeakerLevelChanged, ThreadOption.Publisher)]
@@ -257,7 +258,7 @@ namespace HMI.Presentation.Sirtap.Views
 
                 _Page = e.Page;
                 int absPageBegin = _Page * _NumPositionsByPage;
-                _TlfPageBT.Text = (e.Page+1).ToString();
+                
                 if (_Page == 0)
                 {
                     _TlfPageFirstBT.Text = "2";
@@ -269,7 +270,7 @@ namespace HMI.Presentation.Sirtap.Views
                     _TlfPageFirstBT.Text = "1";
                     _TlfPageSecondBT.Text = "3";
                     _TlfPageConfBT.Text = "C";
-                    _TlfPageBT.Text = (e.Page + 1).ToString();
+                    
 
                 }
                 else if (_Page == 2)

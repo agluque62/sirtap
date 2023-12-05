@@ -253,6 +253,7 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)
         {
+
             if (_IsCurrentView)
             {
                 _Keypad.Enabled = _KeypadEnabled;
@@ -270,6 +271,7 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
         public void OnActiveViewChanging(object sender, EventArgs<string> e)
         {
+            
             if (e.Data == ViewNames.TlfIa)
             {
                 _IsCurrentView = true;

@@ -142,6 +142,7 @@ namespace HMI.Presentation.Sirtap
             else if (_ActualTlfView == ViewNames.TlfIa)
             {
                 NavigateTo(ViewNames.TlfDa);
+                _CmdManager.TlfLoadDaPage(0);// cambiar por tlfhidepage
             }
             else if (_ActualTlfView == ViewNames.Depencences)
             {
@@ -280,6 +281,7 @@ namespace HMI.Presentation.Sirtap
                         ShowViewInWorkspace<TlfView>(ViewNames.Tlf, WorkspaceNames.TlfWorkspace);
                         ShowViewInWorkspace<TlfFunctionsView>(ViewNames.TlfFunctions, WorkspaceNames.TlfFunctionsWorkspace);
                         ShowViewInWorkspace<TlfIaView>(ViewNames.TlfIa, WorkspaceNames.TlfNumbersWorkspace);
+                        
                         break;
                     case ViewNames.Depencences:
                         ShowViewInWorkspace<DependencesView>(ViewNames.Depencences, WorkspaceNames.TlfWorkspace);

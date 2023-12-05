@@ -47,7 +47,6 @@ namespace HMI.Presentation.Sirtap.Views
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Panel _TlfHeadP;
-            this._TlfPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
             this._TlfPageConfBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageSecondBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageFirstBT = new HMI.Model.Module.UI.HMIButton();
@@ -66,34 +65,16 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // _TlfHeadP
             // 
-            _TlfHeadP.Controls.Add(this._TlfPageBT);
             _TlfHeadP.Controls.Add(this._TlfPageConfBT);
             _TlfHeadP.Controls.Add(this._TlfPageSecondBT);
             _TlfHeadP.Controls.Add(this._TlfPageFirstBT);
             _TlfHeadP.Controls.Add(this._TlfHeadPhonesUDB);
             _TlfHeadP.Controls.Add(this._LcSpeakerUDB);
-            _TlfHeadP.Dock = System.Windows.Forms.DockStyle.Fill;
             _TlfHeadP.Location = new System.Drawing.Point(5, 3);
             _TlfHeadP.Margin = new System.Windows.Forms.Padding(5, 3, 3, 3);
             _TlfHeadP.Name = "_TlfHeadP";
-            _TlfHeadP.Size = new System.Drawing.Size(432, 113);
+            _TlfHeadP.Size = new System.Drawing.Size(432, 8);
             _TlfHeadP.TabIndex = 0;
-            // 
-            // _TlfPageBT
-            // 
-            this._TlfPageBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._TlfPageBT.CornerRadius = 4;
-            this._TlfPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
-            this._TlfPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
-            this._TlfPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._TlfPageBT.Location = new System.Drawing.Point(372, 6);
-            this._TlfPageBT.Name = "_TlfPageBT";
-            this._TlfPageBT.Size = new System.Drawing.Size(57, 104);
-            this._TlfPageBT.TabIndex = 7;
-            this._TlfPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
-            this._TlfPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
-            this._TlfPageBT.Visible = false;
             // 
             // _TlfPageConfBT
             // 
@@ -107,7 +88,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfPageConfBT.Location = new System.Drawing.Point(135, -3);
             this._TlfPageConfBT.Name = "_TlfPageConfBT";
             this._TlfPageConfBT.Permitted = true;
-            this._TlfPageConfBT.Size = new System.Drawing.Size(36, 80);
+            this._TlfPageConfBT.Size = new System.Drawing.Size(36, 0);
             this._TlfPageConfBT.TabIndex = 4;
             this._TlfPageConfBT.Text = "C";
             this._TlfPageConfBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -126,7 +107,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfPageSecondBT.Location = new System.Drawing.Point(135, -3);
             this._TlfPageSecondBT.Name = "_TlfPageSecondBT";
             this._TlfPageSecondBT.Permitted = true;
-            this._TlfPageSecondBT.Size = new System.Drawing.Size(36, 80);
+            this._TlfPageSecondBT.Size = new System.Drawing.Size(36, 0);
             this._TlfPageSecondBT.TabIndex = 3;
             this._TlfPageSecondBT.Text = "3";
             this._TlfPageSecondBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -145,7 +126,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfPageFirstBT.Location = new System.Drawing.Point(135, -3);
             this._TlfPageFirstBT.Name = "_TlfPageFirstBT";
             this._TlfPageFirstBT.Permitted = true;
-            this._TlfPageFirstBT.Size = new System.Drawing.Size(36, 80);
+            this._TlfPageFirstBT.Size = new System.Drawing.Size(36, 0);
             this._TlfPageFirstBT.TabIndex = 2;
             this._TlfPageFirstBT.Text = "2";
             this._TlfPageFirstBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -162,7 +143,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfHeadPhonesUDB.Enabled = false;
             this._TlfHeadPhonesUDB.Location = new System.Drawing.Point(69, 6);
             this._TlfHeadPhonesUDB.Name = "_TlfHeadPhonesUDB";
-            this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(60, 107);
+            this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(60, 0);
             this._TlfHeadPhonesUDB.TabIndex = 1;
             this._TlfHeadPhonesUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesUp;
             this._TlfHeadPhonesUDB.Visible = false;
@@ -179,7 +160,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._LcSpeakerUDB.Enabled = false;
             this._LcSpeakerUDB.Location = new System.Drawing.Point(306, 3);
             this._LcSpeakerUDB.Name = "_LcSpeakerUDB";
-            this._LcSpeakerUDB.Size = new System.Drawing.Size(60, 107);
+            this._LcSpeakerUDB.Size = new System.Drawing.Size(60, 0);
             this._LcSpeakerUDB.TabIndex = 0;
             this._LcSpeakerUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.SpeakerUp;
             this._LcSpeakerUDB.Visible = false;
@@ -197,8 +178,8 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfDaTLP.Margin = new System.Windows.Forms.Padding(0);
             this._TlfDaTLP.Name = "_TlfDaTLP";
             this._TlfDaTLP.RowCount = 2;
-            this._TlfDaTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this._TlfDaTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 66F));
+            this._TlfDaTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 4.285714F));
+            this._TlfDaTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 95.71429F));
             this._TlfDaTLP.Size = new System.Drawing.Size(440, 350);
             this._TlfDaTLP.TabIndex = 0;
             // 
@@ -213,7 +194,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfButtonsTLP.Controls.Add(this.listaDEParticipantes1, 2, 0);
             this._TlfButtonsTLP.Dock = System.Windows.Forms.DockStyle.Fill;
             this._TlfButtonsTLP.Font = new System.Drawing.Font("Trebuchet MS", 7.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._TlfButtonsTLP.Location = new System.Drawing.Point(5, 119);
+            this._TlfButtonsTLP.Location = new System.Drawing.Point(5, 14);
             this._TlfButtonsTLP.Margin = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this._TlfButtonsTLP.Name = "_TlfButtonsTLP";
             this._TlfButtonsTLP.RowCount = 4;
@@ -224,7 +205,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfButtonsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this._TlfButtonsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this._TlfButtonsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this._TlfButtonsTLP.Size = new System.Drawing.Size(435, 231);
+            this._TlfButtonsTLP.Size = new System.Drawing.Size(435, 336);
             this._TlfButtonsTLP.TabIndex = 2;
             // 
             // listaDEParticipantes1
@@ -276,7 +257,6 @@ namespace HMI.Presentation.Sirtap.Views
         private System.Windows.Forms.Timer _SlowBlinkTimer;
         private Model.Module.UI.HMIButton _TlfPageConfBT;
         public UI.ListaDeParticipantes listaDEParticipantes1;
-        private UI.RdPageButton _TlfPageBT;
     }
 }
 
