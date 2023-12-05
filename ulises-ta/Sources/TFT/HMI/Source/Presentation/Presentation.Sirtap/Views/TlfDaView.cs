@@ -332,7 +332,7 @@ namespace HMI.Presentation.Sirtap.Views
                         }
                     }
                 }
-                RedimensionaBotonesConferencia(ConfirmaPaginaConf);
+                //RedimensionaBotonesConferencia(ConfirmaPaginaConf);
             }
         }
 
@@ -621,7 +621,6 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void ResetBtPage(HMIButton bt)
         {
-            _TlfPageBT.Text = "x";
             if (_FastBlinkList.Remove(bt) && (_FastBlinkList.Count == 0))
             {
                 _FastBlinkTimer.Enabled = false;

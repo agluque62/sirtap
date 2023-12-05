@@ -76,24 +76,26 @@ namespace HMI.Presentation.Sirtap.Views
         private void _TlfPageBT_DownClick(object sender)
         {
             bool up = false;
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6;// Radio.GetNumberOfPagesRd();
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
             int actualPage = _TlfPageBT.Page;
-            if (actualPage < numero_paginas_tlf)
+            if (actualPage < numero_paginas_tlf-2)
                 _TlfPageBT.Page = actualPage + 1;
             else
                 _TlfPageBT.Page = 0;
+            actualPage = _TlfPageBT.Page;
             _CmdManager.TlfLoadDaPage(actualPage);
         }
 
         private void _TlfPageBT_UpClick(object sender)
         {
             bool up = true;
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6;// Radio.GetNumberOfPagesRd();
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
             int actualPage = _TlfPageBT.Page;
             if (actualPage == 0)
-                _TlfPageBT.Page = numero_paginas_tlf - 1;
+                _TlfPageBT.Page = numero_paginas_tlf - 2;
             else
                 _TlfPageBT.Page = actualPage - 1;
+            actualPage = _TlfPageBT.Page;
             _CmdManager.TlfLoadDaPage(actualPage);
 
         }
