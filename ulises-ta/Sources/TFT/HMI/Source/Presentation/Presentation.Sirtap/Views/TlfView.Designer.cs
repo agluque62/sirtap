@@ -62,9 +62,9 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             _TlfTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             _TlfTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            _TlfTLP.Controls.Add(this._TlfNumbersWS, 0, 0);
             _TlfTLP.Controls.Add(this.tableLayoutPanel1, 2, 0);
             _TlfTLP.Controls.Add(this._TlfFunctionsWS, 0, 1);
+            _TlfTLP.Controls.Add(this._TlfNumbersWS, 0, 0);
             _TlfTLP.Dock = System.Windows.Forms.DockStyle.Fill;
             _TlfTLP.Location = new System.Drawing.Point(0, 0);
             _TlfTLP.Margin = new System.Windows.Forms.Padding(0);
@@ -78,11 +78,11 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // _TlfNumbersWS
             // 
-            this._TlfNumbersWS.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._TlfNumbersWS.Location = new System.Drawing.Point(0, 0);
+            this._TlfNumbersWS.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this._TlfNumbersWS.Location = new System.Drawing.Point(0, 97);
             this._TlfNumbersWS.Margin = new System.Windows.Forms.Padding(0);
             this._TlfNumbersWS.Name = "_TlfNumbersWS";
-            this._TlfNumbersWS.Size = new System.Drawing.Size(487, 415);
+            this._TlfNumbersWS.Size = new System.Drawing.Size(487, 221);
             this._TlfNumbersWS.TabIndex = 3;
             this._TlfNumbersWS.Text = "deckWorkspace3";
             // 

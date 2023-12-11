@@ -58,6 +58,12 @@ namespace HMI.Presentation.Sirtap.Views
         public TlfDaView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
         {
             InitializeComponent();
+            // fila y relleno.
+            Dictionary<int, int> RowFill = new Dictionary<int, int>
+            {
+                { 0, 40 }, { 2, 40 }
+            };
+
             if (!VisualStyle.ModoNocturno)
             {
 
@@ -93,12 +99,14 @@ namespace HMI.Presentation.Sirtap.Views
             _CmdManager = cmdManager;
             _StateManager = stateManager;
             //listaDEParticipantes1.setup(cmdManager, stateManager);
-            _TlfButtonsTLP.RowCount = Settings.Default.TlfRows;
+            _TlfButtonsTLP.RowCount = Settings.Default.TlfRows+RowFill.Count;
             _TlfButtonsTLP.RowStyles.Clear();
 
             for (int i = 0; i < _TlfButtonsTLP.RowCount; i++)
             {
                 RowStyle st = new RowStyle(SizeType.Percent, 100);
+                if (RowFill.ContainsKey(i))
+                    st = new RowStyle(SizeType.Absolute, RowFill[i]);
                 _TlfButtonsTLP.RowStyles.Add(st);
             }
 
@@ -117,12 +125,13 @@ namespace HMI.Presentation.Sirtap.Views
                 _TlfButtonsTLP.ColumnStyles.Add(st);
             }
 
-            _NumPositionsByPage = (_TlfButtonsTLP.RowCount * _TlfButtonsTLP.ColumnCount) - 1;
+            _NumPositionsByPage = ((_TlfButtonsTLP.RowCount- RowFill.Count) * _TlfButtonsTLP.ColumnCount) - 1;
             _FastBlinkList = new Dictionary<HMIButton, Color>();
             _SlowBlinkList = new Dictionary<HMIButton, Color>();
 
             for (int row = 0, pos = 0; row < _TlfButtonsTLP.RowCount; row++)
             {
+                if (!RowFill.ContainsKey(row))
                 for (int column = 0; column < _TlfButtonsTLP.ColumnCount; column++, pos++)
                 {
                     HMIButton bt = new HMIButton();
