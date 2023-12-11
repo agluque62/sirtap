@@ -256,6 +256,14 @@
 		<English>The reference to the unit a slave is replacing cannot be empty. Unexpected error.</English>
 		<French>La référence de l'équipement remplacé par un esclave ne peut pas être vide. Erreur inattendue.</French>
 	</log>
+  <log id="{0} iba a reemplazar a un Master, pero la referencia es nula. Posiblemente el Master ya se haya recuperado. En cuyo caso no hay error.">
+		<English>{0} was going to replace a Master, but the reference is null. Possibly the Master has already recovered. In which case there is no error.</English>
+		<French>{0} allait remplacer un Master, mais la référence est nulle. Il est possible que le Maître soit déjà rétabli. Dans ce cas il n'y a pas d'erreur.</French>
+	</log>
+  <log id="{0} no encuentra Master para obtencion parametros. Posiblemente el Master al que iba a sustituir se haya recuperado, entonces no hay error.">
+		<English>{0} does not find Master to obtain parameters. Possibly the Master it was going to replace has recovered, so there is no error.</English>
+		<French>{0} ne trouve pas de maître pour obtenir les paramètres. Il est possible que le maître que j'allais remplacer ait récupéré, il n'y a donc pas d'erreur.</French>
+	</log>  
 	<log id="Frecuencia no encontrada y asignada a equipo">
 		<English>Frequency not found and assigned to the unit</English>
 		<French>Fréquence introuvable et affectée à un équipement</French>

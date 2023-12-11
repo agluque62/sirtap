@@ -359,8 +359,9 @@ namespace U5ki.RdService
         }
         /// <summary>
         /// Genera los recursos radio (canales físicos) asociados a la frecuencia
+        /// Retorna true si ha habido cambios en la frecuencia en la cnfiguracion
         /// </summary>
-        public void Reset(Cd40Cfg cd40cfg, CfgEnlaceExterno cfg, Dictionary<string, bool> selectedRs)
+        public bool Reset(Cd40Cfg cd40cfg, CfgEnlaceExterno cfg, Dictionary<string, bool> selectedRs)
         {
             Debug.Assert(cfg.Literal == _IdDestino);
 
@@ -684,6 +685,8 @@ namespace U5ki.RdService
                 RdRegistry.Publish(_IdDestino, _FrRs);
             }
             ConfiguraModoTransmision(cfg);
+
+            return hayCambiosEnFrecuencia;
         }
 
         /// <summary>
