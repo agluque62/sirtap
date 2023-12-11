@@ -450,7 +450,7 @@ PJ_DEF(const pj_str_t*) pj_gethostname(void)
 	    hostname.ptr[0] = '\0';
 	    hostname.slen = 0;
 	} else {
-	   hostname.slen = strlen(buf);
+	   hostname.slen = (pj_ssize_t) strlen(buf);
 	}
     }
     return &hostname;
@@ -469,7 +469,7 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 
     /* Sanity checks. */
     PJ_ASSERT_RETURN(sock!=NULL, PJ_EINVAL);
-    PJ_ASSERT_RETURN((unsigned)PJ_INVALID_SOCKET==INVALID_SOCKET, 
+    PJ_ASSERT_RETURN((SOCKET)PJ_INVALID_SOCKET==INVALID_SOCKET, 
                      (*sock=PJ_INVALID_SOCKET, PJ_EINVAL));
 
     *sock = WSASocket(af, type, proto, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -610,7 +610,7 @@ PJ_DEF(pj_status_t) pj_sock_send(pj_sock_t sock,
     PJ_CHECK_STACK();
     PJ_ASSERT_RETURN(len, PJ_EINVAL);
 
-    *len = send(sock, (const char*)buf, *len, flags);
+    *len = send(sock, (const char*)buf, (int)(*len), flags);
 
     if (*len < 0)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
@@ -634,7 +634,7 @@ PJ_DEF(pj_status_t) pj_sock_sendto(pj_sock_t sock,
     
     CHECK_ADDR_LEN(to, tolen);
 
-    *len = sendto(sock, (const char*)buf, *len, flags, 
+    *len = sendto(sock, (const char*)buf, (int)(*len), flags, 
 		  (const struct sockaddr*)to, tolen);
 
     if (*len < 0) 
@@ -654,7 +654,7 @@ PJ_DEF(pj_status_t) pj_sock_recv(pj_sock_t sock,
     PJ_CHECK_STACK();
     PJ_ASSERT_RETURN(buf && len, PJ_EINVAL);
 
-    *len = recv(sock, (char*)buf, *len, flags);
+    *len = recv(sock, (char*)buf, (int)(*len), flags);
 
     if (*len < 0) 
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
@@ -676,7 +676,7 @@ PJ_DEF(pj_status_t) pj_sock_recvfrom(pj_sock_t sock,
     PJ_ASSERT_RETURN(buf && len, PJ_EINVAL);
     PJ_ASSERT_RETURN(from && fromlen, (*len=-1, PJ_EINVAL));
 
-    *len = recvfrom(sock, (char*)buf, *len, flags, 
+    *len = recvfrom(sock, (char*)buf, (int)(*len), flags, 
 		    (struct sockaddr*)from, (socklen_t*)fromlen);
 
     if (*len < 0) 

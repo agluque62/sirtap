@@ -1175,7 +1175,7 @@ PJ_DEF(void) pjsip_endpt_log_error(  pjsip_endpoint *endpt,
 {
 #if PJ_LOG_MAX_LEVEL > 0
     char newformat[256];
-    int len;
+    pj_size_t len;
     va_list marker;
 
     va_start(marker, format);
@@ -1409,7 +1409,7 @@ PJ_DEF(pj_bool_t) pjsip_endpt_Neg_ED137Version_from_msg(pjsip_endpoint *endpt, c
         }
         if (strlen(versions[i]) > 0)
         {
-            for (int j = (strlen(versions[i]) - 1); j >= 0 && versions[i][j] == ' '; j--)
+            for (int j = ((int)strlen(versions[i]) - 1); j >= 0 && versions[i][j] == ' '; j--)
             {
                 versions[i][j] = '\0';
             }

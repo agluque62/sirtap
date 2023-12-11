@@ -347,7 +347,11 @@ struct pj_pool_t
  * Pool memory alignment (must be power of 2). 
  */
 #ifndef PJ_POOL_ALIGNMENT
+#if defined(_WIN64) && _WIN64!=0
+#   define PJ_POOL_ALIGNMENT    8
+#else
 #   define PJ_POOL_ALIGNMENT    4
+#endif
 #endif
 
 /**
@@ -509,7 +513,7 @@ PJ_INLINE(void*) pj_pool_zalloc(pj_pool_t *pool, pj_size_t size)
  * Internal functions
  */
 PJ_IDECL(void*) pj_pool_alloc_from_block(pj_pool_block *block, pj_size_t size);
-PJ_DECL(void*) pj_pool_allocate_find(pj_pool_t *pool, unsigned size);
+PJ_DECL(void*) pj_pool_allocate_find(pj_pool_t *pool, pj_size_t size);
 
 
 	
@@ -856,7 +860,7 @@ struct pj_caching_pool
     /**
      * Internal pool.
      */
-    char	    pool_buf[256 * (sizeof(long) / 4)];
+    char	    pool_buf[256 * (sizeof(size_t) / 4)];
 
     /**
      * Mutex.

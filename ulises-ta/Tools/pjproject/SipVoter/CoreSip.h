@@ -60,6 +60,8 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_SELCAL_LENGTH			4
 #define CORESIP_MAX_SOUND_NAME_LENGTH		512
 #define CORESIP_MAX_SOUND_NAMES				16
+#define CORESIP_MAX_DTMF_DIGITS				128
+#define CORESIP_AUD_PACKET_LEN				160
 
 #ifdef _ED137_
 // PlugTest FAA 05/2011
@@ -157,6 +159,15 @@ typedef enum CORESIP_CallRole
 
 } CORESIP_CallRole;
 
+typedef enum CORESIP_SDPSendRecvAttrForced
+{
+	CORESIP_SDP_SR_ATTR_NOFORCED,		//Este valor indica que no se fuerza un nuevo valor del atributo
+	CORESIP_SDP_SR_ATTR_NONE,			//Con este valor no se pone el atributo en el SDP
+	CORESIP_SDP_SR_ATTR_INACTIVE,
+	CORESIP_SDP_SR_ATTR_SENDONLY,
+	CORESIP_SDP_SR_ATTR_RECVONLY,
+	CORESIP_SDP_SR_ATTR_SENDRECV	
+} CORESIP_SDPSendRecvAttrForced;
 
 typedef enum CORESIP_MediaStatus
 {
@@ -175,7 +186,6 @@ typedef enum CORESIP_MediaDir
 	CORESIP_DIR_SENDONLY,
 	CORESIP_DIR_RECVONLY,
 	CORESIP_DIR_SENDRECV
-
 } CORESIP_MediaDir;
 
 
@@ -309,8 +319,9 @@ typedef struct CORESIP_CallInfo
 												//el identificador de la frecuencia (Fid) en el GRS
 												//Y se envia Notify al evento WG67 cuando se modifica le Fid. Solo es valido en ED137C
 	
-#ifdef _ED137_
-	CORESIP_MediaDir Dir;
+	CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr;	//Sirve para forzar el atributo send-recv en el SDP
+
+#ifdef _ED137_	
 	int Codecs;
 	int BssMethods;
 	char Frequency[CORESIP_MAX_FRECUENCY_LENGTH + 1];
@@ -576,13 +587,16 @@ typedef struct CORESIP_ConfInfo
 
 } CORESIP_ConfInfo;
 
-typedef struct CORESIP_tone_digit
+typedef struct CORESIP_tone_digits
 {
-	char    digit;	    /**< The ASCI identification for the digit.	
-						En caso de que quiera reproducir una pausa, digit debe ser una coma, on_msec debe valer cero y off_msec valdra el tiempo de la pausa */
-	short   on_msec;	    /**< Playback ON duration, in miliseconds.	    */
-	short   off_msec;	    /**< Playback OFF duration, ini miliseconds.    */
-} CORESIP_tone_digit;
+	unsigned int count;		/**< Numero de digitos que se van a reproducir */
+	struct {
+		char    digit;	    /**< The ASCI identification for the digit.
+							En caso de que quiera reproducir una pausa, digit debe ser una coma, on_msec debe valer cero y off_msec valdra el tiempo de la pausa */
+		short   on_msec;	    /**< Playback ON duration, in miliseconds.	    */
+		short   off_msec;	    /**< Playback OFF duration, ini miliseconds.    */
+	} digits[CORESIP_MAX_DTMF_DIGITS];
+} CORESIP_tone_digits;
 
 typedef struct CORESIP_tone_digit_map
 {
@@ -602,6 +616,11 @@ typedef struct CORESIP_SndWindowsDevices
 	char FriendlyName[CORESIP_MAX_SOUND_NAME_LENGTH * CORESIP_MAX_SOUND_NAMES]; //array con los nombres, separados por '<###>'
 	char GUID[CORESIP_MAX_SOUND_NAME_LENGTH * CORESIP_MAX_SOUND_NAMES];			//array con los nombres, separados por '<###>'
 } CORESIP_SndWindowsDevices;
+
+typedef struct CORESIP_GenericPortBuffer
+{
+	short buffer[CORESIP_AUD_PACKET_LEN];		//Paquete audio. 
+} CORESIP_GenericPortBuffer;
 
 typedef struct CORESIP_Callbacks
 {
@@ -876,6 +895,17 @@ extern "C" {
 	CORESIP_API int	CORESIP_CreateAccount(const char * acc, int defaultAcc, int * accId, CORESIP_Error * error);
 
 	/**
+	 *	CORESIP_CreateAccountForceContact. Registra una cuenta SIP en el Módulo y fuerza la uri del contact. @ref SipAgent::CreateAccount
+	 *	@param	acc			Puntero a la sip URI que se crea como agente.
+	 *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
+	 *	@param	accId		Puntero a el identificador de cuenta asociado.
+	 *  @param	forced_contact. Uri del contact que se fuerza.
+	 *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	 *	@return				Codigo de Error
+	 */
+	CORESIP_API int CORESIP_CreateAccountForceContact(const char* acc, int defaultAcc, int* accId, char* forced_contact, CORESIP_Error* error);
+
+	/**
 	 *	CORESIP_CreateAccountProxyRouting. Registra una cuenta SIP en el Módulo y los paquetes sip se enrutan por el proxy. 
 	 *	@param	acc			Puntero a la sip URI que se crea como agente.
 	 *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
@@ -902,6 +932,24 @@ extern "C" {
 	 */
 	CORESIP_API int CORESIP_CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, int * accId, const char *proxy_ip, 
 														unsigned int expire_seg, const char *username, const char *pass, const char * displayName, int isfocus, CORESIP_Error * error);
+
+	/**
+	 *	CORESIP_CreateAccountAndRegisterInProxyForceContact. Crea una cuenta y se registra en el SIP proxy. Los paquetes sip se rutean por el SIP proxy también.
+	 *	@param	acc			Puntero al Numero de Abonado (usuario). NO a la uri.
+	 *	@param	defaultAcc	Si es diferente a '0', indica que se creará la cuenta por Defecto.
+	 *	@param	accId		Puntero a el identificador de cuenta asociado que retorna.
+	 *	@param	proxy_ip	IP del proxy.
+	 *	@param	expire_seg  Tiempo en el que expira el registro en segundos.
+	 *	@param	username	Si no es necesario autenticación, este parametro será NULL
+	 *	@param  pass		Password. Si no es necesario autenticación, este parametro será NULL
+	 *	@param  DisplayName	Display name que va antes de la sip URI, se utiliza para como nombre a mostrar
+	 *	@param	isfocus		Si el valor es distinto de cero, indica que es Focus, para establecer llamadas multidestino
+	 *  @param  forced_contact Uri con el Contact que se quiere forzar
+	 *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	 *	@return				Codigo de Error
+	 */
+	CORESIP_API int CORESIP_CreateAccountAndRegisterInProxyForceContact(const char* acc, int defaultAcc, int* accId, const char* proxy_ip,
+		unsigned int expire_seg, const char* username, const char* pass, const char* displayName, int isfocus, char* forced_contact, CORESIP_Error* error);
 
 	/**
 	 *	CORESIP_DestroyAccount. Elimina una cuenta SIP del modulo. @ref SipAgent::DestroyAccount
@@ -1111,9 +1159,10 @@ extern "C" {
 	 *	@param	CallType_SDP	9 couplig, 7 Radio-Rxonly, 5 Radio-TxRx, 6 Radio-Idle
 	 *	@param	TxRx_SDP		4 Rx, 8 Tx, 0 TxRx, 22 Vacio
 	 *  @param	etm_vcs_bss_methods	Para ETM, como VCS, string con los literales de los metodos BSS separados por comas. El string debe terminar caracter '\0'. Si vale NULL se ignora
+	 *  @param	ForceSDPSendRecvAttr	Sirve para forzar el valor de del atributo send-recv en el SDP
 	 *	@return				Codigo de Error
 	 */
-	CORESIP_API int	CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallType_SDP, int TxRx_SDP, char * etm_vcs_bss_methods);
+	CORESIP_API int	CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallType_SDP, int TxRx_SDP, char * etm_vcs_bss_methods, CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr);
 
 	/**
 	 *	CORESIP_CallTransfer
@@ -1315,12 +1364,13 @@ extern "C" {
 	/**
 	 *	CORESIP_CreateConferenceSubscription. Crea una subscripcion por evento de conferencia
 	 *	@param	accId		Identificador del account. Si es -1, se utiliza la default
+	 *  @param  call		Call id. si es negativo usa la de por defecto
 	 *  @param  dest_uri.	Uri del destino a monitorizar
 	 *  @param	by_proxy. Si true entonces el subscribe se envia a traves del proxy
 	 *	@param	error		Puntero a la Estructura de error
 	 *	@return				CORESIP_OK si no hay error.
 	 */
-	CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, char *dest_uri, pj_bool_t by_proxy, CORESIP_Error * error);
+	CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, int call, char *dest_uri, pj_bool_t by_proxy, CORESIP_Error * error);
 
 	/**
 	 *	CORESIP_DestroyConferenceSubscription. Destruye una subscripcion por evento de conferencia
@@ -1421,14 +1471,16 @@ extern "C" {
 	CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscriptions, CORESIP_WG67_Subscription_Info* WG67Subscriptions[], CORESIP_Error* error);
 
 	/**
-	*	CORESIP_CreateGenericPort: Crea un puerto generico de media. A este puerto se pueden poner y tomar muestras de audio 
-	*	con las funciones #PutFrame_GenericPort y #GetFrame_GenericPort.
+	*	CORESIP_CreateGenericPort: Crea un puerto generico de media. 
+	*   A este puerto se pueden poner y tomar paquetes de audio de 160 muestras 16 bits PCM con signo
+	*	con las funciones #PutFrame_GenericPort y #GetFrame_GenericPort.	*   
 	*	Tambien se puede conectar a otros puertos con la funcion CORESIP_BridgeLink. Por ejemplo a una llamada VoIP
 	*	@param gen_port_id. Es el identificador del puerto.
+	*   @param jitter_buff_size. Capacidad del buffer de jitter. Valor recomendado: 2 paquetes.
 	*	@param error. Si hay error contiene la descripcion
 	*	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
 	*/
-	CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, CORESIP_Error* error);
+	CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, int jitter_buff_size, CORESIP_Error* error);
 	
 	/**
 	*	CORESIP_DestroyGenericPort: Destruye el puerto del tipo GenericPort
@@ -1440,23 +1492,32 @@ extern "C" {
 
 	/**
 	*	CORESIP_PutInGenericPort: Pone muestras en el generic port.
-	* *	@param gen_port_id. Es el identificador del puerto.
-	*	@param buffer. Puntero del buffer de muestras.
-	*	@param buffer_length. Logitud (en bytes) del buffer.
+	* 	@param gen_port_id. Es el identificador del puerto.
+	*	@param genBuff. Buffer de muestras. 160 muestras 16 bits PCM con signo	
+	*	@param blocking. Si es true se bloquea la funcion hasta que el paquete es transferido. Si es false entonces la funcion retorna sin esperar.
 	*	@param error. Si hay error contiene la descripcion
 	*	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
 	*/
-	CORESIP_API int CORESIP_PutInGenericPort(int gen_port_id, char *buffer, int buffer_length, CORESIP_Error* error);
+	CORESIP_API int CORESIP_PutInGenericPort(int gen_port_id, CORESIP_GenericPortBuffer *genBuff, pj_bool_t blocking, CORESIP_Error* error);
 
 	/**
 	*	CORESIP_GetFromGenericPort: Toma muestras del generic port
-	* *	@param gen_port_id. Es el identificador del puerto.
-	*	@param buffer. Puntero del buffer de muestras.
-	*	@param buffer_length. Logitud (en bytes) del buffer.
+	* 	@param gen_port_id. Es el identificador del puerto.
+	*	@param genBuff. Buffer en el que se retornan las muestras. 160 muestras 16 bits PCM con signo	
+	*	@param blocking. Si es true se bloquea la funcion hasta que hay disponible un paquete de audio. 
+						 Si es false entonces la funcion retorna sin esperar con un paquete de audio, si no hay disponible entonces es un paquete calculado por el PLC.
 	*	@param error. Si hay error contiene la descripcion
 	*	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
 	*/
-	CORESIP_API int CORESIP_GetFromGenericPort(int gen_port_id, char* buffer, int buffer_length, CORESIP_Error* error);
+	CORESIP_API int CORESIP_GetFromGenericPort(int gen_port_id, CORESIP_GenericPortBuffer *genBuff, pj_bool_t blocking, CORESIP_Error* error);
+
+	/**
+	*	CORESIP_GetJitterStatusGenericPort: Retorna la ocupacion del jitter buffer
+	* *	@param gen_port_id. Es el identificador del puerto.
+	*	@param size. Numero de paquetes que tiene.
+	*	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+	*/
+	CORESIP_API int CORESIP_GetJitterStatusGenericPort(int gen_port_id, unsigned int *size, CORESIP_Error* error);
 
 	/**
 	 * CORESIP_SendInstantMessage. Envia un mensaje instantaneo
@@ -1626,12 +1687,11 @@ extern "C" {
 	 * Envia secuencia de digitos DTMF
 	 * @param	call		Call Id que identifica la llamada
 	 * @param	digit_map	Definicion de los digitos.
-	 * @param	count		Numero de digitos
-	 * @param	tones		Array con la secuencia de digitos.
+	 * @param	digits		Digitos que se quieren reproducir.
 	 * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
 	 * @return	CORESIP_OK OK, CORESIP_ERROR  error.
 	 */
-	CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map *digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0, CORESIP_Error* error);
+	CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map *digit_map, const CORESIP_tone_digits *digits, float volume_dbm0, CORESIP_Error* error);
 
 	/**
 	 * CORESIP_SendSELCAL

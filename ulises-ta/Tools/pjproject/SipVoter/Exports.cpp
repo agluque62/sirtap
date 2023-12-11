@@ -30,9 +30,12 @@
 	catch (PJLibException & ex)\
 	{\
 		ret = ex.SetError(error);\
+		if (SipAgent::ESTADO_INICIALIZACION == SipAgent::INICIALIZADO)\
+			PJ_LOG(3,("Export.cpp","PJLibException: Code %d, File %s, Info %s",ex.Code, ex.File, ex.Info));\
 	}\
 	catch (...)\
 	{\
+		PJ_LOG(3,("Export.cpp","Unknown exception"));\
 		if (error)\
 		{\
 			error->Code = 1;\
@@ -75,12 +78,59 @@ CORESIP_API int CORESIP_Init(const CORESIP_Config * cfg, CORESIP_Error * error)
 
 	Try
 	{
-		SipAgent::Init(cfg);
+		if (SipAgent::ghMutex == NULL)
+		{
+			SipAgent::ghMutex = CreateMutex(NULL, FALSE, NULL);
+			if (SipAgent::ghMutex == NULL)
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = ret;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "ERROR CORESIP_Init: No se puede crear ghMutex");
+				}
+				return ret;
+			}
+		}
+
+		if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::NO_INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Init: CORESIP YA INICIALIZADA O INICIALIZANDOSE");
+			}
+		}
+		else
+		{
+			SipAgent::ESTADO_INICIALIZACION = SipAgent::INICIALIZANDO;
+			SipAgent::Init(cfg);
+		}
 
 		//UNIFETM: En el etm si retorna error 130049 (el bind con la ip da error) entonces lo reintenta con la localhost
 
 	}
 	catch_all;
+
+	if (ret != CORESIP_OK)
+	{
+		SipAgent::ESTADO_INICIALIZACION = SipAgent::NO_INICIALIZADO;
+	}
+	else if (SipAgent::ETM == PJ_FALSE)
+	{
+		//Si la aplicacion no es el ETM entonces damos por inicializada la Coresip. 
+		//Asi lo requiere ulises.
+		//Sin embargo en el ETM no la damos por inicializada hasta que no ha terminado el Start.
+		//Es porque en el ETM intentar realizar operaciones que requieren el Start.
+		SipAgent::ESTADO_INICIALIZACION = SipAgent::INICIALIZADO;
+	}
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -92,11 +142,39 @@ CORESIP_API int CORESIP_Start(CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
-	{
-		SipAgent::Start();
+	{	
+		if ((SipAgent::ETM && SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZANDO) ||
+			(!SipAgent::ETM && SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO && SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZANDO))
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Start: Debe ser llamada despues de CORESIP_Init");
+			}
+		}
+		else
+		{
+			SipAgent::Start();
+		}
 	}
 	catch_all;
+
+	if (ret != CORESIP_OK)
+	{
+		SipAgent::ESTADO_INICIALIZACION = SipAgent::NO_INICIALIZADO;
+	}
+	else
+	{
+		pj_thread_sleep(100);
+		SipAgent::ESTADO_INICIALIZACION = SipAgent::INICIALIZADO;
+	}
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -109,11 +187,19 @@ CORESIP_API void CORESIP_End()
 	int ret = CORESIP_OK;
 	CORESIP_Error * error = NULL;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
+	SipAgent::ESTADO_INICIALIZACION = SipAgent::NO_INICIALIZADO;
+
 	Try
 	{
 		SipAgent::Stop();
 	}
-	catch_all;
+	catch_all;	
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+
+	return;
 }
 
 /**
@@ -123,11 +209,28 @@ CORESIP_API int	CORESIP_Set_Ed137_version(char ED137Radioversion, char ED137Phon
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::Set_Ed137_version(ED137Radioversion, ED137Phoneversion);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Set_Ed137_version: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::Set_Ed137_version(ED137Radioversion, ED137Phoneversion);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -139,11 +242,28 @@ CORESIP_API int	CORESIP_Force_Ed137_version_header(int force, char* ED137Radiove
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::Force_Ed137_version_header(force, ED137Radioversion);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Set_Ed137_version: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::Force_Ed137_version_header(force, ED137Radioversion);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -155,11 +275,28 @@ CORESIP_API int	CORESIP_Get_Ed137_version(char *ED137Radioversion, char *ED137Ph
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::Get_Ed137_version(ED137Radioversion, ED137Phoneversion);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Get_Ed137_version: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::Get_Ed137_version(ED137Radioversion, ED137Phoneversion);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -171,11 +308,28 @@ CORESIP_API int	CORESIP_SetSipPort(int port, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::SetSipPort(port);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetSipPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetSipPort(port);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -187,11 +341,28 @@ CORESIP_API int CORESIP_SetLogLevel(unsigned level, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::SetLogLevel(level);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetLogLevel: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetLogLevel(level);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -203,11 +374,28 @@ CORESIP_API int CORESIP_SetParams(const int* MaxForwards, const int* Options_ans
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::SetParams(MaxForwards, Options_answer_code);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetParams: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetParams(MaxForwards, Options_answer_code);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -219,11 +407,28 @@ CORESIP_API int	CORESIP_SetJitterBuffer(unsigned adaptive, unsigned initial_pref
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
+
 	Try
 	{
-		SipAgent::SetJitterBuffer(adaptive, initial_prefetch, min_prefetch, max_prefetch, discard);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetJitterBuffer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetJitterBuffer(adaptive, initial_prefetch, min_prefetch, max_prefetch, discard);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -234,12 +439,74 @@ CORESIP_API int	CORESIP_SetJitterBuffer(unsigned adaptive, unsigned initial_pref
 CORESIP_API int CORESIP_CreateAccount(const char * acc, int defaultAcc, int * accId, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+	int defaultAcc_aux = defaultAcc;
+
+	char accaux[CORESIP_MAX_URI_LENGTH];
+	strncpy(accaux, acc, sizeof(accaux));
+	accaux[sizeof(accaux) - 1] = 0;
+
+	int tries = 100;
+	while (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+	{
+		Sleep(50);
+		if (--tries <= 0) break;
+	}
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
 	{
-		*accId = (SipAgent::CreateAccount(acc, defaultAcc) | CORESIP_ACC_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateAccount: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*accId = (SipAgent::CreateAccount(accaux, defaultAcc_aux) | CORESIP_ACC_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+
+	return ret;
+}
+
+/**
+ *	CORESIP_CreateAccount. Registra una cuenta SIP en el Módulo. @ref SipAgent::CreateAccount
+ */
+CORESIP_API int CORESIP_CreateAccountForceContact(const char* acc, int defaultAcc, int* accId, char *forced_contact, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateAccountForceContact: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*accId = (SipAgent::CreateAccount(acc, defaultAcc, NULL, forced_contact) | CORESIP_ACC_ID);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -251,11 +518,28 @@ CORESIP_API int CORESIP_CreateAccountProxyRouting(const char * acc, int defaultA
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*accId = (SipAgent::CreateAccount(acc, defaultAcc, proxy_ip) | CORESIP_ACC_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateAccountProxyRouting: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*accId = (SipAgent::CreateAccount(acc, defaultAcc, proxy_ip) | CORESIP_ACC_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -268,11 +552,62 @@ CORESIP_API int CORESIP_CreateAccountAndRegisterInProxy(const char * acc, int de
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*accId = (SipAgent::CreateAccountAndRegisterInProxy(acc, defaultAcc, proxy_ip, expire_seg, username, pass, displayName, isfocus) | CORESIP_ACC_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateAccountAndRegisterInProxy: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*accId = (SipAgent::CreateAccountAndRegisterInProxy(acc, defaultAcc, proxy_ip, expire_seg, username, pass, displayName, isfocus, NULL) | CORESIP_ACC_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+
+	return ret;
+}
+
+/**
+ *	CORESIP_CreateAccountAndRegisterInProxyForceContact. Crea una cuenta y se registra en el SIP proxy. Los paquetes sip se rutean por el SIP proxy también.
+ */
+CORESIP_API int CORESIP_CreateAccountAndRegisterInProxyForceContact(const char* acc, int defaultAcc, int* accId, const char* proxy_ip,
+	unsigned int expire_seg, const char* username, const char* pass, const char* displayName, int isfocus, char* forced_contact, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateAccountAndRegisterInProxyForceContact: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*accId = (SipAgent::CreateAccountAndRegisterInProxy(acc, defaultAcc, proxy_ip, expire_seg, username, pass, displayName, isfocus, forced_contact) | CORESIP_ACC_ID);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -284,12 +619,41 @@ CORESIP_API int CORESIP_DestroyAccount(int accId, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		SipAgent::DestroyAccount(accId & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			if (SipAgent::ETM)
+			{
+				//En el caso de ETM no retorno error porque le provoca un error a Labview
+				ret = CORESIP_OK;
+			}
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = ret;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "ERROR CORESIP_DestroyAccount: CORESIP NO INICIALIZADA");
+				}
+			}
+		}
+		else if ((accId & CORESIP_ID_TYPE_MASK) != CORESIP_ACC_ID)
+		{
+			pj_status_t st = PJ_EINVALIDOP;
+			PJ_CHECK_STATUS(st, ("ERROR CORESIP_DestroyAccount: accId no valido"));
+		}
+		else
+		{			
+			SipAgent::DestroyAccount(accId & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -301,12 +665,33 @@ CORESIP_API int CORESIP_SetTipoGRS(int accId, CORESIP_CallFlagsMask FlagGRS, int
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		SipAgent::SetTipoGRS(accId & CORESIP_ID_MASK, FlagGRS, on);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetTipoGRS: CORESIP NO INICIALIZADA");
+			}
+		}
+		else if ((accId & CORESIP_ID_TYPE_MASK) != CORESIP_ACC_ID)
+		{
+			pj_status_t st = PJ_EINVALIDOP;
+			PJ_CHECK_STATUS(st, ("ERROR CORESIP_SetTipoGRS: accId no valido"));
+		}
+		else
+		{
+			SipAgent::SetTipoGRS(accId & CORESIP_ID_MASK, FlagGRS, on);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -320,22 +705,43 @@ CORESIP_API int CORESIP_SetGRSParams(int accId, char* RdFr, unsigned int *Tj1, u
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pjsua_acc_id pj_acc_id;
-		if (accId < 0)
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
-			pj_acc_id = PJSUA_INVALID_ID;
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetGRSParams: CORESIP NO INICIALIZADA");
+			}
+		}
+		else if ((accId & CORESIP_ID_TYPE_MASK) != CORESIP_ACC_ID)
+		{
+			pj_status_t st = PJ_EINVALIDOP;
+			PJ_CHECK_STATUS(st, ("ERROR CORESIP_SetTipoGRS: accId no valido"));
 		}
 		else
 		{
-			pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-			pj_acc_id = accId & CORESIP_ID_MASK;
-		}
+			pjsua_acc_id pj_acc_id;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
 
-		SipAgent::SetGRSParams(pj_acc_id, RdFr, Tj1, Ts1, Ts2, preferred_grs_bss_method, preferred_grs_bss_method_code, forced_ptt_id, selcal_supported);
+			SipAgent::SetGRSParams(pj_acc_id, RdFr, Tj1, Ts1, Ts2, preferred_grs_bss_method, preferred_grs_bss_method_code, forced_ptt_id, selcal_supported);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -347,22 +753,39 @@ CORESIP_API int CORESIP_GRS_Force_Ptt_Mute(int call, CORESIP_PttType PttType, un
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::GRS_Force_Ptt_Mute(call & CORESIP_ID_MASK, PttType, PttId, on);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_GRS_Force_Ptt_Mute: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_GRS_Force_Ptt_Mute: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::GRS_Force_Ptt_Mute(call & CORESIP_ID_MASK, PttType, PttId, on);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_GRS_Force_Ptt_Mute: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -374,22 +797,39 @@ CORESIP_API int CORESIP_GRS_Force_Ptt(int call, CORESIP_PttType PttType, unsigne
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::GRS_Force_Ptt(call & CORESIP_ID_MASK, PttType, PttId);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_GRS_Force_Ptt_Mute: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_GRS_Force_Ptt: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::GRS_Force_Ptt(call & CORESIP_ID_MASK, PttType, PttId);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_GRS_Force_Ptt_Mute: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -401,22 +841,39 @@ CORESIP_API int CORESIP_GRS_Force_SCT(int call, bool on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::GRS_Force_SCT(call & CORESIP_ID_MASK, on);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_GRS_Force_SCT: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_GRS_Force_SCT: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::GRS_Force_SCT(call & CORESIP_ID_MASK, on);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_GRS_Force_SCT: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -428,22 +885,39 @@ CORESIP_API int CORESIP_Force_PTTS(int call, bool on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Force_PTTS(call & CORESIP_ID_MASK, on);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_Force_PTTS: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_Force_PTTS: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Force_PTTS(call & CORESIP_ID_MASK, on);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_Force_PTTS: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -455,11 +929,28 @@ CORESIP_API int CORESIP_AddSndDevice(const CORESIP_SndDeviceInfo * info, int * d
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*dev = (SipAgent::AddSndDevice(info) | CORESIP_SNDDEV_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_AddSndDevice: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*dev = (SipAgent::AddSndDevice(info) | CORESIP_SNDDEV_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -471,11 +962,28 @@ CORESIP_API int CORESIP_CreateWavPlayer(const char * file, unsigned loop, int * 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*wavPlayer = (SipAgent::CreateWavPlayer(file, loop != 0) | CORESIP_WAVPLAYER_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateWavPlayer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*wavPlayer = (SipAgent::CreateWavPlayer(file, loop != 0) | CORESIP_WAVPLAYER_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -487,13 +995,29 @@ CORESIP_API int CORESIP_DestroyWavPlayer(int wavPlayer, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((wavPlayer & CORESIP_ID_TYPE_MASK) == CORESIP_WAVPLAYER_ID);
-		if((wavPlayer & CORESIP_ID_TYPE_MASK) == CORESIP_WAVPLAYER_ID)
-			SipAgent::DestroyWavPlayer(wavPlayer & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyWavPlayer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((wavPlayer & CORESIP_ID_TYPE_MASK) == CORESIP_WAVPLAYER_ID)
+				SipAgent::DestroyWavPlayer(wavPlayer & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -505,11 +1029,28 @@ CORESIP_API int CORESIP_CreateWavRecorder(const char * file, int * wavRecorder, 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*wavRecorder = (SipAgent::CreateWavRecorder(file) | CORESIP_WAVRECORDER_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateWavRecorder: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*wavRecorder = (SipAgent::CreateWavRecorder(file) | CORESIP_WAVRECORDER_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -521,13 +1062,29 @@ CORESIP_API int CORESIP_DestroyWavRecorder(int wavRecorder, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((wavRecorder & CORESIP_ID_TYPE_MASK) == CORESIP_WAVRECORDER_ID);
-		if ((wavRecorder & CORESIP_ID_TYPE_MASK) == CORESIP_WAVRECORDER_ID)
-			SipAgent::DestroyWavRecorder(wavRecorder & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyWavRecorder: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((wavRecorder & CORESIP_ID_TYPE_MASK) == CORESIP_WAVRECORDER_ID)
+				SipAgent::DestroyWavRecorder(wavRecorder & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -540,11 +1097,28 @@ CORESIP_API int CORESIP_CreateRdRxPort(const CORESIP_RdRxPortInfo * info, const 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*rdRxPort = (SipAgent::CreateRdRxPort(info, localIp) | CORESIP_RDRXPORT_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateRdRxPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*rdRxPort = (SipAgent::CreateRdRxPort(info, localIp) | CORESIP_RDRXPORT_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -556,12 +1130,28 @@ CORESIP_API int CORESIP_DestroyRdRxPort(int rdRxPort, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((rdRxPort & CORESIP_ID_TYPE_MASK) == CORESIP_RDRXPORT_ID);
-		SipAgent::DestroyRdRxPort(rdRxPort & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyRdRxPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::DestroyRdRxPort(rdRxPort & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -573,11 +1163,28 @@ CORESIP_API int CORESIP_CreateSndRxPort(const char * id, int * sndRxPort, CORESI
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*sndRxPort = (SipAgent::CreateSndRxPort(id) | CORESIP_SNDRXPORT_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateSndRxPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*sndRxPort = (SipAgent::CreateSndRxPort(id) | CORESIP_SNDRXPORT_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -589,12 +1196,28 @@ CORESIP_API int CORESIP_DestroySndRxPort(int sndRxPort, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((sndRxPort & CORESIP_ID_TYPE_MASK) == CORESIP_SNDRXPORT_ID);
-		SipAgent::DestroySndRxPort(sndRxPort & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroySndRxPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::DestroySndRxPort(sndRxPort & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -606,12 +1229,29 @@ CORESIP_API int CORESIP_BridgeLink(int src, int dst, int on, CORESIP_Error * err
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipAgent::BridgeLink(src & CORESIP_ID_TYPE_MASK, src & CORESIP_ID_MASK, 
-			dst & CORESIP_ID_TYPE_MASK, dst & CORESIP_ID_MASK, on != 0);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_BridgeLink: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::BridgeLink(src & CORESIP_ID_TYPE_MASK, src & CORESIP_ID_MASK,
+				dst & CORESIP_ID_TYPE_MASK, dst & CORESIP_ID_MASK, on != 0);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -623,11 +1263,28 @@ CORESIP_API int CORESIP_SendToRemote(int dev, int on, const char * id, const cha
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipAgent::SendToRemote(dev & CORESIP_ID_TYPE_MASK, dev & CORESIP_ID_MASK, on != 0, id, ip, port);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendToRemote: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SendToRemote(dev & CORESIP_ID_TYPE_MASK, dev & CORESIP_ID_MASK, on != 0, id, ip, port);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -639,11 +1296,28 @@ CORESIP_API int CORESIP_ReceiveFromRemote(const char * localIp, const char * mca
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipAgent::ReceiveFromRemote(localIp, mcastIp, mcastPort);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_ReceiveFromRemote: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::ReceiveFromRemote(localIp, mcastIp, mcastPort);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -655,11 +1329,28 @@ CORESIP_API int CORESIP_SetVolume(int id, unsigned volume, CORESIP_Error * error
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipAgent::SetVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK, volume);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetVolume: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK, volume);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -671,11 +1362,28 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * err
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*volume = SipAgent::GetVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetVolume: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*volume = SipAgent::GetVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -687,11 +1395,28 @@ CORESIP_API int CORESIP_CallMake(const CORESIP_CallInfo * info, const CORESIP_Ca
 {
 	int ret = CORESIP_OK;	
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*call = (SipCall::New(info, outInfo) | CORESIP_CALL_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CallMake: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*call = (SipCall::New(info, outInfo) | CORESIP_CALL_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -703,23 +1428,39 @@ CORESIP_API int CORESIP_CallAnswer(int call, unsigned code, int addToConference,
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Answer(call & CORESIP_ID_MASK, code, addToConference != 0, reason_code, reason_text);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallAnswer: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallAnswer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Answer(call & CORESIP_ID_MASK, code, addToConference != 0, reason_code, reason_text);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallAnswer: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -731,24 +1472,40 @@ CORESIP_API int CORESIP_CallMovedTemporallyAnswer(int call, const char *dst, con
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::MovedTemporallyAnswer(call & CORESIP_ID_MASK, dst, reason);
-			//SipCall::MovedTemporallyAnswer(call & CORESIP_ID_MASK, "sip:314002@192.168.1.202", "busy");
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_MovedTemporallyAnswer: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallMovedTemporallyAnswer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::MovedTemporallyAnswer(call & CORESIP_ID_MASK, dst, reason);
+				//SipCall::MovedTemporallyAnswer(call & CORESIP_ID_MASK, "sip:314002@192.168.1.202", "busy");
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_MovedTemporallyAnswer: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -761,22 +1518,39 @@ CORESIP_API int CORESIP_CallProccessRedirect(int call, const char *dstUri, CORES
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::CallProccessRedirect(call & CORESIP_ID_MASK, dstUri, op);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallProccessRedirect: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallProccessRedirect: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::CallProccessRedirect(call & CORESIP_ID_MASK, dstUri, op);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallProccessRedirect: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -788,23 +1562,39 @@ CORESIP_API int CORESIP_CallHangup(int call, unsigned code, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Hangup(call & CORESIP_ID_MASK, code);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallHangup: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallHangup: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Hangup(call & CORESIP_ID_MASK, code);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallHangup: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -816,23 +1606,39 @@ CORESIP_API int CORESIP_CallHold(int call, int hold, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Hold(call & CORESIP_ID_MASK, hold != 0);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallHold: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallHold: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Hold(call & CORESIP_ID_MASK, hold != 0);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallHold: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -840,16 +1646,32 @@ CORESIP_API int CORESIP_CallHold(int call, int hold, CORESIP_Error * error)
 /**
  *	CORESIP_CallReinvite
  */
-CORESIP_API int CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallType_SDP, int TxRx_SDP, char* etm_vcs_bss_methods)
+CORESIP_API int CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallType_SDP, int TxRx_SDP, char* etm_vcs_bss_methods, CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::Reinvite(call & CORESIP_ID_MASK, CallType_SDP, TxRx_SDP, etm_vcs_bss_methods);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CallReinvite: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::Reinvite(call & CORESIP_ID_MASK, CallType_SDP, TxRx_SDP, etm_vcs_bss_methods, ForceSDPSendRecvAttr);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -861,23 +1683,39 @@ CORESIP_API int CORESIP_CallTransfer(int call, int dstCall, const char * dst, co
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Transfer(call & CORESIP_ID_MASK, dstCall != PJSUA_INVALID_ID ? dstCall & CORESIP_ID_MASK : PJSUA_INVALID_ID, dst, display_name);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallTransfer: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallTransfer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Transfer(call & CORESIP_ID_MASK, dstCall != PJSUA_INVALID_ID ? dstCall & CORESIP_ID_MASK : PJSUA_INVALID_ID, dst, display_name);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallTransfer: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -891,23 +1729,39 @@ CORESIP_API int CORESIP_CallPtt(int call, const CORESIP_PttInfo * info, CORESIP_
 
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Ptt(call & CORESIP_ID_MASK, info);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallPtt: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallPtt: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Ptt(call & CORESIP_ID_MASK, info);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallPtt: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -921,23 +1775,39 @@ CORESIP_API int CORESIP_CallPtt_Delayed(int call, const CORESIP_PttInfo* info, u
 
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Ptt(call & CORESIP_ID_MASK, info, delay_ms);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallPtt: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallPtt_Delayed: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Ptt(call & CORESIP_ID_MASK, info, delay_ms);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallPtt: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -949,23 +1819,39 @@ CORESIP_API int CORESIP_CallSendInfo(int call, const char * info, CORESIP_Error 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{		
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::SendInfoMsg(call & CORESIP_ID_MASK, info);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallSendInfo: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallSendInfo: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::SendInfoMsg(call & CORESIP_ID_MASK, info);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallSendInfo: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -977,23 +1863,40 @@ CORESIP_API int	CORESIP_GetRdQidx(int call, int* Qidx, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::GetRdQidx(call & CORESIP_ID_MASK, Qidx);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_GetRdResourceInfo: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_GetRdQidx: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::GetRdQidx(call & CORESIP_ID_MASK, Qidx);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_GetRdQidx: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1005,23 +1908,39 @@ CORESIP_API int CORESIP_CallConference(int call, int conf, CORESIP_Error * error
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::Conference(call & CORESIP_ID_MASK, conf != 0);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallConference: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallConference: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::Conference(call & CORESIP_ID_MASK, conf != 0);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallConference: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1033,23 +1952,39 @@ CORESIP_API int CORESIP_CallSendConfInfo(int call, const CORESIP_ConfInfo * info
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		//pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
-			SipCall::SendConfInfo(call & CORESIP_ID_MASK, info);
-		else
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
 			ret = CORESIP_ERROR;
-			if (error)
+			if (error != NULL)
 			{
-				error->Code = 0;
+				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "CORESIP_CallSendConfInfo: Invalid call id 0x%X", call);
+				sprintf(error->Info, "ERROR CORESIP_CallSendConfInfo: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			if ((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID)
+				SipCall::SendConfInfo(call & CORESIP_ID_MASK, info);
+			else
+			{
+				ret = CORESIP_ERROR;
+				if (error != NULL)
+				{
+					error->Code = 0;
+					strcpy(error->File, __FILE__);
+					sprintf(error->Info, "CORESIP_CallSendConfInfo: Invalid call id 0x%X", call);
+				}
 			}
 		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1061,12 +1996,28 @@ CORESIP_API int CORESIP_SendConfInfoFromAcc(int accId, const CORESIP_ConfInfo * 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		SubscriptionServer::SendConfInfoFromAcc(accId & CORESIP_ID_MASK, info);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendConfInfoFromAcc: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SubscriptionServer::SendConfInfoFromAcc(accId & CORESIP_ID_MASK, info);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1078,11 +2029,28 @@ CORESIP_API int CORESIP_TransferAnswer(const char * tsxKey, void * txData, void 
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipCall::TransferAnswer(tsxKey, txData, evSub, code);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_TransferAnswer: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::TransferAnswer(tsxKey, txData, evSub, code);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1094,11 +2062,28 @@ CORESIP_API int CORESIP_TransferNotify(void * evSub, unsigned code, CORESIP_Erro
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipCall::TransferNotify(evSub, code);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_TransferNotify: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::TransferNotify(evSub, code);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1113,11 +2098,28 @@ CORESIP_API int CORESIP_SendOptionsMsg(const char * dst, char * callid, int isRa
 
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		OptionsMod::SendOptionsMsg(dst, callid, isRadio);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendOptionsMsg: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			OptionsMod::SendOptionsMsg(dst, callid, isRadio);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1130,12 +2132,28 @@ CORESIP_API int CORESIP_SendOptionsCFWD(int accId, const char* dst, CORESIP_CFWR
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		OptionsMod::SendOptionsCFWD(accId & CORESIP_ID_MASK, dst, cfwr_options_type, body, callid, by_proxy);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendOptionsCFWD: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			OptionsMod::SendOptionsCFWD(accId & CORESIP_ID_MASK, dst, cfwr_options_type, body, callid, by_proxy);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1148,11 +2166,28 @@ CORESIP_API int CORESIP_SendResponseCFWD(int st_code, const char* body, unsigned
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		OptionsMod::SendResponseCFWD(st_code, body, hresp);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendResponseCFWD: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			OptionsMod::SendResponseCFWD(st_code, body, hresp);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1165,11 +2200,28 @@ CORESIP_API int CORESIP_SendOptionsMsgProxy(const char * dst, char * callid, int
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		OptionsMod::SendOptionsMsg(dst, callid, isRadio, PJ_TRUE);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendOptionsMsgProxy: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			OptionsMod::SendOptionsMsg(dst, callid, isRadio, PJ_TRUE);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1182,15 +2234,29 @@ CORESIP_API int CORESIP_Wav2RemoteStart(const char *filename, const char * id, c
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		/**
-		WavPlayerToRemote *wp=new WavPlayerToRemote(filename, PTIME, eofCb);
-		wp->Send2Remote(id, ip, port);
-		*/
-		SipAgent::CreateWavPlayer2Remote(filename, id, ip, port);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Wav2RemoteStart: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::CreateWavPlayer2Remote(filename, id, ip, port);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+
 	return ret;
 }
 
@@ -1201,15 +2267,28 @@ CORESIP_API int CORESIP_Wav2RemoteEnd(void *obj, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		/**
-		WavPlayerToRemote *wp = (WavPlayerToRemote *)obj;
-		delete wp;
-		*/
-		SipAgent::DestroyWavPlayer2Remote();
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Wav2RemoteEnd: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::DestroyWavPlayer2Remote();
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1221,12 +2300,29 @@ CORESIP_API int CORESIP_RdPttEvent(bool on, const char *freqId, int dev, CORESIP
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		dev &= ~CORESIP_SNDDEV_ID;
-		SipAgent::RdPttEvent(on, freqId, dev, PTT_type);		
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_RdPttEvent: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			dev &= ~CORESIP_SNDDEV_ID;
+			SipAgent::RdPttEvent(on, freqId, dev, PTT_type);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1239,11 +2335,28 @@ CORESIP_API int CORESIP_RdSquEvent(bool on, const char *freqId, const char *reso
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SipAgent::RdSquEvent(on, freqId, resourceId, bssMethod, bssQidx);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_RdSquEvent: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::RdSquEvent(on, freqId, resourceId, bssMethod, bssQidx);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1255,11 +2368,28 @@ CORESIP_API int CORESIP_RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		ret = SipAgent::RecorderCmd(cmd, error);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_RecorderCmd: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::RecorderCmd(cmd, error);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1270,12 +2400,29 @@ CORESIP_API int CORESIP_RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * erro
 CORESIP_API int CORESIP_CreatePresenceSubscription(char *dest_uri, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		ret = SipAgent::CreatePresenceSubscription(dest_uri);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreatePresenceSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::CreatePresenceSubscription(dest_uri);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1287,11 +2434,28 @@ CORESIP_API int CORESIP_DestroyPresenceSubscription(char *dest_uri, CORESIP_Erro
 {
 	int ret = CORESIP_OK;
 	
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		ret = SipAgent::DestroyPresenceSubscription(dest_uri);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyPresenceSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::DestroyPresenceSubscription(dest_uri);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1299,16 +2463,52 @@ CORESIP_API int CORESIP_DestroyPresenceSubscription(char *dest_uri, CORESIP_Erro
 /**
  *	CORESIP_CreateConferenceSubscription. Crea una subscripcion por evento de conferencia
  */
-CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, char *dest_uri, pj_bool_t by_proxy, CORESIP_Error * error)
+CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, int call, char *dest_uri, pj_bool_t by_proxy, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		ret = SipAgent::CreateConferenceSubscription(accId & CORESIP_ID_MASK, dest_uri, by_proxy);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateConferenceSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			pjsua_acc_id pj_acc_id = PJSUA_INVALID_ID;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
+
+			int call_id;
+			if (call == -1)
+			{
+				call_id = -1;
+			}
+			else
+			{
+				call_id = call & CORESIP_ID_MASK;
+			}
+
+			ret = SipAgent::CreateConferenceSubscription(pj_acc_id, call_id, dest_uri, by_proxy);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1319,12 +2519,29 @@ CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, char *dest_uri, 
 CORESIP_API int CORESIP_DestroyConferenceSubscription(char *dest_uri, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		ret = SipAgent::DestroyConferenceSubscription(dest_uri);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyConferenceSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::DestroyConferenceSubscription(dest_uri);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1335,13 +2552,29 @@ CORESIP_API int CORESIP_DestroyConferenceSubscription(char *dest_uri, CORESIP_Er
 CORESIP_API int CORESIP_CreateDialogSubscription(int accId, char *dest_uri, pj_bool_t by_proxy, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		ret = SipAgent::CreateDialogSubscription(accId & CORESIP_ID_MASK, dest_uri, by_proxy);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateDialogSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::CreateDialogSubscription(accId & CORESIP_ID_MASK, dest_uri, by_proxy);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1353,11 +2586,28 @@ CORESIP_API int CORESIP_DestroyDialogSubscription(char* dest_uri, CORESIP_Error*
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		ret = SipAgent::DestroyDialogSubscription(dest_uri);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyDialogSubscription: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::DestroyDialogSubscription(dest_uri);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1369,22 +2619,38 @@ CORESIP_API int CORESIP_SendWG67Subscription(int accId, char* dest_uri, int expi
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pjsua_acc_id pj_acc_id = PJSUA_INVALID_ID;
-		if (accId < 0)
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
-			pj_acc_id = PJSUA_INVALID_ID;
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendWG67Subscription: CORESIP NO INICIALIZADA");
+			}
 		}
 		else
 		{
-			pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-			pj_acc_id = accId & CORESIP_ID_MASK;
-		}
+			pjsua_acc_id pj_acc_id = PJSUA_INVALID_ID;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
 
-		ret = WG67Subs::SendWG67Subscription(pj_acc_id, -1, dest_uri, expires, (pj_bool_t) noRefresh, PJ_FALSE);
+			ret = WG67Subs::SendWG67Subscription(pj_acc_id, -1, dest_uri, expires, (pj_bool_t)noRefresh, PJ_FALSE);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1396,22 +2662,38 @@ CORESIP_API int CORESIP_SetWG67SubscriptionParameters(int accId, char* dest_uri,
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pjsua_acc_id pj_acc_id;
-		if (accId < 0)
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
-			pj_acc_id = PJSUA_INVALID_ID;
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetWG67SubscriptionParameters: CORESIP NO INICIALIZADA");
+			}
 		}
 		else
 		{
-			pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-			pj_acc_id = accId & CORESIP_ID_MASK;
-		}
+			pjsua_acc_id pj_acc_id;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
 
-		ret = WG67Subs::SetWG67SubscriptionParameters(pj_acc_id, -1, dest_uri, noRefresh);
+			ret = WG67Subs::SetWG67SubscriptionParameters(pj_acc_id, -1, dest_uri, noRefresh);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1423,11 +2705,28 @@ CORESIP_API int CORESIP_Set_WG67_Notifier_Parameters(int notify_enabled, int man
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		ret = WG67Subs::Set_WG67_Notifier_Parameters(notify_enabled, manual, minimum_expires, maximum_expires);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Set_WG67_Notifier_Parameters: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = WG67Subs::Set_WG67_Notifier_Parameters(notify_enabled, manual, minimum_expires, maximum_expires);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1440,22 +2739,38 @@ CORESIP_API int CORESIP_Set_WG67_notify_status(int accId, char* subscriberUri, C
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pjsua_acc_id pj_acc_id;
-		if (accId < 0)
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
-			pj_acc_id = PJSUA_INVALID_ID;
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Set_WG67_notify_status: CORESIP NO INICIALIZADA");
+			}
 		}
 		else
 		{
-			pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-			pj_acc_id = accId & CORESIP_ID_MASK;
-		}
+			pjsua_acc_id pj_acc_id;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
 
-		ret = WG67Subs::Set_WG67_notify_status(pj_acc_id, subscriberUri, subsState, wG67Notify_Body);
+			ret = WG67Subs::Set_WG67_notify_status(pj_acc_id, subscriberUri, subsState, wG67Notify_Body);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1467,22 +2782,39 @@ CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscript
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pjsua_acc_id pj_acc_id;
-		if (accId < 0)
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
 		{
-			pj_acc_id = PJSUA_INVALID_ID;
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_Get_GRS_WG67SubscriptionsList: CORESIP NO INICIALIZADA");
+			}
 		}
 		else
 		{
-			pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-			pj_acc_id = accId & CORESIP_ID_MASK;
-		}
+			pjsua_acc_id pj_acc_id;
+			if (accId < 0)
+			{
+				pj_acc_id = PJSUA_INVALID_ID;
+			}
+			else
+			{
+				//pj_assert((accId & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
+				pj_acc_id = accId & CORESIP_ID_MASK;
+			}
 
-		ret = SubscriptionServer::GetWG67SubscriptionList(pj_acc_id, nSubscriptions, WG67Subscriptions);
+			ret = SubscriptionServer::GetWG67SubscriptionList(pj_acc_id, nSubscriptions, WG67Subscriptions);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1491,15 +2823,32 @@ CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscript
 /**
  *	CORESIP_CreateGenericPort		Crea un puerto generico de media
  */
-CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, CORESIP_Error* error)
+CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, int jitter_buff_size, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		*gen_port_id = (GenericPort::CreateGenericPort() | CORESIP_GENPORT_ID);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateGenericPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*gen_port_id = (GenericPort::CreateGenericPort(jitter_buff_size) | CORESIP_GENPORT_ID);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1511,12 +2860,28 @@ CORESIP_API int CORESIP_DestroyGenericPort(int gen_port_id, CORESIP_Error* error
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((gen_port_id & CORESIP_ID_TYPE_MASK) == CORESIP_GENPORT_ID);
-		GenericPort::DestroyGenericPort(gen_port_id & CORESIP_ID_MASK);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyGenericPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			GenericPort::DestroyGenericPort(gen_port_id & CORESIP_ID_MASK);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1524,16 +2889,42 @@ CORESIP_API int CORESIP_DestroyGenericPort(int gen_port_id, CORESIP_Error* error
 /**
  *	CORESIP_PutInGenericPort: Pone muestras en el generic port.
  */
-CORESIP_API int CORESIP_PutInGenericPort(int gen_port_id, char* buffer, int buffer_length, CORESIP_Error* error)
+CORESIP_API int CORESIP_PutInGenericPort(int gen_port_id, CORESIP_GenericPortBuffer *genBuff, pj_bool_t blocking, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL && !blocking) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((gen_port_id & CORESIP_ID_TYPE_MASK) == CORESIP_GENPORT_ID);
-		GenericPort::PutInGenericPort(gen_port_id & CORESIP_ID_MASK, buffer, buffer_length);
+		if (genBuff == NULL)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_PutInGenericPort: genBuff es NULL");
+			}
+		}
+		else if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_PutInGenericPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			GenericPort::PutInGenericPort(gen_port_id & CORESIP_ID_MASK, genBuff->buffer, sizeof(genBuff->buffer), blocking);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL && !blocking) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1541,16 +2932,85 @@ CORESIP_API int CORESIP_PutInGenericPort(int gen_port_id, char* buffer, int buff
 /**
 *CORESIP_GetFromGenericPort: Toma muestras del generic port
 */
-CORESIP_API int CORESIP_GetFromGenericPort(int gen_port_id, char* buffer, int buffer_length, CORESIP_Error * error)
+CORESIP_API int CORESIP_GetFromGenericPort(int gen_port_id, CORESIP_GenericPortBuffer *genBuff, pj_bool_t blocking, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL && !blocking) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((gen_port_id & CORESIP_ID_TYPE_MASK) == CORESIP_GENPORT_ID);
-		GenericPort::GetFromGenericPort(gen_port_id & CORESIP_ID_MASK, buffer, buffer_length);
+		if (genBuff == NULL)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetFromGenericPort: genBuff es NULL");
+			}
+		}
+		else if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetFromGenericPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			GenericPort::GetFromGenericPort(gen_port_id & CORESIP_ID_MASK, genBuff->buffer, sizeof(genBuff->buffer), blocking);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL && !blocking) ReleaseMutex(SipAgent::ghMutex);
+
+	return ret;
+}
+
+/**
+*CORESIP_GetJitterStatusGenericPort:
+*/
+CORESIP_API int CORESIP_GetJitterStatusGenericPort(int gen_port_id, unsigned int* size, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (size == NULL)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetFromGenericPort: size es NULL");
+			}
+		}
+		else if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetFromGenericPort: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			GenericPort::GetJitterStatusGenericPort(gen_port_id & CORESIP_ID_MASK, size);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1561,13 +3021,29 @@ CORESIP_API int CORESIP_GetFromGenericPort(int gen_port_id, char* buffer, int bu
 CORESIP_API int CORESIP_SendInstantMessage(int acc_id, char *dest_uri, char *text, pj_bool_t by_proxy, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		pj_assert((acc_id & CORESIP_ID_TYPE_MASK) == CORESIP_ACC_ID);
-		ret = SipAgent::SendInstantMessage(acc_id & CORESIP_ID_MASK, dest_uri, text, by_proxy);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendInstantMessage: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::SendInstantMessage(acc_id & CORESIP_ID_MASK, dest_uri, text, by_proxy);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1579,12 +3055,29 @@ CORESIP_API int CORESIP_SendInstantMessage(int acc_id, char *dest_uri, char *tex
 CORESIP_API int CORESIP_EchoCancellerLCMic(bool on, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
 	{
-		ret = SipAgent::EchoCancellerLCMic(on);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_EchoCancellerLCMic: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			ret = SipAgent::EchoCancellerLCMic(on);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1592,12 +3085,29 @@ CORESIP_API int CORESIP_EchoCancellerLCMic(bool on, CORESIP_Error * error)
 CORESIP_API int CORESIP_SetImpairments(int call, CORESIP_Impairments * impairments, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::SetImpairments(call & CORESIP_ID_MASK, impairments);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetImpairments: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::SetImpairments(call & CORESIP_ID_MASK, impairments);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1605,12 +3115,29 @@ CORESIP_API int CORESIP_SetImpairments(int call, CORESIP_Impairments * impairmen
 CORESIP_API int CORESIP_SetCallParameters(int call, int *disableKeepAlives, int* forced_cld, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::SetCallParameters(call & CORESIP_ID_MASK, disableKeepAlives, forced_cld);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetCallParameters: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::SetCallParameters(call & CORESIP_ID_MASK, disableKeepAlives, forced_cld);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1621,12 +3148,29 @@ CORESIP_API int CORESIP_SetCallParameters(int call, int *disableKeepAlives, int*
 CORESIP_API int CORESIP_SetConfirmPtt(int call, pj_bool_t val, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::SetConfirmPtt(call & CORESIP_ID_MASK, val);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetConfirmPtt: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::SetConfirmPtt(call & CORESIP_ID_MASK, val);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1637,12 +3181,29 @@ CORESIP_API int CORESIP_SetConfirmPtt(int call, pj_bool_t val, CORESIP_Error* er
 CORESIP_API int CORESIP_GetNetworkDelay(int call, unsigned int* delay_ms, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::GetNetworkDelay(call & CORESIP_ID_MASK, delay_ms);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetNetworkDelay: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::GetNetworkDelay(call & CORESIP_ID_MASK, delay_ms);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1653,12 +3214,29 @@ CORESIP_API int CORESIP_GetNetworkDelay(int call, unsigned int* delay_ms, CORESI
 CORESIP_API int CORESIP_SendToneToCall(int call, unsigned int frequency, float volume_dbm0, int on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SignalGen::SendToneToCall(call & CORESIP_ID_MASK, frequency, volume_dbm0, on);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendToneToCall: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SignalGen::SendToneToCall(call & CORESIP_ID_MASK, frequency, volume_dbm0, on);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1669,12 +3247,29 @@ CORESIP_API int CORESIP_SendToneToCall(int call, unsigned int frequency, float v
 CORESIP_API int CORESIP_SendNoiseToCall(int call, float volume_dbm0, int on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SignalGen::SendNoiseToCall(call & CORESIP_ID_MASK, NoiseGenerator::White, volume_dbm0, on);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendNoiseToCall: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SignalGen::SendNoiseToCall(call & CORESIP_ID_MASK, NoiseGenerator::White, volume_dbm0, on);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1685,12 +3280,29 @@ CORESIP_API int CORESIP_SendNoiseToCall(int call, float volume_dbm0, int on, COR
 CORESIP_API int CORESIP_SendPinkNoiseToCall(int call, float volume_dbm0, int on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SignalGen::SendNoiseToCall(call & CORESIP_ID_MASK, NoiseGenerator::Pink, volume_dbm0, on);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendPinkNoiseToCall: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SignalGen::SendNoiseToCall(call & CORESIP_ID_MASK, NoiseGenerator::Pink, volume_dbm0, on);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1698,15 +3310,32 @@ CORESIP_API int CORESIP_SendPinkNoiseToCall(int call, float volume_dbm0, int on,
 /**
  * SendDTMF.	...
  */
-CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map* digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0, CORESIP_Error* error)
+CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map* digit_map, const CORESIP_tone_digits *digits, float volume_dbm0, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
+
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SignalGen::SendDTMF(call & CORESIP_ID_MASK, digit_map, count, digits, volume_dbm0);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendDTMF: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SignalGen::SendDTMF(call & CORESIP_ID_MASK, digit_map, digits, volume_dbm0);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1718,12 +3347,28 @@ CORESIP_API int CORESIP_SendSELCAL(int call, const char* selcalValue, CORESIP_Er
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_assert((call & CORESIP_ID_TYPE_MASK) == CORESIP_CALL_ID);
-		SipCall::SendSELCAL(call & CORESIP_ID_MASK, selcalValue);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SendSELCAL: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipCall::SendSELCAL(call & CORESIP_ID_MASK, selcalValue);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1732,11 +3377,28 @@ CORESIP_API int CORESIP_SetSNDDeviceWindowsName(CORESIP_SndDevType UlisesDev, co
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SoundDevHw::SetSNDDeviceWindowsName(UlisesDev, DevWinName);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetSNDDeviceWindowsName: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SoundDevHw::SetSNDDeviceWindowsName(UlisesDev, DevWinName);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1745,11 +3407,28 @@ CORESIP_API int CORESIP_GetWindowsSoundDeviceNames(int captureType, CORESIP_SndW
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetWindowsSoundDeviceNames: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1758,12 +3437,29 @@ CORESIP_API int CORESIP_SetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_status_t st = SoundDevHw::SetVolumeOutputDevice(dev, volume);
-		PJ_CHECK_STATUS(st, ("ERROR CORESIP_SetVolumeOutputDevice. Ver logs"));
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetVolumeOutputDevice: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			pj_status_t st = SoundDevHw::SetVolumeOutputDevice(dev, volume);
+			PJ_CHECK_STATUS(st, ("ERROR CORESIP_SetVolumeOutputDevice. Ver logs"));
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }
@@ -1772,12 +3468,29 @@ CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 {
 	int ret = CORESIP_OK;
 
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
 	Try
 	{
-		pj_status_t st = SoundDevHw::GetVolumeOutputDevice(dev, volume);
-		PJ_CHECK_STATUS(st, ("ERROR CORESIP_GetVolumeOutputDevice. Ver logs"));
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_GetVolumeOutputDevice: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			pj_status_t st = SoundDevHw::GetVolumeOutputDevice(dev, volume);
+			PJ_CHECK_STATUS(st, ("ERROR CORESIP_GetVolumeOutputDevice. Ver logs"));
+		}
 	}
 	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 
 	return ret;
 }

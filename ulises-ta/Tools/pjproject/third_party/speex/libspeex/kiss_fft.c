@@ -289,6 +289,8 @@ static void kf_bfly_generic(
     kiss_fft_cpx scratchbuf[17];
     int Norig = st->nfft;
 
+    int ifstride = (int)fstride;
+
     /*CHECKBUF(scratchbuf,nscratchbuf,p);*/
     if (p>17)
        speex_fatal("KissFFT: max radix supported is 17");
@@ -308,7 +310,7 @@ static void kf_bfly_generic(
             int twidx=0;
             Fout[ k ] = scratchbuf[0];
             for (q=1;q<p;++q ) {
-                twidx += fstride * k;
+                twidx += ifstride * k;
                 if (twidx>=Norig) twidx-=Norig;
                 C_MUL(t,scratchbuf[q] , twiddles[twidx] );
                 C_ADDTO( Fout[ k ] ,t);
@@ -368,6 +370,7 @@ void kf_work(
     kiss_fft_cpx * Fout_beg=Fout;
     const int p=*factors++; /* the radix  */
     const int m=*factors++; /* stage's fft length/p */
+    int ifstride = (int)fstride;
 #if 0
     /*printf ("fft %d %d %d %d %d %d\n", p*m, m, p, s2, fstride*in_stride, N);*/
     if (m==1)
@@ -413,7 +416,7 @@ void kf_work(
           }
        }*/
     }else{
-       kf_work( Fout , f, fstride*p, in_stride, factors,st, N*p, fstride*in_stride, m);
+       kf_work( Fout , f, ifstride*p, in_stride, factors,st, N*p, ifstride*in_stride, m);
     }
 
     
@@ -468,7 +471,7 @@ kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem 
         + sizeof(kiss_fft_cpx)*(nfft-1); /* twiddle factors*/
 
     if ( lenmem==NULL ) {
-        st = ( kiss_fft_cfg)KISS_FFT_MALLOC( memneeded );
+        st = ( kiss_fft_cfg)KISS_FFT_MALLOC( (int) memneeded );
     }else{
         if (mem != NULL && *lenmem >= memneeded)
             st = (kiss_fft_cfg)mem;

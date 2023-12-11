@@ -142,7 +142,7 @@ PJ_DEF(void) pj_set_netos_error(pj_status_t code)
 int platform_strerror( pj_os_err_type os_errcode, 
                        char *buf, pj_size_t bufsize)
 {
-    int len = 0;
+    pj_size_t len = 0;
     PJ_DECL_UNICODE_TEMP_BUF(wbuf,128);
 
     pj_assert(buf != NULL);
@@ -159,9 +159,9 @@ int platform_strerror( pj_os_err_type os_errcode,
 	int i;
         for (i = 0; gaErrorList[i].msg; ++i) {
             if (gaErrorList[i].code == os_errcode) {
-                len = strlen(gaErrorList[i].msg);
+                len = (int) strlen(gaErrorList[i].msg);
 		if ((pj_size_t)len >= bufsize) {
-		    len = bufsize-1;
+		    len = (int) (bufsize-1);
 		}
 		pj_memcpy(buf, gaErrorList[i].msg, len);
 		buf[len] = '\0';
@@ -193,7 +193,7 @@ int platform_strerror( pj_os_err_type os_errcode,
 			     os_errcode,
 			     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
 			     buf,
-			     bufsize,
+			     (unsigned int) bufsize,
 			     NULL);
 	buf[bufsize-1] = '\0';
 #endif
@@ -211,10 +211,10 @@ int platform_strerror( pj_os_err_type os_errcode,
 	len = pj_ansi_snprintf( buf, bufsize, "Win32 error code %u", 
 				(unsigned)os_errcode);
 	if (len < 0 || len >= (int)bufsize)
-	    len = bufsize-1;
+	    len = (int) (bufsize-1);
 	buf[len] = '\0';
     }
 
-    return len;
+    return (int)len;
 }
 

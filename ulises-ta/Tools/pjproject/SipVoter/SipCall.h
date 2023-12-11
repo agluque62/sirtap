@@ -28,6 +28,7 @@ public:
 	char DstUri[CORESIP_MAX_URI_LENGTH + 1];
 	char IncommingReqUri[CORESIP_MAX_URI_LENGTH + 1];		//Uri del Request Line entrante
 	CORESIP_CallInfo _Info;	
+	CORESIP_CallFlagsMask Callflag_previous_reinvite;
 	pj_bool_t SelcalSupported;					//Si vale distinto de cero, la llamada soporta SELCAL
 	char _RdFr[CORESIP_MAX_RS_LENGTH + 1];					//Identificador de la frecuencia. Con valor "000.000" no se envia el fid. Debe estar terminado cn el caracter '\0'
 	char _IdDestino[CORESIP_MAX_RS_LENGTH + 1];				//Identificador del destino de radio. Si esta campo tiene una longitud mayor que cero
@@ -84,7 +85,7 @@ public:
 	static void MovedTemporallyAnswer(pjsua_call_id call_id, const char *dst_uri, const char *reason);
 	static void CallProccessRedirect(pjsua_call_id call_id, const char* dstUri, CORESIP_REDIRECT_OP op);
 	static void Hold(pjsua_call_id call_id, bool hold);
-	static void Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, char* etm_bss_methods);
+	static void Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, char* etm_bss_methods, CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr);
 	static void Transfer(pjsua_call_id call_id, pjsua_call_id dst_call_id, const char * dst, const char *display_name);	
 	static void Conference(pjsua_call_id call_id, bool conf);
 	static void SendConfInfo(pjsua_call_id call_id, const CORESIP_ConfInfo * info);

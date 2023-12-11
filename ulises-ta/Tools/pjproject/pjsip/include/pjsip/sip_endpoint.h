@@ -586,7 +586,6 @@ PJ_DECL(pj_bool_t) pjsip_endpt_Is_ETM(pjsip_endpoint* endpt);
  * @}
  */
 
-
 /**
  * Log an error.
  */

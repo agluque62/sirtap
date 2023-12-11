@@ -23,6 +23,21 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info, unsigned i
 	pj_status_t status = acquire_call("Ptt delayed()", call_id, &call1, &dlg1);
 	PJ_CHECK_STATUS(status, ("ERROR adquiriendo call", "[Call=%d]", call_id));
 
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("Ptt delayed:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: Ptt delayed: Sesion no establecida", "[Call=%d]", call_id));
+		return;
+	}
+
 	SipCall* sipcall = (SipCall*)call1->user_data;
 
 	sipcall->PTT_delayed_timer.id = 0;
@@ -36,7 +51,7 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info, unsigned i
 	delay1.sec = (long)(delay_ms / 1000);
 	delay1.msec = (long)(delay_ms % 1000);
 	sipcall->PTT_delayed_timer.id = 1;
-	pj_status_t st = pjsua_schedule_timer(&sipcall->PTT_delayed_timer, &delay1);
+	pj_status_t st = pjsua_schedule_timer(&sipcall->PTT_delayed_timer, &delay1);	
 	if (st != PJ_SUCCESS)
 	{
 		sipcall->PTT_delayed_timer.id = 0;
@@ -118,10 +133,18 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info)
 		return;
 	}
 
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: Ptt: Sesion no establecida", "[Call=%d]", call_id));
+		return;
+	}
+
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: Ptt: La llamada no tiene activa la media", "[Call=%d]", call_id));
 		return;
 	}
 
@@ -130,6 +153,7 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info)
 	if (stream == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: Ptt: La llamada no tiene activa la media", "[Call=%d]", call_id));
 		return;
 	}
 	pjmedia_stream_get_rtp_ext_tx_info(stream, &rtp_ext_info_prev);
@@ -252,6 +276,14 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info)
 			{
 				//Si la sesion es del tipo Radio-Rxonly entonces ignoramos la orden de PTT
 				pjsip_dlg_dec_lock(dlg1);
+				PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR Ptt. PTT is not supported by Radio-Rxonly type", "[Call=%d]", call_id));
+				return;
+			}
+			if (call->_Info.CallFlags & CORESIP_CALL_RD_IDLE)
+			{
+				//Si la sesion es del tipo Radio-Idle entonces ignoramos la orden de PTT
+				pjsip_dlg_dec_lock(dlg1);
+				PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR Ptt. PTT is not supported by Radio-Idle type", "[Call=%d]", call_id));
 				return;
 			}
 		}
@@ -420,6 +452,8 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info)
 
 	if (stream != NULL)
 	{
+		pjmedia_conf_reset_put_frame_port(pjsua_var.mconf, pjsua_call_get_conf_port(call_id));
+
 		pjmedia_stream_set_rtp_ext_tx_info(stream, rtp_ext_info);
 		call->last_rtp_ext_info = rtp_ext_info;
 
@@ -500,10 +534,17 @@ void SipCall::GRS_Force_Ptt_Mute(int call_id, CORESIP_PttType PttType, unsigned 
 		return;
 	}
 
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt_Mute: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt_Mute: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -512,6 +553,7 @@ void SipCall::GRS_Force_Ptt_Mute(int call_id, CORESIP_PttType PttType, unsigned 
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt_Mute: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -574,14 +616,21 @@ void SipCall::GRS_Force_Ptt(int call_id, CORESIP_PttType PttType, unsigned short
 	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
 	{
 		pjsip_dlg_dec_lock(dlg1);
-		throw PJLibException(__FILE__, PJ_EINVAL).Msg("GRS_Force_Ptt_Mute:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("GRS_Force_Ptt:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
 		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt: ", "ERROR: Llamada no activa [Call=%d]", call_id));
 	}
 
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -590,6 +639,7 @@ void SipCall::GRS_Force_Ptt(int call_id, CORESIP_PttType PttType, unsigned short
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -638,10 +688,17 @@ void SipCall::GRS_Force_SCT(int call_id, bool on)
 		return;
 	}
 
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_Ptt: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_SCT: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -650,6 +707,7 @@ void SipCall::GRS_Force_SCT(int call_id, bool on)
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GRS_Force_SCT: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -699,10 +757,17 @@ void SipCall::Force_PTTS(int call_id, bool on)
 		return;
 	}
 
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("Force_PTTS: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("Force_PTTS: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -711,6 +776,7 @@ void SipCall::Force_PTTS(int call_id, bool on)
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg1);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("Force_PTTS: ", "ERROR: No esta activa la media para esta llamada [Call=%d]", call_id));
 		return;
 	}
 
@@ -912,9 +978,9 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 										sipCall->fPdataQidx[i] = (float)(ibuf[i]);
 									}
 
-									iir(sipCall->fPdataQidx, sipCall->afMuestrasIfRx, sipCall->b_dc, sipCall->a_dc, &sipCall->fFiltroDC_IfRx_ciX, &sipCall->fFiltroDC_IfRx_ciY, 1, frame_out.size / 2);	//Filtro para eliminar la continua							
+									iir(sipCall->fPdataQidx, sipCall->afMuestrasIfRx, sipCall->b_dc, sipCall->a_dc, &sipCall->fFiltroDC_IfRx_ciX, &sipCall->fFiltroDC_IfRx_ciY, 1, (int)frame_out.size / 2);	//Filtro para eliminar la continua							
 
-									process(&sipCall->PdataQidx, sipCall->afMuestrasIfRx, frame_out.size / 2);
+									process(&sipCall->PdataQidx, sipCall->afMuestrasIfRx, (int)frame_out.size / 2);
 
 									centralized_qidx_value = (pj_uint32_t)quality_indicator(&sipCall->PdataQidx);				//Escala 0-50				
 									centralized_qidx_value = (centralized_qidx_value * MAX_QIDX_ESCALE) / MAX_CENTRAL_ESCALE;		//Lo transformamos a escala 0- 15 (RSSI)																
@@ -1002,7 +1068,7 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 
 					//Se a�ade al buffer circular el frame													
 
-					pjmedia_circ_buf_write(sipCall->p_retbuff, (pj_int16_t*)buf, frame_out.size / 2);
+					pjmedia_circ_buf_write(sipCall->p_retbuff, (pj_int16_t*)buf, (unsigned)frame_out.size / 2);
 
 					pj_mutex_unlock(sipCall->circ_buff_mutex);
 
@@ -1014,7 +1080,7 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 			}
 			else if ((st == PJ_SUCCESS) && (frame_out.size != (SAMPLES_PER_FRAME / 2) * sizeof(pj_int16_t)))
 			{
-				PJ_LOG(5, (__FILE__, "Warning: PAquete diferente de 80\n"));
+				PJ_LOG(5, (__FILE__, "WARNING: PAquete diferente de 80\n"));
 			}
 		}
 		else
@@ -1394,6 +1460,12 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 
 			pjmedia_stream_set_rtp_ext_tx_info((pjmedia_stream*)stream, tx_rtp_ext_info);
 			sipCall->last_rtp_ext_info = tx_rtp_ext_info;
+
+			if (PJMEDIA_RTP_RD_EX_GET_SQU(tx_rtp_ext_info) == 0)
+			{
+				//Se fuerza un keep alive con el nuevo estado siempre que no haya squ activado
+				pjmedia_stream_force_send_KA_packet((pjmedia_stream*)stream);
+			}
 		}
 
 		if (GRS_force_ptt_mute_in_RTPRx_changed)
@@ -1662,7 +1734,7 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 			pj_mutex_lock(sipCall->circ_buff_mutex);
 			for (pj_uint32_t i = 0; i < 6; i++)
 			{
-				pjmedia_circ_buf_write(sipCall->p_retbuff, (pj_int16_t*)sipCall->zerobuf, size / 2);
+				pjmedia_circ_buf_write(sipCall->p_retbuff, (pj_int16_t*)sipCall->zerobuf, (unsigned)size / 2);
 			}
 			pj_mutex_unlock(sipCall->circ_buff_mutex);
 
@@ -1866,12 +1938,12 @@ int SipCall::Out_circbuff_Th(void* proc)
 		{
 			if (wp->last_received_squ_status == SQU_ON)
 			{
-				PJ_LOG(5, (__FILE__, "Warning: Multicast_clock_cb SIN MUESTRAS"));
+				PJ_LOG(5, (__FILE__, "WARNING: Multicast_clock_cb SIN MUESTRAS"));
 			}
 		}
 		else
 		{
-			pjmedia_circ_buf_read(wp->p_retbuff, (pj_int16_t*)buf_out, size_packet / 2);
+			pjmedia_circ_buf_read(wp->p_retbuff, (pj_int16_t*)buf_out, (unsigned)size_packet / 2);
 			pj_mutex_unlock(wp->circ_buff_mutex);
 
 			if (wp->_Sending_Multicast_enabled)
@@ -2128,8 +2200,22 @@ void SipCall::SetConfirmPtt(pjsua_call_id call_id, pj_bool_t val)
 	st = acquire_call("SetConfirmPtt()", call_id, &call, &dlg);
 	if (st != PJ_SUCCESS)
 	{
-		PJ_LOG(3, ("SipCall.cpp", "ERROR: SetConfirmPtt: Invalid call_id %d", call_id));
+		PJ_CHECK_STATUS(st, ("SetConfirmPtt: ", "ERROR: Invalid call_id [Call=%d]", call_id));
 		return;
+	}
+
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SetConfirmPtt:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SetConfirmPtt: ", "ERROR: Llamada no activa [Call=%d]", call_id));
 	}
 
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
@@ -2155,6 +2241,16 @@ void SipCall::SetConfirmPtt(pjsua_call_id call_id, pj_bool_t val)
 			}
 			pjmedia_stream_set_rtp_ext_tx_info((pjmedia_stream*)stream, tx_rtp_ext_info);
 		}
+		else
+		{
+			pjsip_dlg_dec_lock(dlg);
+			PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SetConfirmPtt: La llamada no tiene activa la media"));
+		}
+	}
+	else
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SetConfirmPtt: La llamada no tiene activa la media"));
 	}
 
 	pjsip_dlg_dec_lock(dlg);

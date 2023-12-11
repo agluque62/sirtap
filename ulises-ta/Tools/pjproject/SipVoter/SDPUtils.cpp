@@ -156,6 +156,43 @@ void SDPUtils::OnCreateSdp(pj_pool_t* pool, int call_id, void* local_sdp, void* 
 		}
 		else if (call)
 		{
+			//Actualizamos el atributo de Media Direction
+			if (call->_Info.ForceSDPSendRecvAttr != CORESIP_SDP_SR_ATTR_NOFORCED)
+			{
+				pjmedia_sdp_attr* a;
+				//Borramos todos los atributos
+				for (unsigned int i = 0; i < sdp->media_count; i++)
+				{	
+					pjmedia_sdp_media_remove_all_attr(sdp->media[i], "inactive");
+					pjmedia_sdp_media_remove_all_attr(sdp->media[i], "sendrecv");
+					pjmedia_sdp_media_remove_all_attr(sdp->media[i], "sendonly");
+					pjmedia_sdp_media_remove_all_attr(sdp->media[i], "recvonly");
+				}
+
+				//Ponemos el que queremos forzar
+				switch (call->_Info.ForceSDPSendRecvAttr)
+				{
+				case CORESIP_SDP_SR_ATTR_NONE:
+					break;
+				case CORESIP_SDP_SR_ATTR_INACTIVE:
+					a = pjmedia_sdp_attr_create(call->_Pool, "inactive", NULL);
+					break;
+				case CORESIP_SDP_SR_ATTR_SENDONLY:
+					a = pjmedia_sdp_attr_create(call->_Pool, "sendonly", NULL);
+					break;
+				case CORESIP_SDP_SR_ATTR_RECVONLY:
+					a = pjmedia_sdp_attr_create(call->_Pool, "recvonly", NULL);
+					break;
+				default:
+					a = pjmedia_sdp_attr_create(call->_Pool, "sendrecv", NULL);
+					break;
+				}				
+				if (call->_Info.ForceSDPSendRecvAttr != CORESIP_SDP_SR_ATTR_NONE)
+				{
+					pjmedia_sdp_media_add_attr(sdp->media[0], a);
+				}
+
+			}
 
 			if (call->_Info.Type != CORESIP_CALL_RD)
 			{
@@ -194,7 +231,7 @@ void SDPUtils::OnCreateSdp(pj_pool_t* pool, int call_id, void* local_sdp, void* 
 
 				/** CODEC 123 */
 
-				if (call->_Info.CallFlags & CORESIP_CALL_RD_IDLE)
+				if (0) //(call->_Info.CallFlags & CORESIP_CALL_RD_IDLE)
 				{
 					//Si la llamada es idle entonces solo trabajamos con el tipo de codec 123
 					sdp->media[0]->desc.fmt_count = 0;
@@ -382,7 +419,7 @@ void SDPUtils::OnCreateSdp(pj_pool_t* pool, int call_id, void* local_sdp, void* 
 					}
 				}
 			}
-			else if (call->_Info.Type == CORESIP_CALL_IA && !SipAgent::EnableMonitoring)
+			else if (call->_Info.Type == CORESIP_CALL_IA && !SipAgent::EnableMonitoring && call->_Info.ForceSDPSendRecvAttr == CORESIP_SDP_SR_ATTR_NOFORCED)
 			{
 				pjmedia_sdp_attr* attr = pjmedia_sdp_media_find_attr2(sdp->media[0], "sendrecv", NULL);
 				if (attr != NULL)
@@ -394,8 +431,26 @@ void SDPUtils::OnCreateSdp(pj_pool_t* pool, int call_id, void* local_sdp, void* 
 			pjsip_subject_hdr* subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &gSubjectHdr, NULL);
 			if (subject && (pj_stricmp(&subject->hvalue, &gSubject[CORESIP_CALL_IA]) == 0))
 			{
+				pjmedia_sdp_session* rem_sdp = NULL;
+				pjmedia_sdp_attr* remote_sendrecv_attr = NULL;
+
+				pj_status_t status = pjmedia_sdp_parse(pool, (char*)rdata->msg_info.msg->body->data, rdata->msg_info.msg->body->len, &rem_sdp);
+				if (status == PJ_SUCCESS && rem_sdp)
+				{
+					/* Validate */
+					status = pjmedia_sdp_validate(rem_sdp);
+				}
+
+				if (status == PJ_SUCCESS && rem_sdp && rem_sdp->media_count > 0)
+				{
+					for (unsigned int i = 0; i < rem_sdp->media_count; i++)
+					{
+						remote_sendrecv_attr = pjmedia_sdp_media_find_attr2(rem_sdp->media[i], "sendrecv", NULL);
+					}
+				}
+
 				pjmedia_sdp_attr* attr = pjmedia_sdp_media_find_attr2(sdp->media[0], "sendrecv", NULL);
-				if (attr != NULL)
+				if (attr != NULL && remote_sendrecv_attr == NULL)
 					attr->name = gRecvOnly;
 			}
 		}

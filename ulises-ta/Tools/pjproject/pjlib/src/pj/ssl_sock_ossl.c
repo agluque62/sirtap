@@ -367,7 +367,7 @@ static int password_cb(char *buf, int num, int rwflag, void *user_data)
 	return 0;
     
     pj_memcpy(buf, cert->privkey_pass.ptr, cert->privkey_pass.slen);
-    return cert->privkey_pass.slen;
+    return (int)cert->privkey_pass.slen;
 }
 
 
@@ -976,7 +976,7 @@ static pj_bool_t on_handshake_complete(pj_ssl_sock_t *ssock,
 		      errmsg));
 
 	    /* Workaround for ticket #985 */
-#if defined(PJ_WIN32) && PJ_WIN32!=0
+#if (defined(PJ_WIN32) && PJ_WIN32!=0) || (defined(_WIN64) && _WIN64!=0)
 	    if (ssock->param.timer_heap) {
 		pj_time_val interval = {0, DELAYED_CLOSE_TIMEOUT};
 

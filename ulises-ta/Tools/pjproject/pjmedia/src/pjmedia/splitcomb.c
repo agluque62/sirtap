@@ -562,7 +562,7 @@ static pj_status_t put_frame(pjmedia_port *this_port,
 	/* Extract the mono frame to temporary buffer */
 	extract_mono_frame((const pj_int16_t*)frame->buf, sc->put_buf, ch, 
 			   this_port->info.channel_count, 
-			   frame->size * 8 / 
+			   (unsigned)frame->size * 8 / 
 			     this_port->info.bits_per_sample /
 			     this_port->info.channel_count);
 

@@ -336,7 +336,7 @@ static pj_status_t create_comp(pj_ice_strans *ice_st, unsigned comp_id)
 				   cand->type, &cand->base_addr);
 
 	    /* Set default candidate to srflx */
-	    comp->default_cand = cand - comp->cand_list;
+	    comp->default_cand = (unsigned)(cand - comp->cand_list);
 
 	}
 
@@ -451,7 +451,7 @@ static pj_status_t create_comp(pj_ice_strans *ice_st, unsigned comp_id)
 		      comp_id));
 
 	/* Set default candidate to relay */
-	comp->default_cand = cand - comp->cand_list;
+	comp->default_cand = (unsigned)(cand - comp->cand_list);
     }
 
     return PJ_SUCCESS;
@@ -1150,14 +1150,14 @@ PJ_DEF(pj_status_t) pj_ice_strans_sendto( pj_ice_strans *ice_st,
 		comp->turn_log_off = PJ_TRUE;
 	    }
 
-	    status = pj_turn_sock_sendto(comp->turn_sock, (const pj_uint8_t*)data, data_len,
+	    status = pj_turn_sock_sendto(comp->turn_sock, (const pj_uint8_t*)data, (unsigned)data_len,
 					 dst_addr, dst_addr_len);
 	    return (status==PJ_SUCCESS||status==PJ_EPENDING) ? 
 		    PJ_SUCCESS : status;
 	} else {
 	    pkt_size = data_len;
 	    status = pj_stun_sock_sendto(comp->stun_sock, NULL, data, 
-					 data_len, 0, dst_addr, dst_addr_len);
+					 (unsigned)data_len, 0, dst_addr, dst_addr_len);
 	    return (status==PJ_SUCCESS||status==PJ_EPENDING) ? 
 		    PJ_SUCCESS : status;
 	}
@@ -1288,14 +1288,14 @@ static pj_status_t ice_tx_pkt(pj_ice_sess *ice,
     if (transport_id == TP_TURN) {
 	if (comp->turn_sock) {
 	    status = pj_turn_sock_sendto(comp->turn_sock, 
-					 (const pj_uint8_t*)pkt, size,
+					 (const pj_uint8_t*)pkt, (unsigned)size,
 					 dst_addr, dst_addr_len);
 	} else {
 	    status = PJ_EINVALIDOP;
 	}
     } else if (transport_id == TP_STUN) {
 	status = pj_stun_sock_sendto(comp->stun_sock, NULL, 
-				     pkt, size, 0,
+				     pkt, (unsigned)size, 0,
 				     dst_addr, dst_addr_len);
     } else {
 	pj_assert(!"Invalid transport ID");
@@ -1458,7 +1458,7 @@ static pj_bool_t stun_on_status(pj_stun_sock *stun_sock,
 
 		if (dup) {
 		    /* Duplicate found, remove the srflx candidate */
-		    unsigned idx = cand - comp->cand_list;
+		    unsigned idx = (unsigned)(cand - comp->cand_list);
 
 		    /* Update default candidate index */
 		    if (comp->default_cand > idx) {

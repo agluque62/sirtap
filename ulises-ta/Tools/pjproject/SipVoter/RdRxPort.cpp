@@ -46,9 +46,6 @@ RdRxPort::RdRxPort(unsigned clkRate, unsigned channelCount, unsigned bitsPerSamp
 		PJ_CHECK_STATUS(st, ("ERROR creando buffer jitter para puerto de recepcion multicast radio"));
 		pjmedia_jbuf_set_adaptive(_Jbuf, jb_init, jb_min_pre, jb_max_pre);
 
-		//PJ_LOG(5, ("RdRxPort::RdRxPort", "TRAZA: RdRxPort::RdRxPort rFrameTime %d, pjsua_var.media_cfg.jb_max %d, jb_max %d, jb_min_pre %d jb_max_pre %d jb_init %d", 
-		//	rFrameTime, pjsua_var.media_cfg.jb_max, jb_max, jb_min_pre, jb_max_pre, jb_init));
-
 		st = pjmedia_plc_create(_Pool, rClkRate, _RemoteSamplesPerFrame, 0, &_Plc);
 		PJ_CHECK_STATUS(st, ("ERROR creando plc para puerto de recepcion multicast radio"));
 

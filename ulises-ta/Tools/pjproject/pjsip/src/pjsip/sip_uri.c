@@ -352,7 +352,7 @@ static pj_ssize_t pjsip_url_print(  pjsip_uri_context_e context,
     }
 
     /* Other param. */
-    printed = pjsip_param_print_on(&url->other_param, buf, endbuf-buf, 
+    printed = (int)pjsip_param_print_on(&url->other_param, buf, endbuf-buf, 
 				   &pc->pjsip_PARAM_CHAR_SPEC, 
 				   &pc->pjsip_PARAM_CHAR_SPEC, ';');
     if (printed < 0)
@@ -365,7 +365,7 @@ static pj_ssize_t pjsip_url_print(  pjsip_uri_context_e context,
      *	- PJSIP_URI_IN_OTHER
      */
     if (context == PJSIP_URI_IN_CONTACT_HDR || context == PJSIP_URI_IN_OTHER) {
-	printed = pjsip_param_print_on(&url->header_param, buf, endbuf-buf,
+	printed = (int)pjsip_param_print_on(&url->header_param, buf, endbuf-buf,
 				       &pc->pjsip_HDR_CHAR_SPEC, 
 				       &pc->pjsip_HDR_CHAR_SPEC, '?');
 	if (printed < 0)

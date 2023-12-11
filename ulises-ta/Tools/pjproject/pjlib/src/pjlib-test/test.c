@@ -194,8 +194,8 @@ on_return:
     PJ_LOG(3,("test", ""));
  
     pj_thread_get_stack_info(pj_thread_this(), &filename, &line);
-    PJ_LOG(3,("test", "Stack max usage: %u, deepest: %s:%u", 
-	              pj_thread_get_stack_max_usage(pj_thread_this()),
+    PJ_LOG(3,("test", "Stack max usage: %llu, deepest: %s:%u", 
+	              (unsigned long long) pj_thread_get_stack_max_usage(pj_thread_this()),
 		      filename, line));
     if (rc == 0)
 	PJ_LOG(3,("test", "Looks like everything is okay!.."));

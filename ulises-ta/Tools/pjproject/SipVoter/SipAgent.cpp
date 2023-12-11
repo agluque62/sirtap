@@ -61,6 +61,10 @@ static pjsip_module coresip_mod =
 
 pj_bool_t SipAgent::SIP_AGENT_INITIALIZED_AND_STARTED = PJ_FALSE;
 pj_bool_t SipAgent::ETM = PJ_FALSE;				//Si es true entonces indica que el agente es un ETM
+UINT SipAgent::timePeriodApplied = 0;
+int SipAgent::ESTADO_INICIALIZACION = NO_INICIALIZADO;
+
+HANDLE SipAgent::ghMutex = NULL;
 
 unsigned SipAgent::UseDefaultSoundDevices = 0;				//Si es distinto de cero entonces se utilizan los dispositivos de microfono y altavoz 
 															//por defecto en el sistema automáticamente, sin que lo tenga que manejar la  aplicacion.
@@ -231,8 +235,36 @@ float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transm
  */
 void SipAgent::Init(const CORESIP_Config * cfg)
 {
-	pj_status_t st = PJ_FALSE;
+	pjsua_config uaCfg;
 
+	uaCfg.user_agent.slen = 0;
+	if (strlen(cfg->UserAgent) == 0)
+	{
+		uaCfg.user_agent = pj_str("U5K-UA/1.0.0");
+	}
+	else
+	{
+		if (strlen(cfg->UserAgent) < sizeof(cfg->UserAgent))
+		{
+			uaCfg.user_agent = pj_str((char*)cfg->UserAgent);
+		}
+		else
+		{
+			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
+		}
+	}
+
+	if (uaCfg.user_agent.slen >= 3 && pj_strnicmp2(&uaCfg.user_agent, "ETM", 3) == 0)
+	{
+		//Si el User Agent comienza por "ETM"
+		SipAgent::ETM = PJ_TRUE;
+	}
+	else
+	{
+		SipAgent::ETM = PJ_FALSE;
+	}
+
+	pj_status_t st = PJ_FALSE;
 	TIMECAPS ptc;
 	UINT currentPeriod = 0;
 	MMRESULT ee = timeGetDevCaps(&ptc, sizeof(ptc));
@@ -243,12 +275,15 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 			if (20 % currentPeriod == 0)
 			{
 				ee = timeBeginPeriod(currentPeriod);
+				SipAgent::timePeriodApplied = currentPeriod;
 				break;
 			}
 		}
 	}
 
 	ReadiniFile();
+
+	if (SipAgent::ETM == PJ_TRUE) Corelogfile::Init();
 		
 	for (unsigned i = 0; i < PJ_ARRAY_SIZE(_SndPorts); i++)
 	{
@@ -369,8 +404,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 * Bloques de Configuracion de 'pjsua'.
 		 * - Declaracion e
 		 * - Inicializacion con los valores por defecto
-		 */
-		pjsua_config uaCfg;
+		 */		
 		pjsua_logging_config logCfg;
 		pjsua_media_config mediaCfg;
 		pjsua_transport_config transportCfg;
@@ -399,32 +433,6 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		if (cfg->max_calls > PJSUA_MAX_CALLS) uaCfg.max_calls = 30;		
 		else uaCfg.max_calls = cfg->max_calls;
 
-		uaCfg.user_agent.slen = 0;
-		if (strlen(cfg->UserAgent) == 0)
-		{
-			uaCfg.user_agent = pj_str("U5K-UA/1.0.0");
-		}
-		else
-		{
-			if (strlen(cfg->UserAgent) < sizeof(cfg->UserAgent))
-			{
-				uaCfg.user_agent = pj_str((char*)cfg->UserAgent);
-			}
-			else
-			{
-				PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
-			}
-		}
-
-		if (uaCfg.user_agent.slen >= 3 && pj_strnicmp2(&uaCfg.user_agent, "ETM", 3) == 0)
-		{
-			//Si el User Agent comienza por "ETM"
-			SipAgent::ETM = PJ_TRUE;				
-		}
-		else
-		{
-			SipAgent::ETM = PJ_FALSE;
-		}
 		pjsip_endpt_Set_ETM(pjsua_var.endpt, SipAgent::ETM);
 
 		uaCfg.cb.on_call_state = &SipCall::OnStateChanged;						// Trata los Cambios de estado de una Llamada.
@@ -454,9 +462,15 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 */
 		logCfg.msg_logging = cfg->LogLevel >= 4;
 		logCfg.level = cfg->LogLevel;
+		if (logCfg.level >= 6) logCfg.level = 6;
 		logCfg.console_level = 3;	// cfg->LogLevel;
 
-		if (cfg->Cb.LogCb)
+		if (SipAgent::ETM == PJ_TRUE)
+		{			
+			logCfg.console_level = logCfg.level;
+			logCfg.cb = Corelogfile::Writelog;
+		}
+		else if (cfg->Cb.LogCb)
 		{
 			logCfg.decor = 0;
 			logCfg.cb = Cb.LogCb;
@@ -480,7 +494,17 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 * http://www.pjsip.org/docs/latest-1/pjsip/docs/html/structpjsua__media__config.htm#a2c95e5ce554bbee9cc60d0328f508658
 		 */
 		mediaCfg.clock_rate = SAMPLING_RATE;
-		mediaCfg.audio_frame_ptime = PTIME;
+		if (SipAgent::ETM)
+		{
+			mediaCfg.audio_frame_ptime = 1;						//Ponemos 1 ms para que los ticks de la conferencia sea de 1ms
+																//De esa forma se puede activar el PTT o SQU segun esos ticks.
+																//Y no con los de 20ms de PTIME
+		}
+		else
+		{
+			mediaCfg.audio_frame_ptime = PTIME;
+		}
+
 		mediaCfg.channel_count = CHANNEL_COUNT;
 		mediaCfg.max_media_ports = uaCfg.max_calls + 10;
 		mediaCfg.no_vad = PJ_TRUE;
@@ -552,6 +576,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 * Crea el Transporte para SIP. UDP en puerto Base.
 		 */
 		st = pjsua_transport_create(PJSIP_TRANSPORT_UDP, &transportCfg, &SipTransportId);
+		if (st != PJ_SUCCESS) SipTransportId = PJSUA_INVALID_ID;
 		PJ_CHECK_STATUS(st, ("ERROR creando puertos UDP para Sip", "(%s:%d)", cfg->IpAddress, cfg->Port));	
 
 		pj_sock_t sip_socket = pjsip_udp_transport_get_socket(pjsua_var.tpdata[SipTransportId].data.tp);
@@ -1179,9 +1204,19 @@ void SipAgent::Stop()
 
 		pj_thread_sleep(100);
 
+		if (SipTransportId != PJSUA_INVALID_ID)
+		{
+			pjsua_transport_close(SipTransportId, PJ_FALSE);
+			SipTransportId = PJSUA_INVALID_ID;
+		}
+
+		pj_thread_sleep(100);
+
 		pj_lock_destroy(_Lock);
 
 		pjsua_destroy();
+
+		if (SipAgent::timePeriodApplied != 0) timeEndPeriod(SipAgent::timePeriodApplied);
 	}
 }
 
@@ -1564,29 +1599,56 @@ void SipAgent::SetJitterBuffer(unsigned adaptive, unsigned initial_prefetch, uns
  * @param	acc			Puntero a la URI que se crea como agente. 
  * @param	defaultAcc	Si es diferente a '0', indica que se creará la cuentra por Defecto.
  * @param	proxy_ip	Si es distinto de NULL. IP del proxy Donde se quieren enrutar los paquetes.
+ * @param	forced__contact	Si es distinto de NULL. Fuerza un contact.
  * @return	Indentificador de la cuenta.
  */
-int SipAgent::CreateAccount(const char * acc, int defaultAcc, const char *proxy_ip)
+int SipAgent::CreateAccount(const char * acc, int defaultAcc, const char *proxy_ip, const char* forced__contact)
 {
 	pjsua_acc_config accCfg;
 	pjsua_acc_config_default(&accCfg);
 	pj_str_t sturi = pj_str(const_cast<char*>("sip:"));
-	pj_str_t stproxip = pj_str(const_cast<char*>(proxy_ip));
+	pj_str_t stproxip;
 	pjsua_acc_id accId = PJSUA_INVALID_ID;
 	pj_status_t st;	
-	
-	accCfg.id = pj_str(const_cast<char*>(acc));
+	char accaux[CORESIP_MAX_URI_LENGTH];
+	char proxy_ip_aux[CORESIP_MAX_URI_LENGTH];
+	char forced__contact_aux[CORESIP_MAX_URI_LENGTH];
 
-	//"sip:proxy_ip"
-	char cproxy_route[128];
+	strncpy(accaux, acc, sizeof(accaux));
+	accaux[sizeof(accaux) - 1] = 0;
+	accCfg.id = pj_str(accaux);
+
 	if (proxy_ip != NULL)
 	{
-		if (strlen(proxy_ip) > 0)
+		strncpy(proxy_ip_aux, proxy_ip, sizeof(proxy_ip_aux));
+		proxy_ip_aux[sizeof(proxy_ip_aux) - 1] = 0;
+		stproxip = pj_str(proxy_ip_aux);
+	}
+	else
+	{
+		stproxip.ptr = NULL;
+	}
+
+	if (forced__contact != NULL)
+	{
+		strncpy(forced__contact_aux, forced__contact, sizeof(forced__contact_aux));
+		forced__contact_aux[sizeof(forced__contact_aux) - 1] = 0;
+	}
+	else
+	{
+		forced__contact_aux[0] = 0;
+	}
+	
+	//"sip:proxy_ip"
+	char cproxy_route[128];
+	if (stproxip.ptr != NULL)
+	{
+		if (strlen(proxy_ip_aux) > 0)
 		{
-			if ((strlen(proxy_ip) + sturi.slen + 1) > sizeof(cproxy_route))
+			if ((strlen(proxy_ip_aux) + sturi.slen + 1) > sizeof(cproxy_route))
 			{
 				st = PJ_ENOMEM;
-				PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Memoria insuficiente", "(%s)", acc));
+				PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Memoria insuficiente", "(%s)", accaux));
 				return accId;
 			}
 
@@ -1603,22 +1665,13 @@ int SipAgent::CreateAccount(const char * acc, int defaultAcc, const char *proxy_
 	AccountUserData *accUserData = new AccountUserData();
 	accCfg.user_data = (void *)accUserData;
 
-#if 0
-	//Generamos pidf_tuple_id para el PIDF ID de los PUBLISH y NOTIFIes
-	char tuple_id_buf[PJ_GUID_MAX_LENGTH+2];
-	pj_bzero(tuple_id_buf, sizeof(tuple_id_buf));
-	accCfg.pidf_tuple_id = pj_str(tuple_id_buf);
-
-    accCfg.pidf_tuple_id.ptr += 2;
-	pj_generate_unique_string(&accCfg.pidf_tuple_id);
-	accCfg.pidf_tuple_id.ptr -= 2;
-	accCfg.pidf_tuple_id.ptr[0] = 'n';
-	accCfg.pidf_tuple_id.ptr[1] = 'u';
-	accCfg.pidf_tuple_id.slen += 2;
-#endif
+	if (strlen(forced__contact_aux) > 0)
+	{
+		accCfg.force_contact = pj_str((char*)forced__contact_aux);
+	}
 
 	st = pjsua_acc_add(&accCfg, defaultAcc, &accId);
-	PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip", "(%s)", acc));
+	PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip", "(%s)", accaux));
 	accUserData->accid = accId;
 
 	if (accCfg.publish_enabled == PJ_TRUE)
@@ -1636,7 +1689,7 @@ int SipAgent::CreateAccount(const char * acc, int defaultAcc, const char *proxy_
 			do {
 				pj_thread_sleep(5);
 				st = pjsua_acc_get_info(accId, &info);
-				PJ_CHECK_STATUS(st, ("ERROR en pjsua_acc_get_info", "(%s)", acc));
+				PJ_CHECK_STATUS(st, ("ERROR en pjsua_acc_get_info", "(%s)", accaux));
 			} while ((info.status != PJSIP_SC_OK) && (tries-- > 0));
 		}	
 	}
@@ -1654,26 +1707,69 @@ int SipAgent::CreateAccount(const char * acc, int defaultAcc, const char *proxy_
  * @param   pass		Password. Si no es necesario autenticación, este parametro será NULL
  * @param   displayName	friendly name to be displayed included before SIP uri
  * @param	isfocus		Si el valor es distinto de cero, indica que es Focus, para establecer llamadas multidestino
+ * @param	forced__contact	Si es distinto de NULL. Fuerza un contact.
  * @return	Indentificador de la cuenta.
  */
-int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, const char *proxy_ip, unsigned int expire_seg, const char *username, const char *pass, const char *displayName, int isfocus)
+int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, const char *proxy_ip, unsigned int expire_seg, const char *username, const char *pass, const char *displayName, int isfocus, const char* forced__contact)
 {
 	pjsua_acc_id accId = PJSUA_INVALID_ID;
 	pj_status_t st = PJ_SUCCESS;
+	char forced__contact_aux[CORESIP_MAX_URI_LENGTH];
 	pjsua_acc_config accCfg;
 	pjsua_acc_config_default(&accCfg);
 
+	char accaux[CORESIP_MAX_URI_LENGTH];
+	strncpy(accaux, acc, sizeof(accaux));
+	accaux[sizeof(accaux) - 1] = 0;
+
+	char proxy_ip_aux[CORESIP_MAX_URI_LENGTH];
+	strncpy(proxy_ip_aux, proxy_ip, sizeof(proxy_ip_aux));
+	proxy_ip_aux[sizeof(proxy_ip_aux) - 1] = 0;
+
+	char username_aux[CORESIP_MAX_URI_LENGTH];
+	if (username != NULL)
+	{
+		strncpy(username_aux, username, sizeof(username_aux));
+		username_aux[sizeof(username_aux) - 1] = 0;
+	}
+	else
+	{
+		username_aux[0] = 0;
+	}
+
+	char pass_aux[CORESIP_MAX_URI_LENGTH];
+	if (pass != NULL)
+	{
+		strncpy(pass_aux, pass, sizeof(pass_aux));
+		pass_aux[sizeof(pass_aux) - 1] = 0;
+	}
+	else
+	{
+		pass_aux[0] = 0;
+	}
+
+	char displayName_aux[CORESIP_MAX_URI_LENGTH];
+	if (displayName != NULL)
+	{
+		strncpy(displayName_aux, displayName, sizeof(displayName_aux));
+		displayName_aux[sizeof(displayName_aux) - 1] = 0;
+	}
+	else
+	{
+		displayName_aux[0] = 0;
+	}
+
 	pj_str_t sturi = pj_str(const_cast<char*>("sip:"));
 	pj_str_t starr = pj_str(const_cast<char*>("@"));
-	pj_str_t stacc = pj_str(const_cast<char*>(acc));	
-	pj_str_t stproxip = pj_str(const_cast<char*>(proxy_ip));
+	pj_str_t stacc = pj_str(const_cast<char*>(accaux));
+	pj_str_t stproxip = pj_str(const_cast<char*>(proxy_ip_aux));
 	pj_str_t stpp = pj_str(const_cast<char*>(":"));
 	pj_str_t st_uaIpAdd = pj_str(const_cast<char*>(uaIpAdd));
 	pj_str_t st_doubleQuote = pj_str(const_cast<char*>("\""));
 	pj_str_t st_space = pj_str(const_cast<char*>(" "));
 	pj_str_t st_menorque = pj_str(const_cast<char*>("<"));
 	pj_str_t st_mayorque = pj_str(const_cast<char*>(">"));
-	pj_str_t st_displayName = pj_str(const_cast<char*>(displayName));
+	pj_str_t st_displayName = pj_str(const_cast<char*>(displayName_aux));
 
 	if (st_displayName.slen > 32)
 	{
@@ -1696,7 +1792,7 @@ int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, 
 		pj_strlen(&stpp) + pj_strlen(&stuaport) +  pj_strlen(&st_mayorque) + 1) > sizeof(cid))
 	{
 		st = PJ_ENOMEM;
-		PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Uri demasiado larga", "(%s)", acc));
+		PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Uri demasiado larga", "(%s)", accaux));
 		return accId;
 	}
 
@@ -1721,7 +1817,7 @@ int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, 
 	if ((pj_strlen(&sturi) + pj_strlen(&stproxip) + 1) > sizeof(cprox))
 	{
 		st = PJ_ENOMEM;
-		PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Memoria insuficiente", "(%s)", acc));
+		PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip. Memoria insuficiente", "(%s)", accaux));
 		return accId;
 	}
 
@@ -1729,19 +1825,34 @@ int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, 
 	accCfg.reg_uri = pj_str(cprox);
 	pj_strcpy(&accCfg.reg_uri, &sturi);
 	pj_strcat(&accCfg.reg_uri, &stproxip);
+
+	if (forced__contact != NULL)
+	{
+		strncpy(forced__contact_aux, forced__contact, sizeof(forced__contact_aux));
+		forced__contact_aux[sizeof(forced__contact_aux) - 1] = 0;
+	}
+	else
+	{
+		forced__contact_aux[0] = 0;
+	}
+
+	if (strlen(forced__contact_aux) > 0)
+	{
+		accCfg.force_contact = pj_str((char*)forced__contact_aux);
+	}
 		
 	accCfg.reg_timeout = expire_seg;	
 	accCfg.reg_retry_interval = 20;
-	if ((username != NULL) && (pass != NULL))
+	if ((strlen(username_aux) > 0) && (strlen(pass_aux) > 0))
 	{
 		accCfg.cred_count = 1;
 		accCfg.cred_info[0].realm = pj_str(const_cast<char*>("*")); 
 		accCfg.cred_info[0].scheme = pj_str(const_cast<char*>("digest")); 
-		accCfg.cred_info[0].username = pj_str(const_cast<char*>(username));
+		accCfg.cred_info[0].username = pj_str(const_cast<char*>(username_aux));
 		for (int i = 0; i < accCfg.cred_info[0].username.slen; i++)
 			accCfg.cred_info[0].username.ptr[i] = pj_tolower(accCfg.cred_info[0].username.ptr[i]);
 		accCfg.cred_info[0].data_type = 0;   //Plain text
-		accCfg.cred_info[0].data = pj_str(const_cast<char*>(pass));
+		accCfg.cred_info[0].data = pj_str(const_cast<char*>(pass_aux));
 		for (int i = 0; i < accCfg.cred_info[0].data.slen; i++)
 			accCfg.cred_info[0].data.ptr[i] = pj_tolower(accCfg.cred_info[0].data.ptr[i]);
 	}
@@ -1778,9 +1889,9 @@ int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, 
 	accCfg.pidf_tuple_id.ptr[1] = 'u';
 	accCfg.pidf_tuple_id.slen += 2;
 #endif
-	
+		
 	st = pjsua_acc_add(&accCfg, defaultAcc, &accId);
-	PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip", "(%s)", acc));
+	PJ_CHECK_STATUS(st, ("ERROR creando usuario Sip", "(%s)", accaux));
 	accUserData->accid = accId;
 
 	if (accCfg.publish_enabled == PJ_TRUE)
@@ -1798,7 +1909,7 @@ int SipAgent::CreateAccountAndRegisterInProxy(const char * acc, int defaultAcc, 
 			do {
 				pj_thread_sleep(5);
 				st = pjsua_acc_get_info(accId, &info);
-				PJ_CHECK_STATUS(st, ("ERROR en pjsua_acc_get_info", "(%s)", acc));
+				PJ_CHECK_STATUS(st, ("ERROR en pjsua_acc_get_info", "(%s)", accaux));
 			} while ((info.status != PJSIP_SC_OK) && (tries-- > 0));
 		}	
 	}
@@ -3019,7 +3130,11 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		throw PJLibException(__FILE__, PJ_EINVAL).Msg("BridgeLink:", "Tipo de Puerto de destino dstType 0x%08x no es valido", dstType);		
 	}
 
-	if (error_src || error_dst) return;		//Alguno de los slots no es valido. Por tanto no seguimos.
+	if (error_src || error_dst)
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: BridgeLink: src o dst no valido"));
+		return;		//Alguno de los slots no es valido. Por tanto no seguimos.
+	}
 
 	/**
 	 * Conecta o Desconecta los puertos.
@@ -3670,7 +3785,7 @@ int SipAgent::DestroyPresenceSubscription(char *dest_uri)
 	return ret;
 }
 
-int SipAgent::CreateConferenceSubscription(int acc_id, char *dest_uri, pj_bool_t by_proxy)
+int SipAgent::CreateConferenceSubscription(int acc_id, pjsua_call_id call_id, char *dest_uri, pj_bool_t by_proxy)
 {
 	int ret = CORESIP_OK;
 
@@ -3678,7 +3793,7 @@ int SipAgent::CreateConferenceSubscription(int acc_id, char *dest_uri, pj_bool_t
 	{
 		if (_ConfManager->Remove(-1, dest_uri) != 0) ret = CORESIP_ERROR;
 #ifdef _DEBUG
-		else if (_ConfManager->Add(acc_id, -1, dest_uri, 60, PJ_FALSE, by_proxy) != 0) ret = CORESIP_ERROR;
+		else if (_ConfManager->Add(acc_id, call_id, dest_uri, 60, PJ_FALSE, by_proxy) != 0) ret = CORESIP_ERROR;
 #else
 		else if (_ConfManager->Add(acc_id, -1, dest_uri, -1, PJ_FALSE, by_proxy) != 0) ret = CORESIP_ERROR;
 #endif
@@ -3813,8 +3928,8 @@ void SipAgent::OnPager(pjsua_call_id call_id, const pj_str_t *from,
 		pj_str_t tmpbody;
 		pj_strdup_with_null(tmppool, &tmpbody, body);
 
-		SipAgent::Cb.PagerCb(tmpfrom.ptr, tmpfrom.slen, tmpto.ptr, tmpto.slen, tmpcontact.ptr, tmpcontact.slen,
-			tmpmime_type.ptr, tmpmime_type.slen, tmpbody.ptr, tmpbody.slen);
+		SipAgent::Cb.PagerCb(tmpfrom.ptr, (int)tmpfrom.slen, tmpto.ptr, (int)tmpto.slen, tmpcontact.ptr, (int)tmpcontact.slen,
+			tmpmime_type.ptr, (int)tmpmime_type.slen, tmpbody.ptr, (int)tmpbody.slen);
 
 		pj_pool_release(tmppool);
 	}

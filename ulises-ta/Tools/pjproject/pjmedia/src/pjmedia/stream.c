@@ -235,7 +235,8 @@ struct pjmedia_stream
 	pj_uint32_t audio_flags;		//Toma valores del tipo Stream_CallFlags
 	pj_bool_t radio_ua;			//Si vale TRUE entonces somos una radio. Seguramente de un simulador de radio
 	pj_bool_t ka_forced;		//Si vale TRUE entonces la siguiente vez que entre la funcion put_frame_imp se fuerza a enviar un keep_alive
-	pj_bool_t tx_pttmute_changed;	//Si fale true indica que el bit de mute a transmitir ha cambiado. 
+	pj_bool_t tx_pttmute_changed;	//Si false true indica que el bit de mute a transmitir ha cambiado. 
+	pj_bool_t force_no_send_rtp;	//Si true indica que se fuerza que no se envie RTP en ningun caso.
 
 	pj_bool_t send_MAM;
 	pj_uint32_t mam_T1;
@@ -742,7 +743,7 @@ static void send_keep_alive_packet(pjmedia_stream *stream, int ts_len)
 	else if (stream->ka_type == PJMEDIA_STREAM_KA_USER)
 	{
 		 /* Keep-alive packet is defined in PJMEDIA_STREAM_KA_USER_PKT */
-		 int pkt_len;
+		 pj_ssize_t pkt_len;
 		 const pj_str_t str_ka = PJMEDIA_STREAM_KA_USER_PKT;
 
 		 pj_memcpy(stream->enc->out_pkt, str_ka.ptr, str_ka.slen);
@@ -812,7 +813,7 @@ static pj_status_t get_frame( pjmedia_port *port, pjmedia_frame *frame)
 		frame_out.buf = p_out_samp + samples_count;
 		frame_out.size = frame->size - samples_count*2;
 		status = (*stream->codec->op->recover)(stream->codec,
-						       frame_out.size,
+						       (unsigned int) frame_out.size,
 						       &frame_out);
 
 		++stream->plc_cnt;
@@ -861,7 +862,7 @@ static pj_status_t get_frame( pjmedia_port *port, pjmedia_frame *frame)
 			frame_out.buf = p_out_samp + samples_count;
 			frame_out.size = frame->size - samples_count*2;
 			status = (*stream->codec->op->recover)(stream->codec,
-							       frame_out.size,
+							       (unsigned)frame_out.size,
 							       &frame_out);
 			if (status != PJ_SUCCESS)
 			    break;
@@ -916,7 +917,7 @@ static pj_status_t get_frame( pjmedia_port *port, pjmedia_frame *frame)
 		    frame_out.buf = p_out_samp + samples_count;
 		    frame_out.size = frame->size - samples_count*2;
 		    status = (*stream->codec->op->recover)(stream->codec,
-							   frame_out.size,
+							   (unsigned)frame_out.size,
 							   &frame_out);
 		    if (status != PJ_SUCCESS)
 			break;
@@ -967,7 +968,7 @@ static pj_status_t get_frame( pjmedia_port *port, pjmedia_frame *frame)
 	    frame_out.buf = p_out_samp + samples_count;
 	    frame_out.size = frame->size - samples_count*BYTES_PER_SAMPLE;
 	    status = stream->codec->op->decode( stream->codec, &frame_in,
-						frame_out.size, PJ_TRUE, &frame_out);
+						(unsigned) frame_out.size, PJ_TRUE, &frame_out);
 	    if (status != 0) {
 		LOGERR_((port->info.name.ptr, "codec decode() error", 
 			 status));
@@ -1303,7 +1304,7 @@ static unsigned create_rtcp_sdes(pjmedia_stream *stream, pj_uint8_t *pkt,
     hdr.p = 0;
     hdr.count = 1;
     hdr.pt = 202;
-    hdr.length = 2 + (4+stream->cname.slen+3)/4 - 1;
+    hdr.length = 2 + (4+((unsigned)stream->cname.slen)+3)/4 - 1;
     if (max_len < (hdr.length << 2)) {
 	pj_assert(!"Not enough buffer for SDES packet");
 	return 0;
@@ -1327,7 +1328,7 @@ static unsigned create_rtcp_sdes(pjmedia_stream *stream, pj_uint8_t *pkt,
     while ((p-pkt) % 4)
 	*p++ = '\0';
 
-    return (p - pkt);
+    return (unsigned)(p - pkt);
 }
 
 /* Build RTCP BYE packet */
@@ -1391,7 +1392,7 @@ static void rebuffer(pjmedia_stream *stream,
 	} else {
 	    pj_bzero(stream->enc_buf + stream->enc_buf_count, frame->size);
 	}
-	stream->enc_buf_count += (frame->size >> 1);
+	stream->enc_buf_count += ((unsigned)frame->size >> 1);
     }
 
     /* How many samples are needed */
@@ -1459,16 +1460,23 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 	pj_uint16_t mam_Tid = 0;
 	pj_uint16_t mam_Ts2 = 0;
 	pj_bool_t send_MAM = PJ_FALSE;
-	pj_bool_t enviar_paquete_rtp = PJ_TRUE;
+	pj_bool_t enviar_paquete_rtp_por_impairement = PJ_TRUE;
 	pj_bool_t keep_alive_enviado_en_este_frame = PJ_FALSE;		//Si se ha enviado un keep alive en este mismo frame
 	pj_uint32_t current_reserved;
 	pj_bool_t force_header_extension = PJ_FALSE;				//Fuerza extension de cabecera aunque no sea llamada de radio
+	pj_bool_t audio_not_sent = PJ_FALSE;
 
-    /* If the interval since last sending packet is greater than
-     * ka_local_interval, send keep-alive packet.
-     */
-	 if (stream->ka_type != 0)
-    {
+	if (stream->force_no_send_rtp)
+	{
+		stream->enc_buf_pos = stream->enc_buf_count = 0;
+		return PJ_SUCCESS;
+	}
+
+	/* If the interval since last sending packet is greater than
+	 * ka_local_interval, send keep-alive packet.
+	 */
+	if (stream->ka_type != 0)
+	{
 		pj_uint32_t dtx_duration;
 
 		if (stream->ka_received)
@@ -1490,80 +1498,85 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 				stream->last_vf_ts_received = frame->timestamp;
 			}
 		}
-		
+
+		if (channel->paused) {
+
+			//No enviamos el keep-alive pero si testeamos el keep-alive time out
+
+			stream->enc_buf_pos = stream->enc_buf_count = 0;
+			return PJ_SUCCESS;
+		}
+
 		dtx_duration = pj_timestamp_diff32(&stream->last_frm_ts_sent, &frame->timestamp);
 
 		if ((dtx_duration >= (stream->ka_local_interval * stream->port.info.clock_rate) / 1000)
 			||
 			(stream->ka_forced))
 		{
-			ka_ts_len = (int) dtx_duration;
+			ka_ts_len = (int)dtx_duration;
 			if (ka_ts_len < 0) ka_ts_len = 0;
 			send_keep_alive_packet(stream, ka_ts_len);
 			stream->last_frm_ts_sent = frame->timestamp;
 			keep_alive_enviado_en_este_frame = PJ_TRUE;
 			stream->ka_send = PJ_TRUE;
 		}
-    }
+	}
 
-    /* Don't do anything if stream is paused */
+	 /* Don't do anything if stream is paused */
 	/*
-    if (channel->paused ||
+	if (channel->paused ||
 		 (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_PTT_TYPE(stream->rtp_ext_tx_info) == 0))) {
 	stream->enc_buf_pos = stream->enc_buf_count = 0;
 	return PJ_SUCCESS;
-    }
+	}
 	*/
 
-	 if (channel->paused) {
+	if (channel->paused) {
 		stream->enc_buf_pos = stream->enc_buf_count = 0;
 		return PJ_SUCCESS;
-    }
+	}
 
-	 if (stream->radio_ua)
-	 {
-		 //Si el recurso es tx only o idle. No se envia RTP independientemente del tipo de SQU
-		 if ((stream->audio_flags & STREAM_TXONLY) || (stream->audio_flags & STREAM_IDLE))
-		 {
-			 stream->enc_buf_pos = stream->enc_buf_count = 0;
-			 return PJ_SUCCESS;
-		 }
-
-		if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_SQU(stream->rtp_ext_tx_info) == 0))
+	if (stream->radio_ua)
+	{
+		//Si el recurso es tx only o idle. No se envia RTP independientemente del tipo de SQU
+		if ((stream->audio_flags & STREAM_TXONLY) || (stream->audio_flags & STREAM_IDLE))
+		{
+			stream->enc_buf_pos = stream->enc_buf_count = 0;
+			audio_not_sent = PJ_TRUE;
+		}
+		else if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_SQU(stream->rtp_ext_tx_info) == 0))
 		{
 			if (stream->SQU_rep_count == 0)
 			{
 				stream->enc_buf_pos = stream->enc_buf_count = 0;
-				return PJ_SUCCESS;
+				audio_not_sent = PJ_TRUE;
 			}
 			else
 			{
 				stream->SQU_rep_count -= 1;
 			}
 		}
-	 }
-	 else
-	 {
+	}
+	else
+	{
 		//Si el recurso es rx only o idle. No se envia RTP independientemente del tipo de PTT
 		if ((stream->audio_flags & STREAM_RXONLY) || (stream->audio_flags & STREAM_IDLE)) 
 		{
 			stream->enc_buf_pos = stream->enc_buf_count = 0;
-			return PJ_SUCCESS;
+			audio_not_sent = PJ_TRUE;
 		}
-
-		if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_PM(stream->rtp_ext_tx_info) == 1))
+		else if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_PM(stream->rtp_ext_tx_info) == 1))
 		{
 			//Si Ptt Mute esta activado entonces no enviamos audio a la radio
 			stream->enc_buf_pos = stream->enc_buf_count = 0;
-			return PJ_SUCCESS;
+			audio_not_sent = PJ_TRUE;
 		}
-
-		if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_PTT_TYPE(stream->rtp_ext_tx_info) == 0))
+		else if (stream->rtp_ext_enabled && (PJMEDIA_RTP_RD_EX_GET_PTT_TYPE(stream->rtp_ext_tx_info) == 0))
 		{
 			if (stream->PTT_rep_count == 0)
 			{
 				stream->enc_buf_pos = stream->enc_buf_count = 0;
-				return PJ_SUCCESS;
+				audio_not_sent = PJ_TRUE;
 			}
 			else
 			{
@@ -1572,22 +1585,39 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 		}
 	}
 
-	 if (stream->radio_ua && stream->GRS_force_ptt_in_RTPRx_confirmed)
-	 {
-		 pj_uint32_t current_squ;
-		 pj_uint32_t current_ptt_id;
-		 current_squ = PJMEDIA_RTP_RD_EX_GET_SQU(stream->rtp_ext_tx_info);
-		 current_ptt_id = PJMEDIA_RTP_RD_EX_GET_PTT_ID(stream->rtp_ext_tx_info);
-		 if (current_squ != 0 &&
+	if (audio_not_sent == PJ_FALSE && (stream->radio_ua && stream->GRS_force_ptt_in_RTPRx_confirmed))
+	{
+		pj_uint32_t current_squ;
+		pj_uint32_t current_ptt_id;
+		current_squ = PJMEDIA_RTP_RD_EX_GET_SQU(stream->rtp_ext_tx_info);
+		current_ptt_id = PJMEDIA_RTP_RD_EX_GET_PTT_ID(stream->rtp_ext_tx_info);
+		if (current_squ != 0 &&
 			 current_ptt_id == 0)
-		 {
+		{
 			 //Si es squelch de avion, entonces lo enviamos
-		 }
-		 else
-		 {
-			 return PJ_SUCCESS;
-		 }
-	 }
+		}
+		else
+		{
+			audio_not_sent = PJ_TRUE;
+		}
+	}
+
+	if (audio_not_sent)
+	{
+		//No se envia audio. Se chequea si se fuerza keepalive para enviar RMM, MAM ...
+		if (stream->request_MAM || stream->send_MAM)
+		{
+			pj_uint32_t dtx_duration;
+			dtx_duration = pj_timestamp_diff32(&stream->last_frm_ts_sent, &frame->timestamp);
+
+			ka_ts_len = (int)dtx_duration;
+			if (ka_ts_len < 0) ka_ts_len = 0;
+			send_keep_alive_packet(stream, ka_ts_len);
+			stream->last_frm_ts_sent = frame->timestamp;
+			stream->ka_send = PJ_TRUE;
+		}
+		return PJ_SUCCESS;
+	}
 
 	 /* Number of samples in the frame */
 	 if (keep_alive_enviado_en_este_frame)
@@ -1608,7 +1638,7 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 		 }
 		 else
 		 {
-			 ts_len = (frame->size >> 1) / stream->codec_param.info.channel_cnt;
+			 ts_len = ((unsigned)frame->size >> 1) / stream->codec_param.info.channel_cnt;
 		 }		 
 	 }
 	 else if (frame->type == PJMEDIA_FRAME_TYPE_EXTENDED)
@@ -1709,7 +1739,7 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
          */
 	status = pjmedia_rtp_encode_rtp( &channel->rtp, 
 					 stream->tx_event_pt, first, 
-					 frame_out.size,
+					 (int)frame_out.size,
 					 (first ? rtp_ts_len : 0), 
 					 (const void**)&rtphdr, 
 					 &rtphdrlen);
@@ -1774,7 +1804,7 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 	/* Encapsulate. */
 	status = pjmedia_rtp_encode_rtp( &channel->rtp, 
 					 channel->pt, 0, 
-					 frame_out.size, rtp_ts_len, 
+					 (int)frame_out.size, rtp_ts_len, 
 					 (const void**)&rtphdr, 
 					 &rtphdrlen);
 
@@ -1804,7 +1834,7 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 	/* Encapsulate. */
 	status = pjmedia_rtp_encode_rtp( &channel->rtp, 
 					 channel->pt, 0, 
-					 frame_out.size, rtp_ts_len, 
+					 (int)frame_out.size, rtp_ts_len, 
 					 (const void**)&rtphdr, 
 					 &rtphdrlen);
 
@@ -1993,109 +2023,112 @@ static pj_status_t put_frame_imp( pjmedia_port *port, const pjmedia_frame *frame
 	/*Se ejecutan los impairments*/
 	if (stream->ImpDat.Perdidos && (!(pj_rand()%stream->ImpDat.Perdidos)))			//Perdemos aletoriamente paquetes
 	{
-		enviar_paquete_rtp = PJ_FALSE;
+		enviar_paquete_rtp_por_impairement = PJ_FALSE;
 	}
 	
-	if (stream->ImpDat.Duplicados && (!(pj_rand()%stream->ImpDat.Duplicados)))		//Duplicamos aletoriamente paquetes
+	if (enviar_paquete_rtp_por_impairement == PJ_TRUE)
 	{
-		if (stream->ImpDat.LatMax && stream->ImpDat.p_timerheap_latency)
+		if (stream->ImpDat.Duplicados && (!(pj_rand() % stream->ImpDat.Duplicados)))		//Duplicamos aletoriamente paquetes
 		{
-			int cdup;
-			int latency = stream->ImpDat.LatMax == stream->ImpDat.LatMin ? stream->ImpDat.LatMin : stream->ImpDat.LatMin + (pj_rand() % (stream->ImpDat.LatMax - stream->ImpDat.LatMin));
-
-			for (cdup = 0; cdup < 2; cdup++)
+			if (stream->ImpDat.LatMax && stream->ImpDat.p_timerheap_latency)
 			{
-				void* copia_pkt = malloc(frame_out.size + rtp_hdr_size + sizeof(MYDATA));
-				MYDATA* MyData = (MYDATA*)copia_pkt;
-				MyData->stream = stream;
-				MyData->size = frame_out.size + rtp_hdr_size;
-				MyData->pkt = &MyData[1];
+				int cdup;
+				int latency = stream->ImpDat.LatMax == stream->ImpDat.LatMin ? stream->ImpDat.LatMin : stream->ImpDat.LatMin + (pj_rand() % (stream->ImpDat.LatMax - stream->ImpDat.LatMin));
 
-				memcpy((void*)&MyData[1], channel->out_pkt, frame_out.size + rtp_hdr_size);
-				enviar_paquete_rtp = PJ_FALSE;
+				for (cdup = 0; cdup < 2; cdup++)
+				{
+					void* copia_pkt = malloc(frame_out.size + rtp_hdr_size + sizeof(MYDATA));
+					MYDATA* MyData = (MYDATA*)copia_pkt;
+					MyData->stream = stream;
+					MyData->size = frame_out.size + rtp_hdr_size;
+					MyData->pkt = &MyData[1];
 
-				pj_time_val delay;
-				delay.sec = 0;
-				delay.msec = latency;
-				pj_time_val_normalize(&delay);
-						
-				pj_timer_heap_cancel(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count]);
-				if (stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data != NULL)
-				{
-					MYDATA* pMyData = (MYDATA*)stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data;
-					free(pMyData);
-					stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = NULL;
-				}
-						
-				stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = (void*)MyData;
-				status = pj_timer_heap_schedule(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count], &delay);
-				if (status != PJ_SUCCESS)
-				{
-					PJ_LOG(3, (THIS_FILE, "ERROR: timer_entry_latency fail"));
-				}
-				else
-				{
-					stream->ImpDat.timer_entry_latency_count++;
-					if (stream->ImpDat.timer_entry_latency_count == STREAM_MAX_LATENCY_TIMER_HEAP) stream->ImpDat.timer_entry_latency_count = 0;
+					memcpy((void*)&MyData[1], channel->out_pkt, frame_out.size + rtp_hdr_size);
+					enviar_paquete_rtp_por_impairement = PJ_FALSE;
+
+					pj_time_val delay;
+					delay.sec = 0;
+					delay.msec = latency;
+					pj_time_val_normalize(&delay);
+
+					pj_timer_heap_cancel(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count]);
+					if (stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data != NULL)
+					{
+						MYDATA* pMyData = (MYDATA*)stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data;
+						free(pMyData);
+						stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = NULL;
+					}
+
+					stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = (void*)MyData;
+					status = pj_timer_heap_schedule(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count], &delay);
+					if (status != PJ_SUCCESS)
+					{
+						PJ_LOG(3, (THIS_FILE, "ERROR: timer_entry_latency fail"));
+					}
+					else
+					{
+						stream->ImpDat.timer_entry_latency_count++;
+						if (stream->ImpDat.timer_entry_latency_count == STREAM_MAX_LATENCY_TIMER_HEAP) stream->ImpDat.timer_entry_latency_count = 0;
+					}
 				}
 			}
+			else
+			{
+				pjmedia_transport_send_rtp(stream->transport, channel->out_pkt,
+					frame_out.size + rtp_hdr_size);
+			}
 		}
-		else
+		else if (stream->ImpDat.LatMax && stream->ImpDat.p_timerheap_latency)
 		{
-			pjmedia_transport_send_rtp(stream->transport, channel->out_pkt, 
-				frame_out.size + rtp_hdr_size);
-		}
-	}
-	else if (stream->ImpDat.LatMax && stream->ImpDat.p_timerheap_latency)
-	{
-		int latency = stream->ImpDat.LatMax == stream->ImpDat.LatMin? stream->ImpDat.LatMin : stream->ImpDat.LatMin + (pj_rand() % (stream->ImpDat.LatMax - stream->ImpDat.LatMin));
+			int latency = stream->ImpDat.LatMax == stream->ImpDat.LatMin ? stream->ImpDat.LatMin : stream->ImpDat.LatMin + (pj_rand() % (stream->ImpDat.LatMax - stream->ImpDat.LatMin));
 
-		void* copia_pkt = malloc(frame_out.size + rtp_hdr_size + sizeof(MYDATA));
-		MYDATA* MyData = (MYDATA*)copia_pkt;
-		MyData->stream = stream;
-		MyData->size = frame_out.size + rtp_hdr_size;
-		MyData->pkt = &MyData[1];
+			void* copia_pkt = malloc(frame_out.size + rtp_hdr_size + sizeof(MYDATA));
+			MYDATA* MyData = (MYDATA*)copia_pkt;
+			MyData->stream = stream;
+			MyData->size = frame_out.size + rtp_hdr_size;
+			MyData->pkt = &MyData[1];
 
-		memcpy((void*)&MyData[1], channel->out_pkt, frame_out.size + rtp_hdr_size);
-		enviar_paquete_rtp = PJ_FALSE;
+			memcpy((void*)&MyData[1], channel->out_pkt, frame_out.size + rtp_hdr_size);
+			enviar_paquete_rtp_por_impairement = PJ_FALSE;
 
-		pj_time_val delay;
-		delay.sec = 0;
-		delay.msec = latency;
-		pj_time_val_normalize(&delay);
+			pj_time_val delay;
+			delay.sec = 0;
+			delay.msec = latency;
+			pj_time_val_normalize(&delay);
 
-		pj_timer_heap_cancel(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count]);
-		if (stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data != NULL)
-		{
-			MYDATA* pMyData = (MYDATA*)stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data;
-			free(pMyData);
-			stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = NULL;
-		}
+			pj_timer_heap_cancel(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count]);
+			if (stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data != NULL)
+			{
+				MYDATA* pMyData = (MYDATA*)stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data;
+				free(pMyData);
+				stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = NULL;
+			}
 
-		stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = (void*)MyData;
-		status = pj_timer_heap_schedule(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count], &delay);
-		if (status != PJ_SUCCESS)
-		{
-			PJ_LOG(3, (THIS_FILE, "ERROR: timer_entry_latency fail"));
-		}
-		else
-		{
-			stream->ImpDat.timer_entry_latency_count++;
-			if (stream->ImpDat.timer_entry_latency_count == STREAM_MAX_LATENCY_TIMER_HEAP) stream->ImpDat.timer_entry_latency_count = 0;
+			stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count].user_data = (void*)MyData;
+			status = pj_timer_heap_schedule(stream->ImpDat.p_timerheap_latency, &stream->ImpDat.timer_entry_latency[stream->ImpDat.timer_entry_latency_count], &delay);
+			if (status != PJ_SUCCESS)
+			{
+				PJ_LOG(3, (THIS_FILE, "ERROR: timer_entry_latency fail"));
+			}
+			else
+			{
+				stream->ImpDat.timer_entry_latency_count++;
+				if (stream->ImpDat.timer_entry_latency_count == STREAM_MAX_LATENCY_TIMER_HEAP) stream->ImpDat.timer_entry_latency_count = 0;
+			}
 		}
 	}
 
 	pj_lock_release(stream->p_latency_lock);
 
     /* Send the RTP packet to the transport. */
-	if (enviar_paquete_rtp)
+	if (enviar_paquete_rtp_por_impairement == PJ_TRUE)
 	{
 		pjmedia_transport_send_rtp(stream->transport, channel->out_pkt, 
 			frame_out.size + rtp_hdr_size);
 	}
 
     /* Update stat */
-    pjmedia_rtcp_tx_rtp(&stream->rtcp, frame_out.size);
+    pjmedia_rtcp_tx_rtp(&stream->rtcp, (unsigned)frame_out.size);
     stream->rtcp.stat.rtp_tx_last_ts = pj_ntohl(stream->enc->rtp.out_hdr.ts);
     stream->rtcp.stat.rtp_tx_last_seq = pj_ntohs(stream->enc->rtp.out_hdr.seq);
 
@@ -2119,7 +2152,7 @@ static pj_status_t put_frame( pjmedia_port *port, const pjmedia_frame *frame )
     pjmedia_frame tmp_zero_frame;
     unsigned samples_per_frame;
 
-    samples_per_frame = stream->enc_samples_per_pkt;
+    samples_per_frame = stream->enc_samples_per_pkt;	
 
     /* http://www.pjsip.org/trac/ticket/56:
      *  when input is PJMEDIA_FRAME_TYPE_NONE, feed zero PCM frame
@@ -2355,7 +2388,7 @@ static void on_rx_rtp( void *data,
 
     /* Check for errors */
     if (bytes_read < 0) {
-		LOGERR_((stream->port.info.name.ptr, "RTP recv() error", -bytes_read));
+		LOGERR_((stream->port.info.name.ptr, "RTP recv() error", (pj_status_t)-bytes_read));
 		return;
     }
 
@@ -2364,7 +2397,7 @@ static void on_rx_rtp( void *data,
 		return;
 
     /* Update RTP and RTCP session. */
-    status = pjmedia_rtp_decode_rtp(&channel->rtp, pkt, bytes_read,
+    status = pjmedia_rtp_decode_rtp(&channel->rtp, pkt, (int)bytes_read,
 		&hdr, &ext_type_length, &rtp_ext_info, &p_rtp_ext_info, &rtp_ext_length, &payload, &payloadlen);
     if (status != PJ_SUCCESS) {
 		LOGERR_((stream->port.info.name.ptr, "RTP decode error", status));
@@ -2716,10 +2749,11 @@ on_return:
 	len = create_rtcp_sdes(stream, (pj_uint8_t*)pkt, 
 			       stream->enc->out_pkt_size - len);
 	if (len > 0) {
+		pj_size_t len_to_send;
 	    pkt += len;
-	    len = ((pj_uint8_t*)pkt) - ((pj_uint8_t*)stream->enc->out_pkt);
+		len_to_send = ((pj_uint8_t*)pkt) - ((pj_uint8_t*)stream->enc->out_pkt);
 	    pjmedia_transport_send_rtcp(stream->transport, 
-					stream->enc->out_pkt, len);
+					stream->enc->out_pkt, len_to_send);
 	}
 
 	stream->initial_rr = PJ_TRUE;
@@ -2740,7 +2774,7 @@ static void on_rx_rtcp( void *data,
     /* Check for errors */
     if (bytes_read < 0) {
 	LOGERR_((stream->port.info.name.ptr, "RTCP recv() error", 
-		 -bytes_read));
+		 (pj_status_t) -bytes_read));
 	return;
     }
 
@@ -2786,10 +2820,10 @@ static pj_status_t create_channel( pj_pool_t *pool,
 	channel->out_pkt_size = PJMEDIA_MAX_MTU;
 
     /* It should big enough to hold (minimally) RTCP SR with an SDES. */
-    min_out_pkt_size =  sizeof(pjmedia_rtcp_sr_pkt) +
+    min_out_pkt_size = (unsigned) (sizeof(pjmedia_rtcp_sr_pkt) +
 			sizeof(pjmedia_rtcp_common) +
 			(4 + stream->cname.slen) +
-			32;
+			32);
 
     if (channel->out_pkt_size < min_out_pkt_size)
 	channel->out_pkt_size = min_out_pkt_size;
@@ -3555,7 +3589,10 @@ PJ_DEF(void) pjmedia_stream_disable_keepalives(pjmedia_stream* stream, int on)
 
 PJ_DEF(void) pjmedia_stream_force_set_impairments(pj_pool_t* pool, pjmedia_stream * stream, int Perdidos, int Duplicados, int LatMin, int LatMax)
 {
-	pj_assert(stream != NULL && pool != NULL);
+	if (stream == NULL || pool == NULL)
+	{
+		return;
+	}
 
 	pj_lock_acquire(stream->p_latency_lock);
 
@@ -3598,6 +3635,12 @@ PJ_DEF(void) pjmedia_stream_set_radio_ua(pjmedia_stream* stream, pj_bool_t radio
 {
 	if (stream == NULL) return;
 	stream->radio_ua = radio_ua;
+}
+
+PJ_DEF(void) pjmedia_stream_force_no_send_rtp(pjmedia_stream* stream, pj_bool_t force_no_send_rtp)
+{
+	if (stream == NULL) return;
+	stream->force_no_send_rtp = force_no_send_rtp;
 }
 
 PJ_DEF(void) pjmedia_stream_GRS_force_ptt_mute_in_RTPRx(pjmedia_stream* stream, pj_uint32_t PttType, pj_uint32_t PttId, pj_bool_t on)
@@ -3971,7 +4014,7 @@ PJ_DEF(pj_status_t) pjmedia_stream_dial_dtmf( pjmedia_stream *stream,
 	    goto on_return;
 
 	/* Increment digit count only if all digits are valid. */
-	stream->tx_dtmf_count += digit_char->slen;
+	stream->tx_dtmf_count += (int)digit_char->slen;
     }
 
 on_return:

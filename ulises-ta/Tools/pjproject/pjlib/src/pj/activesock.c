@@ -285,7 +285,7 @@ PJ_DEF(pj_status_t) pj_activesock_start_read2( pj_activesock_t *asock,
 	pj_ssize_t size_to_read;
 
 	r->pkt = (pj_uint8_t*)readbuf[i];
-	r->max_size = size_to_read = buff_size;
+	size_to_read = r->max_size = buff_size;
 
 	status = pj_ioqueue_recv(asock->key, &r->op_key, r->pkt, &size_to_read,
 				 PJ_IOQUEUE_ALWAYS_ASYNC | flags);
@@ -344,7 +344,7 @@ PJ_DEF(pj_status_t) pj_activesock_start_recvfrom2( pj_activesock_t *asock,
 	pj_ssize_t size_to_read;
 
 	r->pkt = (pj_uint8_t*) readbuf[i];
-	r->max_size = size_to_read = buff_size;
+	size_to_read = r->max_size = buff_size;
 	r->src_addr_len = sizeof(r->src_addr);
 
 	status = pj_ioqueue_recvfrom(asock->key, &r->op_key, r->pkt,
@@ -443,7 +443,7 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 		 * oriented, it means connection has been closed. For datagram
 		 * sockets, it means we've got some error (e.g. EWOULDBLOCK).
 		 */
-		status = -bytes_read;
+		status = (pj_status_t)-bytes_read;
 	    }
 
 	    /* Set default remainder to zero */
@@ -506,7 +506,7 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 	 * read()/recvfrom() to return pending operation to allow the program
 	 * to do other jobs.
 	 */
-	bytes_read = r->max_size - r->size;
+	bytes_read = (pj_ssize_t) r->max_size - (pj_ssize_t) r->size;
 	flags = asock->read_flags;
 	if (++loop >= asock->max_loop)
 	    flags |= PJ_IOQUEUE_ALWAYS_ASYNC;

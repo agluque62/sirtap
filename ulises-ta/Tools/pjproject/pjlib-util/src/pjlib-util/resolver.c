@@ -632,7 +632,8 @@ static pj_status_t transmit_query(pj_dns_resolver *resolver,
  */
 static void init_res_key(struct res_key *key, int type, const pj_str_t *name)
 {
-    unsigned i, len;
+    unsigned i;
+    pj_size_t len;
     char *dst = key->name;
     const char *src = name->ptr;
 
@@ -842,8 +843,8 @@ PJ_DEF(pj_status_t) pj_dns_parse_a_response(const pj_dns_parsed_packet *pkt,
 					    pj_dns_a_record *rec)
 {
     pj_str_t hostname, alias, *res_name;
-    unsigned bufstart = 0;
-    unsigned bufleft = sizeof(rec->buf_);
+    pj_size_t bufstart = 0;
+    pj_size_t bufleft = sizeof(rec->buf_);
     unsigned i, ansidx;
 
     PJ_ASSERT_RETURN(pkt && rec, PJ_EINVAL);
@@ -1285,7 +1286,7 @@ static void on_read_complete(pj_ioqueue_key_t *key,
     if (bytes_read < 0) {
 	char errmsg[PJ_ERR_MSG_SIZE];
 
-	status = -bytes_read;
+	status = (pj_status_t)-bytes_read;
 	pj_strerror(status, errmsg, sizeof(errmsg));
 	PJ_LOG(4,(resolver->name.ptr, 
 		  "DNS resolver read error from %s:%d: %s", 

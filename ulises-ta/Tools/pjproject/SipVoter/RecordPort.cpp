@@ -2691,7 +2691,7 @@ void RecordPort::GetNumSquPtt(int *nPtt, int *nSqu)
  * @param   tel_len. Longitud del buffer tel
  * @return	true o false.
  */
-void RecordPort::GetTelNum(char *uri, int uri_len, char *tel, int tel_len)
+void RecordPort::GetTelNum(char *uri, pj_ssize_t uri_len, char *tel, pj_ssize_t tel_len)
 {
 	memset(tel, 0, tel_len);
 
