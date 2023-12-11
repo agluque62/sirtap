@@ -1315,7 +1315,8 @@ namespace HMI.CD40.Module.BusinessEntities
                 /*-----------------------------------------*/
                 int NumPositionsByPage = (int)Top.Cfg.NumEnlacesInternosPag;
 #if DEBUG
-                NumPositionsByPage = 6;
+                if (NumPositionsByPage>6)
+                    NumPositionsByPage = 6;
 #endif
                 int max_a_presentar = NumPositionsByPage;
                 int NumPagEnlacesInt= (int)Top.Cfg.NumPagEnlacesInt; //Tlf.NumPagEnlacesInt;
