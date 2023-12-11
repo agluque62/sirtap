@@ -271,7 +271,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(3, 23);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 23);
+            this.label2.Size = new System.Drawing.Size(55, 23);
             this.label2.TabIndex = 10;
             this.label2.Text = "Clave";
             // 
@@ -282,20 +282,20 @@ namespace HMI.Presentation.Sirtap.Views
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 23);
+            this.label1.Size = new System.Drawing.Size(55, 23);
             this.label1.TabIndex = 9;
             this.label1.Text = "Usuario";
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(62, 3);
+            this.txtUsuario.Location = new System.Drawing.Point(64, 3);
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.Size = new System.Drawing.Size(258, 20);
             this.txtUsuario.TabIndex = 7;
             // 
             // txtContrasena
             // 
-            this.txtContrasena.Location = new System.Drawing.Point(62, 26);
+            this.txtContrasena.Location = new System.Drawing.Point(64, 26);
             this.txtContrasena.Name = "txtContrasena";
             this.txtContrasena.PasswordChar = '*';
             this.txtContrasena.Size = new System.Drawing.Size(258, 20);
@@ -306,19 +306,19 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.20988F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 81.79012F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 71F));
             this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this._ClearBT, 2, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(34, 12);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(21, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(394, 46);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(407, 46);
             this.tableLayoutPanel1.TabIndex = 12;
             // 
             // _ClearBT
@@ -329,12 +329,12 @@ namespace HMI.Presentation.Sirtap.Views
             this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._ClearBT.IsButtonTlf = false;
             this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(323, 1);
+            this._ClearBT.Location = new System.Drawing.Point(335, 1);
             this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
             this._ClearBT.Name = "_ClearBT";
             this._ClearBT.Permitted = true;
             this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
-            this._ClearBT.Size = new System.Drawing.Size(68, 42);
+            this._ClearBT.Size = new System.Drawing.Size(69, 42);
             this._ClearBT.TabIndex = 16;
             this._ClearBT.Text = "<--";
             this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
@@ -347,7 +347,8 @@ namespace HMI.Presentation.Sirtap.Views
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(_KeypadTLP);
             this.Name = "loginform";
-            this.Text = "loginform";
+            this.Text = "Solicitud de Usuario";
+            this.Load += new System.EventHandler(this.loginform_Load);
             _KeypadTLP.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

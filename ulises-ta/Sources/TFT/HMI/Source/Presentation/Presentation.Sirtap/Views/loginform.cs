@@ -119,5 +119,10 @@ namespace HMI.Presentation.Sirtap.Views
             }
 
         }
+
+        private void loginform_Load(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

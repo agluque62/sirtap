@@ -389,7 +389,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.Controls.Add(this.btnIniciarSesion);
             this.Controls.Add(this.lblMensaje);
             this.Name = "login";
-            this.Size = new System.Drawing.Size(855, 610);
+            this.Size = new System.Drawing.Size(471, 547);
             _KeypadTLP.ResumeLayout(false);
             _DisplayTLP.ResumeLayout(false);
             _DisplayTLP.PerformLayout();
