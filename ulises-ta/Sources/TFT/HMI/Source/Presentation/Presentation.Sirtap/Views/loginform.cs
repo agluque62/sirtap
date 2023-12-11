@@ -108,11 +108,14 @@ namespace HMI.Presentation.Sirtap.Views
             if (sellogin)
             {
                 txtUsuario.Text = (txtUsuario.TextLength > 0) ? txtUsuario.Text.Substring(0, txtUsuario.TextLength - 1) : txtUsuario.Text;
-                ;
+                txtUsuario.SelectionStart = txtUsuario.Text.Length;
+                txtUsuario.SelectionLength = 0;
             }
             else
             {
                 txtContrasena.Text = (txtContrasena.TextLength > 0) ? txtContrasena.Text.Substring(0, txtContrasena.TextLength - 1) : txtContrasena.Text;
+                txtContrasena.SelectionStart = txtContrasena.Text.Length;
+                txtContrasena.SelectionLength = 0;
             }
 
         }

@@ -47,6 +47,8 @@ namespace HMI.Presentation.Sirtap.Views
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TableLayoutPanel _IaFunctionsTLP;
             System.Windows.Forms.TableLayoutPanel _TlfIaTLP;
+            this._Num4BT = new HMI.Model.Module.UI.HMIButton();
+            this._Num3BT = new HMI.Model.Module.UI.HMIButton();
             this._Num2BT = new HMI.Model.Module.UI.HMIButton();
             this._Num1BT = new HMI.Model.Module.UI.HMIButton();
             this._MemBT = new HMI.Model.Module.UI.HMIButton();
@@ -54,8 +56,6 @@ namespace HMI.Presentation.Sirtap.Views
             this._IaToolsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
             this._SlowBlinkTimer = new System.Windows.Forms.Timer(this.components);
             this._DescolgarTimer = new System.Windows.Forms.Timer(this.components);
-            this._Num3BT = new HMI.Model.Module.UI.HMIButton();
-            this._Num4BT = new HMI.Model.Module.UI.HMIButton();
             _IaFunctionsTLP = new System.Windows.Forms.TableLayoutPanel();
             _TlfIaTLP = new System.Windows.Forms.TableLayoutPanel();
             _IaFunctionsTLP.SuspendLayout();
@@ -65,26 +65,56 @@ namespace HMI.Presentation.Sirtap.Views
             // _IaFunctionsTLP
             // 
             _IaFunctionsTLP.ColumnCount = 2;
-            _IaFunctionsTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.03226F));
-            _IaFunctionsTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.96774F));
-            _IaFunctionsTLP.Controls.Add(this._Num4BT, 0, 3);
-            _IaFunctionsTLP.Controls.Add(this._Num3BT, 0, 3);
-            _IaFunctionsTLP.Controls.Add(this._Num2BT, 0, 2);
-            _IaFunctionsTLP.Controls.Add(this._Num1BT, 0, 2);
+            _IaFunctionsTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            _IaFunctionsTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            _IaFunctionsTLP.Controls.Add(this._Num4BT, 0, 2);
+            _IaFunctionsTLP.Controls.Add(this._Num3BT, 0, 2);
+            _IaFunctionsTLP.Controls.Add(this._Num2BT, 0, 1);
+            _IaFunctionsTLP.Controls.Add(this._Num1BT, 0, 1);
             _IaFunctionsTLP.Controls.Add(this._MemBT, 0, 0);
             _IaFunctionsTLP.Controls.Add(this._CallBT, 1, 0);
             _IaFunctionsTLP.Dock = System.Windows.Forms.DockStyle.Fill;
             _IaFunctionsTLP.Location = new System.Drawing.Point(285, 0);
             _IaFunctionsTLP.Margin = new System.Windows.Forms.Padding(10, 0, 0, 10);
             _IaFunctionsTLP.Name = "_IaFunctionsTLP";
-            _IaFunctionsTLP.RowCount = 4;
+            _IaFunctionsTLP.RowCount = 3;
+            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 43.29502F));
-            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 31.80077F));
-            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 59F));
-            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            _IaFunctionsTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             _IaFunctionsTLP.Size = new System.Drawing.Size(155, 340);
             _IaFunctionsTLP.TabIndex = 1;
+            // 
+            // _Num4BT
+            // 
+            this._Num4BT.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._Num4BT.DrawX = false;
+            this._Num4BT.Enabled = false;
+            this._Num4BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._Num4BT.IsButtonTlf = false;
+            this._Num4BT.IsConferencePreprogramada = false;
+            this._Num4BT.Location = new System.Drawing.Point(3, 258);
+            this._Num4BT.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
+            this._Num4BT.Name = "_Num4BT";
+            this._Num4BT.Permitted = true;
+            this._Num4BT.Size = new System.Drawing.Size(69, 79);
+            this._Num4BT.TabIndex = 18;
+            this._Num4BT.Text = "Núm. 4";
+            // 
+            // _Num3BT
+            // 
+            this._Num3BT.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._Num3BT.DrawX = false;
+            this._Num3BT.Enabled = false;
+            this._Num3BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._Num3BT.IsButtonTlf = false;
+            this._Num3BT.IsConferencePreprogramada = false;
+            this._Num3BT.Location = new System.Drawing.Point(82, 258);
+            this._Num3BT.Margin = new System.Windows.Forms.Padding(5, 3, 3, 3);
+            this._Num3BT.Name = "_Num3BT";
+            this._Num3BT.Permitted = true;
+            this._Num3BT.Size = new System.Drawing.Size(70, 79);
+            this._Num3BT.TabIndex = 17;
+            this._Num3BT.Text = "Núm. 3";
             // 
             // _Num2BT
             // 
@@ -94,11 +124,11 @@ namespace HMI.Presentation.Sirtap.Views
             this._Num2BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._Num2BT.IsButtonTlf = false;
             this._Num2BT.IsConferencePreprogramada = false;
-            this._Num2BT.Location = new System.Drawing.Point(78, 194);
+            this._Num2BT.Location = new System.Drawing.Point(80, 173);
             this._Num2BT.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
             this._Num2BT.Name = "_Num2BT";
             this._Num2BT.Permitted = true;
-            this._Num2BT.Size = new System.Drawing.Size(72, 83);
+            this._Num2BT.Size = new System.Drawing.Size(70, 79);
             this._Num2BT.TabIndex = 16;
             this._Num2BT.Text = "Núm. 2";
             // 
@@ -110,11 +140,11 @@ namespace HMI.Presentation.Sirtap.Views
             this._Num1BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._Num1BT.IsButtonTlf = false;
             this._Num1BT.IsConferencePreprogramada = false;
-            this._Num1BT.Location = new System.Drawing.Point(5, 194);
+            this._Num1BT.Location = new System.Drawing.Point(5, 173);
             this._Num1BT.Margin = new System.Windows.Forms.Padding(5, 3, 3, 3);
             this._Num1BT.Name = "_Num1BT";
             this._Num1BT.Permitted = true;
-            this._Num1BT.Size = new System.Drawing.Size(67, 83);
+            this._Num1BT.Size = new System.Drawing.Size(69, 79);
             this._Num1BT.TabIndex = 12;
             this._Num1BT.Text = "Núm. 1";
             // 
@@ -125,12 +155,11 @@ namespace HMI.Presentation.Sirtap.Views
             this._MemBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._MemBT.IsButtonTlf = false;
             this._MemBT.IsConferencePreprogramada = false;
-            this._MemBT.Location = new System.Drawing.Point(3, 40);
-            this._MemBT.Margin = new System.Windows.Forms.Padding(3, 40, 3, 40);
+            this._MemBT.Location = new System.Drawing.Point(3, 20);
+            this._MemBT.Margin = new System.Windows.Forms.Padding(3, 20, 3, 40);
             this._MemBT.Name = "_MemBT";
             this._MemBT.Permitted = true;
-            _IaFunctionsTLP.SetRowSpan(this._MemBT, 2);
-            this._MemBT.Size = new System.Drawing.Size(69, 111);
+            this._MemBT.Size = new System.Drawing.Size(71, 110);
             this._MemBT.TabIndex = 0;
             this._MemBT.Text = "MEM";
             this._MemBT.Click += new System.EventHandler(this._MemBT_Click);
@@ -143,12 +172,11 @@ namespace HMI.Presentation.Sirtap.Views
             this._CallBT.ImageNormal = global::HMI.Presentation.Sirtap.Properties.Resources.Unhang;
             this._CallBT.IsButtonTlf = false;
             this._CallBT.IsConferencePreprogramada = false;
-            this._CallBT.Location = new System.Drawing.Point(78, 40);
-            this._CallBT.Margin = new System.Windows.Forms.Padding(3, 40, 3, 40);
+            this._CallBT.Location = new System.Drawing.Point(80, 20);
+            this._CallBT.Margin = new System.Windows.Forms.Padding(3, 20, 3, 40);
             this._CallBT.Name = "_CallBT";
             this._CallBT.Permitted = true;
-            _IaFunctionsTLP.SetRowSpan(this._CallBT, 2);
-            this._CallBT.Size = new System.Drawing.Size(74, 111);
+            this._CallBT.Size = new System.Drawing.Size(72, 110);
             this._CallBT.TabIndex = 1;
             this._CallBT.Click += new System.EventHandler(this._CallBT_Click);
             // 
@@ -190,38 +218,6 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             this._DescolgarTimer.Interval = 500;
             this._DescolgarTimer.Tick += new System.EventHandler(this._DescolgarTimer_Tick);
-            // 
-            // _Num3BT
-            // 
-            this._Num3BT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._Num3BT.DrawX = false;
-            this._Num3BT.Enabled = false;
-            this._Num3BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._Num3BT.IsButtonTlf = false;
-            this._Num3BT.IsConferencePreprogramada = false;
-            this._Num3BT.Location = new System.Drawing.Point(80, 283);
-            this._Num3BT.Margin = new System.Windows.Forms.Padding(5, 3, 3, 3);
-            this._Num3BT.Name = "_Num3BT";
-            this._Num3BT.Permitted = true;
-            this._Num3BT.Size = new System.Drawing.Size(72, 54);
-            this._Num3BT.TabIndex = 17;
-            this._Num3BT.Text = "Núm. 3";
-            // 
-            // _Num4BT
-            // 
-            this._Num4BT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._Num4BT.DrawX = false;
-            this._Num4BT.Enabled = false;
-            this._Num4BT.Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._Num4BT.IsButtonTlf = false;
-            this._Num4BT.IsConferencePreprogramada = false;
-            this._Num4BT.Location = new System.Drawing.Point(3, 283);
-            this._Num4BT.Margin = new System.Windows.Forms.Padding(3, 3, 5, 3);
-            this._Num4BT.Name = "_Num4BT";
-            this._Num4BT.Permitted = true;
-            this._Num4BT.Size = new System.Drawing.Size(67, 54);
-            this._Num4BT.TabIndex = 18;
-            this._Num4BT.Text = "Núm. 4";
             // 
             // TlfIaView
             // 
