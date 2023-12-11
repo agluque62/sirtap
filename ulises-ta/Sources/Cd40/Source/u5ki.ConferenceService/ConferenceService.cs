@@ -215,6 +215,7 @@ namespace u5ki.ConferenceService
             }
             catch(Exception ex)
             {
+                LogError<ConferenceService>("EndRegistry: Exception " + ex.Message);
             }
             ConfRegistry = null;
         }

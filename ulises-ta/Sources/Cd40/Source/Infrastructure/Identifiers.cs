@@ -48,6 +48,8 @@ namespace U5ki.Infrastructure
         public const string PhoneMasterTopic = "UvkiPhoSrv";
         public const string ConferenceTopic = "UkiConf";
         public const string ConferenceMasterTopic = "UkiConfSrv";
+        public const string SirTapAudAlmTopic = "AudAlm";
+        public const string SirTapAudAlmMasterTopic = "AudAlmSrv";
         /// <summary>
         /// 
         /// </summary>
@@ -92,6 +94,8 @@ namespace U5ki.Infrastructure
         // Mensajes referentes a las conferencias preprogramadas
         public const short CONFERENCE_STATUS = 520;  //Estado de la conferencia. Se envia mensaje ConferenceStatus de TopMessages.proto
 
+        // Mensajes referentes a SIRTAP
+        public const short SIRTAP_AUD_ALM = 600;     //Alarmas del SIRTAP. Mensaje SirTapAudAlarmMsg
 
         /// <summary>
         /// 

@@ -172,7 +172,7 @@ namespace Utilities
                 }
                 catch (Exception exc)
                 {
-                    _Logger.Error(String.Format("Error SipUtilities EqualSipEndPoint {0} {1}", endPoint1, endPoint2));
+                    _Logger.Error(String.Format("Error SipUtilities EqualSipEndPoint {0} {1} {3}", endPoint1, endPoint2, exc.Message));
                     return false;
                 }
             }

@@ -596,6 +596,7 @@ namespace U5ki.Infrastructure
                             }
                             catch (Exception excep)
                             {
+                                _Logger.Info("GetNameDevice: Exception  " + excep.Message);
                                 return null;
                             }
                         }

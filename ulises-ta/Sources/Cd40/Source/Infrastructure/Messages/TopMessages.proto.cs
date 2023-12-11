@@ -443,4 +443,60 @@ namespace U5ki.Infrastructure
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"SirTapAudAlarmMsg")]
+  public partial class SirTapAudAlarmMsg : global::ProtoBuf.IExtensible
+  {
+    public SirTapAudAlarmMsg() {}
+    
+    private string _identity;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"identity", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string identity
+    {
+      get { return _identity; }
+      set { _identity = value; }
+    }
+    private U5ki.Infrastructure.SirTapAudAlarmMsg.EventType _eventtype;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"eventtype", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.SirTapAudAlarmMsg.EventType eventtype
+    {
+      get { return _eventtype; }
+      set { _eventtype = value; }
+    }
+    private U5ki.Infrastructure.SirTapAudAlarmMsg.Category _category;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"category", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.SirTapAudAlarmMsg.Category category
+    {
+      get { return _category; }
+      set { _category = value; }
+    }
+    [global::ProtoBuf.ProtoContract(Name=@"EventType")]
+    public enum EventType
+    {
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Stop", Value=0)]
+      Stop = 0,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Start", Value=1)]
+      Start = 1,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Cancel", Value=2)]
+      Cancel = 2
+    }
+  
+    [global::ProtoBuf.ProtoContract(Name=@"Category")]
+    public enum Category
+    {
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Alert", Value=0)]
+      Alert = 0,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Alarm", Value=1)]
+      Alarm = 1
+    }
+  
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

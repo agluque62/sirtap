@@ -475,6 +475,10 @@
       <Component Id='u5ki.ConferenceService' Guid='{F157AE15-528B-6FA3-336C-F52927AC739D}'>
         <File Id='u5ki.ConferenceService' Name='u5ki.ConferenceService.dll' />
       </Component>
+
+      <Component Id='u5ki.SirTapAudAlm' Guid='{F157AE15-E28B-6FA3-3E6C-F529E7AC739E}'>
+        <File Id='u5ki.SirTapAudAlm' Name='u5ki.SirTapAudAlm.dll' />
+      </Component>
       
     </ComponentGroup>
   </Fragment>
