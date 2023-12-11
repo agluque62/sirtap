@@ -56,8 +56,8 @@ namespace HMI.Model.Module.UI
             _KeypadTLP.BackColor = System.Drawing.Color.Silver;
             _KeypadTLP.ColumnCount = 3;
             _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             _KeypadTLP.Controls.Add(this._1BT, 0, 1);
             _KeypadTLP.Controls.Add(this._2BT, 1, 1);
             _KeypadTLP.Controls.Add(this._3BT, 2, 1);
@@ -76,11 +76,11 @@ namespace HMI.Model.Module.UI
             _KeypadTLP.Margin = new System.Windows.Forms.Padding(5, 10, 0, 0);
             _KeypadTLP.Name = "_KeypadTLP";
             _KeypadTLP.RowCount = 5;
-            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 24F));
+            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 19F));
+            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 19F));
+            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 19F));
+            _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 19F));
             _KeypadTLP.Size = new System.Drawing.Size(379, 532);
             _KeypadTLP.TabIndex = 1;
             // 
@@ -91,10 +91,10 @@ namespace HMI.Model.Module.UI
             this._1BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._1BT.IsButtonTlf = false;
             this._1BT.IsConferencePreprogramada = false;
-            this._1BT.Location = new System.Drawing.Point(3, 109);
+            this._1BT.Location = new System.Drawing.Point(3, 130);
             this._1BT.Name = "_1BT";
             this._1BT.Permitted = true;
-            this._1BT.Size = new System.Drawing.Size(120, 100);
+            this._1BT.Size = new System.Drawing.Size(120, 95);
             this._1BT.TabIndex = 1;
             this._1BT.Tag = "";
             this._1BT.Text = "1";
@@ -107,10 +107,10 @@ namespace HMI.Model.Module.UI
             this._2BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._2BT.IsButtonTlf = false;
             this._2BT.IsConferencePreprogramada = false;
-            this._2BT.Location = new System.Drawing.Point(129, 109);
+            this._2BT.Location = new System.Drawing.Point(129, 130);
             this._2BT.Name = "_2BT";
             this._2BT.Permitted = true;
-            this._2BT.Size = new System.Drawing.Size(120, 100);
+            this._2BT.Size = new System.Drawing.Size(120, 95);
             this._2BT.TabIndex = 2;
             this._2BT.Text = "2";
             this._2BT.Click += new System.EventHandler(this._BT_Click);
@@ -122,10 +122,10 @@ namespace HMI.Model.Module.UI
             this._3BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._3BT.IsButtonTlf = false;
             this._3BT.IsConferencePreprogramada = false;
-            this._3BT.Location = new System.Drawing.Point(255, 109);
+            this._3BT.Location = new System.Drawing.Point(255, 130);
             this._3BT.Name = "_3BT";
             this._3BT.Permitted = true;
-            this._3BT.Size = new System.Drawing.Size(121, 100);
+            this._3BT.Size = new System.Drawing.Size(121, 95);
             this._3BT.TabIndex = 3;
             this._3BT.Text = "3";
             this._3BT.Click += new System.EventHandler(this._BT_Click);
@@ -137,10 +137,10 @@ namespace HMI.Model.Module.UI
             this._4BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._4BT.IsButtonTlf = false;
             this._4BT.IsConferencePreprogramada = false;
-            this._4BT.Location = new System.Drawing.Point(3, 215);
+            this._4BT.Location = new System.Drawing.Point(3, 231);
             this._4BT.Name = "_4BT";
             this._4BT.Permitted = true;
-            this._4BT.Size = new System.Drawing.Size(120, 100);
+            this._4BT.Size = new System.Drawing.Size(120, 95);
             this._4BT.TabIndex = 4;
             this._4BT.Text = "4";
             this._4BT.Click += new System.EventHandler(this._BT_Click);
@@ -152,10 +152,10 @@ namespace HMI.Model.Module.UI
             this._5BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._5BT.IsButtonTlf = false;
             this._5BT.IsConferencePreprogramada = false;
-            this._5BT.Location = new System.Drawing.Point(129, 215);
+            this._5BT.Location = new System.Drawing.Point(129, 231);
             this._5BT.Name = "_5BT";
             this._5BT.Permitted = true;
-            this._5BT.Size = new System.Drawing.Size(120, 100);
+            this._5BT.Size = new System.Drawing.Size(120, 95);
             this._5BT.TabIndex = 5;
             this._5BT.Text = "5";
             this._5BT.Click += new System.EventHandler(this._BT_Click);
@@ -167,10 +167,10 @@ namespace HMI.Model.Module.UI
             this._6BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._6BT.IsButtonTlf = false;
             this._6BT.IsConferencePreprogramada = false;
-            this._6BT.Location = new System.Drawing.Point(255, 215);
+            this._6BT.Location = new System.Drawing.Point(255, 231);
             this._6BT.Name = "_6BT";
             this._6BT.Permitted = true;
-            this._6BT.Size = new System.Drawing.Size(121, 100);
+            this._6BT.Size = new System.Drawing.Size(121, 95);
             this._6BT.TabIndex = 6;
             this._6BT.Text = "6";
             this._6BT.Click += new System.EventHandler(this._BT_Click);
@@ -182,10 +182,10 @@ namespace HMI.Model.Module.UI
             this._7BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._7BT.IsButtonTlf = false;
             this._7BT.IsConferencePreprogramada = false;
-            this._7BT.Location = new System.Drawing.Point(3, 321);
+            this._7BT.Location = new System.Drawing.Point(3, 332);
             this._7BT.Name = "_7BT";
             this._7BT.Permitted = true;
-            this._7BT.Size = new System.Drawing.Size(120, 100);
+            this._7BT.Size = new System.Drawing.Size(120, 95);
             this._7BT.TabIndex = 7;
             this._7BT.Text = "7";
             this._7BT.Click += new System.EventHandler(this._BT_Click);
@@ -197,10 +197,10 @@ namespace HMI.Model.Module.UI
             this._8BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._8BT.IsButtonTlf = false;
             this._8BT.IsConferencePreprogramada = false;
-            this._8BT.Location = new System.Drawing.Point(129, 321);
+            this._8BT.Location = new System.Drawing.Point(129, 332);
             this._8BT.Name = "_8BT";
             this._8BT.Permitted = true;
-            this._8BT.Size = new System.Drawing.Size(120, 100);
+            this._8BT.Size = new System.Drawing.Size(120, 95);
             this._8BT.TabIndex = 8;
             this._8BT.Text = "8";
             this._8BT.Click += new System.EventHandler(this._BT_Click);
@@ -212,10 +212,10 @@ namespace HMI.Model.Module.UI
             this._9BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._9BT.IsButtonTlf = false;
             this._9BT.IsConferencePreprogramada = false;
-            this._9BT.Location = new System.Drawing.Point(255, 321);
+            this._9BT.Location = new System.Drawing.Point(255, 332);
             this._9BT.Name = "_9BT";
             this._9BT.Permitted = true;
-            this._9BT.Size = new System.Drawing.Size(121, 100);
+            this._9BT.Size = new System.Drawing.Size(121, 95);
             this._9BT.TabIndex = 9;
             this._9BT.Text = "9";
             this._9BT.Click += new System.EventHandler(this._BT_Click);
@@ -227,10 +227,10 @@ namespace HMI.Model.Module.UI
             this._AstBT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._AstBT.IsButtonTlf = false;
             this._AstBT.IsConferencePreprogramada = false;
-            this._AstBT.Location = new System.Drawing.Point(3, 427);
+            this._AstBT.Location = new System.Drawing.Point(3, 433);
             this._AstBT.Name = "_AstBT";
             this._AstBT.Permitted = true;
-            this._AstBT.Size = new System.Drawing.Size(120, 102);
+            this._AstBT.Size = new System.Drawing.Size(120, 96);
             this._AstBT.TabIndex = 10;
             this._AstBT.Text = "*";
             this._AstBT.Click += new System.EventHandler(this._BT_Click);
@@ -242,10 +242,10 @@ namespace HMI.Model.Module.UI
             this._0BT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._0BT.IsButtonTlf = false;
             this._0BT.IsConferencePreprogramada = false;
-            this._0BT.Location = new System.Drawing.Point(129, 427);
+            this._0BT.Location = new System.Drawing.Point(129, 433);
             this._0BT.Name = "_0BT";
             this._0BT.Permitted = true;
-            this._0BT.Size = new System.Drawing.Size(120, 102);
+            this._0BT.Size = new System.Drawing.Size(120, 96);
             this._0BT.TabIndex = 11;
             this._0BT.Text = "0";
             this._0BT.Click += new System.EventHandler(this._BT_Click);
@@ -257,10 +257,10 @@ namespace HMI.Model.Module.UI
             this._AlmBT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._AlmBT.IsButtonTlf = false;
             this._AlmBT.IsConferencePreprogramada = false;
-            this._AlmBT.Location = new System.Drawing.Point(255, 427);
+            this._AlmBT.Location = new System.Drawing.Point(255, 433);
             this._AlmBT.Name = "_AlmBT";
             this._AlmBT.Permitted = true;
-            this._AlmBT.Size = new System.Drawing.Size(121, 102);
+            this._AlmBT.Size = new System.Drawing.Size(121, 96);
             this._AlmBT.TabIndex = 12;
             this._AlmBT.Text = "#";
             this._AlmBT.Click += new System.EventHandler(this._BT_Click);
@@ -272,8 +272,8 @@ namespace HMI.Model.Module.UI
             | System.Windows.Forms.AnchorStyles.Right)));
             _DisplayTLP.ColumnCount = 2;
             _KeypadTLP.SetColumnSpan(_DisplayTLP, 3);
-            _DisplayTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80F));
-            _DisplayTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            _DisplayTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            _DisplayTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             _DisplayTLP.Controls.Add(this._ClearBT, 1, 0);
             _DisplayTLP.Controls.Add(this._DisplayTB, 0, 0);
             _DisplayTLP.Controls.Add(this._PauseBt, 1, 1);
@@ -283,7 +283,7 @@ namespace HMI.Model.Module.UI
             _DisplayTLP.RowCount = 2;
             _DisplayTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             _DisplayTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            _DisplayTLP.Size = new System.Drawing.Size(379, 106);
+            _DisplayTLP.Size = new System.Drawing.Size(379, 127);
             _DisplayTLP.TabIndex = 13;
             // 
             // _ClearBT
@@ -294,11 +294,11 @@ namespace HMI.Model.Module.UI
             this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._ClearBT.IsButtonTlf = false;
             this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(303, 1);
+            this._ClearBT.Location = new System.Drawing.Point(265, 1);
             this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
             this._ClearBT.Name = "_ClearBT";
             this._ClearBT.Permitted = true;
-            this._ClearBT.Size = new System.Drawing.Size(73, 33);
+            this._ClearBT.Size = new System.Drawing.Size(111, 33);
             this._ClearBT.TabIndex = 15;
             this._ClearBT.Text = "<--";
             this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
@@ -314,7 +314,7 @@ namespace HMI.Model.Module.UI
             this._DisplayTB.Margin = new System.Windows.Forms.Padding(3, 1, 3, 3);
             this._DisplayTB.Name = "_DisplayTB";
             this._DisplayTB.ReadOnly = true;
-            this._DisplayTB.Size = new System.Drawing.Size(297, 26);
+            this._DisplayTB.Size = new System.Drawing.Size(259, 26);
             this._DisplayTB.TabIndex = 14;
             this._DisplayTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -324,7 +324,7 @@ namespace HMI.Model.Module.UI
             this._PauseBt.Font = new System.Drawing.Font("Microsoft Sans Serif", 18.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._PauseBt.IsButtonTlf = false;
             this._PauseBt.IsConferencePreprogramada = false;
-            this._PauseBt.Location = new System.Drawing.Point(306, 56);
+            this._PauseBt.Location = new System.Drawing.Point(268, 66);
             this._PauseBt.Name = "_PauseBt";
             this._PauseBt.Permitted = true;
             this._PauseBt.Size = new System.Drawing.Size(42, 32);

@@ -1314,6 +1314,9 @@ namespace HMI.CD40.Module.BusinessEntities
 
                 /*-----------------------------------------*/
                 int NumPositionsByPage = (int)Top.Cfg.NumEnlacesInternosPag;
+#if DEBUG
+                NumPositionsByPage = 6;
+#endif
                 int max_a_presentar = NumPositionsByPage;
                 int NumPagEnlacesInt= (int)Top.Cfg.NumPagEnlacesInt; //Tlf.NumPagEnlacesInt;
                 int numpages = 3;// Tlf.NumDestinations / NumPositionsByPage;
@@ -2750,6 +2753,6 @@ namespace HMI.CD40.Module.BusinessEntities
             }
         }
 #endif
-        #endregion
+#endregion
     }
     }
