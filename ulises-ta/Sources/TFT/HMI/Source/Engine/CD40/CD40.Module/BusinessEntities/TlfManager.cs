@@ -1272,6 +1272,10 @@ namespace HMI.CD40.Module.BusinessEntities
             {
                 uint npi = Top.Cfg.NumPagEnlacesInt;
                 uint neip = Top.Cfg.NumEnlacesInternosPag;
+#if DEBUG
+                if (neip > 6)
+                    neip = 6;
+#endif
                 int c45 =(int) (npi * neip );//La pagina de conferencia esta siempre a continuacion de la paginas de AD.
 
                 //230606 cambio la forma de asignación.
@@ -1320,8 +1324,8 @@ namespace HMI.CD40.Module.BusinessEntities
 #endif
                 int max_a_presentar = NumPositionsByPage;
                 int NumPagEnlacesInt= (int)Top.Cfg.NumPagEnlacesInt; //Tlf.NumPagEnlacesInt;
-                int numpages = 3;// Tlf.NumDestinations / NumPositionsByPage;
-                if (NumPagEnlacesInt > 4)
+                int numpages = 28;// Tlf.NumDestinations / NumPositionsByPage;
+                if (NumPagEnlacesInt > 29)// será para conferencia
                 {
                     numpages = NumPagEnlacesInt;
                 }

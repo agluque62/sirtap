@@ -75,6 +75,7 @@ namespace HMI.Presentation.Sirtap.Views
             pulsa("9");
         }
 
+
         private void _AlmBT_Click(object sender, EventArgs e)
         {
             sellogin = !sellogin;

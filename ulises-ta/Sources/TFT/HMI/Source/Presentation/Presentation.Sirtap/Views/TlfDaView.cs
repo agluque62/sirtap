@@ -263,7 +263,7 @@ namespace HMI.Presentation.Sirtap.Views
                 OcultaPaticipantes();
             if (_Page != e.Page)
             {
-                Debug.Assert(e.Page < 4);
+                Debug.Assert(e.Page < 28);
 
                 _Page = e.Page;
                 int absPageBegin = _Page * _NumPositionsByPage;
