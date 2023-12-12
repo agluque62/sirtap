@@ -25,5 +25,6 @@ namespace HMI.Model.Module.Constants
 		public const string ModalWindows = "ModalWindows";
 		public const string ScreenSaverWindow = "ScreenSaverWindow";
         public const string SelCallWorkspace = "SelCallWorkspace";
+        public const string LoginWorkspace = "LoginWorkspace";
     }
 }
