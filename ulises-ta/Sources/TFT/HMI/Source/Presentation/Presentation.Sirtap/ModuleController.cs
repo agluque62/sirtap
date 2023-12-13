@@ -55,6 +55,8 @@ namespace HMI.Presentation.Sirtap
         {
             _CmdManager = cmdManager;
             _StateManager = stateManager;
+            _StateManager.Tft.Enabled = false;//  Por defecto tft esta deshabilitado en sirtap.
+            _StateManager.Tft.Login = false;//  Por defecto tft esta deshabilitado en sirtap.
         }
 
         public override void Run()

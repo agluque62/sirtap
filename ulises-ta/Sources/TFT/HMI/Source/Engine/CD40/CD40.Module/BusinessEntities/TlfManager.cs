@@ -1245,6 +1245,7 @@ namespace HMI.CD40.Module.BusinessEntities
             finally
             {
                 _ChangingCfg = false;
+                
             }
 		}
 

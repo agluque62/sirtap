@@ -11,12 +11,15 @@ namespace HMI.Model.Module.BusinessEntities
 	public sealed class Tft
 	{
         private bool _Enabled = true;
+        private bool _Login = false;
 
         private bool _Briefing = false;
         private bool _Playing = false;
 
         [EventPublication(EventTopicNames.TftEnabledChanged, PublicationScope.Global)]
         public event EventHandler TftEnabledChanged;
+        [EventPublication(EventTopicNames.TftLoginChanged, PublicationScope.Global)]
+        public event EventHandler TftLoginChanged;
         [EventPublication(EventTopicNames.BriefingChanged, PublicationScope.Global)]
         public event EventHandler BriefingChanged;
         [EventPublication(EventTopicNames.PlayingChanged, PublicationScope.Global)]
@@ -35,6 +38,18 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 		}
 
+        public bool Login
+        {
+            get { return _Login; }
+            set
+            {
+                if (_Login != value)
+                {
+                    _Login = value;
+                    General.SafeLaunchEvent(TftLoginChanged, this);
+                }
+            }
+        }
         public bool Briefing
         {
             get { return _Briefing; }
