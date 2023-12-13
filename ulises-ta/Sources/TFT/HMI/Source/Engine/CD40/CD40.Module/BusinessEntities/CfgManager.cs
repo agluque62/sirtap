@@ -222,6 +222,10 @@ namespace HMI.CD40.Module.BusinessEntities
             confcfg = p1;
             foreach (Conferencia c in confcfg) c.Alias = (c.Alias == "") ? c.IdSalaBkk : c.Alias;
             int NumPositionsByPage = (int)Top.Cfg.NumEnlacesInternosPag;
+#if DEBUG
+            if (NumPositionsByPage > 6)
+                NumPositionsByPage = 6;
+#endif
             int max_a_presentar = NumPositionsByPage;
             int numpages = Tlf.NumDestinations / NumPositionsByPage;
             int firstposition = (numpages - 1) * NumPositionsByPage;//ultima pagina
@@ -249,7 +253,10 @@ namespace HMI.CD40.Module.BusinessEntities
                         ei.Literal = conf2.Alias;
                         ei.Prioridad = 3;
                         ei.PosicionHMI = (uint)conf2.PosHMI + (NumEnlacesInternosPag * NumPagEnlacesInt);// 45 /*+ 1*/;
-
+#if DEBUG
+                        if (NumEnlacesInternosPag > 6)
+                            ei.PosicionHMI = (uint)conf2.PosHMI + (6 * NumPagEnlacesInt);// 45 /*+ 1*/;
+#endif
                         lei.Add(ei);
                     }
                 }
