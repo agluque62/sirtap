@@ -205,7 +205,7 @@ PJ_DEF(pj_status_t) pjsip_dlg_create_uac( pjsip_user_agent *ua,
 
     /* Calculate hash value of local tag. */
     dlg->local.tag_hval = pj_hash_calc(0, dlg->local.info->tag.ptr,
-				       dlg->local.info->tag.slen);
+				       (unsigned)dlg->local.info->tag.slen);
 
     /* Randomize local CSeq. */
     dlg->local.first_cseq = pj_rand() & 0x7FFF;
@@ -373,7 +373,7 @@ PJ_DEF(pj_status_t) pjsip_dlg_create_uas(   pjsip_user_agent *ua,
 
     /* Calculate hash value of local tag. */
     dlg->local.tag_hval = pj_hash_calc(0, dlg->local.info->tag.ptr,
-				       dlg->local.info->tag.slen);
+				       (unsigned)dlg->local.info->tag.slen);
 
 
     /* Randomize local cseq */
@@ -520,7 +520,7 @@ PJ_DEF(pj_status_t) pjsip_dlg_create_uas(   pjsip_user_agent *ua,
 
     /* Calculate hash value of remote tag. */
     dlg->remote.tag_hval = pj_hash_calc(0, dlg->remote.info->tag.ptr, 
-					dlg->remote.info->tag.slen);
+					(unsigned)dlg->remote.info->tag.slen);
 
     /* Register this dialog to user agent. */
     status = pjsip_ua_register_dlg( ua, dlg );

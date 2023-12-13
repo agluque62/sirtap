@@ -1,12 +1,19 @@
-﻿using System;
-using System.Text;
-using System.Runtime.InteropServices;
-
-using U5ki.Infrastructure.Properties;
+﻿#if !_AMPER_ULISES_
+using Amper.Etm.SipServices.CoreSip;
+#endif
+using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text;
 
+#if !_AMPER_ULISES_
+namespace Amper.Etm.SipServices.CoreSip;
+#endif
+
+#if _AMPER_ULISES_
 namespace U5ki.Infrastructure
 {
+#endif
     /// <summary>
     /// 
     /// </summary>
@@ -97,8 +104,8 @@ namespace U5ki.Infrastructure
     /// 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void PagerCb(string from_uri, uint from_uri_len,
-                string to_uri, uint to_uri_len, string contact_uri, uint contact_uri_len,
-                string mime_type, uint mime_type_len, string body, uint body_len);
+        string to_uri, uint to_uri_len, string contact_uri, uint contact_uri_len,
+        string mime_type, uint mime_type_len, string body, uint body_len);
 
     /// <summary>
     /// 
@@ -178,22 +185,22 @@ namespace U5ki.Infrastructure
     public delegate void InfoReceivedCb(int call, string info, uint lenInfo);
 
     /**
-    * WG67SubscriptionCb
-    * Esta funcion se llama cuando hay un cambio en el estado de una subscripcion al evento WG67KEY-IN.
-        Como Suscriptor se llama cuando ha cambiado el estado, o porque se ha recibido un NOTIFY.
-        Como Notificador se llama cuando ha cambiado el estado de la suscripcion.
-    * @param	info			Estructura con la info
-    */
+        * WG67SubscriptionCb
+        * Esta funcion se llama cuando hay un cambio en el estado de una subscripcion al evento WG67KEY-IN.
+            Como Suscriptor se llama cuando ha cambiado el estado, o porque se ha recibido un NOTIFY.
+            Como Notificador se llama cuando ha cambiado el estado de la suscripcion.
+        * @param	info			Estructura con la info
+        */
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void WG67SubscriptionStateCb(CORESIP_WG67_Subscription_Info wg67Info);
 
     /**
-    * WG67SubscriptionReceivedCb
-    * Esta funcion se llama cuando se recibe el primer request de suscripcion al evento WG67KEY-IN.
-    * Si dentro de esta callback se llama a la funcion CORESIP_Set_WG67_notify_status se establece un estado inicial de la suscripcion
-    * @param	accId. Identificador del account.
-    * @param	subscriberUri. uri del suscriptor
-    */
+        * WG67SubscriptionReceivedCb
+        * Esta funcion se llama cuando se recibe el primer request de suscripcion al evento WG67KEY-IN.
+        * Si dentro de esta callback se llama a la funcion CORESIP_Set_WG67_notify_status se establece un estado inicial de la suscripcion
+        * @param	accId. Identificador del account.
+        * @param	subscriberUri. uri del suscriptor
+        */
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void WG67SubscriptionReceivedCb(int accId, string subscriberUri);
 
@@ -244,7 +251,6 @@ namespace U5ki.Infrastructure
         CORESIP_CALL_RD,
         CORESIP_CALL_UNKNOWN
     }
-
     /// <summary>
     /// 
     /// </summary>
@@ -319,6 +325,17 @@ namespace U5ki.Infrastructure
         CORESIP_CALL_ROLE_UAC,
         CORESIP_CALL_ROLE_UCS
     }
+
+    public enum CORESIP_SDPSendRecvAttrForced
+    {
+        CORESIP_SDP_SR_ATTR_NOFORCED,       //Este valor indica que no se fuerza un nuevo valor del atributo
+        CORESIP_SDP_SR_ATTR_NONE,           //Con este valor no se pone el atributo en el SDP
+        CORESIP_SDP_SR_ATTR_INACTIVE,
+        CORESIP_SDP_SR_ATTR_SENDONLY,
+        CORESIP_SDP_SR_ATTR_RECVONLY,
+        CORESIP_SDP_SR_ATTR_SENDRECV
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -381,7 +398,8 @@ namespace U5ki.Infrastructure
 
     //EDU 20170223
     public enum CORESIP_FREQUENCY_TYPE { Simple = 0, Dual = 1, FD = 2, ME = 3 }         // 0. Normal, 1: 1+1, 2: FD, 3: EM
-    public enum CORESIP_FREQUENCY_MODO_TRANSMISION {
+    public enum CORESIP_FREQUENCY_MODO_TRANSMISION
+    {
         Climax = 0,
         UltimoReceptor = 1,
         Manual = 2,
@@ -479,6 +497,8 @@ namespace U5ki.Infrastructure
                                                     //el identificador de la frecuencia (Fid) en el GRS
                                                     //Y se envia Notify al evento WG67 cuando se modifica le Fid. Solo es valido en ED137C
 
+        CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr;     //Sirve para forzar el atributo send-recv en el SDP. Establecer, por defecto el valor CORESIP_SDP_SR_ATTR_NOFORCED.
+
     }
 
     /// <summary>
@@ -506,15 +526,16 @@ namespace U5ki.Infrastructure
         public uint RdMcastPort;
 
         //Referente al replaces. Esto no se necesita cuando el DstUri se obtiene de un REFER y ya tiene la info de replaces
-        public bool RequireReplaces;		//Vale true si requiere replaces
+        public bool RequireReplaces;        //Vale true si requiere replaces
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SipAgent.CORESIP_MAX_CALLID_LENGTH + 1)]
-        public string CallIdToReplace;	    //Call id de la llamada a reemplazar
+        public string CallIdToReplace;      //Call id de la llamada a reemplazar
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SipAgent.CORESIP_MAX_TAG_LENGTH + 1)]
-        public string ToTag;				//Tag del To de la llamada a reemplazar
+        public string ToTag;                //Tag del To de la llamada a reemplazar
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SipAgent.CORESIP_MAX_TAG_LENGTH + 1)]
         public string FromTag;              //Tag del From de la llamada a reemplazar
         public bool EarlyOnly;              //Vale true si se requiere el parametro early-only en el replaces
     }
+
 
     /// <summary>
     /// 
@@ -547,6 +568,7 @@ namespace U5ki.Infrastructure
                                                         //EN ULISES SE IGNORA
     }
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -574,9 +596,6 @@ namespace U5ki.Infrastructure
         public string DstRs;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public class CORESIP_CallStateInfo
     {
@@ -603,7 +622,7 @@ namespace U5ki.Infrastructure
         public uint BitsPerSample;
         public uint FrameTime;
 
-        public bool remote_grs_supports_ED137C_Selcal;		//es true si la sesion con el grs remoto soporta selcal de ED137C
+        public bool remote_grs_supports_ED137C_Selcal;      //es true si la sesion con el grs remoto soporta selcal de ED137C
     }
 
     /// <summary>
@@ -648,7 +667,6 @@ namespace U5ki.Infrastructure
         public uint Tsd_ms;                //Tsd en ms calculado del MAM recibido
         public int Ts2_ms;                 //Ts2 en ms calculado del MAM recibido. Un valor negativo indica que no se ha recibido.
     }
-
     /// <summary>
     /// 
     /// </summary>
@@ -676,19 +694,28 @@ namespace U5ki.Infrastructure
         public ConfUser[] Users;
     }
 
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public class CORESIP_tone_digit
+    public class CORESIP_tone_digits
     {
-        public char digit;         /**< The ASCI identification for the digit.	
+        public uint count;              /**< Numero de digitos del array digits que se van a reproducir */
+
+        public struct strpdigits
+        {
+            public char digit;         /**< The ASCI identification for the digit.	
 						        En caso de que quiera reproducir una pausa, digit debe ser una coma, on_msec debe valer cero y off_msec valdra el tiempo de la pausa */
-        public short on_msec;      /**< Playback ON duration, in miliseconds.	    */
-        public short off_msec;     /**< Playback OFF duration, ini miliseconds.    */
+            public short on_msec;      /**< Playback ON duration, in miliseconds.	    */
+            public short off_msec;     /**< Playback OFF duration, ini miliseconds.    */
+        }
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = SipAgent.CORESIP_MAX_DTMF_DIGITS)]
+        public strpdigits[] digits;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public class CORESIP_tone_digit_map
     {
+        public uint count;     /**< Number of digits in the map. 16 maximo	*/
+
         public struct strdigits
         {
             public char digit;     /**< The ASCI identification for the digit.	*/
@@ -696,10 +723,15 @@ namespace U5ki.Infrastructure
             public short freq2;    /**< Optional second frequency.		*/
         }
 
-        public uint count;     /**< Number of digits in the map. 16 maximo	*/
-
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public strdigits[] digits;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public class CORESIP_GenericPortBuffer
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = SipAgent.CORESIP_AUD_PACKET_LEN)]
+        public short[] buffer;
     }
 
 
@@ -782,6 +814,8 @@ namespace U5ki.Infrastructure
         public string RawBody;                //Es el cuerpo del NOTIFY sin parsear  
     }
 
+
+
     //Estructura que define el cuerpo de los Notify al evento WG67KEY-IN
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public class CORESIP_WG67Notify_Body_Config
@@ -824,7 +858,6 @@ namespace U5ki.Infrastructure
                                                         // "deactivated", "probation", "rejected", "timeout", "giveup", "noresource"
                                                         // Se explica en RFC3265, apartado 3.2.4
     }
-    
 
     /// <summary>
     /// 
@@ -892,6 +925,8 @@ namespace U5ki.Infrastructure
         public const int CORESIP_MAX_BODY_LEN = 1024;
         public const int CORESIP_MAX_SESSTYPE_LENGTH = 32;
         public const int CORESIP_MAX_SELCAL_LENGTH = 4;
+        public const int CORESIP_MAX_DTMF_DIGITS = 128;
+        public const int CORESIP_AUD_PACKET_LEN = 160;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct CORESIP_Error
@@ -921,7 +956,7 @@ namespace U5ki.Infrastructure
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CORESIP_MAX_IP_LENGTH + 1)]
             public string Ip;
             public uint Port;
-        }        
+        }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public class CORESIP_Config
@@ -982,7 +1017,6 @@ namespace U5ki.Infrastructure
             public uint RD_TxAttenuation_dB;        //Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En dB
         }
 
-
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public class CORESIP_Impairments   //Necesario para ETM
         {
@@ -1010,538 +1044,539 @@ namespace U5ki.Infrastructure
         public const uint CORESIP_ID_TYPE_MASK = 0xFF800000;
         public const uint CORESIP_ID_MASK = 0x007FFFFF;
 
-        public const string coresip = "coresip-voter";
+        const string coresip = "coresip-voter";
 
         /**
-            *	CORESIP_Init Rutina de Inicializacion del Modulo. @ref SipAgent::Init
-            *	@param	cfg		Puntero @ref CORESIP_Config a la configuracion.
-            *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error
-            *	@return			Codigo de Error
-            */
+                *	CORESIP_Init Rutina de Inicializacion del Modulo. @ref SipAgent::Init
+                *	@param	cfg		Puntero @ref CORESIP_Config a la configuracion.
+                *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error
+                *	@return			Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Init([In] CORESIP_Config info, out CORESIP_Error error);
 
         /**
-        *	CORESIP_Start Rutina de Arranque del Modulo. @ref SipAgent::Start
-        *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
-        *	@return			Codigo de Error
-        */
+            *	CORESIP_Start Rutina de Arranque del Modulo. @ref SipAgent::Start
+            *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
+            *	@return			Codigo de Error
+            */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Start(out CORESIP_Error error);
 
         /**
-        *	CORESIP_End Rutina de Parada del Modulo. @ref SipAgent::Stop
-        *	@return			Sin Retorno
-        */
+            *	CORESIP_End Rutina de Parada del Modulo. @ref SipAgent::Stop
+            *	@return			Sin Retorno
+            */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern void CORESIP_End();
 
         /**
-        *	CORESIP_Set_Ed137_version Establece la version de la ED137. El agente arranca por defecto con la ED137B
-        *	@param	ED137Radioversion	Version para radio. Vale 'B' para ED137B y 'C' para ED137C
-        *	@param	ED137Phoneversion	Version para telefonia. Vale 'B' para ED137B y 'C' para ED137C
-        *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
-        *	@return			Codigo de Error
-        */
+            *	CORESIP_Set_Ed137_version Establece la version de la ED137. El agente arranca por defecto con la ED137B
+            *	@param	ED137Radioversion	Version para radio. Vale 'B' para ED137B y 'C' para ED137C
+            *	@param	ED137Phoneversion	Version para telefonia. Vale 'B' para ED137B y 'C' para ED137C
+            *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
+            *	@return			Codigo de Error
+            */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Set_Ed137_version(char ED137Radioversion, char ED137Phoneversion, out CORESIP_Error error);
 
         /**
-        *	CORESIP_Get_Ed137_version Obtiene la version de la ED137.
-        *	@param	ED137Radioversion	Se retorna un caracter con la Version del agente para radio. Vale 'B' para ED137B y 'C' para ED137C
-        *	@param	ED137Phoneversion	Se retorna un caracter con la Version del agente para telefonia. Vale 'B' para ED137B y 'C' para ED137C
-        *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
-        *	@return			Codigo de Error
-        */
+            *	CORESIP_Get_Ed137_version Obtiene la version de la ED137.
+            *	@param	ED137Radioversion	Se retorna un caracter con la Version del agente para radio. Vale 'B' para ED137B y 'C' para ED137C
+            *	@param	ED137Phoneversion	Se retorna un caracter con la Version del agente para telefonia. Vale 'B' para ED137B y 'C' para ED137C
+            *	@param	error	Puntero a la estructura de Error. @ref CORESIP_Error
+            *	@return			Codigo de Error
+            */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Get_Ed137_version(out char ED137Radioversion, out char ED137Phoneversion, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetLogLevel Establece el nivel de LOG del Modulo. @ref SipAgent::SetLogLevel
-            *	@param	level	Nivel de LOG solicitado. Recomendable el valor 3
-            *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
-            *	@return			Codigo de Error
-            */
+                *	CORESIP_SetLogLevel Establece el nivel de LOG del Modulo. @ref SipAgent::SetLogLevel
+                *	@param	level	Nivel de LOG solicitado. Recomendable el valor 3
+                *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
+                *	@return			Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetLogLevel(uint level, out CORESIP_Error error);
 
         /**
-            * CORESIP_SetSipPort. Establece el puerto SIP
-            * @param	port	Puerto SIP
-            * @return			Codigo de Error
-            */
+                * CORESIP_SetSipPort. Establece el puerto SIP
+                * @param	port	Puerto SIP
+                * @return			Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetSipPort(int port, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetParams Establece los Parametros del Modulo. @ref SipAgent::SetParams
-            *	@param	MaxForwards	Valor de la cabecera Max-Forwards. Si vale NULL se ignora.
-            *	@param	Options_answer_code		Codigo de la respuesta a los mensajes OPTIONS (200, 404, etc.)
-            *									Si el codigo es 0, entonces no se envia respuesta
-            *									Si se pasa un NULL, este parametro se ignora.
-            *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
-            *	@return			Codigo de Error
-            */
+                *	CORESIP_SetParams Establece los Parametros del Modulo. @ref SipAgent::SetParams
+                *	@param	MaxForwards	Valor de la cabecera Max-Forwards. Si vale NULL se ignora.
+                *	@param	Options_answer_code		Codigo de la respuesta a los mensajes OPTIONS (200, 404, etc.)
+                *									Si el codigo es 0, entonces no se envia respuesta
+                *									Si se pasa un NULL, este parametro se ignora.
+                *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
+                *	@return			Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SetParams([In] int MaxForwards, [In] int Options_answer_code, out CORESIP_Error error);
+        public static extern int CORESIP_SetParams([In] IntPtr MaxForwards, [In] IntPtr Options_answer_code, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetJitterBuffer. Establece el buffer Jitter. Esta basado en el Jitter Buffer implementado en la libreria PJSIP
-            *						Si nunca se llama a esta funcion, los valores del buffer son: 
-                                adaptativo
-                                initial_prefetch = 0
-                                min_prefetch = 10 ms
-                                max_prefetch = DefaultJBufPframes * 10ms * 4 / 5;
-            * @param	adaptive	Si es distinto de cero, entonces el buffer es adaptativo, si es 0 entonces es fijo
-            * @param	initial_prefetch Prefetch del buffer de jitter. En ms. 
-            *						Si es adaptativo:	Precarga inicial aplicada al jitter buffer. 
-            *											El prefetch es una funcion del jitter buffer que se aplica cada vez que queda vacio o desde el inicio cuando initial_prefetch no es 0.
-                                                    Si el valor es mayor que 0 activara la precarga del jitter 
-                                                    retorna un frame hasta que su longitud alcanza el numero de frames especificados en este parametro.
-                                Si es fijo: The fixed delay value, in ms. Por ejemplo 40ms.
-            * @param	min_prefetch	Para buffer adaptativo (en fijo se ignora): El minimo prefetch que se aplica, in ms. Ej: 10ms
-            * @param	max_prefetch	Para buffer adaptativo (en fijo se ignora): El maximo prefetch que se aplica, in ms. Ej: 60 ms
-            * @param	discard			Para buffer adaptativo (en fijo se ignora):
-            *							Si su valor es distinto de cero, buffer descarta paquetes para minimizar el retardo progresivamente, incluso por debajo de min_prefetch.
-            *							El prefetch es una funcion del jitter buffer que se aplica cada vez que queda vacio.
-            *							Si su valor es cero entonces no se descarta ningun paquete.
-            *							En cualquiera de los casos, cuando el buffer se llena se descarta un paquete.
-            *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
-            *	@return			Codigo de Error
-            */
+                *	CORESIP_SetJitterBuffer. Establece el buffer Jitter. Esta basado en el Jitter Buffer implementado en la libreria PJSIP
+                *						Si nunca se llama a esta funcion, los valores del buffer son: 
+                                    adaptativo
+                                    initial_prefetch = 0
+                                    min_prefetch = 10 ms
+                                    max_prefetch = DefaultJBufPframes * 10ms * 4 / 5;
+                * @param	adaptive	Si es distinto de cero, entonces el buffer es adaptativo, si es 0 entonces es fijo
+                * @param	initial_prefetch Prefetch del buffer de jitter. En ms. 
+                *						Si es adaptativo:	Precarga inicial aplicada al jitter buffer. 
+                *											El prefetch es una funcion del jitter buffer que se aplica cada vez que queda vacio o desde el inicio cuando initial_prefetch no es 0.
+                                                        Si el valor es mayor que 0 activara la precarga del jitter 
+                                                        retorna un frame hasta que su longitud alcanza el numero de frames especificados en este parametro.
+                                    Si es fijo: The fixed delay value, in ms. Por ejemplo 40ms.
+                * @param	min_prefetch	Para buffer adaptativo (en fijo se ignora): El minimo prefetch que se aplica, in ms. Ej: 10ms
+                * @param	max_prefetch	Para buffer adaptativo (en fijo se ignora): El maximo prefetch que se aplica, in ms. Ej: 60 ms
+                * @param	discard			Para buffer adaptativo (en fijo se ignora):
+                *							Si su valor es distinto de cero, buffer descarta paquetes para minimizar el retardo progresivamente, incluso por debajo de min_prefetch.
+                *							El prefetch es una funcion del jitter buffer que se aplica cada vez que queda vacio.
+                *							Si su valor es cero entonces no se descarta ningun paquete.
+                *							En cualquiera de los casos, cuando el buffer se llena se descarta un paquete.
+                *	@param	error	Puntero @ref CORESIP_Error a la estructura de Error.
+                *	@return			Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetJitterBuffer(uint adaptive, uint initial_prefetch, uint min_prefetch, uint max_prefetch, uint discard, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateAccount. Registra una cuenta SIP en el Módulo. @ref SipAgent::CreateAccount
-            *	@param	acc			Puntero a la sip URI que se crea como agente.
-            *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
-            *	@param	accId		Puntero a el identificador de cuenta asociado.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateAccount. Registra una cuenta SIP en el Módulo. @ref SipAgent::CreateAccount
+                *	@param	acc			Puntero a la sip URI que se crea como agente.
+                *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
+                *	@param	accId		Puntero a el identificador de cuenta asociado.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateAccount([In] string acc, int defaultAcc, out int accId, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateAccountProxyRouting. Registra una cuenta SIP en el Módulo y los paquetes sip se enrutan por el proxy. @ref SipAgent::CreateAccount
-            *	@param	acc			Puntero a la sip URI que se crea como agente.
-            *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
-            *	@pa ram	accId		Puntero a el identificador de cuenta asociado.
-            *  @param	proxy_ip	Si es distinto de NULL. IP del proxy Donde se quieren enrutar los paquetes.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateAccountProxyRouting. Registra una cuenta SIP en el Módulo y los paquetes sip se enrutan por el proxy. @ref SipAgent::CreateAccount
+                *	@param	acc			Puntero a la sip URI que se crea como agente.
+                *	@param	defaultAcc	Marca si esta cuenta pasa a ser la Cuenta por Defecto.
+                *	@pa ram	accId		Puntero a el identificador de cuenta asociado.
+                *  @param	proxy_ip	Si es distinto de NULL. IP del proxy Donde se quieren enrutar los paquetes.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateAccountProxyRouting([In] string acc, int defaultAcc, out int accId, [In] string proxy_ip, out CORESIP_Error error);
 
         /**
-            *	CreateAccountAndRegisterInProxy. Crea una cuenta y se registra en el SIP proxy. Los paquetes sip se rutean por el SIP proxy también.
-            *	@param	acc			Puntero al Numero de Abonado (usuario). NO a la uri.
-            *	@param	defaultAcc	Si es diferente a '0', indica que se creará la cuenta por Defecto.
-            *	@param	accId		Puntero a el identificador de cuenta asociado que retorna.
-            *	@param	proxy_ip	IP del proxy.
-            *	@param	expire_seg  Tiempo en el que expira el registro en segundos.
-            *	@param	username	Si no es necesario autenticación, este parametro será NULL
-            *	@param  pass		Password. Si no es necesario autenticación, este parametro será NULL
-            *	@param  DisplayName	Display name que va antes de la sip URI, se utiliza para como nombre a mostrar
-            *	@param	isfocus		Si el valor es distinto de cero, indica que es Focus, para establecer llamadas multidestino
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CreateAccountAndRegisterInProxy. Crea una cuenta y se registra en el SIP proxy. Los paquetes sip se rutean por el SIP proxy también.
+                *	@param	acc			Puntero al Numero de Abonado (usuario). NO a la uri.
+                *	@param	defaultAcc	Si es diferente a '0', indica que se creará la cuenta por Defecto.
+                *	@param	accId		Puntero a el identificador de cuenta asociado que retorna.
+                *	@param	proxy_ip	IP del proxy.
+                *	@param	expire_seg  Tiempo en el que expira el registro en segundos.
+                *	@param	username	Si no es necesario autenticación, este parametro será NULL
+                *	@param  pass		Password. Si no es necesario autenticación, este parametro será NULL
+                *	@param  DisplayName	Display name que va antes de la sip URI, se utiliza para como nombre a mostrar
+                *	@param	isfocus		Si el valor es distinto de cero, indica que es Focus, para establecer llamadas multidestino
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateAccountAndRegisterInProxy([In] string acc, int defaultAcc, out int accId, string proxy_ip,
-                                                                uint expire_seg, string username, string pass, string displayName, int isfocus, out CORESIP_Error error);
+            uint expire_seg, string username, string pass, string displayName, int isfocus, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyAccount. Elimina una cuenta SIP del modulo. @ref SipAgent::DestroyAccount
-            *	@param	accId		Identificador de la cuenta.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyAccount. Elimina una cuenta SIP del modulo. @ref SipAgent::DestroyAccount
+                *	@param	accId		Identificador de la cuenta.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyAccount(int accId, out CORESIP_Error error);
 
         /**
-            *	CORESIP_AddSndDevice		Añade un dispositvo de audio al módulo. @ref SipAgent::AddSndDevice
-            *	@param	info		Puntero @ref CORESIP_SndDeviceInfo a la Informacion asociada al dispositivo.
-            *	@param	dev			Puntero donde se recorre el identificador del dispositivo.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_AddSndDevice		Añade un dispositvo de audio al módulo. @ref SipAgent::AddSndDevice
+                *	@param	info		Puntero @ref CORESIP_SndDeviceInfo a la Informacion asociada al dispositivo.
+                *	@param	dev			Puntero donde se recorre el identificador del dispositivo.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_AddSndDevice([In] CORESIP_SndDeviceInfo info, out int dev, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateWavPlayer		Crea un 'Reproductor' WAV. @ref SipAgent::CreateWavPlayer
-            *	@param	file		Puntero al path del fichero.
-            *	@param	loop		Marca si se reproduce una sola vez o indefinidamente.
-            *	@param	wavPlayer	Puntero donde se recorre el identificador del 'reproductor'.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateWavPlayer		Crea un 'Reproductor' WAV. @ref SipAgent::CreateWavPlayer
+                *	@param	file		Puntero al path del fichero.
+                *	@param	loop		Marca si se reproduce una sola vez o indefinidamente.
+                *	@param	wavPlayer	Puntero donde se recorre el identificador del 'reproductor'.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateWavPlayer([In] string file, int loop, out int wavPlayer, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyWavPlayer	Elimina un Reproductor WAV. @ref SipAgent::DestroyWavPlayer
-            *	@param	wavPlayer	Identificador del Reproductor.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyWavPlayer	Elimina un Reproductor WAV. @ref SipAgent::DestroyWavPlayer
+                *	@param	wavPlayer	Identificador del Reproductor.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyWavPlayer(int wavPlayer, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateWavRecorder	Crea un 'grabador' en formato WAV. @ref SipAgent::CreateWavRecorder
-            *	@param	file		Puntero al path del fichero, donde guardar el sonido.
-            *	@param	wavRecorder	Puntero donde se recoge el identificador del 'grabador'
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateWavRecorder	Crea un 'grabador' en formato WAV. @ref SipAgent::CreateWavRecorder
+                *	@param	file		Puntero al path del fichero, donde guardar el sonido.
+                *	@param	wavRecorder	Puntero donde se recoge el identificador del 'grabador'
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateWavRecorder([In] string file, out int wavPlayer, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyWavRecorder	Elimina un 'grabador' WAV. @ref SipAgent::DestroyWavRecorder
-            *	@param	wavRecorder	Identificador del Grabador.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyWavRecorder	Elimina un 'grabador' WAV. @ref SipAgent::DestroyWavRecorder
+                *	@param	wavRecorder	Identificador del Grabador.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyWavRecorder(int wavPlayer, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateRdRxPort		Crea un 'PORT' @ref RdRxPort de Recepcion Radio. @ref SipAgent::CreateRdRxPort
-            *	@param	info		Puntero @ref CORESIP_RdRxPortInfo a la informacion del puerto
-            *	@param	localIp		Puntero a la Ip Local.
-            *	@param	rdRxPort	Puntero que recoge el identificador del puerto.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateRdRxPort		Crea un 'PORT' @ref RdRxPort de Recepcion Radio. @ref SipAgent::CreateRdRxPort
+                *	@param	info		Puntero @ref CORESIP_RdRxPortInfo a la informacion del puerto
+                *	@param	localIp		Puntero a la Ip Local.
+                *	@param	rdRxPort	Puntero que recoge el identificador del puerto.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateRdRxPort([In] CORESIP_RdRxPortInfo info, string localIp, out int rdRxPort, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyRdRxPort		Elimina un Puerto @ref RdRxPort. @ref SipAgent::DestroyRdRxPort
-            *	@param	rdRxPort	Identificador del Puerto.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyRdRxPort		Elimina un Puerto @ref RdRxPort. @ref SipAgent::DestroyRdRxPort
+                *	@param	rdRxPort	Identificador del Puerto.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyRdRxPort(int rdRxPort, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CreateSndRxPort.	Crea un puerto @ref SoundRxPort. @ref SipAgent::CreateSndRxPort
-            *	@param	id			Puntero al nombre del puerto.
-            *	@param	sndRxPort	Puntero que recoge el identificador del puerto.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateSndRxPort.	Crea un puerto @ref SoundRxPort. @ref SipAgent::CreateSndRxPort
+                *	@param	id			Puntero al nombre del puerto.
+                *	@param	sndRxPort	Puntero que recoge el identificador del puerto.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateSndRxPort(string id, out int sndRxPort, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroySndRxPort	Eliminar un puerto @ref SoundRxPort. 
-            *	@param	sndRxPort	Identificador del puerto.
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroySndRxPort	Eliminar un puerto @ref SoundRxPort. 
+                *	@param	sndRxPort	Identificador del puerto.
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroySndRxPort(int sndRxPort, out CORESIP_Error error);
 
         /**
-            *	CORESIP_BridgeLink	Configura un enlace de conferencia. Conecta y desconecta puertos.
-            *	@param	src			Tipo e Identificador de Puerto Origen. @ref CORESIP_ID_TYPE_MASK, @ref CORESIP_ID_MASK
-            *	@param	dst			Tipo e Identificador de Puerto Destino. @ref CORESIP_ID_TYPE_MASK, @ref CORESIP_ID_MASK
-            *	@param	on			Indica Conexión o Desconexión.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_BridgeLink	Configura un enlace de conferencia. Conecta y desconecta puertos.
+                *	@param	src			Tipo e Identificador de Puerto Origen. @ref CORESIP_ID_TYPE_MASK, @ref CORESIP_ID_MASK
+                *	@param	dst			Tipo e Identificador de Puerto Destino. @ref CORESIP_ID_TYPE_MASK, @ref CORESIP_ID_MASK
+                *	@param	on			Indica Conexión o Desconexión.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_BridgeLink(int src, int dst, int on, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SendToRemote		Configura El puerto de Sonido apuntado para los envios UNICAST de Audio. @ref SipAgent::SendToRemote
-            *	@param	dev			...
-            *	@param	on			...
-            *	@param	id			Puntero a ...
-            *	@param	ip			Puntero a ...
-            *	@param	port		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SendToRemote		Configura El puerto de Sonido apuntado para los envios UNICAST de Audio. @ref SipAgent::SendToRemote
+                *	@param	dev			...
+                *	@param	on			...
+                *	@param	id			Puntero a ...
+                *	@param	ip			Puntero a ...
+                *	@param	port		...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendToRemote(int dev, int on, string id, string ip, uint port, out CORESIP_Error error);
 
         /**
-            *	CORESIP_ReceiveFromRemote
-            *	@param	localIp		Puntero a ...
-            *	@param	mcastIp		Puntero a ...
-            *	@param	mcastPort	...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_ReceiveFromRemote
+                *	@param	localIp		Puntero a ...
+                *	@param	mcastIp		Puntero a ...
+                *	@param	mcastPort	...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_ReceiveFromRemote(string localIp, string mcastIp, uint mcastPort, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetVolume
-            *	@param	id			...
-            *	@param	volume		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SetVolume
+                *	@param	id			...
+                *	@param	volume		Es el porcentaje del nivel maximo para cada dispoisitivo, segun winaudio.ini
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetVolume(int id, int volume, out CORESIP_Error error);
 
         /**
-            *	CORESIP_GetVolume
-            *	@param	id			...
-            *	@param	volume		Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_GetVolume
+                *	@param	id			...
+                *	@param	volume		Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GetVolume(int dev, out int volume, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallMake
-            *	@param	info		Puntero a la informacion de llamada
-            *	@param	outInfo
-            *	@param	call		Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallMake
+                *	@param	info		Puntero a la informacion de llamada
+                *	@param	outInfo
+                *	@param	call		Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallMake([In] CORESIP_CallInfo info, [In] CORESIP_CallOutInfo outInfo, out int call, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallHangup
-            *	@param	call		Identificador de Llamada
-            *	@param	code		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallHangup
+                *	@param	call		Identificador de Llamada
+                *	@param	code		...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallHangup(int call, int code, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallAnswer
-            *	@param	call		Identificador de Llamada
-            *	@param	code		...
-            *	@param	addToConference		...
-            *	@param	reason_code. Es el codigo del campo cause de la cabecera reason. En caso radio y el codigo esta entre 2000 y 2099 reason_text podria ser NULL porque se pone internamente.
-            *						En el caso de que no se utilice este parametro entonces su valor debera ser cero
-            *	@param	reason_text. Es el texto del campo text de la cabecera Reason. En caso de ser NULL no se incluira el campo text.
-            *						Debe de ser un string acabado con el caracter cero. 
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallAnswer
+                *	@param	call		Identificador de Llamada
+                *	@param	code		...
+                *	@param	addToConference		...
+                *	@param	reason_code. Es el codigo del campo cause de la cabecera reason. En caso radio y el codigo esta entre 2000 y 2099 reason_text podria ser NULL porque se pone internamente.
+                *						En el caso de que no se utilice este parametro entonces su valor debera ser cero
+                *	@param	reason_text. Es el texto del campo text de la cabecera Reason. En caso de ser NULL no se incluira el campo text.
+                *						Debe de ser un string acabado con el caracter cero. 
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallAnswer(int call, int code, int addToConference, int reason_code, string reason_text, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallMovedTemporallyAnswer
-            *	@param	call		Identificador de Llamada
-            *	@param	dst			Uri del usuario al que la llamada es desviada
-            *	@param	reason		Es la razon del desvio. Posibles valores "unconditional", "user-busy", etc.
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallMovedTemporallyAnswer
+                *	@param	call		Identificador de Llamada
+                *	@param	dst			Uri del usuario al que la llamada es desviada
+                *	@param	reason		Es la razon del desvio. Posibles valores "unconditional", "user-busy", etc.
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallMovedTemporallyAnswer(int call, [In] string dst, [In] string reason, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallProccessRedirect
-            *	Esta funcion debe llamarse despues de recibirse la callback MovedTemporallyCb para 
-            *	aceptar o rechazar la redireccion de la llamada.
-            *	@param	call		Identificador de Llamada
-            *	@param  dstUri		Nueva request uri hacia donde se desvia la llamada. Terminado en '\0', Si se rechaza entonces este parametro se ignora.
-            *	@param	op			Opcion (aceptar o rechazar)
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallProccessRedirect
+                *	Esta funcion debe llamarse despues de recibirse la callback MovedTemporallyCb para 
+                *	aceptar o rechazar la redireccion de la llamada.
+                *	@param	call		Identificador de Llamada
+                *	@param  dstUri		Nueva request uri hacia donde se desvia la llamada. Terminado en '\0', Si se rechaza entonces este parametro se ignora.
+                *	@param	op			Opcion (aceptar o rechazar)
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallProccessRedirect(int call, string dstUri, CORESIP_REDIRECT_OP op, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallHold
-            *	@param	call		Identificador de llamada
-            *	@param	hold		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallHold
+                *	@param	call		Identificador de llamada
+                *	@param	hold		...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallHold(int call, int hold, out CORESIP_Error error);
 
         /**
-            *	CallReinvite
-            *	@param	call		Identificador de llamada
-            *	@param	error		Puntero a la Estructura de error
-            *	@param	CallType_SDP	9 couplig, 7 Radio-Rxonly, 5 Radio-TxRx, 6 Radio-Idle
-            *	@param	TxRx_SDP		4 Rx, 8 Tx, 0 TxRx, 22 Vacio
-            *  @param	etm_vcs_bss_methods	Para ETM, como VCS, string con los literales de los metodos BSS separados por comas. El string debe terminar caracter '\0'. Si vale NULL se ignora
-            *	@return				Codigo de Error
-            */
+                *	CallReinvite
+                *	@param	call		Identificador de llamada
+                *	@param	error		Puntero a la Estructura de error
+                *	@param	CallType_SDP	9 couplig, 7 Radio-Rxonly, 5 Radio-TxRx, 6 Radio-Idle
+                *	@param	TxRx_SDP		4 Rx, 8 Tx, 0 TxRx, 22 Vacio
+                *   @param	etm_vcs_bss_methods	Para ETM, como VCS, string con los literales de los metodos BSS separados por comas. El string debe terminar caracter '\0'. Si vale NULL se ignora
+                *   @param	ForceSDPSendRecvAttr	Sirve para forzar el valor del atributo send-recv en el SDP
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_CallReinvite(int call, out CORESIP_Error error, int CallType_SDP, int TxRx_SDP, string etm_vcs_bss_methods);
+        public static extern int CORESIP_CallReinvite(int call, out CORESIP_Error error, int CallType_SDP, int TxRx_SDP, string etm_vcs_bss_methods, CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr);
 
         /**
-            *	CORESIP_CallTransfer
-            *	@param	call		Identificador de llamada
-            *	@param	dstCall		...
-            *	@param	dst			Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallTransfer
+                *	@param	call		Identificador de llamada
+                *	@param	dstCall		...
+                *	@param	dst			Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallTransfer(int call, int dstCall, [In] string dst, [In] string displayName, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallPtt
-            *	@param	call		Identificador de llamada
-            *	@param	info		Puntero a la Informacion asociada al PTT
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallPtt
+                *	@param	call		Identificador de llamada
+                *	@param	info		Puntero a la Informacion asociada al PTT
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallPtt(int call, [In] CORESIP_PttInfo info, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallPtt_Delayed. Envía PTT retardado
-            *	@param	call		Identificador de llamada
-            *	@param	info		Puntero a la Informacion asociada al PTT
-            *	@param	delay_ms	Tiempo del retardo en ms
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallPtt_Delayed. Envía PTT retardado
+                *	@param	call		Identificador de llamada
+                *	@param	info		Puntero a la Informacion asociada al PTT
+                *	@param	delay_ms	Tiempo del retardo en ms
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallPtt_Delayed(int call, [In] CORESIP_PttInfo info, uint delay_ms, out CORESIP_Error error);
 
         /**
-	     *	CORESIP_GetRdQidx
-	     *	@param	call		Identificador de llamada
-	     *	@param	Qidx		Qidx del recurso de radio receptor que se retorna. Sera el manejado por el BSS.
-	     *	@param	error		Puntero a la Estructura de error
-	     *	@return				Codigo de Error
-	     */
+                *	CORESIP_GetRdQidx
+                *	@param	call		Identificador de llamada
+                *	@param	Qidx		Qidx del recurso de radio receptor que se retorna. Sera el manejado por el BSS.
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GetRdQidx(int call, ref int Qidx, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallConference
-            *	@param	call		Identificador de llamada
-            *	@param	conf		Identificador de conferencia
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallConference
+                *	@param	call		Identificador de llamada
+                *	@param	conf		Identificador de conferencia
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallConference(int call, int conf, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallSendConfInfo
-            *	@param	call		Identificador de llamada
-            *	@param	info		Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallSendConfInfo
+                *	@param	call		Identificador de llamada
+                *	@param	info		Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallSendConfInfo(int call, [In] CORESIP_ConfInfo info, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SendConfInfoFromAcc
-            *	@param	accId		Identificador del account del agente
-            *	@param	info		Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SendConfInfoFromAcc
+                *	@param	accId		Identificador del account del agente
+                *	@param	info		Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendConfInfoFromAcc(int accId, [In] CORESIP_ConfInfo info, out CORESIP_Error error);
 
         /**
-            *	CORESIP_CallSendInfo. envia paquete SIP INFO
-            *	@param	call		Identificador de llamada
-            *	@param	info		Puntero a ...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CallSendInfo. envia paquete SIP INFO
+                *	@param	call		Identificador de llamada
+                *	@param	info		Puntero a ...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CallSendInfo(int call, [In] string info, out CORESIP_Error error);
 
         /**
-            *	CORESIP_TransferAnswer. Envia la respuesta al paquete SIP REFER utilizado para la transferencia
-            *	@param	tsxKey		Puntero a ...
-            *	@param	txData		Puntero a ...
-            *	@param	evSub		Puntero a ...
-            *	@param	code		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_TransferAnswer. Envia la respuesta al paquete SIP REFER utilizado para la transferencia
+                *	@param	tsxKey		Puntero a ...
+                *	@param	txData		Puntero a ...
+                *	@param	evSub		Puntero a ...
+                *	@param	code		...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_TransferAnswer(string tsxKey, IntPtr txData, IntPtr evSub, int code, out CORESIP_Error error);
 
         /**
-            *	CORESIP_TransferNotify. Envia el SIP NOTIFY que se utiliza en las transferencias de llamadas
-            *	@param	evSub		Puntero a ...
-            *	@param	code		...
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_TransferNotify. Envia el SIP NOTIFY que se utiliza en las transferencias de llamadas
+                *	@param	evSub		Puntero a ...
+                *	@param	code		...
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_TransferNotify(IntPtr evSub, int code, out CORESIP_Error error);
 
         /**
-            *	SendOptionsMsg
-            *  Esta función no envia OPTIONS a traves del proxy
-            *	@param	dst			Puntero a uri donde enviar OPTIONS
-            *  @param	callid		callid que retorna.
-            *  @param	isRadio		Si tiene valor distinto de cero el agente se identifica como radio. Si es cero, como telefonia.
-            *						Sirve principalmente para poner radio.01 o phone.01 en la cabecera WG67-version
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	SendOptionsMsg
+                *  Esta función no envia OPTIONS a traves del proxy
+                *	@param	dst			Puntero a uri donde enviar OPTIONS
+                *  @param	callid		callid que retorna.
+                *  @param	isRadio		Si tiene valor distinto de cero el agente se identifica como radio. Si es cero, como telefonia.
+                *						Sirve principalmente para poner radio.01 o phone.01 en la cabecera WG67-version
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendOptionsMsg([In] string dst, StringBuilder callid, int isRadio, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SendOptionsMsgProxy
-            *  Esta función envia OPTIONS a traves del proxy
-            *	@param	dst			Puntero a uri donde enviar OPTIONS
-            *  @param	callid		callid que retorna.
-            *  @param	isRadio		Si tiene valor distinto de cero el agente se identifica como radio. Si es cero, como telefonia.
-            *						Sirve principalmente para poner radio.01 o phone.01 en la cabecera WG67-version
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SendOptionsMsgProxy
+                *  Esta función envia OPTIONS a traves del proxy
+                *	@param	dst			Puntero a uri donde enviar OPTIONS
+                *  @param	callid		callid que retorna.
+                *  @param	isRadio		Si tiene valor distinto de cero el agente se identifica como radio. Si es cero, como telefonia.
+                *						Sirve principalmente para poner radio.01 o phone.01 en la cabecera WG67-version
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendOptionsMsgProxy([In] string dst, StringBuilder callid, int isRadio, out CORESIP_Error error);
         //Envía OPTIONS pasando por el proxy
 
         /**
-            * SendOptionsCFWD.	...
-            * Envia mensaje OPTIONS necesario para la negociacion Call Forward
-            * @param	accId				Account de la Coresip que utilizamos.
-            * @param	dst					Uri a la que se envia OPTIONS
-            * @param	cfwr_options_type	Tipo de OPTIONS para la negociacion. Es del tipo CORESIP_CFWR_OPT_TYPE
-            * @param	body				Contenido del body (XML). Acabado en '\0'
-            * @param	callid				callid que se retorna, acabado en '\0'.
-            * @param	by_proxy			TRUE si queremos que se envie a través del proxy. Agregara cabecera route
-            * @param	error		Puntero a la Estructura de error
-            * @return				Codigo de Error
-            */
+                * SendOptionsCFWD.	...
+                * Envia mensaje OPTIONS necesario para la negociacion Call Forward
+                * @param	accId				Account de la Coresip que utilizamos.
+                * @param	dst					Uri a la que se envia OPTIONS
+                * @param	cfwr_options_type	Tipo de OPTIONS para la negociacion. Es del tipo CORESIP_CFWR_OPT_TYPE
+                * @param	body				Contenido del body (XML). Acabado en '\0'
+                * @param	callid				callid que se retorna, acabado en '\0'.
+                * @param	by_proxy			TRUE si queremos que se envie a través del proxy. Agregara cabecera route
+                * @param	error		Puntero a la Estructura de error
+                * @return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendOptionsCFWD(int accId, [In] string dst, CORESIP_CFWR_OPT_TYPE cfwr_options_type, [In] string body, StringBuilder callid, bool by_proxy, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendResponseCFWD.	...
-            * Envia la respuesta al options utilizado para la negociacion de call forward
-            * @param	st_code				Code de la respuesta. Si no es 200 entonces se ignora el parametro del body
-            * @param	body				Contenido del body (XML). Acabado en '\0'
-            * @param	hresp				Manejador necesario para enviar la respuesta
-            * @param	error		Puntero a la Estructura de error
-            * @return				Codigo de Error
-            */
+                * CORESIP_SendResponseCFWD.	...
+                * Envia la respuesta al options utilizado para la negociacion de call forward
+                * @param	st_code				Code de la respuesta. Si no es 200 entonces se ignora el parametro del body
+                * @param	body				Contenido del body (XML). Acabado en '\0'
+                * @param	hresp				Manejador necesario para enviar la respuesta
+                * @param	error		Puntero a la Estructura de error
+                * @return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendResponseCFWD(int st_code, [In] string body, uint hresp, out CORESIP_Error error);
 
@@ -1555,384 +1590,389 @@ namespace U5ki.Infrastructure
 
         /* GRABACION VOIP START */
         /**
-            *	CORESIP_RdPttEvent. Se llama cuando hay un evento de PTT en el HMI. Sirve sobretodo para enviar los metadata de grabacion VoIP en el puesto
-            *  @param  on			true=ON/false=OFF
-            *	@param	freqId		Identificador de la frecuencia
-            *  @param  dev			Indice del array _SndPorts. Es dispositivo (microfono) fuente del audio.
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_RdPttEvent. Se llama cuando hay un evento de PTT en el HMI. Sirve sobretodo para enviar los metadata de grabacion VoIP en el puesto
+                *  @param  on			true=ON/false=OFF
+                *	@param	freqId		Identificador de la frecuencia
+                *  @param  dev			Indice del array _SndPorts. Es dispositivo (microfono) fuente del audio.
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_RdPttEvent(bool on, [In] string freqId, int dev, out CORESIP_Error error, CORESIP_PttType priority);
 
         /**
-            *	CORESIP_RdSquEvent. Se llama cuando hay un evento de Squelch en el HMI. Sirve sobretodo para enviar los metadata de grabacion VoIP en el puesto
-            *  @param  on			true=ON/false=OFF
-            *	@param	freqId		Identificador de la frecuencia
-            *	@param	resourceId  Identificador del recurso seleccionado en el bss
-            *	@param	bssMethod	Método bss
-            *	@param  bssQidx		Indice de calidad
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_RdSquEvent. Se llama cuando hay un evento de Squelch en el HMI. Sirve sobretodo para enviar los metadata de grabacion VoIP en el puesto
+                *  @param  on			true=ON/false=OFF
+                *	@param	freqId		Identificador de la frecuencia
+                *	@param	resourceId  Identificador del recurso seleccionado en el bss
+                *	@param	bssMethod	Método bss
+                *	@param  bssQidx		Indice de calidad
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_RdSquEvent(bool on, [In] string freqId, [In] string resourceId, [In] string bssMethod, uint bssQidx, out CORESIP_Error error);
 
         //Metodo para enviar un comando al grabador
         /**
-            *	CORESIP_RecorderCmd. Se pasan comandos para realizar acciones sobre el grabador VoIP
-            *  @param  cmd			Comando
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_RecorderCmd. Se pasan comandos para realizar acciones sobre el grabador VoIP
+                *  @param  cmd			Comando
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_RecorderCmd(CORESIP_RecCmdType cmd, out CORESIP_Error error);
         /* GRABACION VOIP END */
 
         /*Funciones para gestion de presencia por subscripcion al evento de presencia*/
         /**
-            *	CORESIP_CreatePresenceSubscription. Crea una subscripcion por evento de presencia
-            *  @param  dest_uri.	Uri del destino al que nos subscribimos
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreatePresenceSubscription. Crea una subscripcion por evento de presencia
+                *  @param  dest_uri.	Uri del destino al que nos subscribimos
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreatePresenceSubscription(string dest_uri, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyPresenceSubscription. destruye una subscripcion por evento de presencia
-            *  @param  dest_uri.	Uri del destino al que nos desuscribimos
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyPresenceSubscription. destruye una subscripcion por evento de presencia
+                *  @param  dest_uri.	Uri del destino al que nos desuscribimos
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyPresenceSubscription(string dest_uri, out CORESIP_Error error);
 
         /*Funciones para gestion de subscripcion al evento de conferencia*/
         /**
-            *	CORESIP_CreateConferenceSubscription. Crea una subscripcion por evento de conferencia
-            *	@param	accId		Identificador del account.
-            *  @param  dest_uri.	Uri del destino a monitorizar
-            *  @param	by_proxy.   Si true entonces el subscribe se envia a traves del proxy
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateConferenceSubscription. Crea una subscripcion por evento de conferencia
+                *	@param	accId		Identificador del account.
+                *  @param  dest_uri.	Uri del destino a monitorizar
+                *  @param	by_proxy.   Si true entonces el subscribe se envia a traves del proxy
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateConferenceSubscription(int accId, string dest_uri, bool byProxy, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyConferenceSubscription. Destruye una subscripcion por evento de presencia
-            *  @param  dest_uri.	Uri del destino a monitorizar
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyConferenceSubscription. Destruye una subscripcion por evento de presencia
+                *  @param  dest_uri.	Uri del destino a monitorizar
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyConferenceSubscription(string dest_uri, out CORESIP_Error error);
 
         /*Funciones para gestion de subscripcion al evento de dialogo*/
         /**
-            *	CORESIP_CreateDialogSubscription. Crea una subscripcion por evento de dialogo
-            *	@param	accId		Identificador del account.
-            *  @param  dest_uri.	Uri del destino a monitorizar
-            *  @param	by_proxy.   Si true entonces el subscribe se envia a traves del proxy
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_CreateDialogSubscription. Crea una subscripcion por evento de dialogo
+                *	@param	accId		Identificador del account.
+                *  @param  dest_uri.	Uri del destino a monitorizar
+                *  @param	by_proxy.   Si true entonces el subscribe se envia a traves del proxy
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_CreateDialogSubscription(int accId, string dest_uri, bool byProxy, out CORESIP_Error error);
 
         /**
-            *	CORESIP_DestroyDialogSubscription. Destruye una subscripcion por evento de dialogo
-            *  @param  dest_uri.	Uri del destino a monitorizar
-            *	@param	error		Puntero a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_DestroyDialogSubscription. Destruye una subscripcion por evento de dialogo
+                *  @param  dest_uri.	Uri del destino a monitorizar
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_DestroyDialogSubscription(string dest_uri, out CORESIP_Error error);
 
         /**
-	     *	CORESIP_SendWG67Subscription. Crea y envia una subscripcion por evento WG67KE-IN. 
-	     *	Una vez creada la suscripcion se puede enviar un nuevo request de la susbcripcion llamando a esta funcion, la suscripcion se identifica con:
-			    acc_id + dest_uri. 
-	     *	@param	accId		Identificador del account. Si es -1, se utiliza la default
-	     *  @param  dest_uri.	Uri del destino GRS al que nos subscribimos. Si callId es disinto de -1 entonces este parametro se ignora y puede ser NULL.
-	     *	@param	expires.	Valor del expires. Si vale -1 entonces toma el valor por defecto, si vale 0 entonces se terminará la subscripcion
-	     *	@param	noRefresh	Si es 1 entonces la suscripcion no se refresca automaticamente a partir del momento en que se envia. Si es 0 entonces si refresca
-	     *	@param	error		Puntero a la Estructura de error
-	     *	@return				CORESIP_OK si no hay error.
-	     */
+                *	CORESIP_SendWG67Subscription. Crea y envia una subscripcion por evento WG67KE-IN. 
+                *	Una vez creada la suscripcion se puede enviar un nuevo request de la susbcripcion llamando a esta funcion, la suscripcion se identifica con:
+                    acc_id + dest_uri. 
+                *	@param	accId		Identificador del account. Si es -1, se utiliza la default
+                *  @param  dest_uri.	Uri del destino GRS al que nos subscribimos. Si callId es disinto de -1 entonces este parametro se ignora y puede ser NULL.
+                *	@param	expires.	Valor del expires. Si vale -1 entonces toma el valor por defecto, si vale 0 entonces se terminará la subscripcion
+                *	@param	noRefresh	Si es 1 entonces la suscripcion no se refresca automaticamente a partir del momento en que se envia. Si es 0 entonces si refresca
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				CORESIP_OK si no hay error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendWG67Subscription(int accId, string dest_uri, int expires, int noRefresh, out CORESIP_Error error);
 
         /**
-	     *	CORESIP_SetWG67SubscriptionParameters. Modifica parametros de la subscripcion por evento WG67KE-IN. 
-	     *						Esta funcion no puede llamarse si previamente no se ha llamado a CORESIP_SendWG67Subscription
-	     *	Una vez creada la suscripcion se puede enviar un nuevo request de la susbcripcion llamando a esta funcion, la suscripcion se identifica con:
-			    acc_id + dest_uri. 
-	     *	@param	accId		Identificador del account. Si es -1, se utiliza la default
-	     *  @param  dest_uri.	Uri del destino GRS al que nos subscribimos. 
-	     *						Debe ser el mismo parametro que se utilizo con CORESIP_SendWG67Subscription
-	     *	@param	noRefresh	Si es 1 entonces la suscripcion no se refresca automaticamente. Si es 0 entonces si refresca. Si es -1 entonces no tiene efecto
-	     *	@param	error		Puntero a la Estructura de error
-	     *	@return				CORESIP_OK si no hay error.
-	     */
+                *	CORESIP_SetWG67SubscriptionParameters. Modifica parametros de la subscripcion por evento WG67KE-IN. 
+                *						Esta funcion no puede llamarse si previamente no se ha llamado a CORESIP_SendWG67Subscription
+                *	Una vez creada la suscripcion se puede enviar un nuevo request de la susbcripcion llamando a esta funcion, la suscripcion se identifica con:
+                    acc_id + dest_uri. 
+                *	@param	accId		Identificador del account. Si es -1, se utiliza la default
+                *  @param  dest_uri.	Uri del destino GRS al que nos subscribimos. 
+                *						Debe ser el mismo parametro que se utilizo con CORESIP_SendWG67Subscription
+                *	@param	noRefresh	Si es 1 entonces la suscripcion no se refresca automaticamente. Si es 0 entonces si refresca. Si es -1 entonces no tiene efecto
+                *	@param	error		Puntero a la Estructura de error
+                *	@return				CORESIP_OK si no hay error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetWG67SubscriptionParameters(int accId, string dest_uri, int noRefresh, out CORESIP_Error error);
 
         /**
-	     *	CORESIP_Set_WG67_Notifier_Parameters. Configura algunos parametros del WG67 notifier
-	     *  @param	notify_enabled. Si es 1 entonces los Notify son aceptados, 0 son rechazados, con -1 este parametro se ignora.
-	     *	@param	manual_notify. Si es 1 entonces las notificaciones son manuales, 0 automatico, -1 no cambia. Si no se llama a esta función, por defecto los notify se envía automáticamente
-	     *  @param  minimum_expires. Tiempo minimo de expires soportado. Si el valor es -1, entonces no tiene efecto. Si el subscriptor envia un valor menor entonces se rechaza
- 			    y hay ue enviar cabecera con el minimo expires soportado. El valor mínimo de este parámetro es de 30.
-	     *  @param  maximum_expires. Tiempo maximo de expires soportado. Si el valor es -1, entonces no tiene efecto. Si el subscriptor envia un valor mayor al valor de este 
-			    parametro entonces en el 200 OK envia este valor.
-	     *	@param error. Si hay error contiene la descripcion
-	     *	@return	CORESIP_OK si no hay error.
-	     */
+                *	CORESIP_Set_WG67_Notifier_Parameters. Configura algunos parametros del WG67 notifier
+                *  @param	notify_enabled. Si es 1 entonces los Notify son aceptados, 0 son rechazados, con -1 este parametro se ignora.
+                *	@param	manual_notify. Si es 1 entonces las notificaciones son manuales, 0 automatico, -1 no cambia. Si no se llama a esta función, por defecto los notify se envía automáticamente
+                *  @param  minimum_expires. Tiempo minimo de expires soportado. Si el valor es -1, entonces no tiene efecto. Si el subscriptor envia un valor menor entonces se rechaza
+                    y hay que enviar cabecera con el minimo expires soportado. El valor mínimo de este parámetro es de 30.
+                *  @param  maximum_expires. Tiempo maximo de expires soportado. Si el valor es -1, entonces no tiene efecto. Si el subscriptor envia un valor mayor al valor de este 
+                    parametro entonces en el 200 OK envia este valor.
+                *	@param error. Si hay error contiene la descripcion
+                *	@return	CORESIP_OK si no hay error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Set_WG67_Notifier_Parameters(int notify_enabled, int manual, int minimum_expires, int maximum_expires, out CORESIP_Error error);
 
         /**
-            * CORESIP_Set_WG67_notify_status: Establece el estado de la suscripcion y las sesiones ficticias, ademas de enviar el Notify correspondiente.
-            * Esta funcion puede ser llamada en la callback WG67SubscriptionReceivedCb para establecer el estado inicial de la suscripcion
-            * La función CORESIP_Set_WG67_notify_status establece el estado de una subscripción (si el parámetro subscriberUri no es NULL), o de todas
-            las subscripciones activas o futuras (si el parámetro subscriberUri es NULL).
-            Es decir, que si se quiere establecer las sesiones y estados ficticios para todas las subscripciones activas o las futuras,
-            se llamaría a esta función con el parámetro subscriberUri a NULL. En este caso, para las suscripciones activas se envía en ese momento un 
-            NOTIFY. Y para las nuevas subscripciones el primer NOTIFY ya lleva las sesiones configuradas con esta función.
+                * CORESIP_Set_WG67_notify_status: Establece el estado de la suscripcion y las sesiones ficticias, ademas de enviar el Notify correspondiente.
+                * Esta funcion puede ser llamada en la callback WG67SubscriptionReceivedCb para establecer el estado inicial de la suscripcion
+                * La función CORESIP_Set_WG67_notify_status establece el estado de una subscripción (si el parámetro subscriberUri no es NULL), o de todas
+                las subscripciones activas o futuras (si el parámetro subscriberUri es NULL).
+                Es decir, que si se quiere establecer las sesiones y estados ficticios para todas las subscripciones activas o las futuras,
+                se llamaría a esta función con el parámetro subscriberUri a NULL. En este caso, para las suscripciones activas se envía en ese momento un 
+                NOTIFY. Y para las nuevas subscripciones el primer NOTIFY ya lleva las sesiones configuradas con esta función.
 
-            En el caso de que el parametro subscriberUri no sea NULL, afecta solo al subscriptor de esa uri. Y esta funcion se podria llamar dentro 
-            de la callback WG67SubscriptionReceivedCb para que el primero notify de esa subscripción concreta ya lleva las funciones ficticias.
-            Y si se llama cuando la suscripción ya está activa entonces se envía un NOTIFY.
-            * @param	accId		Identificador del account. Si es -1, se utiliza la default
-            * @param	subscriberUri.	Uri del suscriptor recibido en la callback WG67SubscriptionReceivedCb. Si es NULL establece el estado y envia notify a todos los subscriptores.
-            * @param	subsState. Establece el estado de la subscripcion. Puede valer NULL si no queremos modificar el estado.
-            *						Si el campo subscription_state de la estructura tiene longitud cero, entonces tampoco se modifica el estado.
-            * @param	wG67Notify_Body. Configura el body (las sesiones activas) que se envia en los NOTIFY. Puede ser NULL si no queremos modificar la lista de sesiones
-            *	@param error. Si hay error contiene la descripcion
-            *	@return	CORESIP_OK si no hay error.
-            */
+                En el caso de que el parametro subscriberUri no sea NULL, afecta solo al subscriptor de esa uri. Y esta funcion se podria llamar dentro 
+                de la callback WG67SubscriptionReceivedCb para que el primero notify de esa subscripción concreta ya lleva las funciones ficticias.
+                Y si se llama cuando la suscripción ya está activa entonces se envía un NOTIFY.
+                * @param	accId		Identificador del account. Si es -1, se utiliza la default
+                * @param	subscriberUri.	Uri del suscriptor recibido en la callback WG67SubscriptionReceivedCb. Si es NULL establece el estado y envia notify a todos los subscriptores.
+                * @param	subsState. Establece el estado de la subscripcion. Puede valer NULL si no queremos modificar el estado.
+                *						Si el campo subscription_state de la estructura tiene longitud cero, entonces tampoco se modifica el estado.
+                * @param	wG67Notify_Body. Configura el body (las sesiones activas) que se envia en los NOTIFY. Puede ser NULL si no queremos modificar la lista de sesiones
+                *	@param error. Si hay error contiene la descripcion
+                *	@return	CORESIP_OK si no hay error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Set_WG67_notify_status(int accId, string subscriberUri, [In] CORESIP_WG67Notify_SubscriptionState_Config subsState,
             [In] CORESIP_WG67Notify_Body_Config wG67Notify_Body, out CORESIP_Error error);
 
         /**
-            * CORESIP_Get_GRS_WG67SubscriptionsList: Retorna las subscripciones al evento WG67 en el GRS
-            * @param	accId.	Identificador del account. Si es -1, se utiliza la default
-            * @param	nSubscriptions. Retorna el número de subscripciones.
-            * @param   WG67Subscriptions. Se retorna un puntero a un array de elementos del tipo CORESIP_WG67_Subscription_Info. Si es NULL entonces no hay subscripciones	     *          
-            * OJO! Esta funcion esta sin probar en C#, pego aqui la funcion prototipo de C/C++ 
-            * CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscriptions, CORESIP_WG67_Subscription_Info* WG67Subscriptions[], CORESIP_Error* error);
-            * @return	CORESIP_OK si no hay error.
-            */
+                * CORESIP_Get_GRS_WG67SubscriptionsList: Retorna las subscripciones al evento WG67 en el GRS
+                * @param	accId.	Identificador del account. Si es -1, se utiliza la default
+                * @param	nSubscriptions. Retorna el número de subscripciones.
+                * @param   WG67Subscriptions. Se retorna un puntero a un array de elementos del tipo CORESIP_WG67_Subscription_Info. Si es NULL entonces no hay subscripciones	     *          
+                * OJO! Esta funcion esta sin probar en C#, pego aqui la funcion prototipo de C/C++ 
+                * CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscriptions, CORESIP_WG67_Subscription_Info* WG67Subscriptions[], CORESIP_Error* error);
+                * @return	CORESIP_OK si no hay error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         //static extern int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, out int nSubscriptions, [Out] CORESIP_WG67_Subscription_Info[] WG67Subscriptions, out CORESIP_Error error);
         public static extern int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, out int nSubscriptions, ref IntPtr WG67Subscriptions, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendInstantMessage. Envia un mensaje instantaneo
-            *
-            * @param	acc_id		Account ID to be used to send the request.
-            * @param	dest_uri	Uri del destino del mensaje. Acabado en 0.
-            * @param	text		Texto plano a enviar. Acabado en 0
-            * @param	by_proxy	Si es true el mensaje se envia por el proxy
-            * @return	Codigo de Error
-            *
-            */
+                * CORESIP_SendInstantMessage. Envia un mensaje instantaneo
+                *
+                * @param	acc_id		Account ID to be used to send the request.
+                * @param	dest_uri	Uri del destino del mensaje. Acabado en 0.
+                * @param	text		Texto plano a enviar. Acabado en 0
+                * @param	by_proxy	Si es true el mensaje se envia por el proxy
+                * @return	Codigo de Error
+                *
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendInstantMessage(int acc_id, string dest_uri, string text, bool by_proxy, out CORESIP_Error error);
 
         /**
-            * CORESIP_EchoCancellerLCMic.	...
-            * Activa/desactiva cancelador de eco altavoz LC y Microfonos. Sirve para el modo manos libres 
-            * Por defecto esta desactivado en la coresip
-            * @param	on						true - activa / false - desactiva
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_EchoCancellerLCMic.	...
+                * Activa/desactiva cancelador de eco altavoz LC y Microfonos. Sirve para el modo manos libres 
+                * Por defecto esta desactivado en la coresip
+                * @param	on						true - activa / false - desactiva
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_EchoCancellerLCMic(bool on, out CORESIP_Error error);
 
         /**
-	     *	CORESIP_SetTipoGRS. Configura el tipo de GRS. El ETM lo llama cuando crea un account tipo GRS.
-	     *	@param	accId		Identificador de la cuenta.
-	     *	@param	FlagGRS	Tipo de GRS.
-	     *	@param	on			Indicamos que este account es de una radio GRS
-	     *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-	     *	@return				Codigo de Error
-	     */
+                *	CORESIP_SetTipoGRS. Configura el tipo de GRS. El ETM lo llama cuando crea un account tipo GRS.
+                *	@param	accId		Identificador de la cuenta.
+                *	@param	FlagGRS	Tipo de GRS.
+                *	@param	on			Indicamos que este account es de una radio GRS
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SetTipoGRS(int accId, uint Flag, int on, CORESIP_Error error);
+        public static extern int CORESIP_SetTipoGRS(int accId, uint Flag, int on, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetGRSParams. Configura parametros del GRS
-            *	@param	accId		Identificador de la cuenta. Si es -1 entonces se utiliza la default.
-            *	@param	RdFr		Frecuencia del GRS (fid). String acabado en '\0'. Con NULL se ignora
-            *	@param	Tj1			Jitter buffer delay en milisegundos. Con NULL se ignora.
-            *	@param	Ts1			GRS System Delay. En milisegundos. Con NULL se ignora
-            *  @param	Ts2			GRS system RX delay (including packetizing time). En milisegundos. Con NULL se ignora
-            *	@param	preferred_grs_bss_method   Metodo BSS preferido. Si en la lista de metodo recibido del VCS aparece entonces se selecciona, 
-                                            si no entonces se selecciona "RSSI". Es un string terminado com caracter cero o si es NULL se ignora este parametro
-                                            Su longitud maxima es CORESIP_MAX_BSS_LENGTH
-            *	@param  preferred_grs_bss_method_code		Si #preferred_grs_bss_method no es "RSSI", "AGC", "C/N" ni "PSD", 
-                                                        este parametro es el valor del codigo del Vendor specific method. Debera ser entre 4 y 7.
-                                                        Si es NULL se ignora este parametro
-            *	@param  forced_pttid	Si es NULL se ignora este parametro. Si el valor es -1, entonces el GRS asigna automaticamente el ptt-id.
-                                    Si el valor es distinto de -1 entonces es el valor de ptt-id que se fuerza cuando se establece una sesion.
-                                    Si el valor es cero entonces no aparece el atribueto ptt-id.
-            *	@param	selcal_supported	Si es NULL se ignore. Si el valor es 1 entonces el GRS soporta SELCAL, y vale 0 no.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SetGRSParams. Configura parametros del GRS
+                *	@param	accId		Identificador de la cuenta. Si es -1 entonces se utiliza la default.
+                *	@param	RdFr		Frecuencia del GRS (fid). String acabado en '\0'. Con NULL se ignora
+                *	@param	Tj1			Jitter buffer delay en milisegundos. Con NULL se ignora.
+                *	@param	Ts1			GRS System Delay. En milisegundos. Con NULL se ignora
+                *  @param	Ts2			GRS system RX delay (including packetizing time). En milisegundos. Con NULL se ignora
+                *	@param	preferred_grs_bss_method   Metodo BSS preferido. Si en la lista de metodo recibido del VCS aparece entonces se selecciona, 
+                                                si no entonces se selecciona "RSSI". Es un string terminado com caracter cero o si es NULL se ignora este parametro
+                                                Su longitud maxima es CORESIP_MAX_BSS_LENGTH
+                *	@param  preferred_grs_bss_method_code		Si #preferred_grs_bss_method no es "RSSI", "AGC", "C/N" ni "PSD", 
+                                                            este parametro es el valor del codigo del Vendor specific method. Debera ser entre 4 y 7.
+                                                            Si es NULL se ignora este parametro
+                *	@param  forced_pttid	Si es NULL se ignora este parametro. Si el valor es -1, entonces el GRS asigna automaticamente el ptt-id.
+                                        Si el valor es distinto de -1 entonces es el valor de ptt-id que se fuerza cuando se establece una sesion.
+                                        Si el valor es cero entonces no aparece el atribueto ptt-id.
+                *	@param	selcal_supported	Si es NULL se ignore. Si el valor es 1 entonces el GRS soporta SELCAL, y vale 0 no.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
+        //[DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        //public static extern int CORESIP_SetGRSParams(int accId, string RdFr, [In] int Tj1, [In] int Ts1, [In] int Ts2,
+        //    string preferred_grs_bss_method, [In] int preferred_grs_bss_method_code,
+        //    [In] int forced_ptt_id, [In] int selcal_supported, out CORESIP_Error error);
+
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SetGRSParams(int accId, string RdFr, [In] int Tj1, [In] int Ts1, [In] int Ts2,
-            string preferred_grs_bss_method, [In] int preferred_grs_bss_method_code,
-            [In] int forced_ptt_id, [In] int selcal_supported, out CORESIP_Error error);
+        public static extern int CORESIP_SetGRSParams(int accId, string RdFr, [In] IntPtr Tj1, [In] IntPtr Ts1, [In] IntPtr Ts2,
+            string preferred_grs_bss_method, [In] IntPtr preferred_grs_bss_method_code,
+            [In] IntPtr forced_ptt_id, [In] IntPtr selcal_supported, out CORESIP_Error error);
 
         /**
-            *	CORESIP_GRS_Force_Ptt_Mute. Como GRS Fuerza PTT mute en R2S Keepalives hacia VCS. Sirve para simular un PTT mute de otra sesion inventada.
-            *	@param	call		Identificador de la llamada/sesion SIP
-            *	@param	PttType		Tipo de PTT. PTT que activa el Ptt mute
-            *	@param	PttId		Ptt ID. PTT id del ptt que activa el mute.
-            *	@param	on			on. Si true lo activa, si false lo desactiva y los keepalives son los normales. 
-            *						En caso de false se ignoran los parametros anteriores excepto el call.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_GRS_Force_Ptt_Mute. Como GRS Fuerza PTT mute en R2S Keepalives hacia VCS. Sirve para simular un PTT mute de otra sesion inventada.
+                *	@param	call		Identificador de la llamada/sesion SIP
+                *	@param	PttType		Tipo de PTT. PTT que activa el Ptt mute
+                *	@param	PttId		Ptt ID. PTT id del ptt que activa el mute.
+                *	@param	on			on. Si true lo activa, si false lo desactiva y los keepalives son los normales. 
+                *						En caso de false se ignoran los parametros anteriores excepto el call.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GRS_Force_Ptt_Mute(int call, CORESIP_PttType PttType, ushort PttId, bool on, out CORESIP_Error error);
 
         /**
-            *	CORESIP_GRS_Force_Ptt. Como GRS Fuerza PTT en R2S Keepalives hacia VCS. Sirve para simular un PTT de otra sesion inventada.
-            *	@param	call		Identificador de la llamada/sesion SIP
-            *	@param	PttType		Tipo de PTT. PTT que activa el Ptt mute
-            *	@param	PttId		Ptt ID. PTT id del ptt que activa el mute.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_GRS_Force_Ptt. Como GRS Fuerza PTT en R2S Keepalives hacia VCS. Sirve para simular un PTT de otra sesion inventada.
+                *	@param	call		Identificador de la llamada/sesion SIP
+                *	@param	PttType		Tipo de PTT. PTT que activa el Ptt mute
+                *	@param	PttId		Ptt ID. PTT id del ptt que activa el mute.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GRS_Force_Ptt(int call, CORESIP_PttType PttType, ushort PttId, out CORESIP_Error error);
 
         /**
-            *	CORESIP_GRS_Force_SCT. Como GRS Fuerza el bit SCT en el RTPRx enviado desde un GRS
-            *	@param	call		Identificador de la llamada/sesion SIP
-            *	@param	on			on. Si true lo activa, si false lo desactiva.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_GRS_Force_SCT. Como GRS Fuerza el bit SCT en el RTPRx enviado desde un GRS
+                *	@param	call		Identificador de la llamada/sesion SIP
+                *	@param	on			on. Si true lo activa, si false lo desactiva.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GRS_Force_SCT(int call, bool on, out CORESIP_Error error);
 
         /**
-            *	CORESIP_Force_PTTS. Fuerza el bit PTTS en el RTPRx o RTPTx
-            *	@param	call		Identificador de la llamada/sesion SIP
-            *	@param	on			on. Si true lo activa, si false lo desactiva.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_Force_PTTS. Fuerza el bit PTTS en el RTPRx o RTPTx
+                *	@param	call		Identificador de la llamada/sesion SIP
+                *	@param	on			on. Si true lo activa, si false lo desactiva.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_Force_PTTS(int call, bool on, out CORESIP_Error error);
 
 
         /**
-            * CORESIP_SetImpairments.	...
-            * Funcion para activar inperfecciones en la señal de audio que se envia por rtp 
-            * @param	call          Call id de la llamada
-            * @param	impairments   Define las inperfecciones que queremos que se ejecuten
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SetImpairments.	...
+                * Funcion para activar inperfecciones en la señal de audio que se envia por rtp 
+                * @param	call          Call id de la llamada
+                * @param	impairments   Define las inperfecciones que queremos que se ejecuten
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SetImpairments(int call, [In] CORESIP_Impairments impairments, CORESIP_Error error);
+        public static extern int CORESIP_SetImpairments(int call, [In] CORESIP_Impairments impairments, out CORESIP_Error error);
 
         /**
-            *	CORESIP_SetCallParameters. Configura parametros para una sesion SIP activa.
-            *	@param	call		Call Id que identifica la llamada
-            *	@param	disableKeepAlives. Si vale 1 los Keepalives dejan de enviarse. con valor 0 se envian. Si el puntero es NULL se ignora.
-            *	@param	forced_cld. Valor forzado del CLD en ms. Si el valor es negativo, entonces se envia el calculado (Tn1 en el caso del ETM). Si el puntero es NULL se ignora.
-            *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            *	@return				Codigo de Error
-            */
+                *	CORESIP_SetCallParameters. Configura parametros para una sesion SIP activa.
+                *	@param	call		Call Id que identifica la llamada
+                *	@param	disableKeepAlives. Si vale 1 los Keepalives dejan de enviarse. con valor 0 se envian. Si el puntero es NULL se ignora.
+                *	@param	forced_cld. Valor forzado del CLD en ms. Si el valor es negativo, entonces se envia el calculado (Tn1 en el caso del ETM). Si el puntero es NULL se ignora.
+                *	@param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                *	@return				Codigo de Error
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SetCallParameters(int call, [In] int disableKeepAlives, [In] int forced_cld, out CORESIP_Error error);
+        public static extern int CORESIP_SetCallParameters(int call, [In] IntPtr disableKeepAlives, [In] IntPtr forced_cld, out CORESIP_Error error);
 
         /**
-            * CORESIP_SetConfirmPtt.	...
-            * Activa/desactiva la confirmacion de PTT cuando es un agente de radio
-            * Por defecto esta activado en la CORESIP
-            * @param	on						true - activa / false - desactiva
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SetConfirmPtt.	...
+                * Activa/desactiva la confirmacion de PTT cuando es un agente de radio
+                * Por defecto esta activado en la CORESIP
+                * @param	on						true - activa / false - desactiva
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetConfirmPtt(int call, bool val, out CORESIP_Error error);
 
         /**
-            * CORESIP_GetNetworkDelay.	...
-            * Retorna el retardo de red para una llamada VoIP
-            * @param	call		Call Id que identifica la llamada
-            * @param	delay_ms	Retardo en ms
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_GetNetworkDelay.	...
+                * Retorna el retardo de red para una llamada VoIP
+                * @param	call		Call Id que identifica la llamada
+                * @param	delay_ms	Retardo en ms
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_GetNetworkDelay(int call, [In] uint delay_ms, out CORESIP_Error error);
+        public static extern int CORESIP_GetNetworkDelay(int call, ref uint delay_ms, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendToneToCall
-            * Envia un tono por una llamada establecida. Si se llama a esta funcion varias veces para la misma llamada los tonos se suman.
-            * @param	call		Call Id que identifica la llamada
-            * @param	frequency	Frecuencia en Hz. Si vale 0 entonces se aplica a todos los tonos activos. 
-            * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
-            * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SendToneToCall
+                * Envia un tono por una llamada establecida. Si se llama a esta funcion varias veces para la misma llamada los tonos se suman.
+                * @param	call		Call Id que identifica la llamada
+                * @param	frequency	Frecuencia en Hz. Si vale 0 entonces se aplica a todos los tonos activos. 
+                * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
+                * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendToneToCall(int call, [In] uint frequency, float volume_dbm0, int on, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendNoiseToCall
-            * Envia un ruido blanco por una llamada establecida. 
-            * @param	call		Call Id que identifica la llamada
-            * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
-            * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SendNoiseToCall
+                * Envia un ruido blanco por una llamada establecida. 
+                * @param	call		Call Id que identifica la llamada
+                * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
+                * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendNoiseToCall(int call, float volume_dbm0, int on, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendNoiseToCall
-            * Envia un ruido rosa por una llamada establecida.
-            * @param	call		Call Id que identifica la llamada
-            * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
-            * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SendNoiseToCall
+                * Envia un ruido rosa por una llamada establecida.
+                * @param	call		Call Id que identifica la llamada
+                * @param	volume_dbm0		en dBm0. Rango valores (-60 a +3.14)
+                * @param	on			Si vale 1 el tono se emite, si vale 0 el tono deja de emitirse
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendPinkNoiseToCall(int call, float volume_dbm0, int on, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendDTMF
-            * Envia secuencia de digitos DTMF
-            * @param	call		Call Id que identifica la llamada
-            * @param	digit_map	Definicion de los digitos.
-            * @param	count		Numero de digitos
-            * @param	tones		Array con la secuencia de digitos.
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SendDTMF
+                * Envia secuencia de digitos DTMF
+                * @param	call		Call Id que identifica la llamada
+                * @param	digit_map	Definicion de los digitos.
+                * @param	count		Numero de digitos
+                * @param	tones		Array con la secuencia de digitos.
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_SendDTMF(int call, [In] CORESIP_tone_digit_map digit_map, uint count, CORESIP_tone_digit[] digits, float volume_dbm0, out CORESIP_Error error);
+        public static extern int CORESIP_SendDTMF(int call, [In] CORESIP_tone_digit_map digit_map, [In] CORESIP_tone_digits digits, float volume_dbm0, out CORESIP_Error error);
 
         /**
-            * CORESIP_SendSELCAL
-            * Envia secuencia SELCAL
-            * @param	call		Call Id que identifica la llamada
-            * @param	selcalValue	string con los identificadores de los tonos. La longitud debe ser #CORESIP_MAX_SELCAL_LENGTH
-            * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
-            * @return	CORESIP_OK OK, CORESIP_ERROR  error.
-            */
+                * CORESIP_SendSELCAL
+                * Envia secuencia SELCAL
+                * @param	call		Call Id que identifica la llamada
+                * @param	selcalValue	string con los identificadores de los tonos. La longitud debe ser #CORESIP_MAX_SELCAL_LENGTH
+                * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+                * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+                */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SendSELCAL(int call, string selcalValue, out CORESIP_Error error);
 
@@ -1951,11 +1991,11 @@ namespace U5ki.Infrastructure
         }
 
         /*
-	    Funcion que retorna los dispositivos de sonido en Windows (no en asio)
-	    @param captureType. Si vale distinto de cero retorna los de tipo entrada (capture), si vale cero los de tipo salida (play)
-	    @param Devices. Retorna la cantidad La lista de dispositivos encontrados.	 
-	    @return	CORESIP_OK OK, CORESIP_ERROR  error.
-	    */
+        Funcion que retorna los dispositivos de sonido en Windows (no en asio)
+        @param captureType. Si vale distinto de cero retorna los de tipo entrada (capture), si vale cero los de tipo salida (play)
+        @param Devices. Retorna la cantidad La lista de dispositivos encontrados.	 
+        @return	CORESIP_OK OK, CORESIP_ERROR  error.
+        */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GetWindowsSoundDeviceNames(int captureType, out CORESIP_SndWindowsDevices Devices, out CORESIP_Error error);
 
@@ -1963,14 +2003,71 @@ namespace U5ki.Infrastructure
         public static extern int CORESIP_SetSNDDeviceWindowsName(CORESIP_SndDevType UlisesDev, string DevWinName, out CORESIP_Error error);
 
         /*
-	    Funcion que establece volumen de un dispositivo de salida
-	    @param dev. dispositivo. 
-	    @param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
-	    */
+        Funcion que establece volumen de un dispositivo de salida
+        @param dev. dispositivo. 
+        @param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
+        */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_SetVolumeOutputDevice(CORESIP_SndDevType dev, uint volume, out CORESIP_Error error);
 
+        /**
+        *	CORESIP_CreateGenericPort: Crea un puerto generico de media. 
+        *   A este puerto se pueden poner y tomar paquetes de audio de 160 muestras 16 bits PCM con signo
+        *	con las funciones #PutFrame_GenericPort y #GetFrame_GenericPort.	
+        *	Tambien se puede conectar a otros puertos con la funcion CORESIP_BridgeLink. Por ejemplo a una llamada VoIP
+        *	@param gen_port_id. Es el identificador del puerto que se retorna.
+        *   @param jitter_buff_size. Capacidad del buffer de jitter. Valor recomendado: 2 paquetes.
+        *	@param error. Si hay error contiene la descripcion
+        *	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_CreateGenericPort(out int gen_port_id, int jitter_buff_size, out CORESIP_Error error);
+
+        /**
+        *	CORESIP_DestroyGenericPort: Destruye el puerto del tipo GenericPort
+        *	@param gen_port_id. Es el identificador del puerto.
+        *	@param error. Si hay error contiene la descripcion
+        *	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_DestroyGenericPort(int gen_port_id, out CORESIP_Error error);
+
+        /**
+        *	CORESIP_PutInGenericPort: Pone muestras en el generic port.
+        * 	@param gen_port_id. Es el identificador del puerto.
+        *	@param genBuff. Buffer de muestras. 160 muestras 16 bits PCM con signo
+        *	@param error. Si hay error contiene la descripcion
+        *	@param blocking. Si es true se bloquea la funcion hasta que el paquete es transferido. Si es false entonces la funcion retorna sin esperar.
+        *	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_PutInGenericPort(int gen_port_id, [In] CORESIP_GenericPortBuffer genBuff, bool blocking, out CORESIP_Error error);
+
+        /**
+        *	CORESIP_GetFromGenericPort: Toma muestras del generic port
+        * *	@param gen_port_id. Es el identificador del puerto.
+        *	@param genBuff. Buffer en el que se retornan las muestras. 160 muestras 16 bits PCM con signo
+        *	@param error. Si hay error contiene la descripcion
+        *	@param blocking. Si es true se bloquea la funcion hasta que hay disponible un paquete de audio. 
+                                Si es false entonces la funcion retorna sin esperar con un paquete de audio, si no hay disponible entonces es un paquete calculado por el PLC.
+        *	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_GetFromGenericPort(int gen_port_id, out CORESIP_GenericPortBuffer genBuff, bool blocking, out CORESIP_Error error);
+
+        /**
+        *	CORESIP_GetJitterStatusGenericPort: Retorna la ocupacion del jitter buffer
+        * *	@param gen_port_id. Es el identificador del puerto.
+        *	@param size. Numero de paquetes que tiene.
+        *	@return	CORESIP_OK si no hay error. Si hay error entonces genericPort devuelto no sera valido.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_GetJitterStatusGenericPort(int gen_port_id, out uint size, out CORESIP_Error error);
+
         #endregion
 
+#if _AMPER_ULISES_
     }
+#endif
+
 }

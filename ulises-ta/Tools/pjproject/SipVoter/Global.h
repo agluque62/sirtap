@@ -18,6 +18,7 @@
 #include <pjsua-lib/pjsua_internal.h>
 
 #include "CoreSip.h"
+#include "Corelogfile.h"
 
 #define SAMPLING_RATE			8000
 #define CHANNEL_COUNT			1

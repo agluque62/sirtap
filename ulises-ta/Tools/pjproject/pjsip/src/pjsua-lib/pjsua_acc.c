@@ -756,7 +756,8 @@ PJ_DEF(pj_status_t) pjsua_acc_modify( pjsua_acc_id acc_id,
 
     /* Global outbound proxy */
     if (global_route_crc != acc->global_route_crc) {
-	unsigned i, rcnt;
+	unsigned i;
+	pj_size_t rcnt;
 
 	/* Remove the outbound proxies from the route set */
 	rcnt = pj_list_size(&acc->route_set);
@@ -1173,7 +1174,8 @@ void update_service_route(pjsua_acc *acc, pjsip_rx_data *rdata)
     const pj_str_t HNAME = { "Service-Route", 13 };
     const pj_str_t HROUTE = { "Route", 5 };
     pjsip_uri *uri[PJSUA_ACC_MAX_PROXIES];
-    unsigned i, uri_cnt = 0, rcnt;
+    unsigned i, uri_cnt = 0;
+	pj_size_t rcnt;
 
     /* Find and parse Service-Route headers */
     for (;;) {

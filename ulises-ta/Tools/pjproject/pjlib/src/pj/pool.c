@@ -32,7 +32,7 @@
 #endif
 
 #define LOG(expr)   			PJ_LOG(6,expr)
-#define ALIGN_PTR(PTR,ALIGNMENT)	(PTR + (-(long)(PTR) & (ALIGNMENT-1)))
+#define ALIGN_PTR(PTR,ALIGNMENT)	(PTR + (-(pj_ssize_t)(PTR) & (ALIGNMENT-1)))
 
 PJ_DEF_DATA(int) PJ_NO_MEMORY_EXCEPTION;
 
@@ -88,11 +88,11 @@ static pj_pool_block *pj_pool_create_block( pj_pool_t *pool, pj_size_t size)
  * If no space is available in all the blocks, a new block might be created
  * (depending on whether the pool is allowed to resize).
  */
-PJ_DEF(void*) pj_pool_allocate_find(pj_pool_t *pool, unsigned size)
+PJ_DEF(void*) pj_pool_allocate_find(pj_pool_t *pool, pj_size_t size)
 {
     pj_pool_block *block = pool->block_list.next;
     void *p;
-    unsigned block_size;
+    pj_size_t block_size;
 
     PJ_CHECK_STACK();
 
@@ -121,7 +121,7 @@ PJ_DEF(void*) pj_pool_allocate_find(pj_pool_t *pool, unsigned size)
     if (pool->increment_size < 
 	    size + sizeof(pj_pool_block) + PJ_POOL_ALIGNMENT) 
     {
-        unsigned count;
+        pj_size_t count;
         count = (size + pool->increment_size + sizeof(pj_pool_block) +
                  PJ_POOL_ALIGNMENT) / 
                 pool->increment_size;
@@ -132,8 +132,8 @@ PJ_DEF(void*) pj_pool_allocate_find(pj_pool_t *pool, unsigned size)
     }
 
     LOG((pool->obj_name, 
-	 "%u bytes requested, resizing pool by %u bytes (used=%u, cap=%u)",
-	 size, block_size, pj_pool_get_used_size(pool), pool->capacity));
+	 "%llu bytes requested, resizing pool by %llu bytes (used=%llu, cap=%llu)",
+	 (unsigned long long) size, (unsigned long long) block_size, (unsigned long long)pj_pool_get_used_size(pool), (unsigned long long)pool->capacity));
 
     block = pj_pool_create_block(pool, block_size);
     if (!block)

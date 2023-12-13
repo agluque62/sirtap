@@ -1198,12 +1198,15 @@ PJ_DEF(pj_status_t) pjmedia_session_set_dtmf_callback(pjmedia_session *session,
     return pjmedia_stream_set_dtmf_callback(session->stream[index], cb, user_data);
 }
 
-PJ_DEF(void) pjmedia_session_force_set_impairments(pjmedia_session* session, int Perdidos, int Duplicados, int LatMin, int LatMax)
+PJ_DEF(pj_status_t) pjmedia_session_force_set_impairments(pjmedia_session* session, int Perdidos, int Duplicados, int LatMin, int LatMax)
 {
+	int ret = PJ_SUCCESS;
 	pjmedia_stream* stream = NULL;
 	pj_assert(session);
 	stream = pjmedia_session_get_stream(session, 0);
 	if (stream != NULL)
 		pjmedia_stream_force_set_impairments(session->pool, stream, Perdidos, Duplicados, LatMin, LatMax);
+	else ret = PJ_EINVALIDOP;
+	return ret;
 }
 

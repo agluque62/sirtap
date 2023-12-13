@@ -15,6 +15,7 @@ using System.IO;
 using System.Collections;
 using System.Management;
 using VideoPlayerController;
+using Lextm.SharpSnmpLib.Pipeline;
 
 namespace U5ki.Infrastructure
 {
@@ -595,6 +596,7 @@ namespace U5ki.Infrastructure
                             }
                             catch (Exception excep)
                             {
+                                _Logger.Info("GetNameDevice: Exception  " + excep.Message);
                                 return null;
                             }
                         }
@@ -1724,7 +1726,7 @@ namespace U5ki.Infrastructure
 #if _TRACEAGENT_
             _Logger.Debug("Entrando en SipAgent.CallCouplingReinvite {0}", callId);
 #endif
-            if (CORESIP_CallReinvite(callId, out err, (int) type, 22, null) != 0)
+            if (CORESIP_CallReinvite(callId, out err, (int) type, 22, null, CORESIP_SDPSendRecvAttrForced.CORESIP_SDP_SR_ATTR_NOFORCED) != 0)
             {
                 throw new Exception(err.Info);
             }

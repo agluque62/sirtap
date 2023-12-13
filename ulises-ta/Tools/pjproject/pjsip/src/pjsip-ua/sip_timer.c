@@ -116,7 +116,7 @@ static int se_hdr_print(pjsip_sess_expires_hdr *hdr, char *buf, pj_size_t size)
 {
     char *p = buf;
     char *endbuf = buf+size;
-    int printed;
+	pj_ssize_t printed;
     const pjsip_parser_const_t *pc = pjsip_parser_const();
     const pj_str_t *hname = pjsip_use_compact_form? &hdr->sname : &hdr->name;
 
@@ -148,10 +148,10 @@ static int se_hdr_print(pjsip_sess_expires_hdr *hdr, char *buf, pj_size_t size)
 				   &pc->pjsip_TOKEN_SPEC, 
 				   &pc->pjsip_TOKEN_SPEC, ';');
     if (printed < 0)
-		return printed;
+		return (int)printed;
 
     p += printed;
-    return p - buf;
+    return (int)(p - buf);
 }
 
 /** */
@@ -184,7 +184,7 @@ static int min_se_hdr_print(pjsip_min_se_hdr *hdr,
 {
     char *p = buf;
     char *endbuf = buf+size;
-    int printed;
+	pj_ssize_t printed;
     const pjsip_parser_const_t *pc = pjsip_parser_const();
 
     /* Print header name and value */
@@ -203,10 +203,10 @@ static int min_se_hdr_print(pjsip_min_se_hdr *hdr,
 				   &pc->pjsip_TOKEN_SPEC, 
 				   &pc->pjsip_TOKEN_SPEC, ';');
     if (printed < 0)
-		return printed;
+		return (int) printed;
 
     p += printed;
-		return p - buf;
+		return (int) (p - buf);
 }
 
 /** */

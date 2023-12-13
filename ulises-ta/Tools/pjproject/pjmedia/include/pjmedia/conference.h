@@ -309,6 +309,15 @@ PJ_DECL(pj_status_t) pjmedia_conf_configure_port( pjmedia_conf *conf,
 						  pjmedia_port_op tx,
 						  pjmedia_port_op rx);
 
+/**
+ * Se reinicia put frame, de tal forma que cuando se llame se envie el rtp cuanto antes
+ *
+ * @param conf		The conference bridge.
+ * @param slot		Port number/slot in the conference bridge.
+ * @return		PJ_SUCCESS on success.
+ */
+PJ_DECL(pj_status_t) pjmedia_conf_reset_put_frame_port(pjmedia_conf* conf, unsigned slot);
+
 
 /**
  * Enable unidirectional audio from the specified source slot to the

@@ -67,14 +67,18 @@ void OptionsMod::SendOptionsMsg(const char* target, char* callid, int isRadio, p
 	pj_str_t callId;
 
 	acc_id = pjsua_acc_get_default();
-	if (!pjsua_acc_is_valid(acc_id)) return;
+	if (!pjsua_acc_is_valid(acc_id))
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SendOptionsMsg: Default account no valido"));
+		return;
+	}
 
 	/*Se comprueba si la URI es valida*/
 	pj_bool_t urivalida = PJ_TRUE;
 	pj_pool_t* pool = pjsua_pool_create(NULL, 256, 32);
 	if (pool == NULL)
 	{
-		PJ_LOG(3, (__FILE__, "ERROR: SendOptionsMsg: No se puede crear pj_pool"));
+		PJ_CHECK_STATUS(PJ_ENOMEM, ("ERROR: SendOptionsMsg: No se puede crear pj_pool"));
 		return;
 	}
 
@@ -94,8 +98,8 @@ void OptionsMod::SendOptionsMsg(const char* target, char* callid, int isRadio, p
 	if (!urivalida)
 	{
 		//target no es una uri valida
-		PJ_LOG(3, (__FILE__, "ERROR: La URI a la que se intenta enviar OPTIONS no es valida: %s", target));
 		pj_pool_release(pool);
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: La URI a la que se intenta enviar OPTIONS no es valida"));
 		return;
 	}
 

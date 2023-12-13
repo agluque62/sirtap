@@ -74,7 +74,7 @@ pj_status_t NoiseGenerator::Noise_get_frame(pjmedia_port* port, pjmedia_frame* f
 		return PJ_SUCCESS;
 	}
 
-	int size_16bits = frame->size / 2;
+	int size_16bits = (int)frame->size / 2;
 
 	float nivel_16bits;
 	if (noisegen->_LeyA)
@@ -153,7 +153,7 @@ pj_status_t NoiseGenerator::Pink_Noise_get_frame(pjmedia_port* port, pjmedia_fra
 		return PJ_SUCCESS;
 	}
 
-	int size_16bits = frame->size / 2;
+	int size_16bits = (int)frame->size / 2;
 
 	float white;
 	float amplitude;
@@ -208,7 +208,7 @@ pj_status_t NoiseGenerator::Pink_Noise_get_frame(pjmedia_port* port, pjmedia_fra
 			nivel_16bits = nivel_13bits * 32767;
 		*/
 
-		float nivel_13bits = (float)pow(10.0f, (noisegen->dBm0_level + 10.5f) / 20.0f);
+		float nivel_13bits = (float)pow(10.0f, (noisegen->dBm0_level + 7.5f) / 20.0f);
 		nivel_16bits = 32767.0f * nivel_13bits;
 	}
 

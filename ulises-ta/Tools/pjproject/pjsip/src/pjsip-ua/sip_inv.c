@@ -24,6 +24,7 @@
 #include <pjsip/sip_endpoint.h>
 #include <pjsip/sip_event.h>
 #include <pjsip/sip_transaction.h>
+#include <pjmedia/session.h>
 #include <pjmedia/sdp.h>
 #include <pjmedia/sdp_neg.h>
 #include <pjmedia/errno.h>

@@ -186,7 +186,7 @@ static void suspend_logging(int *saved_level)
 #if PJ_HAS_THREADS
     if (thread_suspended_tls_id != -1) 
     {
-	pj_thread_local_set(thread_suspended_tls_id, (void*)PJ_TRUE);
+	pj_thread_local_set(thread_suspended_tls_id, (void*)(pj_ssize_t)PJ_TRUE);
     } 
     else
 #endif
@@ -201,7 +201,7 @@ static void resume_logging(int *saved_level)
 #if PJ_HAS_THREADS
     if (thread_suspended_tls_id != -1) 
     {
-	pj_thread_local_set(thread_suspended_tls_id, (void*)PJ_FALSE);
+	pj_thread_local_set(thread_suspended_tls_id, (void*)(pj_size_t)PJ_FALSE);
     }
     else
 #endif
@@ -297,7 +297,7 @@ PJ_DEF(void) pj_log( const char *sender, int level,
     }
     if (log_decor & PJ_LOG_HAS_SENDER) {
 	enum { SENDER_WIDTH = 14 };
-	int sender_len = strlen(sender);
+	size_t sender_len = strlen(sender);
 	*pre++ = ' ';
 	if (sender_len <= SENDER_WIDTH) {
 	    while (sender_len < SENDER_WIDTH)
@@ -313,7 +313,7 @@ PJ_DEF(void) pj_log( const char *sender, int level,
     if (log_decor & PJ_LOG_HAS_THREAD_ID) {
 	enum { THREAD_WIDTH = 12 };
 	const char *thread_name = pj_thread_get_name(pj_thread_this());
-	int thread_len = strlen(thread_name);
+	size_t thread_len = strlen(thread_name);
 	*pre++ = ' ';
 	if (thread_len <= THREAD_WIDTH) {
 	    while (thread_len < THREAD_WIDTH)
@@ -334,7 +334,7 @@ PJ_DEF(void) pj_log( const char *sender, int level,
 	*pre++ = ' ';
     }
 
-    len = pre - log_buffer;
+    len = (int) (pre - log_buffer);
 
     /* Print the whole message to the string log_buffer. */
     print_len = pj_ansi_vsnprintf(pre, sizeof(log_buffer)-len, format, 

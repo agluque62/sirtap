@@ -303,7 +303,7 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
          * Unfortunately we must do this while holding key's mutex, thus
          * preventing parallel write on a single key.. :-((
          */
-        sent = write_op->size - write_op->written;
+        sent = (pj_ssize_t) write_op->size - write_op->written;
         if (write_op->op == PJ_IOQUEUE_OP_SEND) {
             send_rc = pj_sock_send(h->fd, write_op->buf+write_op->written,
                                    &sent, write_op->flags);
@@ -466,7 +466,7 @@ void ioqueue_dispatch_read_event( pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h )
         if (pj_list_empty(&h->read_list))
             ioqueue_remove_from_set(ioqueue, h, READABLE_EVENT);
 
-        bytes_read = read_op->size;
+        bytes_read = (pj_ssize_t) read_op->size;
 
 	if ((read_op->op == PJ_IOQUEUE_OP_RECV_FROM)) {
 	    read_op->op = PJ_IOQUEUE_OP_NONE;
@@ -1218,7 +1218,7 @@ PJ_DEF(pj_status_t) pj_ioqueue_post_completion( pj_ioqueue_key_t *key,
 
             (*key->cb.on_accept_complete)(key, op_key, 
                                           PJ_INVALID_SOCKET,
-                                          bytes_status);
+                                          (pj_status_t)bytes_status);
             return PJ_SUCCESS;
         }
         op_rec = op_rec->next;

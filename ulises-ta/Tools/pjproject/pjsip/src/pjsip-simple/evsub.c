@@ -2189,11 +2189,18 @@ static void on_tsx_state_uac( pjsip_evsub *sub, pjsip_transaction *tsx,
 		update_expires(sub, next_refresh);
 
 		/* Start UAC refresh timer, only when we're not unsubscribing */
-		timeout = (next_refresh > TIME_UAC_REFRESH) ?
-		next_refresh - TIME_UAC_REFRESH : next_refresh;
-
-	    PJ_LOG(5,(sub->obj_name, "Will refresh in %d seconds", timeout));
-	    set_timer(sub, TIMER_TYPE_UAC_REFRESH, timeout);
+		if (next_refresh > TIME_UAC_REFRESH)
+		{
+			timeout = next_refresh - TIME_UAC_REFRESH;
+			PJ_LOG(5, (sub->obj_name, "Will refresh in %d seconds", timeout));
+			set_timer(sub, TIMER_TYPE_UAC_REFRESH, timeout);
+		}
+		else
+		{
+			//Se ha recibido un Notify con expires menor o igual que TIME_UAC_REFRESH
+			//En ese caso habria que refrescar subscribe en este momento
+			//No llamamos a la funcion set_timer para que no cancele el timer ni lo reinicie y mande el refresco cuando le toque
+		}		
 	}
 	
 	/* Find out the state */

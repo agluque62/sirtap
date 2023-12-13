@@ -72,6 +72,14 @@ class SipAgent
 public:
 	static pj_bool_t SIP_AGENT_INITIALIZED_AND_STARTED;
 	static pj_bool_t ETM;				//Si es true entonces indica que el agente es un ETM
+	static UINT timePeriodApplied;
+
+	static const int NO_INICIALIZADO = 0;
+	static const int INICIALIZANDO = 1;
+	static const int INICIALIZADO = 2;
+	static int ESTADO_INICIALIZACION;
+
+	static HANDLE ghMutex;
 
 	//Direccion llamada
 	static const int INCOM = 0;
@@ -143,8 +151,8 @@ public:
 	static void SetLogLevel(unsigned level);
 	static void SetParams(const int* MaxForwards, const int* Answer_options_no_user);
 	static void SetJitterBuffer(unsigned adaptive, unsigned initial_prefetch, unsigned min_prefetch, unsigned max_prefetch, unsigned discard);
-
-	static int CreateAccount(const char * acc, int defaultAcc, const char *proxy_ip=NULL);
+		
+	static int CreateAccount(const char * acc, int defaultAcc, const char *proxy_ip=NULL, const char *forced__contact = NULL);
 	static void DestroyAccount(int id);
 
 	static void SetTipoGRS(int id, CORESIP_CallFlagsMask Flag, int on);
@@ -152,7 +160,7 @@ public:
 		unsigned int* preferred_grs_bss_method_code, int* forced_ptt_id, int* selcal_supported);
 	static pjsua_acc_id GetTipoGRS(int id, CORESIP_CallFlagsMask* );
 
-	static int CreateAccountAndRegisterInProxy(const char * accID, int defaultAcc, const char *proxy_ip, unsigned int expire_seg, const char *username, const char *pass, const char *displayName, int isfocus);
+	static int CreateAccountAndRegisterInProxy(const char * accID, int defaultAcc, const char *proxy_ip, unsigned int expire_seg, const char *username, const char *pass, const char *displayName, int isfocus, const char* forced__contact);
 
 	static int AddSndDevice(const CORESIP_SndDeviceInfo * info);
 
@@ -208,7 +216,7 @@ public:
 	static int CreatePresenceSubscription(char *dest_uri);
 	static int DestroyPresenceSubscription(char *dest_uri);
 
-	static int CreateConferenceSubscription(int acc_id, char *dest_uri, pj_bool_t by_proxy);
+	static int CreateConferenceSubscription(int acc_id, pjsua_call_id call_id, char *dest_uri, pj_bool_t by_proxy);
 	static int DestroyConferenceSubscription(char *dest_uri);
 
 	static int CreateDialogSubscription(int acc_id, char *dest_uri, pj_bool_t by_proxy);

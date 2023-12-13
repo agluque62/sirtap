@@ -501,7 +501,7 @@ pjmedia_frame_ext_pop_subframes(pjmedia_frame_ext *frm, unsigned n)
 {
     pjmedia_frame_ext_subframe *sf;
     pj_uint8_t *move_src;
-    unsigned move_len;
+    pj_size_t move_len;
 
     if (frm->subframe_cnt <= n) {
 	frm->subframe_cnt = 0;
@@ -511,7 +511,7 @@ pjmedia_frame_ext_pop_subframes(pjmedia_frame_ext *frm, unsigned n)
 
     move_src = (pj_uint8_t*)pjmedia_frame_ext_get_subframe(frm, n);
     sf = pjmedia_frame_ext_get_subframe(frm, frm->subframe_cnt-1);
-    move_len = (unsigned)((pj_uint8_t*)sf - move_src + sizeof(sf->bitlen) + 
+    move_len = ((pj_uint8_t*)sf - move_src + sizeof(sf->bitlen) + 
 	       ((sf->bitlen+7) >> 3));
     pj_memmove((pj_uint8_t*)frm+sizeof(pjmedia_frame_ext), 
 	       move_src, move_len);

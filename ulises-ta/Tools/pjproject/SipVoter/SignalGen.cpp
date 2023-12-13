@@ -30,9 +30,20 @@ tone_info::tone_info(int freq, int volume)
 	}
 
 	pjmedia_tone_desc tone;
+	double period_ms;
+	double max_short_value = 32768.0;
+	double double_on_msec = 10000.0;
+
+	period_ms = 1000.0 / ((double)frequency);
+	while (period_ms < max_short_value)
+	{
+		double_on_msec = period_ms;
+		period_ms *= 2.0;
+	}
+
 	tone.freq1 = (short)frequency;
 	tone.freq2 = 0;
-	tone.on_msec = 10000;	//Duracion infinita
+	tone.on_msec = (short)double_on_msec;	//Duracion infinita
 	tone.off_msec = 0;
 	tone.volume = (short) volume;
 	st = pjmedia_tonegen_play(tone_port, 1, &tone, PJMEDIA_TONEGEN_LOOP);
@@ -81,9 +92,20 @@ int tone_info::Update_tone(int volume)
 	if (volume > 0)
 	{
 		pjmedia_tone_desc tone;
+		double period_ms;
+		double max_short_value = 32768.0;
+		double double_on_msec = 10000.0;
+
+		period_ms = 1000.0 / ((double)frequency);
+		while (period_ms < max_short_value)
+		{
+			double_on_msec = period_ms;
+			period_ms *= 10.0;
+		}		
+
 		tone.freq1 = (short)frequency;
 		tone.freq2 = 0;
-		tone.on_msec = 10000;	//Duracion infinita
+		tone.on_msec = (short)double_on_msec;	//Duracion infinita
 		tone.off_msec = 0;
 		tone.volume = (short) volume;
 		st = pjmedia_tonegen_play(tone_port, 1, &tone, PJMEDIA_TONEGEN_LOOP);
@@ -119,6 +141,20 @@ void SignalGen::SendToneToCall(int call_id, unsigned int frequency, float volume
 	if (st != PJ_SUCCESS)
 	{
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendToneToCall: invalid call_id"));
+	}
+
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SendToneToCall:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SendToneToCall: ", "ERROR: Llamada no activa [Call=%d]", call_id));
 	}
 
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
@@ -292,6 +328,15 @@ int SignalGen::dBm0_to_lineal_volume_a_law(float volume_dbm0)
 	if (volume_dbm0 > 3.14f) volume_dbm0 = 3.14f;
 	float lineal_volume = 2852.68557f * (float) pow(10.0f, volume_dbm0 / 20.0f);
 	float tone_volume = (32767.0f / 4095.0f) * lineal_volume;
+
+#if PJMEDIA_TONEGEN_ALG==PJMEDIA_TONEGEN_SINE
+#elif PJMEDIA_TONEGEN_ALG==PJMEDIA_TONEGEN_FLOATING_POINT
+
+	//Se aplica un factor de correccion que se ha detectado para este tipo de algoritmo
+	tone_volume *= 0.923f;
+
+#endif
+
 	return (int)tone_volume;
 }
 
@@ -314,6 +359,16 @@ int SignalGen::dBm0_to_lineal_volume_mu_law(float volume_dbm0)
 	if (volume_dbm0 > 3.17f) volume_dbm0 = 3.17f;
 	float lineal_volume = 5687.08793f * (float)pow(10.0f, volume_dbm0 / 20.0f);
 	float tone_volume = (32767.0f / 8192.0f) * lineal_volume;
+
+#if PJMEDIA_TONEGEN_ALG==PJMEDIA_TONEGEN_SINE
+#elif PJMEDIA_TONEGEN_ALG==PJMEDIA_TONEGEN_FLOATING_POINT
+
+	//Se aplica un factor de correccion que se ha detectado para este tipo de algoritmo
+	//EN ley u esta sin probar
+	tone_volume *= 0.923f;
+
+#endif
+
 	return (int)tone_volume;
 }
 
@@ -329,6 +384,20 @@ void SignalGen::SendNoiseToCall(int call_id, NoiseGenerator::NoiseType type, flo
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendNoiseToCall: invalid call_id"));
 	}
 
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SendNoiseToCall:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SendNoiseToCall: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 	if (sipcall == NULL)
 	{
@@ -340,14 +409,14 @@ void SignalGen::SendNoiseToCall(int call_id, NoiseGenerator::NoiseType type, flo
 	if (session == NULL)
 	{
 		pjsip_dlg_dec_lock(dlg);
-		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendNoiseToCall: no session"));
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SignalGen::SendNoiseToCall: no session"));
 	}
 
 	pjmedia_session_info sess_info;
 	if (pjmedia_session_get_info((pjmedia_session*)session, &sess_info) != PJ_SUCCESS)
 	{
 		pjsip_dlg_dec_lock(dlg);
-		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info returns error"));
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info returns error"));
 	}
 
 	pj_bool_t pcmA = PJ_TRUE;
@@ -365,13 +434,13 @@ void SignalGen::SendNoiseToCall(int call_id, NoiseGenerator::NoiseType type, flo
 		else
 		{
 			pjsip_dlg_dec_lock(dlg);
-			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info format error"));
+			PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info format error"));
 		}
 	}
 	else
 	{
 		pjsip_dlg_dec_lock(dlg);
-		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info returns 0 sessions"));
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SignalGen::SendNoiseToCall: pjmedia_session_get_info returns 0 sessions"));
 	}
 
 	if (sipcall->Noise_generator != NULL)
@@ -433,25 +502,25 @@ void SignalGen::StopNoiseToCall(int call_id)
 	pjsip_dlg_dec_lock(dlg);
 }
 
-void SignalGen::SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0)
+void SignalGen::SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, const CORESIP_tone_digits *digits, float volume_dbm0)
 {
 	pjsua_call* call;
 	pjsip_dialog* dlg;
 	pj_status_t st;
 
-	if (count == 0) PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid count, must be > 0"));
 	if (digit_map == NULL) PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid digit_map, must be not NULL"));
 	if (digits == NULL) PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid digits, must be not NULL"));
+	if (digits->count == 0 || digits->count > CORESIP_MAX_DTMF_DIGITS) PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid digits->count", "must be > 0 and <= %u", CORESIP_MAX_DTMF_DIGITS));
 	if (digit_map->count == 0 || digit_map->count > 16) PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid digit_map->count, must be > 0 and <= 16"));
 
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < digits->count; i++)
 	{
-		if (digits[i].digit != ',')
+		if (digits->digits[i].digit != ',')
 		{
 			pj_bool_t in_map = PJ_FALSE;
 			for (unsigned int j = 0; j < digit_map->count; j++)
 			{
-				if (digits[i].digit == digit_map->digits[j].digit)
+				if (digits->digits[i].digit == digit_map->digits[j].digit)
 				{
 					in_map = PJ_TRUE;
 					break;
@@ -465,6 +534,20 @@ void SignalGen::SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, u
 	if (st != PJ_SUCCESS)
 	{
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: invalid call_id"));
+	}
+
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SendDTMF:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SendDTMF: ", "ERROR: Llamada no activa [Call=%d]", call_id));
 	}
 
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
@@ -526,7 +609,7 @@ void SignalGen::SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, u
 		pjsip_dlg_dec_lock(dlg);
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SignalGen::SendDTMF: sipcall->DTMF_generator cannot be created"));
 	}
-	if (sipcall->DTMF_generator->Init(call_id, digit_map, count, digits, volume_dbm0, pcmA) < 0)
+	if (sipcall->DTMF_generator->Init(call_id, digit_map, digits, volume_dbm0, pcmA) < 0)
 	{
 		delete sipcall->DTMF_generator;
 		sipcall->DTMF_generator = NULL;
@@ -588,7 +671,7 @@ DTMFgen::~DTMFgen()
 	}
 }
 
-int DTMFgen::Init(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0, pj_bool_t pcmA)
+int DTMFgen::Init(int call_id, const CORESIP_tone_digit_map* digit_map, const CORESIP_tone_digits *digits, float volume_dbm0, pj_bool_t pcmA)
 {
 	pool = pjsua_pool_create("DTMFgen::Init", 512, 512);
 	if (pool == NULL)
@@ -657,7 +740,7 @@ int DTMFgen::Init(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned
 		return -1;
 	}
 
-	_digits = (pjmedia_tone_digit *) pj_pool_alloc(pool, sizeof(pjmedia_tone_digit) * count);
+	_digits = (pjmedia_tone_digit *) pj_pool_alloc(pool, sizeof(pjmedia_tone_digit) * digits->count);
 	if (_digits == NULL)
 	{
 		PJ_LOG(3, ("DTMFgen::Init", "ERROR: pj_pool_alloc returns NULL"));
@@ -680,26 +763,26 @@ int DTMFgen::Init(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned
 		volume = SignalGen::dBm0_to_lineal_volume_mu_law(volume_dbm0);
 	}
 
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < digits->count; i++)
 	{
-		if (digits[i].digit == ',')
+		if (digits->digits[i].digit == ',')
 		{
 			//Si recibimos la pausa simulamos que es otro digito del map, pero con el tiempo de on a cero
 			_digits[i].digit = digit_map->digits[0].digit;
-			_digits[i].off_msec = digits[i].off_msec;
+			_digits[i].off_msec = digits->digits[i].off_msec;
 			_digits[i].on_msec = 0;
 			_digits[i].volume = 1;
 		}
 		else
 		{
-			_digits[i].digit = digits[i].digit;
-			_digits[i].off_msec = digits[i].off_msec;
-			_digits[i].on_msec = digits[i].on_msec;
+			_digits[i].digit = digits->digits[i].digit;
+			_digits[i].off_msec = digits->digits[i].off_msec;
+			_digits[i].on_msec = digits->digits[i].on_msec;
 			_digits[i].volume = volume;
 		}
 	}
 
-	st = pjmedia_tonegen_play_digits(port, count, _digits, 0);
+	st = pjmedia_tonegen_play_digits(port, digits->count, _digits, 0);
 	if (st != PJ_SUCCESS)
 	{
 		PJ_LOG(3, ("DTMFgen::Init", "ERROR: pjmedia_tonegen_play_digits returns error"));

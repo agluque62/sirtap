@@ -22,7 +22,7 @@ namespace U5ki.Infrastructure
         /// <summary>
         /// Función basica de asignación de un nodo existente o nuevo.
         /// </summary>
-        protected abstract bool NodeSet(TManaged node);
+        protected abstract bool NodeSet(TManaged node, List<string> idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received);
         /// <summary>
         /// Función basica de optención de información de un nodo de la session.
         /// </summary>

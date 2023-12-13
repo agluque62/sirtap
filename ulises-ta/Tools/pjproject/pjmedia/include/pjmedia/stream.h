@@ -193,6 +193,7 @@ PJ_DECL(void) pjmedia_stream_reset_ext_header(pjmedia_stream * stream);
 PJ_DECL(void) pjmedia_stream_get_last_T1(pjmedia_stream * stream, pj_uint32_t *last_T1);
 PJ_DECL(void) pjmedia_stream_set_audio_flags(pjmedia_stream * stream, pj_uint32_t audio_flags);
 PJ_DECL(void) pjmedia_stream_set_radio_ua(pjmedia_stream* stream, pj_bool_t radio_ua);
+PJ_DECL(void) pjmedia_stream_force_no_send_rtp(pjmedia_stream* stream, pj_bool_t force_no_send_rtp);
 PJ_DECL(void) pjmedia_stream_disable_keepalives(pjmedia_stream* stream, int on);
 PJ_DECL(void) pjmedia_stream_set_ptt_id(pjmedia_stream* stream, unsigned short ptt_id);
 PJ_DECL(void) pjmedia_stream_GRS_force_ptt_mute_in_RTPRx(pjmedia_stream *stream, pj_uint32_t PttType, pj_uint32_t PttId, pj_bool_t on);

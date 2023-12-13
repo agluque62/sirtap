@@ -28,7 +28,7 @@ class DTMFgen
 public:
 	DTMFgen();
 	~DTMFgen();
-	int Init(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0, pj_bool_t pcmA);
+	int Init(int call_id, const CORESIP_tone_digit_map* digit_map, const CORESIP_tone_digits *digits, float volume_dbm0, pj_bool_t pcmA);
 	int End(pjsua_call_id call_id);
 };
 
@@ -36,7 +36,7 @@ class SignalGen
 {
 private:
 
-	static pjmedia_port_info _WNoise_port_info;
+	static pjmedia_port_info _WNoise_port_info;	
 
 public:
 	static void SendToneToCall(int call, unsigned int frequency, float volume_dbm0, int on);
@@ -45,7 +45,7 @@ public:
 	static int dBm0_to_lineal_volume_mu_law(float volume_dbm0);
 	static void SendNoiseToCall(int call_id, NoiseGenerator::NoiseType type, float volume_dbm0, int on);
 	static void StopNoiseToCall(int call_id);
-	static void SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, unsigned count, const CORESIP_tone_digit digits[], float volume_dbm0);
+	static void SendDTMF(int call_id, const CORESIP_tone_digit_map* digit_map, const CORESIP_tone_digits *digits, float volume_dbm0);
 	static void StopDTMF(int call_id);
 };
 

@@ -63,8 +63,8 @@ struct pj_thread_t
     void	   *arg;
 
 #if defined(PJ_OS_HAS_CHECK_STACK) && PJ_OS_HAS_CHECK_STACK!=0
-    pj_uint32_t	    stk_size;
-    pj_uint32_t	    stk_max_usage;
+    pj_size_t	    stk_size;
+    pj_size_t	    stk_max_usage;
     char	   *stk_start;
     const char	   *caller_file;
     int		    caller_line;
@@ -607,7 +607,7 @@ PJ_DEF(pj_status_t) pj_thread_sleep(unsigned msec)
 PJ_DEF(void) pj_thread_check_stack(const char *file, int line)
 {
     char stk_ptr;
-    pj_uint32_t usage;
+    pj_size_t usage;
     pj_thread_t *thread = pj_thread_this();
 
     pj_assert(thread);
@@ -631,7 +631,7 @@ PJ_DEF(void) pj_thread_check_stack(const char *file, int line)
 /*
  * pj_thread_get_stack_max_usage()
  */
-PJ_DEF(pj_uint32_t) pj_thread_get_stack_max_usage(pj_thread_t *thread)
+PJ_DEF(pj_size_t) pj_thread_get_stack_max_usage(pj_thread_t *thread)
 {
     return thread->stk_max_usage;
 }

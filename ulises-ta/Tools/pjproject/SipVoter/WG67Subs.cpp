@@ -966,40 +966,134 @@ void WG67Subs::OnWG67SrvStateChanged(pjsip_evsub* sub, pjsip_event* event)
 
 	if (process_Callback)
 	{
-		pjsip_dialog* subdlg = pjsip_evsub_get_dlg(sub);
-		
+		pjsip_dialog* subdlg = pjsip_evsub_get_dlg(sub);		
 			
+		pjsip_sip_uri* url = NULL;
 		pjsip_contact_hdr *remote_contact_hdr = subdlg->remote.contact;
 		pjsip_uri *remote_contact_uri = remote_contact_hdr->uri;
-		pjsip_sip_uri* url = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_contact_uri);
-		int n_writen;
-		if (url->port > 0)
+		pjsip_sip_uri* url_contact = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_contact_uri);
+		if (url_contact != NULL && url_contact->user.ptr != NULL && url_contact->user.slen > 0)
 		{
-			n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s@%.*s:%d",
-				url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+			url = url_contact;
 		}
 		else
 		{
-			n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s@%.*s",
-				url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+			pjsip_from_hdr* remote_from_hdr = subdlg->remote.info;
+			pjsip_uri* remote_from_uri = remote_from_hdr->uri;
+			pjsip_sip_uri* url_from = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_from_uri);
+			if (url_from != NULL && url_from->user.ptr != NULL && url_from->user.slen > 0)
+			{
+				url = url_from;
+			}
+			else
+			{
+				if (url_contact != NULL)
+				{
+					url = url_contact;
+				}
+				else
+				{
+					PJ_LOG(3, (THIS_FILE, "ERROR: WG67Subs::OnWG67SrvStateChanged: Remote Contact y From no validos"));
+					return;
+				}
+			}
+		}
+
+		int n_writen;
+		if (url != NULL)
+		{
+			if (url->port > 0)
+			{
+				if (url->user.slen > 0 && url->user.ptr != NULL)
+				{
+					n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s@%.*s:%d",
+						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+				}
+				else
+				{
+					n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s:%d",
+						url->host.slen, url->host.ptr, url->port);
+				}
+			}
+			else
+			{
+				if (url->user.slen > 0 && url->user.ptr != NULL)
+				{
+					n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s@%.*s",
+						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+				}
+				else
+				{
+					n_writen = pj_ansi_snprintf(info.SubscriberUri, sizeof(info.SubscriberUri), "sip:%.*s",
+						url->host.slen, url->host.ptr);
+				}
+			}
 		}
 		if (n_writen <= 0)
 		{
 			info.SubscriberUri[0] = '\0';
 		}
 
+		url = NULL;
 		pjsip_contact_hdr* local_contact_hdr = subdlg->local.contact;
 		pjsip_uri* local_contact_uri = local_contact_hdr->uri;
-		url = (pjsip_sip_uri*)pjsip_uri_get_uri(local_contact_uri);
-		if (url->port > 0)
+		url_contact = (pjsip_sip_uri*)pjsip_uri_get_uri(local_contact_uri);
+
+		if (url_contact != NULL && url_contact->user.ptr != NULL && url_contact->user.slen > 0)
 		{
-			n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s@%.*s:%d",
-				url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+			url = url_contact;
 		}
 		else
 		{
-			n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s@%.*s",
-				url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+			pjsip_from_hdr* local_from_hdr = subdlg->local.info;
+			pjsip_uri* local_from_uri = local_from_hdr->uri;
+			pjsip_sip_uri* url_from = (pjsip_sip_uri*)pjsip_uri_get_uri(local_from_uri);
+			if (url_from != NULL && url_from->user.ptr != NULL && url_from->user.slen > 0)
+			{
+				url = url_from;
+			}
+			else
+			{
+				if (url_contact != NULL)
+				{
+					url = url_contact;
+				}
+				else
+				{
+					PJ_LOG(3, (THIS_FILE, "ERROR: WG67Subs::OnWG67SrvStateChanged: Local Contact y From no validos"));
+					return;
+				}
+			}
+		}
+
+		if (url != NULL)
+		{
+			if (url->port > 0)
+			{
+				if (url->user.slen > 0 && url->user.ptr != NULL)
+				{
+					n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s@%.*s:%d",
+						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+				}
+				else
+				{
+					n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s:%d",
+						url->host.slen, url->host.ptr, url->port);
+				}
+			}
+			else
+			{
+				if (url->user.slen > 0 && url->user.ptr != NULL)
+				{
+					n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s@%.*s",
+						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+				}
+				else
+				{
+					n_writen = pj_ansi_snprintf(info.NotifierUri, sizeof(info.NotifierUri), "sip:%.*s",
+						url->host.slen, url->host.ptr);
+				}
+			}
 		}
 		if (n_writen <= 0)
 		{
@@ -1225,7 +1319,37 @@ pj_bool_t WG67Subs::SubscriptionRxRequest(pjsip_rx_data* rdata, pjsip_dialog* dl
 		return PJ_TRUE;
 	}
 
-	pjsip_evsub* evsubtmp = SubscriptionServer::Get_subMod(accid, subdlg->remote.contact->uri, &STR_WG67KEY_IN);
+	pjsip_uri* uri = NULL;
+	pjsip_contact_hdr* remote_contact_hdr = subdlg->remote.contact;
+	pjsip_uri* remote_contact_uri = remote_contact_hdr->uri;
+	pjsip_sip_uri* url_contact = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_contact_uri);
+	if (url_contact != NULL && url_contact->user.ptr != NULL && url_contact->user.slen > 0)
+	{
+		uri = remote_contact_uri;
+	}
+	else
+	{
+		pjsip_from_hdr* remote_from_hdr = subdlg->remote.info;
+		pjsip_uri* remote_from_uri = remote_from_hdr->uri;
+		pjsip_sip_uri* url_from = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_from_uri);
+		if (url_from != NULL && url_from->user.ptr != NULL && url_from->user.slen > 0)
+		{
+			uri = remote_from_uri;
+		}
+		else
+		{
+			if (url_contact != NULL)
+			{
+				uri = remote_contact_uri;
+			}
+			else
+			{
+				PJ_LOG(3, (THIS_FILE, "ERROR: WG67Subs::SubscriptionRxRequest: Remote Contact y From no validos"));
+			}
+		}
+	}
+
+	pjsip_evsub* evsubtmp = SubscriptionServer::Get_subMod(accid, uri, &STR_WG67KEY_IN);
 	if (evsubtmp != NULL)
 	{
 		if (dlg != NULL && (pjsip_evsub_get_dlg(evsubtmp) == dlg))
@@ -1330,19 +1454,66 @@ pj_bool_t WG67Subs::SubscriptionRxRequest(pjsip_rx_data* rdata, pjsip_dialog* dl
 			if (SipAgent::Cb.WG67SubscriptionReceivedCb)
 			{
 				char SubscriberUri[CORESIP_MAX_URI_LENGTH + 1];				//Uri del subscriptor
+				int n_writen;
+
+				pjsip_sip_uri* url = NULL;
 				pjsip_contact_hdr* remote_contact_hdr = subdlg->remote.contact;
 				pjsip_uri* remote_contact_uri = remote_contact_hdr->uri;
-				pjsip_sip_uri* url = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_contact_uri);
-				int n_writen;
-				if (url->port > 0)
+				pjsip_sip_uri* url_contact = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_contact_uri);
+				if (url_contact != NULL && url_contact->user.ptr != NULL && url_contact->user.slen > 0)
 				{
-					n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s@%.*s:%d",
-						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+					url = url_contact;
 				}
 				else
 				{
-					n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s@%.*s",
-						url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+					pjsip_from_hdr* remote_from_hdr = subdlg->remote.info;
+					pjsip_uri* remote_from_uri = remote_from_hdr->uri;
+					pjsip_sip_uri* url_from = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_from_uri);
+					if (url_from != NULL && url_from->user.ptr != NULL && url_from->user.slen > 0)
+					{
+						url = url_from;
+					}
+					else
+					{
+						if (url_contact != NULL)
+						{
+							url = url_contact;
+						}
+						else
+						{
+							PJ_LOG(3, (THIS_FILE, "ERROR: WG67Subs::SubscriptionRxRequest: Remote Contact y From no validos"));
+						}
+					}
+				}
+
+				if (url != NULL)
+				{
+					if (url->port > 0)
+					{
+						if (url->user.slen > 0 && url->user.ptr != NULL)
+						{
+							n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s@%.*s:%d",
+								url->user.slen, url->user.ptr, url->host.slen, url->host.ptr, url->port);
+						}
+						else
+						{
+							n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s:%d",
+								url->host.slen, url->host.ptr, url->port);
+						}
+					}
+					else
+					{
+						if (url->user.slen > 0 && url->user.ptr != NULL)
+						{
+							n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s@%.*s",
+								url->user.slen, url->user.ptr, url->host.slen, url->host.ptr);
+						}
+						else
+						{
+							n_writen = pj_ansi_snprintf(SubscriberUri, sizeof(SubscriberUri), "sip:%.*s",
+								url->host.slen, url->host.ptr);
+						}
+					}
 				}
 				if (n_writen <= 0)
 				{
@@ -1504,16 +1675,43 @@ void WG67Subs::Send_WG67_current_notify(pjsip_evsub* sub)
 						else if (sipcall->_Info.CallFlags & CORESIP_CALL_RD_IDLE) rdcalltype = radioidle;
 						else rdcalltype = radiotxrx;
 
-						pjsip_uri* sip_uri = pjsip_parse_uri(pjsip_evsub_get_pool(sub), info.remote_contact.ptr, info.remote_contact.slen, 0);
-						if (sip_uri != NULL)
+						pjsip_sip_uri* uri = NULL;
+						if (info.remote_contact.ptr != NULL && info.remote_contact.slen > 0)
 						{
-							pjsip_sip_uri* uri = (pjsip_sip_uri*)pjsip_uri_get_uri(sip_uri);
-							if (uri != NULL)
+							pjsip_uri* sip_uri_contact = pjsip_parse_uri(pjsip_evsub_get_pool(sub), info.remote_contact.ptr, info.remote_contact.slen, 0);
+							if (sip_uri_contact != NULL)
 							{
-								//Si la sesion no asigna ptt-id, porque no lo requiera. Entonces en la ED137C explicitamente dice que no se pone 
-								//en la linea de la sesion, pero en la ED137B no dice nada. En una radio real se ha visto en esta caso que pone un ptt-id a cero.
-								if (sipcall->assigned_pttid == 0 && WG67Version == 'C')
-								{									
+								pjsip_sip_uri* uri_contact = (pjsip_sip_uri*)pjsip_uri_get_uri(sip_uri_contact);
+								if (uri_contact != NULL)
+								{
+									if (uri_contact->user.ptr != NULL && uri_contact->user.slen > 0)
+									{
+										uri = uri_contact;
+									}
+								}
+							}
+						}
+						if (uri == NULL && info.remote_info.ptr != NULL && info.remote_info.slen > 0)
+						{
+							pjsip_uri* sip_uri_from = pjsip_parse_uri(pjsip_evsub_get_pool(sub), info.remote_info.ptr, info.remote_info.slen, 0);
+							if (sip_uri_from != NULL)
+							{
+								pjsip_sip_uri* uri_from = (pjsip_sip_uri*)pjsip_uri_get_uri(sip_uri_from);
+								if (uri_from != NULL)
+								{
+									uri = uri_from;
+								}
+							}
+						}						
+
+						if (uri != NULL)
+						{
+							//Si la sesion no asigna ptt-id, porque no lo requiera. Entonces en la ED137C explicitamente dice que no se pone 
+							//en la linea de la sesion, pero en la ED137B no dice nada. En una radio real se ha visto en esta caso que pone un ptt-id a cero.
+							if (sipcall->assigned_pttid == 0 && WG67Version == 'C')
+							{									
+								if (uri->user.ptr != NULL && uri->user.slen)
+								{
 									if (uri->port != 0)
 									{
 										pj_ansi_snprintf(line, sizeof(line), "sip:%.*s@%.*s:%d,%s\n",
@@ -1529,6 +1727,22 @@ void WG67Subs::Send_WG67_current_notify(pjsip_evsub* sub)
 								{
 									if (uri->port != 0)
 									{
+										pj_ansi_snprintf(line, sizeof(line), "sip:%.*s:%d,%s\n",
+											uri->host.slen, uri->host.ptr, uri->port, rdcalltype);
+									}
+									else
+									{
+										pj_ansi_snprintf(line, sizeof(line), "sip:%.*s,%s\n",
+											uri->host.slen, uri->host.ptr, rdcalltype);
+									}
+								}
+							}
+							else
+							{
+								if (uri->user.ptr != NULL && uri->user.slen)
+								{
+									if (uri->port != 0)
+									{
 										pj_ansi_snprintf(line, sizeof(line), "%u,sip:%.*s@%.*s:%d,%s\n", sipcall->assigned_pttid,
 											uri->user.slen, uri->user.ptr, uri->host.slen, uri->host.ptr, uri->port, rdcalltype);
 									}
@@ -1538,13 +1752,26 @@ void WG67Subs::Send_WG67_current_notify(pjsip_evsub* sub)
 											uri->user.slen, uri->user.ptr, uri->host.slen, uri->host.ptr, rdcalltype);
 									}
 								}
+								else
+								{
+									if (uri->port != 0)
+									{
+										pj_ansi_snprintf(line, sizeof(line), "%u,sip:%.*s:%d,%s\n", sipcall->assigned_pttid,
+											uri->host.slen, uri->host.ptr, uri->port, rdcalltype);
+									}
+									else
+									{
+										pj_ansi_snprintf(line, sizeof(line), "%u,sip:%.*s,%s\n", sipcall->assigned_pttid,
+											uri->host.slen, uri->host.ptr, rdcalltype);
+									}
+								}
 							}
-						}
 
-						if ((sizeof(charBody) - strlen(charBody)) > strlen(line))
-						{
-							pj_ansi_strcat(charBody, line);
-						}
+							if ((sizeof(charBody) - strlen(charBody)) > strlen(line))
+							{
+								pj_ansi_strcat(charBody, line);
+							}
+						}						
 					}
 				}
 			}
