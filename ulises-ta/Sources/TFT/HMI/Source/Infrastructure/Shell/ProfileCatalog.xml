@@ -17,8 +17,8 @@
 			<Dependency Name="Model" />
 		</Dependencies>
 		<Modules>
-			<!--<ModuleInfo AssemblyFile="Presentation.Sirtap.dll" />-->
-			<ModuleInfo AssemblyFile="Presentation.Twr.dll" />
+			<ModuleInfo AssemblyFile="Presentation.Sirtap.dll" />
+			<!--<ModuleInfo AssemblyFile="Presentation.Twr.dll" />-->
 			<!--<ModuleInfo AssemblyFile="Presentation.Asecna.dll" />-->
 			<!--<ModuleInfo AssemblyFile="Presentation.RadioLight.dll" />-->
 			<!--<ModuleInfo AssemblyFile="Presentation.Urr.dll" />-->

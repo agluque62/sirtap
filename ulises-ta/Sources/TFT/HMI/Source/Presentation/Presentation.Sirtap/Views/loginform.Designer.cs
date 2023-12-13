@@ -306,7 +306,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.20988F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 81.79012F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 74F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
@@ -329,12 +329,12 @@ namespace HMI.Presentation.Sirtap.Views
             this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._ClearBT.IsButtonTlf = false;
             this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(332, 1);
+            this._ClearBT.Location = new System.Drawing.Point(331, 1);
             this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
             this._ClearBT.Name = "_ClearBT";
             this._ClearBT.Permitted = true;
             this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
-            this._ClearBT.Size = new System.Drawing.Size(72, 42);
+            this._ClearBT.Size = new System.Drawing.Size(73, 42);
             this._ClearBT.TabIndex = 16;
             this._ClearBT.Text = "<--";
             this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
