@@ -150,6 +150,9 @@ namespace U5ki.RdService.Gears
         // --------------------------------------------------
         // Datos de Estado.
 
+        public bool Changed_after_configuration;    //Vale true si despues de llegar un evento de configuracion por una sectorizacion
+                                                    //ha habido algun cambio en la configuracion de este objeto/nodo/recurso
+
         public GearStatus OldStatus { get; set; }
         /// <summary>
         /// IMPORTANTE: Usar el campo para lectura interna, para no bloquear el hilo. con el semaforo.
@@ -408,6 +411,7 @@ namespace U5ki.RdService.Gears
 #if DEBUG
             _semaphore.SetName(Id);
 #endif
+            Changed_after_configuration = false;
             // Inicializacion de los Handlers.
             ReserveFrecuency = reserveFrecuency;
             UnReserveFrecuency = unReserveFrecuency;
@@ -992,15 +996,15 @@ namespace U5ki.RdService.Gears
             return this.ToString(true);
         }
         
-        public Boolean Compare(BaseGear input)
+        public Boolean Compare(BaseGear input, bool check_idDestino, bool check_RemoteControlType)
         {
             //20180207 #3136
             //Campos de configuración comunes M - N
 
-            if (this.idDestino != input.idDestino)
+            if (check_idDestino && this.idDestino != input.idDestino)
                 return false;
 
-            if (this.RemoteControlType != input.RemoteControlType)
+            if (check_RemoteControlType && this.RemoteControlType != input.RemoteControlType)
                 return false;
 
             if (this.IP != input.IP)

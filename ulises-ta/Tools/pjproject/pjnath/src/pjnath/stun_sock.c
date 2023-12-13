@@ -812,7 +812,7 @@ process_app_data:
     if (stun_sock->cb.on_rx_data) {
 	pj_bool_t ret;
 
-	ret = (*stun_sock->cb.on_rx_data)(stun_sock, data, size,
+	ret = (*stun_sock->cb.on_rx_data)(stun_sock, data, (unsigned)size,
 					  src_addr, addr_len);
 	return ret;
     }

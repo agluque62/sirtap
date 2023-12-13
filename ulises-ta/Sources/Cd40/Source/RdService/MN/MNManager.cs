@@ -192,7 +192,7 @@ namespace U5ki.RdService.NM
         /// 
         /// </summary>
         /// <param name="input"></param>
-        public void UpdatePool(Cd40Cfg input)
+        public void UpdatePool(Cd40Cfg input, List<string> idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received)
         {
             LogDebug<MNManager>("Nueva configuración recibida.", U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GENERIC_EVENT, "MNManager", CTranslate.translateResource("Configuracion Recibida"));
             if (Status != ServiceStatus.Running)
@@ -246,7 +246,7 @@ namespace U5ki.RdService.NM
                     }
 
                     BaseGear parsed_node = NodeParse(node, idDestino);
-                    NodeSet(parsed_node);
+                    NodeSet(parsed_node, idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received);
                 }
 
                 // Eliminar del pool todos los gears no encontrados en la nueva configuracion.
@@ -592,10 +592,11 @@ namespace U5ki.RdService.NM
         /// </summary>
         /// <param name="inputNode"></param>
         /// <returns></returns>
-        protected override bool NodeSet(BaseGear inputNode)
+        protected override bool NodeSet(BaseGear inputNode, List<string> idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received)
         {
             lock (NodePool)
             {
+                bool nodo_ha_cambiado = false;
                 /** 20160915. AGL. Si algun SLAVE viene con FrecuencyMain no funciona bien la inicializacion en algunos casos */
                 inputNode.FrecuencyMain = inputNode.IsSlave ? "" : inputNode.FrecuencyMain;
                 inputNode.Frecuency = inputNode.IsSlave ? "" : inputNode.Frecuency;
@@ -606,16 +607,38 @@ namespace U5ki.RdService.NM
                     OldState = NodePool[inputNode.Id].Status; 
                     //20180703 Fuerza petición de potencia
                     if (NodePool[inputNode.Id].IsMaster && NodePool[inputNode.Id].IsEmitter)
-                        NodePool[inputNode.Id].Power = 0;  
-                    
+                        NodePool[inputNode.Id].Power = 0;
+
+                    bool idDestino_ha_cambiado = false;
                     if (NodePool[inputNode.Id].idDestino != inputNode.idDestino)
+                    {
+                        if (!NodePool[inputNode.Id].IsMaster && !inputNode.IsMaster
+                            && inputNode.idDestino.Length == 0)
+                        {
+                            //Es un nodo suplente N. idDestino es distinto porque en configuracion
+                            //esta vacio para los N, y si esta asignado entonces NodePool[inputNode.Id].idDestino no lo esta.
+                            //Se comprueba si la frecuencia a la que esta asignado el nodo ha sido modificada en
+                            //configuracion despues de la sectorizacion. Es decir si su idDestino esta en la lista
+                            //idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received
+                            if (idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received.Contains(NodePool[inputNode.Id].idDestino))
+                            {
+                                idDestino_ha_cambiado = true;
+                            }
+                        }
+                        else
+                        {
+                            idDestino_ha_cambiado = true;
+                        }
+                    }
+  
+                    if (idDestino_ha_cambiado)
                     {
                         //Si el idDestino cambia, entonces se trata como uno nuevo
                         NodePool[inputNode.Id].Deallocate(GearStatus.Forbidden);
                         NodePool[inputNode.Id] = inputNode;
                         NodePool[inputNode.Id].Allocate();
                     }
-                    else if (!NodePool[inputNode.Id].Compare(inputNode))
+                    else if (!NodePool[inputNode.Id].Compare(inputNode, false, false))
                     {
                         NodePool[inputNode.Id].Deallocate(GearStatus.Forbidden);
                         NodePool[inputNode.Id] = inputNode;
@@ -637,7 +660,8 @@ namespace U5ki.RdService.NM
                         else
                         {
                             NodePool[inputNode.Id].Allocate();
-                        }						
+                        }
+                        nodo_ha_cambiado = true;
                     }
                     else if (NodePoolForbidden.Keys.Contains(inputNode.Id))
                     {
@@ -660,14 +684,20 @@ namespace U5ki.RdService.NM
                     {
                         inputNode.Allocate();
                     }
+                    nodo_ha_cambiado = true;
                 }
+
+                
+
                 // 20180206. Comprobar que, si esta asignado a una frecuencia por fallo del Master no hay que quitarlo... A no ser qué esté eliminado.
                 // 20161221. Los SLAVE a 'Init' porque los asignados son 'machacados' por la carga de una nueva configuracion.
-				//20180208 #3136				
+                //20180208 #3136				
                 if (NodePool[inputNode.Id].IsSlave && (NodePool[inputNode.Id].Status != GearStatus.Assigned && NodePool[inputNode.Id].Status != GearStatus.Forbidden) )
                 {                    
                     NodePool[inputNode.Id].Deallocate(GearStatus.Initial);
-                }		
+                }
+
+                NodePool[inputNode.Id].Changed_after_configuration = nodo_ha_cambiado;
 
                 inputNode.LastCfgModification = DateTime.Now;
             }
@@ -1050,7 +1080,7 @@ namespace U5ki.RdService.NM
             if (SlaveAsignadoaOSinReservas(gear))
                 return false;
 #if DEBUG
-            LogError<MNManager>("Gestor NM Hay Slave Sin Asignar ...", U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GENERIC_ERROR, "MNManager",CTranslate.translateResource("Gestor NM Slave sin asignar..."));
+            LogError<MNManager>("Gestor NM Hay Slave Sin Asignar ...", U5kiIncidencias.U5kiIncidencia.IGNORE);
 #endif
             return true;
         }
@@ -1062,7 +1092,8 @@ namespace U5ki.RdService.NM
         private void OnGearCheckedOK(BaseGear gear)
         {
             if (gear.Status != GearStatus.Forbidden && 
-                !(gear.Status == GearStatus.Initial && gear.OldStatus == GearStatus.Ready))
+                !(gear.Status == GearStatus.Initial && gear.OldStatus == GearStatus.Ready) &&
+                !(gear.Status == GearStatus.Initial && !gear.Changed_after_configuration))
             {
                 // Historico de Equipo OK...
                 
@@ -1232,18 +1263,21 @@ namespace U5ki.RdService.NM
 
             if (gear.IsKO || deallocateStatus == GearStatus.Forbidden)
             {
-                if (deallocateStatus == GearStatus.Fail)
+                if (gear.Status != GearStatus.Initial || (gear.Status == GearStatus.Initial && gear.Changed_after_configuration))
                 {
-                    // Historico de Equipo Caido...
-                    LogInfo<MNManager>("[OPERATION " + GearOperationStatus.Fail + "] " + gear.ToString(),
-                          U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GEAR_FAIL, gear.Id);
-                }
-                else
-                {
-                    // Historico Equipo Deshabilitado
-                    LogInfo<MNManager>("[OPERATION " + "DESHABILITAR" + "] " + gear.ToString(),
-                          U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_COMMAND_COMMAND,
-                          gear.Id, CTranslate.translateResource("Deshabilitado"));
+                    if (deallocateStatus == GearStatus.Fail)
+                    {
+                        // Historico de Equipo Caido...
+                        LogInfo<MNManager>("[OPERATION " + GearOperationStatus.Fail + "] " + gear.ToString(),
+                              U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GEAR_FAIL, gear.Id);
+                    }
+                    else
+                    {
+                        // Historico Equipo Deshabilitado
+                        LogInfo<MNManager>("[OPERATION " + "DESHABILITAR" + "] " + gear.ToString(),
+                              U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_COMMAND_COMMAND,
+                              gear.Id, CTranslate.translateResource("Deshabilitado"));
+                    }
                 }
 
                 OnGearCheckedKO(gear, deallocateStatus);
@@ -1268,8 +1302,15 @@ namespace U5ki.RdService.NM
             if (gear.IsTimeout)
             {
                 // Historico de Equipo TIMEOUT, Caido o Deshabilitado...
-                LogInfo<MNManager>("[OPERATION " + GearOperationStatus.Timeout + "] " + gear.ToString(),
-                     U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GEAR_FAIL, gear.Id, " TIMEOUT");
+
+                if (gear.Status != GearStatus.Initial || (gear.Status == GearStatus.Initial && gear.Changed_after_configuration))
+                {
+                    //Se envia este historico solo si el estado no es el inicial, y si lo es, que no haya habido cambio en la configuracion
+                    //Ya que el estado Initial se pone cuando hay una sectorizacion
+
+                    LogInfo<MNManager>("[OPERATION " + GearOperationStatus.Timeout + "] " + gear.ToString(),
+                         U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GEAR_FAIL, gear.Id, " TIMEOUT");
+                }
 
                 OnGearCheckedKO(gear, deallocateStatus);
             }

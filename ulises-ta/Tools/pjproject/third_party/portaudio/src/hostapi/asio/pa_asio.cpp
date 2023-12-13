@@ -1064,7 +1064,11 @@ static ASIOSampleRate defaultSampleRateSearchOrder_[]
 
 
 /* we look up IsDebuggerPresent at runtime incase it isn't present (on Win95 for example) */
-typedef BOOL (WINAPI *IsDebuggerPresentPtr)(VOID);
+#ifdef _WIN64
+typedef INT_PTR(FAR WINAPI* IsDebuggerPresentPtr)();
+#else
+typedef int (FAR WINAPI* IsDebuggerPresentPtr)();
+#endif  // _WIN64
 IsDebuggerPresentPtr IsDebuggerPresent_ = 0;
 //FARPROC IsDebuggerPresent_ = 0; // this is the current way to do it apparently according to davidv
 

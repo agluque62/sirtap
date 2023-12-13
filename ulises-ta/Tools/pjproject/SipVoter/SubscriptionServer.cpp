@@ -116,7 +116,7 @@ int SubscriptionServer::Del_subMod(pjsip_evsub* sub)
 /**
  * Get_subMod: Retorna el objeto pjsip_evsub para un contact concreto y un tipo de evento
  * @param	accid	Account id			Account id
- * @param	remote_uri	Uri del contact
+ * @param	remote_uri	Uri del from o del contact
  * @param	event_type	Tipo de evento de la subscripcion
  * @return	NULL si no lo encuentra
  */
@@ -152,23 +152,36 @@ pjsip_evsub* SubscriptionServer::Get_subMod(pjsua_acc_id accid, pjsip_uri* remot
 				if (eventhdr != NULL)
 				{
 					pjsip_sip_uri* sip_remote_uri = (pjsip_sip_uri*)pjsip_uri_get_uri(remote_uri);
-					pjsip_sip_uri* sip_dlg_remote_uri = (pjsip_sip_uri*)pjsip_uri_get_uri(dlg->remote.contact->uri);
-					if (sip_remote_uri != NULL && sip_dlg_remote_uri != NULL)
+					pjsip_sip_uri* sip_dlg_remote_uri = (pjsip_sip_uri*)pjsip_uri_get_uri(dlg->remote.info->uri);
+					pjsip_sip_uri* sip_dlg_remote_contact_uri = (pjsip_sip_uri*)pjsip_uri_get_uri(dlg->remote.contact->uri);
+					
+					/*Comparamos la uri con el from y el contact*/
+					while (1)
 					{
-						int sip_remote_uri_port = sip_remote_uri->port;
-						if (sip_remote_uri->port == 0 || sip_remote_uri->port == 5060) sip_remote_uri_port = 0;
-						int sip_dlg_remote_uri_port = sip_dlg_remote_uri->port;
-						if (sip_dlg_remote_uri->port == 0 || sip_dlg_remote_uri->port == 5060) sip_dlg_remote_uri_port = 0;
-
-						if (pj_stricmp(&sip_remote_uri->user, &sip_dlg_remote_uri->user) == 0 &&
-							pj_stricmp(&sip_remote_uri->host, &sip_dlg_remote_uri->host) == 0 &&
-							sip_remote_uri_port == sip_dlg_remote_uri_port &&
-							pj_strcmp(event_type, &eventhdr->event_type) == 0)
+						if (sip_remote_uri != NULL && sip_dlg_remote_uri != NULL)
 						{
-							ret = sub;
-							pjsip_dlg_dec_lock(dlg);
-							break;
+							int sip_remote_uri_port = sip_remote_uri->port;
+							if (sip_remote_uri->port == 0 || sip_remote_uri->port == 5060) sip_remote_uri_port = 0;
+							int sip_dlg_remote_uri_port = sip_dlg_remote_uri->port;
+							if (sip_dlg_remote_uri->port == 0 || sip_dlg_remote_uri->port == 5060) sip_dlg_remote_uri_port = 0;
+
+							if (pj_stricmp(&sip_remote_uri->user, &sip_dlg_remote_uri->user) == 0 &&
+								pj_stricmp(&sip_remote_uri->host, &sip_dlg_remote_uri->host) == 0 &&
+								sip_remote_uri_port == sip_dlg_remote_uri_port &&
+								pj_strcmp(event_type, &eventhdr->event_type) == 0)
+							{
+								ret = sub;
+								break;
+							}
 						}
+
+						if (sip_dlg_remote_uri == sip_dlg_remote_contact_uri) break;
+						sip_dlg_remote_uri = sip_dlg_remote_contact_uri;
+					}
+					if (ret != NULL)
+					{
+						pjsip_dlg_dec_lock(dlg);
+						break;
 					}
 				}
 				pjsip_dlg_dec_lock(dlg);
@@ -450,7 +463,11 @@ void SubscriptionServer::SendConfInfoFromAcc(pjsua_acc_id accid, const CORESIP_C
 	}
 
 	AccountUserData* accUserData = (AccountUserData*)pjsua_acc_get_user_data(accid);
-	if (accUserData == NULL) return;
+	if (accUserData == NULL)
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SendConfInfoFromAcc: Account no valido"));
+		return;
+	}
 
 	std::list<pjsip_evsub*, std::allocator<pjsip_evsub*>> sub_to_send_current_notify_list;	//Contiene las subscripciones que envian los Notify
 
@@ -803,7 +820,7 @@ int SubscriptionServer::GetWG67SubscriptionList(pjsua_acc_id acc_id, int *nSubsc
 	pj_mutex_unlock(accUserData->subsServer->_subModlist_mutex);
 
 	*WG67Subscriptions = accUserData->subsServer->pWG67Subscriptions_array;
-	*nSubscriptions = n_subscriptions;
+	*nSubscriptions = (int)n_subscriptions;
 
 	return ret;
 }

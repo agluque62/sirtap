@@ -34,7 +34,7 @@ namespace U5ki.Infrastructure
         /// <summary>
         /// Funcion para la validación de una nueva configuración, frente la que esta corriendo, y tomar todas las accciones oportunas.
         /// </summary>
-        void UpdatePool(configurationType configuration);
+        void UpdatePool(configurationType configuration, List<string> idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received);
 
         /// <summary>
         /// Funcion para hacer un borrado del pool.

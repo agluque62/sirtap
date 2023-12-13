@@ -267,7 +267,7 @@ PJ_DECL(void) pj_thread_check_stack(const char *file, int line);
 /** @internal
  * Get maximum stack usage statistic. 
  */
-PJ_DECL(pj_uint32_t) pj_thread_get_stack_max_usage(pj_thread_t *thread);
+PJ_DECL(pj_size_t) pj_thread_get_stack_max_usage(pj_thread_t *thread);
 
 /** @internal
  * Dump thread stack status. 

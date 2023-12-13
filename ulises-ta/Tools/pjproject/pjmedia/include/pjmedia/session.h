@@ -185,7 +185,7 @@ PJ_DECL(void) pjmedia_session_set_request_MAM(pjmedia_session *session, pjmedia_
 PJ_DECL(void) pjmedia_session_force_request_MAM(pjmedia_session *session);
 PJ_DECL(void) pjmedia_session_force_send_KA_packet(pjmedia_session *session);
 PJ_DECL(void) pjmedia_session_reset_ext_header( pjmedia_session *session);
-PJ_DECL(void) pjmedia_session_force_set_impairments(pjmedia_session* session, int Perdidos, int Duplicados, int LatMin, int LatMax);
+PJ_DECL(pj_status_t) pjmedia_session_force_set_impairments(pjmedia_session* session, int Perdidos, int Duplicados, int LatMin, int LatMax);
 
 /**
  * Get user data of the session.

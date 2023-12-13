@@ -328,7 +328,7 @@ PJ_DECL(const char*) pj_ioqueue_name(void);
  * @return		PJ_SUCCESS on success.
  */
 PJ_DECL(pj_status_t) pj_ioqueue_create( pj_pool_t *pool, 
-					pj_size_t max_fd,
+					unsigned int max_fd,
 					pj_ioqueue_t **ioqueue);
 
 /**

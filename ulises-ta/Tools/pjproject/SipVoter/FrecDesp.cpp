@@ -884,7 +884,7 @@ void FrecDesp::GetQidx(int index_group, int index_sess, pj_uint8_t *qidx, pj_uin
 
 	if (index_group < 0 || index_sess < 0 || index_group >= MAX_GROUPS || index_sess >= MAX_SESSIONS) 
 	{
-		PJ_LOG(5,(__FILE__, "ERROR: FrecDesp::GetQidx index_group (%d) o index_sess (%d) son erroneos \n", index_group, index_sess));
+		//PJ_LOG(5,(__FILE__, "ERROR: FrecDesp::GetQidx index_group (%d) o index_sess (%d) son erroneos \n", index_group, index_sess));
 		return;
 	}
 
@@ -2370,7 +2370,7 @@ int FrecDesp::NtpStat(char *err, int err_size)
 	/*----------------------------------------------------------------------*/
 	/* Receive the reply message */
 
-	n = pj_sock_select(ntp_sd+1, &ntp_fds, (pj_fd_set_t *) NULL, (pj_fd_set_t *) NULL, &tv);
+	n = pj_sock_select((int)(ntp_sd+1), &ntp_fds, (pj_fd_set_t *) NULL, (pj_fd_set_t *) NULL, &tv);
 	if (n == 0)
 	{
 		DisConnectNTPd(err, err_size);		//Nos desconectamos de NTPd

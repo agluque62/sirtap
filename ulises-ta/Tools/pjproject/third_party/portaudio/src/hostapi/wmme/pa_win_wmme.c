@@ -720,7 +720,7 @@ static PaError InitializeInputDeviceInfo( PaWinMmeHostApiRepresentation *winMmeH
     {
         /* Append I/O suffix to WAVE_MAPPER device. */
         deviceName = (char *)PaUtil_GroupAllocateMemory(
-                    winMmeHostApi->allocations, StrTLen( wic.szPname ) + 1 + sizeof(constInputMapperSuffix_) );
+                    winMmeHostApi->allocations, (long) StrTLen( wic.szPname ) + 1 + (long) sizeof(constInputMapperSuffix_) );
         if( !deviceName )
         {
             result = paInsufficientMemory;
@@ -732,7 +732,7 @@ static PaError InitializeInputDeviceInfo( PaWinMmeHostApiRepresentation *winMmeH
     else
     {
         deviceName = (char*)PaUtil_GroupAllocateMemory(
-                    winMmeHostApi->allocations, StrTLen( wic.szPname ) + 1 );
+                    winMmeHostApi->allocations, (long) StrTLen( wic.szPname ) + 1 );
         if( !deviceName )
         {
             result = paInsufficientMemory;
@@ -844,7 +844,7 @@ static PaError InitializeOutputDeviceInfo( PaWinMmeHostApiRepresentation *winMme
     {
         /* Append I/O suffix to WAVE_MAPPER device. */
         deviceName = (char *)PaUtil_GroupAllocateMemory(
-                    winMmeHostApi->allocations, StrTLen( woc.szPname ) + 1 + sizeof(constOutputMapperSuffix_) );
+                    winMmeHostApi->allocations, (long) StrTLen( woc.szPname ) + 1 + (long) sizeof(constOutputMapperSuffix_) );
         if( !deviceName )
         {
             result = paInsufficientMemory;
@@ -856,7 +856,7 @@ static PaError InitializeOutputDeviceInfo( PaWinMmeHostApiRepresentation *winMme
     else
     {
         deviceName = (char*)PaUtil_GroupAllocateMemory(
-                    winMmeHostApi->allocations, StrTLen( woc.szPname ) + 1 );
+                    winMmeHostApi->allocations, (long) StrTLen( woc.szPname ) + 1 );
         if( !deviceName )
         {
             result = paInsufficientMemory;

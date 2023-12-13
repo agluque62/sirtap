@@ -651,12 +651,12 @@ SipCall::SipCall(pjsua_call_id call_id, const CORESIP_CallInfo * info)
 	_Acc_id = PJSUA_INVALID_ID;
 	SelcalSupported = PJ_FALSE;
 	GRS_Td1 = 0;
-	CallFlags_prev_reinvite = 0;
+	Callflag_previous_reinvite = 0;
 	remote_grs_supports_ED137C_Selcal = PJ_FALSE;
 
 	_R2SKeepAlivePeriod = 200;
 	_R2SKeepAliveMultiplier = 10;
-	
+
 	_Pool = pjsua_pool_create(NULL, 512, 512);
 	pj_memcpy(&_Info, info, sizeof(CORESIP_CallInfo));
 
@@ -851,7 +851,7 @@ int SipCall::Hacer_la_llamada_saliente()
 * 1.
 */
 int SipCall::New(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outInfo) 
-{ 	
+{
 	SipCall * call = new SipCall(info, outInfo);
 	int ret = PJSUA_INVALID_ID;
 	if (call != NULL)
@@ -878,24 +878,6 @@ int SipCall::New(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 		char dsturi[512];
 		strncpy(dsturi, outInfo->DstUri, sizeof(dsturi));
 		dsturi[sizeof(dsturi)-1] = '\0';
-		throw PJLibException(__FILE__, PJ_EINVAL).Msg("SipCall::New:", "Error llamando a %s", dsturi);
-	}
-
-	pjsua_call* pjcall;
-	pjsip_dialog* dlg;
-	pj_status_t st = acquire_call("SipCall::New()", call->_Id, &pjcall, &dlg);
-	if (st == PJ_SUCCESS)
-	{
-		call->_Dlg = dlg;
-		call->_Acc_id = pjcall->acc_id;
-		pjsip_dlg_dec_lock(dlg);
-	}	
-	else
-	{
-		char dsturi[512];
-		strncpy(dsturi, outInfo->DstUri, sizeof(dsturi));
-		dsturi[sizeof(dsturi) - 1] = '\0';
-		ret = PJSUA_INVALID_ID;
 		throw PJLibException(__FILE__, PJ_EINVAL).Msg("SipCall::New:", "Error llamando a %s", dsturi);
 	}
 
@@ -1230,7 +1212,6 @@ void SipCall::Hangup(pjsua_call_id call_id, unsigned code)
 	
 		st = pjsua_call_hangup(call_id, code, NULL, &msg_data);
 	}
-	
 
 	PJ_CHECK_STATUS(st, ("ERROR finalizando llamada", "[Call=%d] [Code=%d]", call_id, code));	
 }
@@ -1453,6 +1434,7 @@ void SipCall::MovedTemporallyAnswer(pjsua_call_id call_id, const char *dst_uri, 
 	if (!sipcall)
 	{
 		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR adquiriendo SipCall->user_data en MovedTemporallyAnswer", "[Call=%d]", call_id));
 		return;
 	}
 
@@ -1691,9 +1673,10 @@ void SipCall::Hold(pjsua_call_id call_id, bool hold)
 *	@param	CallType_SDP	9 couplig, 7 Radio-Rxonly, 5 Radio-TxRx, 6 Radio-Idle
 *	@param	TxRx_SDP		4 Rx, 8 Tx, 0 TxRx, 22 Vacio
 *	@param	etm_vcs_bss_methods	Para ETM, string con los literales de los metodos BSS separados por comas. El string debe terminar caracter '\0'. Si vale NULL se ignora
+*   @param	ForceSDPSendRecvAttr	Sirve para forzar el valor de del atributo send-recv en el SDP 
 *	@return				
 */
-void SipCall::Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, char* etm_vcs_bss_methods)
+void SipCall::Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, char* etm_vcs_bss_methods, CORESIP_SDPSendRecvAttrForced ForceSDPSendRecvAttr)
 {
 	pjsua_call* pjcall;
 	pjsip_dialog* dlg;
@@ -1787,7 +1770,8 @@ void SipCall::Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, ch
 		if (--tries == 0) break;
 	}
 
-	call->CallFlags_prev_reinvite = call->_Info.CallFlags;
+	call->Callflag_previous_reinvite = call->_Info.CallFlags;
+
 	call->_Info.CallFlags = 0;
 	switch (CallType_SDP)
 	{
@@ -1816,9 +1800,9 @@ void SipCall::Reinvite(pjsua_call_id call_id, int CallType_SDP, int TxRx_SDP, ch
 	case 8:
 		call->_Info.CallFlags |= CORESIP_CALL_RD_TXONLY;
 		break;
-	}
+	}	
 
-	
+	call->_Info.ForceSDPSendRecvAttr = ForceSDPSendRecvAttr;
 
 	st = pjsua_call_reinvite(call_id, PJ_TRUE, NULL, &msgData);
 	pjsip_dlg_dec_lock(dlg);
@@ -2120,6 +2104,24 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				}
 			}
 
+			if (pjsip_endpt_Is_ETM(pjsua_var.endpt))
+			{
+				//En el caso del ETM. Por orden de Enaire, cortamos el envio de RTP al hacer el hangup
+
+				pjmedia_stream* stream = NULL;
+				pjmedia_session* session = NULL;
+
+				session = pjsua_call_get_media_session(call_id);
+				if (session != NULL)
+				{
+					stream = pjmedia_session_get_stream(session, 0);
+					if (stream != NULL)
+					{
+						pjmedia_stream_force_no_send_rtp(stream, PJ_TRUE);
+					}
+				}
+			}
+
 			call->IniciaFinSesion();
 		}
 		else
@@ -2141,7 +2143,27 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 
 	pjmedia_session * sess = NULL;
 	pjmedia_session_info sess_info;
-	if (callInfo.state == PJSIP_INV_STATE_CONFIRMED)
+
+	if (callInfo.state == PJSIP_INV_STATE_CALLING)
+	{
+		pjsua_call* pjcall;
+		pjsip_dialog* dlg;
+		pj_status_t status;
+
+		status = acquire_call("OnStateChanged()", call_id, &pjcall, &dlg);
+		if (status == PJ_SUCCESS) {
+			call->_Dlg = dlg;
+			call->_Acc_id = callInfo.acc_id;
+			pjsip_dlg_dec_lock(dlg);
+		}
+		else
+		{
+			PJ_LOG(3, (__FILE__, "ERROR: OnStateChanged: acquire_call retorna error"));
+			call->_Dlg = NULL;
+			call->_Acc_id = PJSUA_INVALID_ID;
+		}
+	}
+	else if (callInfo.state == PJSIP_INV_STATE_CONFIRMED)
 	{
 		sess = pjsua_call_get_media_session(call_id);
 		if (pjmedia_session_get_info(sess, &sess_info ) != PJ_SUCCESS)
@@ -2361,8 +2383,10 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 
 		if (radio_grs)
 		{
-			if (callInfo.state == PJSIP_INV_STATE_CONFIRMED || callInfo.state == PJSIP_INV_STATE_DISCONNECTED)
+			if (callInfo.state == PJSIP_INV_STATE_CONFIRMED || 
+				(callInfo.state == PJSIP_INV_STATE_DISCONNECTED && callInfo.last_status == PJSIP_SC_OK))
 			{
+				//Se envian los Notify cuando se establece una sesion nueva o cuando se desconecta de una sesion con BYE				
 				SubscriptionServer::SendWG67NotifyFromAcc(call_id, PJ_TRUE, 
 					AccountUserData::NO_ENVIAR_WG67_NOTIFY_SI_TODAS_LAS_SESIONES_SON_FICTICIAS);
 			}
@@ -2380,7 +2404,8 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 			if (call->_Info.Type == CORESIP_CALL_RD)
 			{
 				pj_uint32_t audio_flags = 0;
-				if (call->_Info.CallFlags & CORESIP_CALL_RD_RXONLY)
+				if (call->_Info.CallFlags & CORESIP_CALL_RD_RXONLY ||
+					call->_Info.CallFlags & CORESIP_CALL_RD_RADIO_RXONLY)
 				{
 					audio_flags |= STREAM_RXONLY;
 				}
@@ -2595,6 +2620,22 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 			{
 				accUserData->FreePTTID(call->assigned_pttid);
 			}
+		}	
+
+		if (pjsip_endpt_Is_ETM(pjsua_var.endpt))
+		{
+			//En el caso del ETM. Por orden de Enaire, cortamos el envio de RTP al hacer el hangup
+
+			pjmedia_stream* stream = NULL;
+			sess = pjsua_call_get_media_session(call_id);
+			if (sess != NULL)
+			{
+				stream = pjmedia_session_get_stream(sess, 0);
+				if (stream != NULL)
+				{
+					pjmedia_stream_force_no_send_rtp(stream, PJ_TRUE);
+				}
+			}
 		}
 
 		call->IniciaFinSesion();
@@ -2788,7 +2829,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 {
 	PJ_UNUSED_ARG(acc_id);
 	pj_assert(pjsua_call_get_user_data(call_id) == NULL);
-	
+
 	const pjmedia_sdp_session* neg_local_sdp = NULL;
 	const pjmedia_sdp_session* initial_sdp = NULL;
 
@@ -2977,6 +3018,27 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
 		if (radio_grs)
 		{
+			const pjmedia_sdp_session* neg_remote_sdp;
+			st = pjmedia_sdp_neg_get_neg_remote(call->inv->neg, &neg_remote_sdp);
+			if (st == PJ_SUCCESS)
+			{
+				//Como GRS el media direction debe ser siempre sendrecv
+				//Modificamos el remote sdp para simular que es sendrecv. Es la unica forma que he encontrado de forzar 
+				// que un GRS siempre ponga sendrecv
+				//Borramos todos los atributos
+				pjmedia_sdp_attr* a = NULL;
+				for (unsigned int i = 0; i < neg_remote_sdp->media_count; i++)
+				{
+					pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "inactive");
+					pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "sendrecv");
+					pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "sendonly");
+					pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "recvonly");
+				}
+
+				a = pjmedia_sdp_attr_create(call->inv->pool, "sendrecv", NULL);
+				pjmedia_sdp_media_add_attr(neg_remote_sdp->media[0], a);
+			}
+
 			pj_bool_t bad_sdp = PJ_FALSE;
 			if (rem_sdp == NULL)
 			{
@@ -3070,6 +3132,8 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 		SDPUtils::NegotiateNoFreqDisconn(call_id, info.Type, radio_grs, neg_local_sdp, rem_sdp, &info.NoFreqDisconn);
 		SDPUtils::NegotiateNoFreqDisconn(call_id, info.Type, radio_grs, initial_sdp, rem_sdp, &info.NoFreqDisconn);
 
+		info.ForceSDPSendRecvAttr = CORESIP_SDP_SR_ATTR_NOFORCED;
+
 		SipCall* sipcall = new SipCall(call_id, &info);
 		pjsua_call_set_user_data(call_id, sipcall);
 
@@ -3089,6 +3153,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 			return;
 		}
 		sipcall->_Dlg = dlg;
+
 		sipcall->_Acc_id = acc_id;
 
 		//Para extraer la uri de destino
@@ -3129,7 +3194,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 			if (neg_local_sdp != NULL)
 			{
 				SDPUtils::UpdateLocalSdpRadioTypeAsGRS(call->inv->pool, call_id, (pjmedia_sdp_session*)neg_local_sdp, rem_sdp, &TipoGrsFlags);
-			}		
+			}
 
 			SDPUtils::SetGRSBssMethod_from_SDP(acc_id, call_id, rem_sdp);
 			if (strlen(sipcall->etm_grs_bss_method_selected) > 0)
@@ -3451,6 +3516,28 @@ void SipCall::OnMediaStateChanged(pjsua_call_id call_id, int *returned_code)
 								pjmedia_stream_set_ptt_id(stream, sipcall->assigned_pttid);
 							}
 						}
+
+						//Por aqui pasa cuando se envia un reinvite. Se activa la media direction dependiendo del atributo send-recv forzado
+						switch (sipcall->_Info.ForceSDPSendRecvAttr)
+						{
+						case CORESIP_SDP_SR_ATTR_NOFORCED:
+							break;
+						case CORESIP_SDP_SR_ATTR_INACTIVE:
+							pjmedia_session_pause(sess, PJMEDIA_DIR_ENCODING_DECODING);
+							break;
+						case CORESIP_SDP_SR_ATTR_SENDONLY:
+							pjmedia_session_resume(sess, PJMEDIA_DIR_ENCODING_DECODING);
+							pjmedia_session_pause(sess, PJMEDIA_DIR_DECODING);
+							break;
+						case CORESIP_SDP_SR_ATTR_RECVONLY:
+							pjmedia_session_resume(sess, PJMEDIA_DIR_ENCODING_DECODING);
+							pjmedia_session_pause(sess, PJMEDIA_DIR_ENCODING);
+							break;
+						case CORESIP_SDP_SR_ATTR_NONE:
+						case CORESIP_SDP_SR_ATTR_SENDRECV:
+							pjmedia_session_resume(sess, PJMEDIA_DIR_ENCODING_DECODING);
+							break;
+						}			
 					}
 				}
 
@@ -3459,7 +3546,8 @@ void SipCall::OnMediaStateChanged(pjsua_call_id call_id, int *returned_code)
 					if (stream != NULL)
 					{
 						pj_uint32_t audio_flags = 0;
-						if (sipcall->_Info.CallFlags & CORESIP_CALL_RD_RXONLY)
+						if (sipcall->_Info.CallFlags & CORESIP_CALL_RD_RXONLY ||
+							sipcall->_Info.CallFlags & CORESIP_CALL_RD_RADIO_RXONLY)
 						{
 							audio_flags |= STREAM_RXONLY;
 						}
@@ -3728,6 +3816,27 @@ void SipCall::OnReinviteReceived(pjsua_call_id call_id, const pjsip_event* e, pj
 					if (neg_local_sdp != NULL)
 					{
 						SDPUtils::UpdateLocalSdpRadioTypeAsGRS(pjcall->inv->pool, call_id, (pjmedia_sdp_session*)neg_local_sdp, (pjmedia_sdp_session *)remote_sdp, &TipoGrsFlags);
+
+						const pjmedia_sdp_session* neg_remote_sdp;
+						st = pjmedia_sdp_neg_get_neg_remote(pjcall->inv->neg, &neg_remote_sdp);
+						if (st == PJ_SUCCESS)
+						{
+							//Como GRS el media direction debe ser siempre sendrecv
+							//Modificamos el remote sdp para simular que es sendrecv. Es la unica forma que he encontrado de forzar 
+							// que un GRS siempre ponga sendrecv
+							//Borramos todos los atributos
+							pjmedia_sdp_attr* a = NULL;
+							for (unsigned int i = 0; i < neg_remote_sdp->media_count; i++)
+							{
+								pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "inactive");
+								pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "sendrecv");
+								pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "sendonly");
+								pjmedia_sdp_media_remove_all_attr(neg_remote_sdp->media[i], "recvonly");
+							}
+
+							a = pjmedia_sdp_attr_create(pjcall->inv->pool, "sendrecv", NULL);
+							pjmedia_sdp_media_add_attr(neg_remote_sdp->media[0], a);
+						}
 					}
 
 					SDPUtils::SetGRSBssMethod_from_SDP(callInfo.acc_id, call_id, remote_sdp);
@@ -3785,7 +3894,8 @@ void SipCall::OnReinviteReceived(pjsua_call_id call_id, const pjsip_event* e, pj
 						if (stream != NULL)
 						{
 							pj_uint32_t audio_flags = 0;
-							if (sipcall->_Info.CallFlags & CORESIP_CALL_RD_RXONLY)
+							if (sipcall->_Info.CallFlags & CORESIP_CALL_RD_RXONLY ||
+								sipcall->_Info.CallFlags & CORESIP_CALL_RD_RADIO_RXONLY)
 							{
 								audio_flags |= STREAM_RXONLY;
 							}
@@ -3972,13 +4082,13 @@ void SipCall::OnTransferStatusChanged(pjsua_call_id based_call_id, int st_code, 
 * Trata cambios genericos en el estado de una llamada.
 * http://www.pjsip.org/docs/latest-1/pjsip/docs/html/structpjsua__callback.htm#acec485ed428d48a6ca0d28027e5cccde
 */
-void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, pjsip_event* e)
+void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, pjsip_event *e)
 {
 	const pjsip_method info_method = { PJSIP_OTHER_METHOD, { "INFO", 4 } };
-
+	
 	static pj_str_t _gSubjectHdr = { "Reason", 6 };
 
-	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
+	SipCall *sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 
 	if (sipcall && sipcall->_Dlg != NULL && tsx->role == PJSIP_ROLE_UAC && e->type == PJSIP_EVENT_TSX_STATE && e->body.tsx_state.type == PJSIP_EVENT_RX_MSG)
 	{
@@ -3989,7 +4099,7 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, p
 			//No hacemos nada
 		}
 		else if (e->body.rx_msg.rdata->msg_info.msg->type == PJSIP_RESPONSE_MSG && pjsip_dlg_get_WG67_version(sipcall->_Dlg, NULL) == PJ_FALSE)
-		{
+		{		
 			char radio_version = 0;
 			char phone_version = 0;
 			char WG67_version_value_buf[32];
@@ -4005,6 +4115,17 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, p
 				if (sipcall->_Info.Type == CORESIP_CALL_RD) sipcall->ED137Version = radio_version;
 				else sipcall->ED137Version = phone_version;
 			}
+		}		
+
+		if (tsx->state == PJSIP_TSX_STATE_COMPLETED && tsx->method.id == PJSIP_INVITE_METHOD &&
+			sipcall->_Info.Type == CORESIP_CALL_RD &&
+			e->body.rx_msg.rdata->msg_info.msg->type == PJSIP_RESPONSE_MSG && 
+			e->body.rx_msg.rdata->msg_info.msg->line.status.code == 603)
+		{
+			//Es un decline a un INVITE. Se supone que re-invite a una radio que solo puede ser rechazado
+			//Porque no se acepta el tipo Radio-Rxonly o los txrxmode
+			//Se restauran CallFlags
+			sipcall->_Info.CallFlags = sipcall->Callflag_previous_reinvite;
 		}
 	}
 
@@ -4138,24 +4259,24 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, p
 	}
 
 	if ((tsx->role == PJSIP_ROLE_UAS) && (tsx->state == PJSIP_TSX_STATE_TRYING) &&
-		(pjsip_method_cmp(&tsx->method, pjsip_get_cancel_method()) == 0))
+		 (pjsip_method_cmp(&tsx->method, pjsip_get_cancel_method()) == 0)) 		
 	{
 		//Se ha recibido un CANCEL
 
 		pjsua_call_info callInfo;
 		if (pjsua_call_get_info(call_id, &callInfo) == PJ_SUCCESS)
-		{
+		{	
 			if (e->body.rx_msg.rdata != NULL)
 			{
 				if (e->body.rx_msg.rdata->msg_info.msg != NULL)
 				{
-					pjsip_subject_hdr* subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(e->body.rx_msg.rdata->msg_info.msg, &_gSubjectHdr, NULL);
+					pjsip_subject_hdr * subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(e->body.rx_msg.rdata->msg_info.msg, &_gSubjectHdr, NULL);
 					if (subject != NULL)
 					{
-						SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
+						SipCall * sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
 						if (sipcall)
 						{
-							pj_ansi_snprintf(sipcall->LastReason, sizeof(sipcall->LastReason) - 1, "%.*s",
+							pj_ansi_snprintf(sipcall->LastReason, sizeof(sipcall->LastReason) - 1, "%.*s", 
 								subject->hvalue.slen, subject->hvalue.ptr);
 						}
 					}
@@ -4181,15 +4302,15 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, p
 				SipAgent::Cb.TransferStatusCb(call_id | CORESIP_CALL_ID, code);
 			}
 		}
-	}
+	}	
 	else if ((tsx->role == PJSIP_ROLE_UAS) && (tsx->state == PJSIP_TSX_STATE_TRYING) &&
 		(pjsip_method_cmp(&tsx->method, pjsip_get_subscribe_method()) == 0))
 	{
 
-		pjsip_rx_data* rdata = e->body.tsx_state.src.rdata;
+		pjsip_rx_data * rdata = e->body.tsx_state.src.rdata;
 
-		pjsip_event_hdr* event = (pjsip_event_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &STR_EVENT, NULL);
-		pjsip_expires_hdr* expires = (pjsip_expires_hdr*)pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_EXPIRES, NULL);
+		pjsip_event_hdr * event = (pjsip_event_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &STR_EVENT, NULL);
+		pjsip_expires_hdr *expires = (pjsip_expires_hdr*)pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_EXPIRES, NULL);
 
 		if (event && (pj_stricmp(&event->event_type, &STR_WG67KEY_IN) == 0) && expires->ivalue != 0)
 		{
@@ -4201,68 +4322,68 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction* tsx, p
 		}
 		else if (event && (pj_stricmp(&event->event_type, &STR_CONFERENCE) == 0) && expires->ivalue != 0)
 		{
-			pjsip_dialog* dlg = pjsip_tsx_get_dlg(tsx);
+			pjsip_dialog * dlg = pjsip_tsx_get_dlg(tsx);
 			if (dlg == NULL)
 				return;
 
-			SipCall* call = (SipCall*)pjsua_call_get_user_data(call_id);
+			SipCall * call = (SipCall*)pjsua_call_get_user_data(call_id);
 			pj_status_t st;
 
-			if (call && dlg->local.contact->focus)
-			{
-				if (call->_ConfInfoSrvEvSub)
-				{
-					PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Recibe conference SUBSCRIBE STATE %s", pjsip_evsub_get_state_name(call->_ConfInfoSrvEvSub)));
-				}
+if (call && dlg->local.contact->focus)
+{
+	if (call->_ConfInfoSrvEvSub)
+	{
+		PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Recibe conference SUBSCRIBE STATE %s", pjsip_evsub_get_state_name(call->_ConfInfoSrvEvSub)));
+	}
 
-				if (!call->_ConfInfoSrvEvSub)
-				{
-					st = pjsip_conf_create_uas(dlg, &call->_ConfInfoSrvCb, rdata, &call->_ConfInfoSrvEvSub);
-					if (st != PJ_SUCCESS)
-					{
-						pjsua_perror("sipcall.cpp", "ERROR creando servidor de subscripcion a conferencia", st);
-						goto subscription_error;
-					}
-					//pjsip_evsub_set_mod_data(call->_ConfInfoSrvEvSub, pjsua_var.mod.id, call);	
-					pjsip_evsub_set_user_data(call->_ConfInfoSrvEvSub, (void*)call);
+	if (!call->_ConfInfoSrvEvSub)
+	{
+		st = pjsip_conf_create_uas(dlg, &call->_ConfInfoSrvCb, rdata, &call->_ConfInfoSrvEvSub);
+		if (st != PJ_SUCCESS)
+		{
+			pjsua_perror("sipcall.cpp", "ERROR creando servidor de subscripcion a conferencia", st);
+			goto subscription_error;
+		}
+		//pjsip_evsub_set_mod_data(call->_ConfInfoSrvEvSub, pjsua_var.mod.id, call);	
+		pjsip_evsub_set_user_data(call->_ConfInfoSrvEvSub, (void*)call);
 
-					PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Servidor SUBSCRIBE creado"));
+		PJ_LOG(5, ("sipcall.cpp", "NOTIFY CONF: Servidor SUBSCRIBE creado"));
 
-					st = pjsip_conf_accept(call->_ConfInfoSrvEvSub, rdata, PJSIP_SC_OK, NULL);
-					if (st != PJ_SUCCESS)
-					{
-						pjsua_perror("sipcall.cpp", "ERROR aceptando subscripcion a conferencia", st);
-						goto subscription_error;
-					}
+		st = pjsip_conf_accept(call->_ConfInfoSrvEvSub, rdata, PJSIP_SC_OK, NULL);
+		if (st != PJ_SUCCESS)
+		{
+			pjsua_perror("sipcall.cpp", "ERROR aceptando subscripcion a conferencia", st);
+			goto subscription_error;
+		}
 
-					pjsip_evsub_set_state(call->_ConfInfoSrvEvSub, PJSIP_EVSUB_STATE_ACCEPTED);
+		pjsip_evsub_set_state(call->_ConfInfoSrvEvSub, PJSIP_EVSUB_STATE_ACCEPTED);
 
-					pjsua_call_info info;
-					st = pjsua_call_get_info(call_id, &info);
-					if (st == PJ_SUCCESS && SipAgent::Cb.IncomingSubscribeConfCb)
-					{
-						SipAgent::Cb.IncomingSubscribeConfCb(call_id | CORESIP_CALL_ID, (const char*)info.remote_info.ptr, (const int)info.remote_info.slen);
-					}
-				}
-			}
+		pjsua_call_info info;
+		st = pjsua_call_get_info(call_id, &info);
+		if (st == PJ_SUCCESS && SipAgent::Cb.IncomingSubscribeConfCb)
+		{
+			SipAgent::Cb.IncomingSubscribeConfCb(call_id | CORESIP_CALL_ID, (const char*)info.remote_info.ptr, (const int)info.remote_info.slen);
+		}
+	}
+}
 
-			return;
+return;
 
-		subscription_error:
-			pjsip_tx_data* tdata;
-			st = pjsip_dlg_create_response(dlg, rdata, PJSIP_SC_INTERNAL_SERVER_ERROR, NULL, &tdata);
-			if (st != PJ_SUCCESS)
-			{
-				pjsua_perror("sipcall.cpp", "Unable to create error response to conference subscription", st);
-				return;
-			}
+subscription_error:
+pjsip_tx_data* tdata;
+st = pjsip_dlg_create_response(dlg, rdata, PJSIP_SC_INTERNAL_SERVER_ERROR, NULL, &tdata);
+if (st != PJ_SUCCESS)
+{
+	pjsua_perror("sipcall.cpp", "Unable to create error response to conference subscription", st);
+	return;
+}
 
-			st = pjsip_dlg_send_response(dlg, tsx, tdata);
-			if (st != PJ_SUCCESS)
-			{
-				pjsua_perror("sipcall.cpp", "Unable to send error response to conference subscription", st);
-				return;
-			}
+st = pjsip_dlg_send_response(dlg, tsx, tdata);
+if (st != PJ_SUCCESS)
+{
+	pjsua_perror("sipcall.cpp", "Unable to send error response to conference subscription", st);
+	return;
+}
 		}
 	}
 }
@@ -4696,14 +4817,38 @@ void SipCall::SetImpairments(pjsua_call_id call_id, CORESIP_Impairments * impcfg
 	st = acquire_call("SetImpairments()", call_id, &call, &dlg);
 	if (st != PJ_SUCCESS)
 	{
-		PJ_LOG(3, ("SipCall.cpp", "ERROR: SetImpairments: Invalid call_id %d", call_id));
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SetImpairments: ", "Invalid call_id %d", call_id));
 		return;
+	}
+
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SetImpairments:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SetImpairments: ", "ERROR: Llamada no activa [Call=%d]", call_id));
 	}
 	
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session != NULL)
 	{
-		pjmedia_session_force_set_impairments(session, impcfg->Perdidos, impcfg->Duplicados, impcfg->LatMin, impcfg->LatMax);
+		st = pjmedia_session_force_set_impairments(session, impcfg->Perdidos, impcfg->Duplicados, impcfg->LatMin, impcfg->LatMax);
+		if (st != PJ_SUCCESS)
+		{
+			pjsip_dlg_dec_lock(dlg);
+			PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SetImpairments: ", "La media de la llamada no esta activa call_id %d", call_id));
+		}
+	}
+	else
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SetImpairments: ", "La media de la llamada no esta activa call_id %d", call_id));
 	}
 
 	pjsip_dlg_dec_lock(dlg);
@@ -4738,6 +4883,20 @@ void SipCall::SetCallParameters(pjsua_call_id call_id, int *disableKeepAlives, i
 		return;
 	}
 
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("SetCallParameters:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("SetCallParameters: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	pjmedia_session* session = pjsua_call_get_media_session(call_id);
 	if (session != NULL)
 	{
@@ -4750,6 +4909,16 @@ void SipCall::SetCallParameters(pjsua_call_id call_id, int *disableKeepAlives, i
 				pjmedia_stream_disable_keepalives(stream, *disableKeepAlives);
 			}
 		}
+		else
+		{
+			pjsip_dlg_dec_lock(dlg);
+			PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SipCall::SetCallParameters: La llamada no tiene activa la media"));
+		}
+	}
+	else
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SipCall::SetCallParameters: La llamada no tiene activa la media"));
 	}
 
 	SipCall* sipcall = (SipCall*)pjsua_call_get_user_data(call_id);
@@ -4759,6 +4928,11 @@ void SipCall::SetCallParameters(pjsua_call_id call_id, int *disableKeepAlives, i
 		{
 			sipcall->_Info.forced_cld = *forced_cld;
 		}
+	}
+	else
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: SipCall::SetCallParameters: Posiblemente la llamada no este activa"));
 	}
 
 	pjsip_dlg_dec_lock(dlg);
@@ -4778,6 +4952,20 @@ void SipCall::GetNetworkDelay(pjsua_call_id call_id, unsigned int* delay_ms)
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: SipCall::GetNetworkDelay: invalid call_id"));
 	}
 
+	pjsua_call_info call_info;
+	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		throw PJLibException(__FILE__, PJ_EINVALIDOP).Msg("GetNetworkDelay:", "ERROR: No se puede obtener call_info. call_id %d", call_id);
+		return;
+	}
+
+	if (call_info.state != PJSIP_INV_STATE_CONFIRMED)
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("GetNetworkDelay: ", "ERROR: Llamada no activa [Call=%d]", call_id));
+	}
+
 	SipCall* sipcall = (SipCall *) pjsua_call_get_user_data(call_id);
 	if (sipcall == NULL)
 	{
@@ -4795,6 +4983,11 @@ void SipCall::GetNetworkDelay(pjsua_call_id call_id, unsigned int* delay_ms)
 	if (session != NULL)
 	{
 		pjmedia_session_force_request_MAM(session);
+	}
+	else	
+	{
+		pjsip_dlg_dec_lock(dlg);
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: GetNetworkDelay: La llamada no tiene activa la media"));
 	}
 
 	pjsip_dlg_dec_lock(dlg);

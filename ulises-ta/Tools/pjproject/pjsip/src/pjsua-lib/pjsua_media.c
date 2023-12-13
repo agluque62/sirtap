@@ -1462,7 +1462,7 @@ static void dtmf_callback(pjmedia_stream *strm, void *user_data,
     if (pjsua_var.ua_cfg.cb.on_dtmf_digit) {
 	pjsua_call_id call_id;
 
-	call_id = (pjsua_call_id)(long)user_data;
+	call_id = (pjsua_call_id)(pj_ssize_t)user_data;
 	pjsua_var.ua_cfg.cb.on_dtmf_digit(call_id, digit);
     }
 }
@@ -1626,7 +1626,7 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
 		if (pjsua_var.ua_cfg.cb.on_dtmf_digit) {
 			pjmedia_session_set_dtmf_callback(call->session, 0, 
 							  &dtmf_callback, 
-							  (void*)(long)(call->index));
+							  (void*)(pj_ssize_t)(call->index));
 		}
 
 		/* Get the port interface of the first stream in the session.
@@ -2074,7 +2074,7 @@ PJ_DEF(pj_status_t) pjsua_player_create( const pj_str_t *filename,
     pj_memcpy(path, filename->ptr, filename->slen);
     path[filename->slen] = '\0';
 
-    pool = pjsua_pool_create(get_basename(path, filename->slen), 1000, 1000);
+    pool = pjsua_pool_create(get_basename(path, (unsigned)filename->slen), 1000, 1000);
     if (!pool) {
 	PJSUA_UNLOCK();
 	return PJ_ENOMEM;
@@ -2335,7 +2335,7 @@ PJ_DEF(pj_status_t) pjsua_recorder_create( const pj_str_t *filename,
     pj_memcpy(path, filename->ptr, filename->slen);
     path[filename->slen] = '\0';
 
-    pool = pjsua_pool_create(get_basename(path, filename->slen), 1000, 1000);
+    pool = pjsua_pool_create(get_basename(path, (unsigned)filename->slen), 1000, 1000);
     if (!pool) {
 	PJSUA_UNLOCK();
 	return PJ_ENOMEM;

@@ -173,7 +173,7 @@ static int server_thread(void *unused)
 	PJ_FD_ZERO(&readset);
 	PJ_FD_SET(server->sock, &readset);
 
-	if (pj_sock_select(server->sock+1, &readset, NULL, NULL, &delay)==1 &&
+	if (pj_sock_select((int)server->sock+1, &readset, NULL, NULL, &delay)==1 &&
 	    PJ_FD_ISSET(server->sock, &readset)) 
 	{
 	    char pkt[1000];
@@ -386,7 +386,7 @@ static int client_thread(void *unused)
 	PJ_FD_ZERO(&readset);
 	PJ_FD_SET(client->sock, &readset);
 
-	if (pj_sock_select(client->sock+1, &readset, NULL, NULL, &delay)==1 &&
+	if (pj_sock_select((int)client->sock+1, &readset, NULL, NULL, &delay)==1 &&
 	    PJ_FD_ISSET(client->sock, &readset)) 
 	{
 	    char pkt[1000];

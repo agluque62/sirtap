@@ -173,7 +173,7 @@ static void rescan_fdset(pj_ioqueue_t *ioqueue)
  * Create select ioqueue.
  */
 PJ_DEF(pj_status_t) pj_ioqueue_create( pj_pool_t *pool, 
-                                       pj_size_t max_fd,
+                                       unsigned int max_fd,
                                        pj_ioqueue_t **p_ioqueue)
 {
     pj_ioqueue_t *ioqueue;
@@ -222,7 +222,6 @@ PJ_DEF(pj_status_t) pj_ioqueue_create( pj_pool_t *pool,
     /* Init key list */
     pj_list_init(&ioqueue->free_list);
     pj_list_init(&ioqueue->closing_list);
-
 
     /* Pre-create all keys according to max_fd */
     for (i=0; i<max_fd; ++i) {

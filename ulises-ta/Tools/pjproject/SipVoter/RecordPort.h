@@ -232,7 +232,7 @@ private:
 		const char *resourceId, const char *bssMethod, unsigned int bssQidx, bool *status_bss_changed,
 		char* pttConnRef, char* squConnRef);
 	void GetNumSquPtt(int *nPtt, int *nSqu);	
-	void GetTelNum(char *uri, int uri_len, char *tel, int tel_len);
+	void GetTelNum(char *uri, pj_ssize_t uri_len, char *tel, pj_ssize_t tel_len);
 	int Record(bool on, char* connRef);
 	int RecBSS_send(const char *freq, const char *selected_resource, const char *bss_method, unsigned int qidx);
 

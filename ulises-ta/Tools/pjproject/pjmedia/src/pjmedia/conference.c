@@ -707,7 +707,7 @@ PJ_DEF(pjmedia_port*) pjmedia_conf_get_master_port(pjmedia_conf *conf)
 PJ_DEF(pj_status_t) pjmedia_conf_set_port0_name(pjmedia_conf *conf,
 																const pj_str_t *name)
 {
-	unsigned len;
+	pj_size_t len;
 
 	/* Sanity check. */
 	PJ_ASSERT_RETURN(conf != NULL && name != NULL, PJ_EINVAL);
@@ -896,8 +896,6 @@ PJ_DEF(pj_status_t) pjmedia_conf_add_passive_port( pjmedia_conf *conf,
 
 	return PJ_SUCCESS;
 }
-
-
 
 /*
 * Change TX and RX settings for the port.
@@ -1539,8 +1537,8 @@ struct conf_port *cport, pj_int16_t *frame,
 
 		} else {
 
-			pjmedia_copy_samples(frame, cport->rx_buf, count);
-			cport->rx_buf_count -= count;
+			pjmedia_copy_samples(frame, cport->rx_buf, (unsigned)count);
+			cport->rx_buf_count -= (unsigned)count;
 			if (cport->rx_buf_count) {
 				pjmedia_move_samples(cport->rx_buf, cport->rx_buf+count,
 					cport->rx_buf_count);
@@ -1551,6 +1549,17 @@ struct conf_port *cport, pj_int16_t *frame,
 	return PJ_SUCCESS;
 }
 
+PJ_DEF(pj_status_t) pjmedia_conf_reset_put_frame_port(pjmedia_conf* conf, unsigned slot)
+{
+	/* Check arguments */
+	PJ_ASSERT_RETURN(conf && slot < conf->max_ports, PJ_EINVAL);
+
+	pj_mutex_lock(conf->mutex);
+	conf->ports[slot]->tx_buf_count = 0;
+	pj_mutex_unlock(conf->mutex);
+
+	return PJ_SUCCESS;
+}
 
 /*
 * Write the mixed signal to the port.

@@ -107,3 +107,23 @@ message ConferenceStatus
 	repeated string ActiveParticipants = 3;
 }
 
+message SirTapAudAlarmMsg
+{
+	enum EventType
+	{
+		Stop = 0;		//Finaliza la alarma
+		Start = 1;		//Inicia la alarma
+		Cancel = 2;		//Cancela la alarma
+	}
+
+	enum Category
+	{
+		Alert = 0;
+		Alarm = 1;
+	}
+
+	required string identity = 1;
+	required EventType eventtype = 2;
+	required Category category = 3;
+}
+

@@ -1677,7 +1677,9 @@ namespace U5ki.RdService
 				
 				//JOI 201709 NEWRDRP INI
 				_RdRParam.Clear();
-				//JOI 201709 NEWRDRP FIN
+                //JOI 201709 NEWRDRP FIN
+
+                List<string> idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received = new List<string>();
 				
                 foreach (ConfiguracionUsuario userCfg in cfg.ConfiguracionUsuarios)
                     foreach (CfgEnlaceExterno rdLink in userCfg.RdLinks)
@@ -1692,7 +1694,8 @@ namespace U5ki.RdService
                             {
                                 rdFr = new RdFrecuency(rdLink.Literal, rdLink.DescDestino);
                                 rdFr.TimerElapsed += OnRdFrecuencyTimerElapsed;
-                                rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;                                
+                                rdFr.SupervisionPortadora = rdLink.SupervisionPortadora;
+                                idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received.Add(rdLinkId);
                             }
 
                             // JCAM 24/02/2015
@@ -1704,7 +1707,8 @@ namespace U5ki.RdService
                             rdFr.PasivoRetransmision = rdLink.PasivoRetransmision;
                             /** Genera los  INVITE de los nuevos y BYE de los antiguos por este orden de la frecuencia ***/
 
-                            rdFr.Reset(cfg, rdLink, selectedRs);
+                            bool hayCambiosEnFrecuencia = rdFr.Reset(cfg, rdLink, selectedRs);
+                            if (hayCambiosEnFrecuencia) idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received.Add(rdLinkId);
 #if DEBUG
                             base.LogTrace<RdService>("[FRECUENCY] Frecuency added: " + rdLinkId);
 #endif
@@ -1715,12 +1719,15 @@ namespace U5ki.RdService
                         else
                         {
                             RdFrecuency rdFr = Frecuencies[rdLinkId];
-                            rdFr.Frecuency = rdLink.DescDestino;
+                            rdFr.Frecuency = rdLink.DescDestino;                            
                         }
                     }
 
                 foreach (RdFrecuency rdFr in rdFrToRemove.Values)
+                {
+                    idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received.Add(rdFr.IdDestino);
                     rdFr.Dispose();
+                }
                 //JOI 201709 NEWRDRP INI
                 foreach (RdFrecuency rdfy in Frecuencies.Values)
                     foreach (IRdResource irdrsc in rdfy.RdRs.Values)
@@ -1730,7 +1737,7 @@ namespace U5ki.RdService
                     }
 				
 #if !DEBUG1
-                MNManager.UpdatePool(cfg);
+                MNManager.UpdatePool(cfg, idDestinos_of_frequencies_are_modified_deleted_or_added_after_cfg_received);
 
                 MNManager.StartConfig();
 #endif
@@ -2698,10 +2705,10 @@ namespace U5ki.RdService
                     {
                         if (gear.Status != GearStatus.Forbidden)
                         {
-                            LogError<RdService>("La referencia del equipo al que reemplaza un esclavo, no puede ser vacio. Error no esperado.",
+                            LogWarn<RdService>(gear.Id + " iba a reemplazar a un Master, pero la referencia es nula. Posiblemente el Master ya se haya recuperado. En cuyo caso no hay error.",
                                 U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GENERIC_ERROR,
                                 gear.Frecuency, 
-                                CTranslate.translateResource("Equipo: "+ gear.Id + ". La referencia del equipo al que reemplaza un esclavo, no puede ser vacio. Error no esperado."));
+                                CTranslate.translateResource(gear.Id + " iba a reemplazar a un Master, pero la referencia es nula. Posiblemente el Master ya se haya recuperado. En cuyo caso no hay error."));
                         }
                     }
                     else
@@ -2839,9 +2846,9 @@ namespace U5ki.RdService
                     newconfparams = RdRParamGet(gearId);
                     if (null == newconfparams)
                     {
-                        LogInfo<RdService>("Equipo Master no encontrado para obtención parámetros " + gearId,
+                        LogInfo<RdService>(gearId + " no encuentra Master para obtencion parametros. Posiblemente el Master al que iba a sustituir se haya recuperado, entonces no hay error.",
                             U5kiIncidencias.U5kiIncidencia.U5KI_NBX_NM_GENERIC_ERROR,
-                            frec, CTranslate.translateResource("Equipo: " + gearId + ". Equipo no configurado."));
+                            frec, CTranslate.translateResource(gearId + " no encuentra Master para obtencion parametros. Posiblemente el Master al que iba a sustituir se haya recuperado, entonces no hay error."));
                         return;
                     }
                     // JOI 201709 NEWRDRP FIN

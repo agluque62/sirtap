@@ -51,8 +51,8 @@
 	DATA vol;
     };
 
-    #define GEN_INIT(var,R,F,A) var.add = ((DATA)F)/R, var.c=0, var.vol=A
-    #define GEN_SAMP(val,var)   val = (short)(sin(var.c * 2 * M_PI) * \
+    #define GEN_INIT(var,R,F,A) var.add = ((DATA)F)/((DATA)R), var.c=0.0, var.vol=((DATA)A)
+    #define GEN_SAMP(val,var)   val = (short)(sin(var.c * 2.0 * M_PI) * \
 					      var.vol); \
 			        var.c += var.add
 
@@ -627,7 +627,7 @@ static pj_status_t tonegen_get_frame(pjmedia_port *port,
 	pjmedia_tone_desc *dig = &tonegen->digits[tonegen->cur_digit];
 	unsigned required, cnt, on_samp, off_samp;
 
-	required = end - dst;
+	required = (unsigned) (end - dst);
 	on_samp = dig->on_msec * clock_rate / 1000;
 	off_samp = dig->off_msec * clock_rate / 1000;
 
@@ -725,7 +725,7 @@ static pj_status_t tonegen_get_frame(pjmedia_port *port,
     }
 
     if (dst < end)
-	pjmedia_zero_samples(dst, end-dst);
+	pjmedia_zero_samples(dst, (unsigned) (end-dst));
 
     frame->type = PJMEDIA_FRAME_TYPE_AUDIO;
     frame->size = port->info.bytes_per_frame;

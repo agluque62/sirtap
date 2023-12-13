@@ -26,17 +26,19 @@ public:
 	pjsua_conf_port_id _UpStreamSlot;		//su Slot de la conferencia pjmedia
 	pjsua_conf_port_id _DownStreamSlot;		//su Slot de la conferencia pjmedia
 public:
-	static int CreateGenericPort();
+	static int CreateGenericPort(int jitter_buff_size);
 	static void DestroyGenericPort(int gen_port_id);
-	static void PutInGenericPort(int gen_port_id, char* buffer, int buffer_length);
-	static void GetFromGenericPort(int gen_port_id, char* buffer, int buffer_length);
+	static void PutInGenericPort(int gen_port_id, short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
+	static void GetFromGenericPort(int gen_port_id, short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
+	static void GetJitterStatusGenericPort(int gen_port_id, unsigned int* size);
 	
 	GenericPort();
 	~GenericPort();	
-	int Init();
+	int Init(int jitter_buff_size);
 
 	
 private:
+	static const unsigned int MAX_COUNT_IN_JBUF = 100;
 
 	static pj_status_t UpStreamGetFrame(pjmedia_port* port, pjmedia_frame* frame);
 	static pj_status_t UpStreamReset(pjmedia_port* this_port);
@@ -59,10 +61,17 @@ private:
 	pj_uint16_t DownStreamSeq;				//Numero de secuencia
 	char Prev_DownStream_frame_type;		//Valor previo del tipo de frame leido del buffer
 
+	int _Jitter_buff_size;					
+
+	pj_sem_t* semGet;
+	pj_sem_t* semPut;
+
+	pj_bool_t destroying;
+
 private:
 
-	int Put(char* buffer, int buffer_length);
-	int Get(char* buffer, unsigned int buffer_length);
+	int Put(short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
+	int Get(short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
 	void Dispose();
 	
 };

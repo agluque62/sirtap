@@ -442,7 +442,7 @@ PJ_DEF(pj_status_t) pjmedia_endpt_create_sdp( pjmedia_endpt *endpt,
 					codec_info->pt);
 
 	    for (i = 0; i < dec_fmtp->cnt; ++i) {
-		unsigned test_len = 2;
+			pj_size_t test_len = 2;
 
 		/* Check if buf still available */
 		test_len = dec_fmtp->param[i].val.slen + 

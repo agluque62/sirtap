@@ -63,7 +63,7 @@ struct pj_ioqueue_t
 };
 
 PJ_DEF(pj_status_t) pj_ioqueue_create( pj_pool_t *pool, 
-				       pj_size_t max_fd,
+				       unsigned int max_fd,
 				       int max_threads,
 				       pj_ioqueue_t **ptr_ioqueue)
 {

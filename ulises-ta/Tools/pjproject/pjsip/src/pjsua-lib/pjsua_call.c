@@ -1338,6 +1338,7 @@ pj_status_t acquire_call(const char *title,
 		status = PJSUA_TRY_LOCK();
 		if (status != PJ_SUCCESS) {
 			pj_thread_sleep(retry/10);
+			pj_thread_sleep(20);
 			continue;
 		}
 
@@ -1354,6 +1355,7 @@ pj_status_t acquire_call(const char *title,
 		if (status != PJ_SUCCESS) {
 			PJSUA_UNLOCK();
 			pj_thread_sleep(retry/10);
+			pj_thread_sleep(20);
 			continue;
 		}
 
@@ -1698,6 +1700,24 @@ PJ_DEF(pj_status_t) pjsua_call_hangup(pjsua_call_id call_id,
 			status);
 		pjsip_dlg_dec_lock(dlg);
 		return status;
+	}
+
+	if (pjsip_endpt_Is_ETM(pjsua_var.endpt))
+	{
+		//En el caso del ETM. Por orden de Enaire, cortamos el envio de RTP al hacer el hangup
+
+		pjmedia_stream* stream = NULL;
+		pjmedia_session* session = NULL;
+
+		session = pjsua_call_get_media_session(call_id);
+		if (session != NULL)
+		{
+			stream = pjmedia_session_get_stream(session, 0);
+			if (stream != NULL)
+			{
+				pjmedia_stream_force_no_send_rtp(stream, PJ_TRUE);
+			}
+		}
 	}
 
 	pjsip_dlg_dec_lock(dlg);
@@ -3155,7 +3175,7 @@ PJ_DEF(pj_status_t) pjsua_call_dump( pjsua_call_id call_id,
 
 	print_call(indent, call_id, tmp, sizeof(tmp));
 
-	len = pj_ansi_strlen(tmp);
+	len = (int)pj_ansi_strlen(tmp);
 	pj_ansi_strcpy(buffer, tmp);
 
 	p += len;
@@ -3242,7 +3262,7 @@ PJ_DEF(pj_status_t) pjsua_call_dump( pjsua_call_id call_id,
 
 	/* Dump session statistics */
 	if (with_media && call->session)
-		dump_media_session(indent, p, end-p, call);
+		dump_media_session(indent, p, (unsigned)(end-p), call);
 
 	pjsip_dlg_dec_lock(dlg);
 

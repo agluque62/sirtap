@@ -211,7 +211,7 @@ static pj_bool_t http_on_data_sent(pj_activesock_t *asock,
         return PJ_FALSE;
 
     if (sent <= 0) {
-        hreq->error = (sent < 0 ? -sent : PJLIB_UTIL_EHTTPLOST);
+        hreq->error = (sent < 0 ? (pj_status_t)-sent : PJLIB_UTIL_EHTTPLOST);
         pj_http_req_cancel(hreq, PJ_TRUE);
         return PJ_FALSE;
     } 
@@ -609,7 +609,7 @@ PJ_DEF(pj_status_t) pj_http_req_parse_url(const pj_str_t *url,
                                           pj_http_url *hurl)
 {
     pj_scanner scanner;
-    int len = url->slen;
+    pj_size_t len = url->slen;
     PJ_USE_EXCEPTION;
 
     if (!len) return -1;
@@ -635,11 +635,11 @@ PJ_DEF(pj_status_t) pj_http_req_parse_url(const pj_str_t *url,
         }
 
         if (pj_scan_strcmp(&scanner, HTTP_SEPARATOR,
-                           pj_ansi_strlen(HTTP_SEPARATOR))) 
+                           (int)pj_ansi_strlen(HTTP_SEPARATOR))) 
         {
             PJ_THROW(PJLIB_UTIL_EHTTPINURL); // no "://" after protocol name
         }
-        pj_scan_advance_n(&scanner, pj_ansi_strlen(HTTP_SEPARATOR), PJ_FALSE);
+        pj_scan_advance_n(&scanner, (unsigned int)pj_ansi_strlen(HTTP_SEPARATOR), PJ_FALSE);
 
         /* Parse the host and port number (if any) */
         pj_scan_get_until_chr(&scanner, ":/", &s);
@@ -888,8 +888,8 @@ static pj_status_t http_req_start_sending(pj_http_req *hreq)
 
             /* Header field "Content-Length" */
             pj_utoa(hreq->param.reqdata.total_size ? 
-                    hreq->param.reqdata.total_size: 
-                    hreq->param.reqdata.size, buf);
+                    (unsigned long)hreq->param.reqdata.total_size:
+                    (unsigned long)hreq->param.reqdata.size, buf);
             str_snprintf(&pkt, BUF_SIZE, PJ_TRUE, "%s: %s\n",
                          CONTENT_LENGTH, buf);
         }

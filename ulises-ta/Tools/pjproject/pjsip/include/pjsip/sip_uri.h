@@ -318,7 +318,7 @@ PJ_INLINE(int) pjsip_uri_print(pjsip_uri_context_e context,
 			       const void *uri,
 			       char *buf, pj_size_t size)
 {
-    return (*((const pjsip_uri*)uri)->vptr->p_print)(context, uri, buf, size);
+    return (int) (*((const pjsip_uri*)uri)->vptr->p_print)(context, uri, buf, size);
 }
 
 /**
