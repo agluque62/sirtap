@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using NLog;
 using System.Windows.Forms;
 using System.Xml;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace Utilities
 {
@@ -267,16 +269,16 @@ namespace Utilities
       }
    }
 
-   public class BinToLogString
-   {
-      private byte[] _Data;
+	public class BinToLogString
+	{
+		private byte[] _Data;
 		private int _Length;
 
-      public BinToLogString(byte[] data)
-      {
-         _Data = data;
+		public BinToLogString(byte[] data)
+		{
+			_Data = data;
 			_Length = data.Length;
-      }
+		}
 
 		public BinToLogString(byte[] data, int length)
 		{
@@ -284,9 +286,9 @@ namespace Utilities
 			_Length = length;
 		}
 
-      public override string ToString()
-      {
-         StringBuilder str = new StringBuilder();
+		public override string ToString()
+		{
+			StringBuilder str = new StringBuilder();
 
 			if ((_Data != null) && (_Length > 0))
 			{
@@ -310,45 +312,113 @@ namespace Utilities
 				str.Remove(str.Length - newLineLength, newLineLength);
 			}
 
-         return str.ToString();
-      }
-	  public static Dictionary <string,string> ReadXml(
-		  string file= "archivotonos.xml",
-		  string usuario="L2",
-		  string nodo="//usuario",
-		  string cnombre="nombre",
-		  string ctonos="tonos",
-		  string cllamada="llamada"
-		  )
-      {
-			Dictionary<string,string> dict = new Dictionary<string,string>();
-            try
-            {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(file);
+			return str.ToString();
+		}
+		public static Dictionary<string, string> ReadXml(
+			string file = "archivotonos.xml",
+			string usuario = "L2",
+			string nodo = "//usuario",
+			string cnombre = "nombre",
+			string ctonos = "tonos",
+			string cllamada = "llamada"
+			)
+		{
+			Dictionary<string, string> dict = new Dictionary<string, string>();
+			try
+			{
+				XmlDocument xmlDoc = new XmlDocument();
+				xmlDoc.Load(file);
 
-                XmlNodeList userNodes = xmlDoc.SelectNodes("//usuario");
-                foreach (XmlNode userNode in userNodes)
-                {
-                    string nombreUsuario = userNode.Attributes[cnombre].Value;
-                    if (nombreUsuario == usuario)
-                    {
-                        XmlNodeList tonoNodes = userNode.SelectNodes(ctonos);
-                        foreach (XmlNode tonoNode in tonoNodes)
-                        {
-                            string llamada = tonoNode.Attributes[cllamada].Value;
-                            string tono = tonoNode.InnerText;
-                            dict[llamada] = tono;
-                        }
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar los tonos por llamada: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+				XmlNodeList userNodes = xmlDoc.SelectNodes("//usuario");
+				foreach (XmlNode userNode in userNodes)
+				{
+					string nombreUsuario = userNode.Attributes[cnombre].Value;
+					if (nombreUsuario == usuario)
+					{
+						XmlNodeList tonoNodes = userNode.SelectNodes(ctonos);
+						foreach (XmlNode tonoNode in tonoNodes)
+						{
+							string llamada = tonoNode.Attributes[cllamada].Value;
+							string tono = tonoNode.InnerText;
+							dict[llamada] = tono;
+						}
+						break;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Error al cargar los tonos por llamada: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 			return dict;
-        }
-    }
+		}
+
+	}
+
+
+		// Define la interfaz IOperationService
+		public interface IOperationService
+		{
+			Task<string> PerformOperation(string operation, object data);
+		}
+
+	// Implementa la interfaz IOperationService
+	public class OperationService : IOperationService
+		{
+			public async Task<string> PerformOperation(string operation, object data)
+			{
+				switch (operation)
+				{
+					case "HttpService":
+						return await PerformHttpService((HttpServiceData)data);
+					case "HttpServiceSimulated":
+						return await PerformHttpServiceSimulated((HttpServiceData)data);
+					default:
+						throw new ArgumentException("Operación no válida");
+				}
+			}
+
+			private async Task<string> PerformHttpService(HttpServiceData data)
+			{
+				// Lógica para realizar la solicitud HTTP
+
+				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+			}
+			private async Task<string> PerformHttpServiceSimulated(HttpServiceData data)
+			{
+				// Lógica para realizar la solicitud HTTP
+				data.ApiUrl = "http://localhost:3000/login";
+				if (data.PostData == $"{{\"username\": \"\", \"password\": \"\"}}")
+					return "OK";
+				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+			}
+
+			private /*async Task*/string PerformJsonReader(JsonReaderData data)
+			{
+				// Lógica para leer el archivo JSON
+				try
+				{
+					string jsonContent = File.ReadAllText(data.JsonFilePath);
+					return jsonContent;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Error al leer el archivo JSON: {ex.Message}");
+					throw;
+				}
+			}
+		}
+
+		// Define clases de datos específicas para cada operación
+		public class HttpServiceData
+		{
+			public string ApiUrl { get; set; }
+			public string PostData { get; set; }
+		}
+
+		public class JsonReaderData
+		{
+			public string JsonFilePath { get; set; }
+		}
+	
 }

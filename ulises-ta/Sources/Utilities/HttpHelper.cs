@@ -20,5 +20,33 @@ namespace Utilities
                 return content;
             }
         }
+
+        public static async Task <string> SendPostRequest(string apiUrl, string postData)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Configura el contenido de la solicitud POST
+                HttpContent content = new StringContent(postData, Encoding.UTF8, "application/json");
+
+                try
+                {
+                    // Realiza la solicitud POST y obtiene la respuesta
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+
+                    // Lee la respuesta
+                    string responseBody = await response.Content.ReadAsStringAsync();
+
+                    // Muestra la respuesta
+                    Console.WriteLine($"Status Code: {response.StatusCode}");
+                    Console.WriteLine($"Response Body: {responseBody}");
+                    return response.ReasonPhrase;
+                }
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    return null;
+                }
+            }
+        }
     }
 }

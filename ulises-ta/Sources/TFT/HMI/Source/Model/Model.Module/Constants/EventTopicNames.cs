@@ -19,6 +19,7 @@ namespace HMI.Model.Module.Constants
 		#region State Changes Events
 
 		public const string TftEnabledChanged = "TftEnabledChanged";
+		public const string TftLoginChanged = "TftLoginChanged";
 		public const string EngineStateChanged = "EngineStateChanged";
 		public const string ScreenSaverChanged = "ScreenSaverChanged";
 		public const string TitleIdChanged = "TitleIdChanged";
@@ -72,6 +73,7 @@ namespace HMI.Model.Module.Constants
 		public const string RecorderChanged = "RecorderChanged";
 		public const string TempReplayChanged = "TempReplayChanged";
 		public const string CouplingInProgressError = "CouplingInProgressError";
+		public const string MessageLogin= "MessageLogin";
 		#endregion
 
 		#region Presentation Events

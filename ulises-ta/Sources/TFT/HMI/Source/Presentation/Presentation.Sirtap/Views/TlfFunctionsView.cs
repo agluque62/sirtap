@@ -59,7 +59,6 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return true;
                 return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
                     ((_StateManager.Tlf.Priority.State != FunctionState.Idle) ||
                     (((_StateManager.Permissions & Permissions.Priority) == Permissions.Priority) &&

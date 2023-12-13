@@ -43,13 +43,14 @@ namespace HMI.Presentation.Sirtap.Views
         private void InitializeComponent()
         {
             System.Windows.Forms.TableLayoutPanel _TlfTLP;
-            this._TlfNumbersWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            //this.buttonlogin = new System.Windows.Forms.Button();
+            this._TlfFunctionsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
+            this._TlfNumbersWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
+            this.hmiButton1 = new HMI.Model.Module.UI.HMIButton();
+            this.hmiButtonLogin = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
             this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this._TlfFunctionsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
-            this.hmiButton1 = new HMI.Model.Module.UI.HMIButton();
             _TlfTLP = new System.Windows.Forms.TableLayoutPanel();
             _TlfTLP.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -76,6 +77,38 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfTLP.TabIndex = 5;
             _TlfTLP.Paint += new System.Windows.Forms.PaintEventHandler(this._TlfTLP_Paint);
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this._TlfPageBT, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this._TlfHeadPhonesUDB, 0, 2);
+            //this.tableLayoutPanel1.Controls.Add(this.buttonlogin, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.hmiButtonLogin, 0, 3);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(490, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 5;
+            _TlfTLP.SetRowSpan(this.tableLayoutPanel1, 2);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 107F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 513);
+            this.tableLayoutPanel1.TabIndex = 5;
+            // 
+            // _TlfFunctionsWS
+            // 
+            this._TlfFunctionsWS.Location = new System.Drawing.Point(0, 415);
+            this._TlfFunctionsWS.Margin = new System.Windows.Forms.Padding(0);
+            this._TlfFunctionsWS.Name = "_TlfFunctionsWS";
+            this._TlfFunctionsWS.Size = new System.Drawing.Size(487, 104);
+            this._TlfFunctionsWS.TabIndex = 4;
+            this._TlfFunctionsWS.Text = "deckWorkspace3";
+            // 
             // _TlfNumbersWS
             // 
             this._TlfNumbersWS.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -86,25 +119,29 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfNumbersWS.TabIndex = 3;
             this._TlfNumbersWS.Text = "deckWorkspace3";
             // 
-            // tableLayoutPanel1
+            // hmiButton1
             // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this._TlfPageBT, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this._TlfHeadPhonesUDB, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 3);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(490, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            _TlfTLP.SetRowSpan(this.tableLayoutPanel1, 2);
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 107F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 513);
-            this.tableLayoutPanel1.TabIndex = 5;
+            this.hmiButton1.DrawX = false;
+            this.hmiButton1.IsButtonTlf = false;
+            this.hmiButton1.IsConferencePreprogramada = false;
+            this.hmiButton1.Location = new System.Drawing.Point(0, 0);
+            this.hmiButton1.Name = "hmiButton1";
+            this.hmiButton1.Permitted = true;
+            this.hmiButton1.Size = new System.Drawing.Size(0, 0);
+            this.hmiButton1.TabIndex = 6;
+            // 
+            // hmiButtonLogin
+            // 
+            this.hmiButtonLogin.DrawX = false;
+            this.hmiButtonLogin.IsButtonTlf = false;
+            this.hmiButtonLogin.IsConferencePreprogramada = false;
+            this.hmiButtonLogin.Location = new System.Drawing.Point(3, 275);
+            this.hmiButtonLogin.Name = "hmiButtonLogin";
+            this.hmiButtonLogin.Permitted = true;
+            this.hmiButtonLogin.Size = new System.Drawing.Size(75, 23);
+            this.hmiButtonLogin.TabIndex = 11;
+            this.hmiButtonLogin.Text = "Login-out";
+            this.hmiButtonLogin.Click += new System.EventHandler(this.hmiButtonlogin_Click);
             // 
             // _TlfPageBT
             // 
@@ -134,36 +171,6 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfHeadPhonesUDB.LevelDown += new System.EventHandler(this._TlfHeadPhonesUDB_LevelDown);
             this._TlfHeadPhonesUDB.LevelUp += new System.EventHandler(this._TlfHeadPhonesUDB_LevelUp);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(3, 275);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 28);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "Login";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // _TlfFunctionsWS
-            // 
-            this._TlfFunctionsWS.Location = new System.Drawing.Point(0, 415);
-            this._TlfFunctionsWS.Margin = new System.Windows.Forms.Padding(0);
-            this._TlfFunctionsWS.Name = "_TlfFunctionsWS";
-            this._TlfFunctionsWS.Size = new System.Drawing.Size(487, 104);
-            this._TlfFunctionsWS.TabIndex = 4;
-            this._TlfFunctionsWS.Text = "deckWorkspace3";
-            // 
-            // hmiButton1
-            // 
-            this.hmiButton1.DrawX = false;
-            this.hmiButton1.IsButtonTlf = false;
-            this.hmiButton1.IsConferencePreprogramada = false;
-            this.hmiButton1.Location = new System.Drawing.Point(0, 0);
-            this.hmiButton1.Name = "hmiButton1";
-            this.hmiButton1.Permitted = true;
-            this.hmiButton1.Size = new System.Drawing.Size(0, 0);
-            this.hmiButton1.TabIndex = 6;
-            // 
             // TlfView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -187,7 +194,8 @@ namespace HMI.Presentation.Sirtap.Views
         private UI.RdPageButton _TlfPageBT;
         private UI.UpDownButton _TlfHeadPhonesUDB;
         private Model.Module.UI.HMIButton hmiButton1;
-        private System.Windows.Forms.Button button1;
+        //private System.Windows.Forms.Button buttonlogin;
+        private Model.Module.UI.HMIButton hmiButtonLogin;
     }
 }
 

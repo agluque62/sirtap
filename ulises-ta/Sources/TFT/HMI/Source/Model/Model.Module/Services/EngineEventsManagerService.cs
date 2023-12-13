@@ -134,6 +134,7 @@ namespace HMI.Model.Module.Services
 				_HangupCallsTimer.Enabled = false;
 
 				_StateManager.Tft.Enabled = true;
+				_StateManager.Tft.Login = false;
 				_StateManager.ScreenSaver.On = false;
 
 				_EngineCmdManager.SendTrapScreenSaver(false);
