@@ -56,8 +56,11 @@ namespace HMI.Presentation.Twr.Views
             | System.Windows.Forms.AnchorStyles.Left)));
             this._InfoBT.DrawX = false;
             this._InfoBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._InfoBT.IsButtonTlf = false;
+            this._InfoBT.IsConferencePreprogramada = false;
             this._InfoBT.Location = new System.Drawing.Point(355, 17);
             this._InfoBT.Name = "_InfoBT";
+            this._InfoBT.Permitted = true;
             this._InfoBT.Size = new System.Drawing.Size(54, 53);
             this._InfoBT.TabIndex = 2;
             this._InfoBT.Text = "INFO";
@@ -70,8 +73,11 @@ namespace HMI.Presentation.Twr.Views
             this._TitleBT.DrawX = false;
             this._TitleBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._TitleBT.ImageNormal = global::HMI.Presentation.Twr.Properties.Resources.Aena;
+            this._TitleBT.IsButtonTlf = false;
+            this._TitleBT.IsConferencePreprogramada = false;
             this._TitleBT.Location = new System.Drawing.Point(10, 3);
             this._TitleBT.Name = "_TitleBT";
+            this._TitleBT.Permitted = true;
             this._TitleBT.Size = new System.Drawing.Size(142, 79);
             this._TitleBT.TabIndex = 4;
             this._TitleBT.Text = "PuestoPuesto0123";
@@ -135,9 +141,7 @@ namespace HMI.Presentation.Twr.Views
             this._BuzzerUDB.UpImage = global::HMI.Presentation.Twr.Properties.Resources.BuzzerUp;
             this._BuzzerUDB.LevelDown += new System.EventHandler(this._BuzzerUDB_LevelDown);
             this._BuzzerUDB.LevelUp += new System.EventHandler(this._BuzzerUDB_LevelUp);
-#if SELECCION_SONIDO_AD
             this._BuzzerUDB.LongClick += new System.EventHandler(this._BuzzerUDB_LongClick);
-#endif
             // 
             // HeaderView
             // 

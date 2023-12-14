@@ -59,7 +59,6 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return true;
                 return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
                     ((_StateManager.Tlf.Priority.State != FunctionState.Idle) ||
                     (((_StateManager.Permissions & Permissions.Priority) == Permissions.Priority) &&
@@ -335,12 +334,6 @@ namespace HMI.Presentation.Sirtap.Views
             _PickUpBT.Enabled = _PickUpEnabled;
             _ForwardBT.Enabled = _ForwardEnabled;
             _MoreBT.Enabled = _MoreEnabled;
-
-            // 231129 pongo todo a habilitado
-            _PriorityBT.Enabled = _ListenBT.Enabled = _HoldBT.Enabled = _TransferBT.Enabled = true;
-            _TlfViewBT.Enabled = _CancelBT.Enabled = _TlfSpeakerBT.Enabled = true;
-            _PickUpBT.Enabled = _ForwardBT.Enabled = _MoreBT.Enabled = true;
-
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]

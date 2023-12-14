@@ -144,6 +144,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._BuzzerUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.BuzzerUp;
             this._BuzzerUDB.LevelDown += new System.EventHandler(this._BuzzerUDB_LevelDown);
             this._BuzzerUDB.LevelUp += new System.EventHandler(this._BuzzerUDB_LevelUp);
+            this._BuzzerUDB.LongClick += new System.EventHandler(this._BuzzerUDB_LongClick);
             // 
             // HeaderView
             // 

@@ -1,18 +1,34 @@
-﻿using System;
+﻿using HMI.Infrastructure.Interface;
+using HMI.Model.Module.Services;
+using Microsoft.Practices.CompositeUI;
+using NLog;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Utilities;
 
 namespace HMI.Presentation.Sirtap.Views
 {
     public partial class loginform : Form
     {
         private bool sellogin = true;
+        private IModelCmdManagerService _CmdManager = null;
+        private StateManagerService _StateManager = null;
+        private static Logger _Logger = LogManager.GetCurrentClassLogger();
+        public void setuploginform([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
+        {
+            _CmdManager = cmdManager;
+            _StateManager = stateManager;
+            //InitializeComponent();
+
+        }
         public loginform()
         {
             InitializeComponent();
@@ -78,16 +94,16 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _AlmBT_Click(object sender, EventArgs e)
         {
-            sellogin = !sellogin;
+
         }
 
-        private void _AstBT_Click(object sender, EventArgs e)
+        private void _LogClv_Click(object sender, EventArgs e)
         {
             if (sellogin)
-                _AstBT.Text = "Usuario";
+                _LogClv.Text = "Usuario";
             else
-                _AstBT.Text = "Clave";
-            _AstBT.Update();
+                _LogClv.Text = "Clave";
+            _LogClv.Update();
 
             sellogin = !sellogin;
             if (sellogin)
@@ -123,6 +139,37 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void loginform_Load(object sender, EventArgs e)
         {
+
+        }
+
+        private async void _OK_Click(object sender, EventArgs e)
+        {
+            Utilities.IOperationService operationService = new Utilities.OperationService();
+
+            // Define los datos para la operación HttpService
+            var httpServiceData = new HttpServiceData
+            {
+                ApiUrl = "http://localhost:3000/login",
+                PostData = $"{{\"username\": \"{ txtUsuario.Text}\", \"password\": \"{ txtContrasena.Text}\"}}"
+            };
+
+            // Ejecuta la operación HttpService
+            string httpResult = await operationService.PerformOperation("HttpServiceSimulated", httpServiceData);
+            Console.WriteLine("Resultado de la solicitud HTTP: " + httpResult);
+
+            //MessageBox.Show(httpResult, "Título del mensaje", MessageBoxButtons.OK);
+            if (httpResult == "OK")
+            {
+                _StateManager.Tft.Enabled = true;
+                _StateManager.Tft.Login = true;
+            }
+            else
+            {
+                _StateManager.Tft.Enabled = false;
+                _StateManager.Tft.Login = false;
+            }
+            this.DialogResult = DialogResult.OK;
+            this.Close();
             
         }
     }

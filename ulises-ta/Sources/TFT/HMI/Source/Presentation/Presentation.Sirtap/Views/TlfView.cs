@@ -150,13 +150,47 @@ namespace HMI.Presentation.Sirtap.Views
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        private void hmiButtonlogin_Click(object sender, EventArgs e)
         {
-             //   _StateManager.ScreenSaver.On = !_StateManager.ScreenSaver.On;
-            loginform dlg = new loginform();
-            DialogResult result = dlg.ShowDialog();
+            if (_StateManager.Tft.Login)
+            {
+                _StateManager.Tft.Login = false;
+            }
+            else
+            {
+                loginform dlg = new loginform();
+                dlg.setuploginform(_CmdManager, _StateManager);
+                DialogResult result = dlg.ShowDialog();
+            }
+            if (_StateManager.Tft.Login)
+            {
+                hmiButtonLogin.Text = "LOGOUT";
+                hmiButtonLogin.Update();
+            }
+            else
+            {
+                hmiButtonLogin.Text = "LOGIN";
+                hmiButtonLogin.Update();
+                _StateManager.Tft.Enabled = false;//boton rojo.
+            }
         }
 
+    [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
+        [EventSubscription(EventTopicNames.MessageLogin, ThreadOption.Publisher)]
+        public void OnMessageLogin(object sender, EventArgs e)
+        {
+            if (_StateManager.Tft.Login)
+            {
+                hmiButtonLogin.Text = "LOGOUT";
+                _StateManager.Tft.Enabled = true;
+            }
+            else
+            {
+                hmiButtonLogin.Text = "LOGIN";
+                _StateManager.Tft.Enabled = false;
+            }
+        }
     }
 }
 

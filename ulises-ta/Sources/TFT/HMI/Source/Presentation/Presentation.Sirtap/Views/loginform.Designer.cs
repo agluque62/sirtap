@@ -30,7 +30,7 @@ namespace HMI.Presentation.Sirtap.Views
         private void InitializeComponent()
         {
             System.Windows.Forms.TableLayoutPanel _KeypadTLP;
-            this._AstBT = new HMI.Model.Module.UI.HMIButton();
+            this._LogClv = new HMI.Model.Module.UI.HMIButton();
             this._1BT = new HMI.Model.Module.UI.HMIButton();
             this._2BT = new HMI.Model.Module.UI.HMIButton();
             this._3BT = new HMI.Model.Module.UI.HMIButton();
@@ -60,7 +60,7 @@ namespace HMI.Presentation.Sirtap.Views
             _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             _KeypadTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            _KeypadTLP.Controls.Add(this._AstBT, 0, 3);
+            _KeypadTLP.Controls.Add(this._LogClv, 0, 3);
             _KeypadTLP.Controls.Add(this._1BT, 0, 0);
             _KeypadTLP.Controls.Add(this._2BT, 1, 0);
             _KeypadTLP.Controls.Add(this._3BT, 2, 0);
@@ -83,20 +83,20 @@ namespace HMI.Presentation.Sirtap.Views
             _KeypadTLP.Size = new System.Drawing.Size(410, 347);
             _KeypadTLP.TabIndex = 11;
             // 
-            // _AstBT
+            // _LogClv
             // 
-            this._AstBT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._AstBT.DrawX = false;
-            this._AstBT.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._AstBT.IsButtonTlf = false;
-            this._AstBT.IsConferencePreprogramada = false;
-            this._AstBT.Location = new System.Drawing.Point(3, 261);
-            this._AstBT.Name = "_AstBT";
-            this._AstBT.Permitted = true;
-            this._AstBT.Size = new System.Drawing.Size(130, 83);
-            this._AstBT.TabIndex = 16;
-            this._AstBT.Text = "Clave";
-            this._AstBT.Click += new System.EventHandler(this._AstBT_Click);
+            this._LogClv.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._LogClv.DrawX = false;
+            this._LogClv.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._LogClv.IsButtonTlf = false;
+            this._LogClv.IsConferencePreprogramada = false;
+            this._LogClv.Location = new System.Drawing.Point(3, 261);
+            this._LogClv.Name = "_LogClv";
+            this._LogClv.Permitted = true;
+            this._LogClv.Size = new System.Drawing.Size(130, 83);
+            this._LogClv.TabIndex = 16;
+            this._LogClv.Text = "Clave";
+            this._LogClv.Click += new System.EventHandler(this._LogClv_Click);
             // 
             // _1BT
             // 
@@ -262,7 +262,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._AlmBT.Size = new System.Drawing.Size(132, 83);
             this._AlmBT.TabIndex = 12;
             this._AlmBT.Text = "OK";
-            this._AlmBT.Click += new System.EventHandler(this._AlmBT_Click);
+            this._AlmBT.Click += new System.EventHandler(this._OK_Click);
             // 
             // label2
             // 
@@ -306,7 +306,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.20988F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 81.79012F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
@@ -329,12 +329,12 @@ namespace HMI.Presentation.Sirtap.Views
             this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._ClearBT.IsButtonTlf = false;
             this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(333, 1);
+            this._ClearBT.Location = new System.Drawing.Point(331, 1);
             this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
             this._ClearBT.Name = "_ClearBT";
             this._ClearBT.Permitted = true;
             this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
-            this._ClearBT.Size = new System.Drawing.Size(71, 42);
+            this._ClearBT.Size = new System.Drawing.Size(73, 42);
             this._ClearBT.TabIndex = 16;
             this._ClearBT.Text = "<--";
             this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
@@ -373,7 +373,7 @@ namespace HMI.Presentation.Sirtap.Views
         private Model.Module.UI.HMIButton _9BT;
         private Model.Module.UI.HMIButton _0BT;
         private Model.Module.UI.HMIButton _AlmBT;
-        private Model.Module.UI.HMIButton _AstBT;
+        private Model.Module.UI.HMIButton _LogClv;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Model.Module.UI.HMIButton _ClearBT;
     }
