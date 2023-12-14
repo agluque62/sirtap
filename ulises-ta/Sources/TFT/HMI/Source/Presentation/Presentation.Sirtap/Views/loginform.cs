@@ -144,8 +144,23 @@ namespace HMI.Presentation.Sirtap.Views
 
         private async void _OK_Click(object sender, EventArgs e)
         {
-            Utilities.IOperationService operationService = new Utilities.OperationService();
+            Utilities.IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+            var mision=ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+            if (mision.Length>0)
+            {
+                _StateManager.Tft.Enabled = true;
+                _StateManager.Tft.Login = true;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                _StateManager.Tft.Enabled = true;
+                _StateManager.Tft.Login = true;
+            }
+            /*
 
+            Utilities.IOperationService operationService = new Utilities.OperationService();
             // Define los datos para la operación HttpService
             var httpServiceData = new HttpServiceData
             {
@@ -168,9 +183,7 @@ namespace HMI.Presentation.Sirtap.Views
                 _StateManager.Tft.Enabled = false;
                 _StateManager.Tft.Login = false;
             }
-            this.DialogResult = DialogResult.OK;
-            this.Close();
-            
+            */
         }
     }
 }

@@ -409,6 +409,38 @@ namespace Utilities
 			}
 		}
 
+		public interface IValidadorCredenciales
+		{
+		string SimuladorValidarCredenciales(string usuario, string clave);
+		Task<string> ValidarCredencialeshttp(string usuario, string clave);
+		}
+
+		public class ValidadorCredenciales : IValidadorCredenciales
+		{
+			public string SimuladorValidarCredenciales(string usuario, string clave)
+			{
+				// Lógica de validación de credenciales (puedes personalizarla según tus necesidades)
+				if (usuario == "1" && clave == "1")
+				{
+					return "MISION 1";
+				}
+				else
+				{	
+					return "";
+				}
+			}
+			public async Task<string> ValidarCredencialeshttp(string usuario, string clave)
+			{
+				// Lógica para realizar la solicitud HTTP
+				var data= new HttpServiceData
+				{
+					ApiUrl = "http://localhost:3000/login",
+					PostData = $"{{\"username\": \"{ usuario}\", \"password\": \"{ clave}\"}}"
+				};
+				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+			}
+		}
+
 		// Define clases de datos específicas para cada operación
 		public class HttpServiceData
 		{
