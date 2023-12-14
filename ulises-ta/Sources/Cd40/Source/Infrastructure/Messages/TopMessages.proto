@@ -127,3 +127,100 @@ message SirTapAudAlarmMsg
 	required Category category = 3;
 }
 
+message TlmdoGetChannelsAskMsg			//TLMDO_GET_CHANNELS_ASK
+{
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+}
+
+message TlmdoGetChannelsRspMsg			//TLMDO_GET_CHANNELS_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	repeated string Channels = 3;		//Lista con los canales
+	required uint32 Code = 4;
+}
+
+message TlmdoSetChannelAskMsg			//TLMDO_SET_CHANNEL_ASK
+{
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required string Channel = 3;		//Canal solicitado
+}
+
+message TlmdoSetChannelRspMsg			//TLMDO_SET_CHANNEL_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required string Channel = 3;		//Canal seleccionado
+	required uint32 Code = 4;
+}
+
+message TlmdoSetTxPwrAskMsg				//TLMDO_SET_TXPWR_ASK
+{
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required string PowerW = 3;			//Potencia en watios. 0,25 a 50
+}
+
+message TlmdoSetTxPwrRspMsg				//TLMDO_SET_TXPWR_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required string PowerW = 3;			//Potencia seleccionada
+	required uint32 Code = 4;
+}
+
+message TlmdoSetTxInhibitAskMsg			//TLMDO_SET_TXINHIBIT_ASK
+{
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required bool Inhibit = 3;			//Si true se inhibe la transmision
+}
+
+message TlmdoSetTxInhibitRspMsg			//TLMDO_SET_TXINHIBIT_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required bool Inhibit = 3;			//Si true la transmision esta inhibida
+	required uint32 Code = 4;
+}
+
+message TlmdoSetWFallocAskMsg			//TLMDO_SET_WFALLOC_ASK
+{
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required bool SQH = 3;				//Si true se fuerza SQH
+}
+
+message TlmdoSetWFallocRspMsg			//TLMDO_SET_WFALLOC_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required bool SQH = 3;				//Retorna el estado de SQH forzado
+	required uint32 Code = 4;
+}
+
+message TlmdoSetCryptKeyAskMsg			//TLMDO_SET_CRYPT_KEYS_ASK
+{
+	enum KeyTypes
+	{
+		Delete = 0;			//Borrar las claves CRIPTO almacenadas
+		ExternalDev = 1;	//Carga las claves desde un dispositivo externo
+	}
+
+	required string HostId = 1;
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required KeyTypes Keytipe = 3;				//Si true se fuerza SQH
+}
+
+message TlmdoSetCryptKeyRspMsg			//TLMDO_SET_CRYPT_KEYS_RSP
+{
+	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe = 3;														
+	required uint32 Code = 4;
+}
+
+
+

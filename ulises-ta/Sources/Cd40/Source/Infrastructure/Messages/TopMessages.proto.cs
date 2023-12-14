@@ -499,4 +499,422 @@ namespace U5ki.Infrastructure
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoGetChannelsAskMsg")]
+  public partial class TlmdoGetChannelsAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoGetChannelsAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoGetChannelsRspMsg")]
+  public partial class TlmdoGetChannelsRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoGetChannelsRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private readonly global::System.Collections.Generic.List<string> _Channels = new global::System.Collections.Generic.List<string>();
+    [global::ProtoBuf.ProtoMember(3, Name=@"Channels", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<string> Channels
+    {
+      get { return _Channels; }
+    }
+  
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetChannelAskMsg")]
+  public partial class TlmdoSetChannelAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetChannelAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _Channel;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Channel
+    {
+      get { return _Channel; }
+      set { _Channel = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetChannelRspMsg")]
+  public partial class TlmdoSetChannelRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetChannelRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _Channel;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Channel
+    {
+      get { return _Channel; }
+      set { _Channel = value; }
+    }
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetTxPwrAskMsg")]
+  public partial class TlmdoSetTxPwrAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetTxPwrAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _PowerW;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string PowerW
+    {
+      get { return _PowerW; }
+      set { _PowerW = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetTxPwrRspMsg")]
+  public partial class TlmdoSetTxPwrRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetTxPwrRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _PowerW;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string PowerW
+    {
+      get { return _PowerW; }
+      set { _PowerW = value; }
+    }
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetTxInhibitAskMsg")]
+  public partial class TlmdoSetTxInhibitAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetTxInhibitAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private bool _Inhibit;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool Inhibit
+    {
+      get { return _Inhibit; }
+      set { _Inhibit = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetTxInhibitRspMsg")]
+  public partial class TlmdoSetTxInhibitRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetTxInhibitRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private bool _Inhibit;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool Inhibit
+    {
+      get { return _Inhibit; }
+      set { _Inhibit = value; }
+    }
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetWFallocAskMsg")]
+  public partial class TlmdoSetWFallocAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetWFallocAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private bool _SQH;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool SQH
+    {
+      get { return _SQH; }
+      set { _SQH = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetWFallocRspMsg")]
+  public partial class TlmdoSetWFallocRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetWFallocRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private bool _SQH;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool SQH
+    {
+      get { return _SQH; }
+      set { _SQH = value; }
+    }
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetCryptKeyAskMsg")]
+  public partial class TlmdoSetCryptKeyAskMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetCryptKeyAskMsg() {}
+    
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes _Keytipe;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe
+    {
+      get { return _Keytipe; }
+      set { _Keytipe = value; }
+    }
+    [global::ProtoBuf.ProtoContract(Name=@"KeyTypes")]
+    public enum KeyTypes
+    {
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"Delete", Value=0)]
+      Delete = 0,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"ExternalDev", Value=1)]
+      ExternalDev = 1
+    }
+  
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoSetCryptKeyRspMsg")]
+  public partial class TlmdoSetCryptKeyRspMsg : global::ProtoBuf.IExtensible
+  {
+    public TlmdoSetCryptKeyRspMsg() {}
+    
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes _Keytipe;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe
+    {
+      get { return _Keytipe; }
+      set { _Keytipe = value; }
+    }
+    private uint _Code;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }
