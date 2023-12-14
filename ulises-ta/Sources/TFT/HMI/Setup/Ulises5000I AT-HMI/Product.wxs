@@ -671,7 +671,25 @@
                         Value="Presentation.Twr.dll"/>
 
       </Component>
-      <Component Id='ConditionalUpdatesForASECNA' Guid='{E5EDC4B5-F751-4C1E-89FF-AAEE404367DE}' KeyPath='yes'>
+	  <Component Id='ConditionalUpdatesForSIRTAP' Guid='{ea31e615-2d91-4b44-98e4-89b22b4b5546}' KeyPath='yes'>
+		<Condition >CLIENTE="SIRTAP"</Condition>
+			<util:XmlFile Id="LogoSirtap" Action="setValue"
+							File = "[#HMI.config]"
+							ElementPath="/configuration/applicationSettings/HMI.Model.Module.Properties.Settings/setting[\[]@name='Logo'[\]]/value"
+							Value="Resources/logo_AENA.PNG"/>
+			<util:XmlFile Id="GlpForSirtap" Action="setValue"
+							File = "[#HMI.config]"
+							ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='GLP'[\]]/value"
+							Value="False"/>
+			<util:XmlFile Id="AppsSirtap" Action="setValue"
+							File = "[#ProfileCatalog]"
+							ElementPath="/SolutionProfile/Section[\[]@Name='Apps'[\]]/Modules/ModuleInfo"
+							Name="AssemblyFile"
+							Value="Presentation.Sirtap.dll"/>
+
+		</Component>
+
+		<Component Id='ConditionalUpdatesForASECNA' Guid='{E5EDC4B5-F751-4C1E-89FF-AAEE404367DE}' KeyPath='yes'>
         <Condition >CLIENTE="ASECNA"</Condition>
         <util:XmlFile Id="LogoAsecna" Action="setValue"
                         File = "[#HMI.config]"
@@ -888,7 +906,10 @@
       <Component Id='Presentation.twr' Guid='{C52B1F34-F491-499B-97F9-658BA9F6E5F7}'>
         <File Id='Presentation.twr' Name='Presentation.twr.dll'/>
       </Component>
-      <Component Id='Presentation.Urr' Guid='{CE2CBB42-949A-45AF-B358-CAE745B25799}'>
+		<Component Id='Presentation.sirtap' Guid='*'>
+			<File Id='Presentation.sirtap' Name='Presentation.sirtap.dll'/>
+		</Component>
+		<Component Id='Presentation.Urr' Guid='{CE2CBB42-949A-45AF-B358-CAE745B25799}'>
         <File Id='Presentation.Urr' Name='Presentation.Urr.dll'/>
       </Component>
       <Component Id='Presentation.AUrr' Guid='{3797292D-C3AB-483D-A2E3-00A0255E9C91}'>
@@ -1257,8 +1278,9 @@
         <Control Id="TipoInterfaz"        Type="Text"     X="10" Y="102" Width="60" Height="18" TabSkip="no" Text="Cliente" />
         <Control Id="TipoInterfazOptions" Type="ComboBox" X="85" Y="100" Width="90" Height="18" Property="CLIENTE" ComboList="yes" >
           <ComboBox Property="CLIENTE">
-            <ListItem Value="ENAIRE" Text="ENAIRE" />
-            <ListItem Value="ASECNA" Text="ASECNA" />
+			  <ListItem Value="ENAIRE" Text="ENAIRE" />
+			  <ListItem Value="SIRTAP" Text="SIRTAP" />
+			  <ListItem Value="ASECNA" Text="ASECNA" />
             <ListItem Value="ENNA" Text="ENNA" />
             <ListItem Value="URR" Text="URR" />
             <ListItem Value="KENIA" Text="KENIA" />
@@ -1286,7 +1308,7 @@
         <!--<Control Id="TipoLabel"           Type="Text"     X="10" Y="112" Width="60" Height="18" TabSkip="no" Text="Tipo grabación" />
         <Control Id="TipoOptions"         Type="ComboBox" X="85" Y="110" Width="90" Height="18" Property="RECMODE" ComboList="yes" >
           <ComboBox Property="RECMODE">
-            <ListItem Value="0" Text="ENAIRE" />
+            <ListItem Value="0" Text="SIRTAP" />
             <ListItem Value="1" Text="ASECNA" />
             <ListItem Value="2" Text="ASECNA+HF" />
           </ComboBox>
