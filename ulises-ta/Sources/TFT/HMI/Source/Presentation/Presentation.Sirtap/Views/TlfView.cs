@@ -182,9 +182,13 @@ namespace HMI.Presentation.Sirtap.Views
         }
         public void MostrarDialogoLogin()
         {
-            if (dlg==null) dlg = new loginform();
+            if (dlg==null) 
+                dlg = new loginform();
+            if (dlg.Visible)
+                return;
             dlg.setuploginform(_CmdManager, _StateManager);
-            DialogResult result = dlg.ShowDialog();
+            //DialogResult result = dlg.ShowDialog();
+            dlg.Show();
 
         }
 
