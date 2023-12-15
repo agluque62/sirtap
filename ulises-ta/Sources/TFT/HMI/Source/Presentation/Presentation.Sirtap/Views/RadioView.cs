@@ -1688,6 +1688,23 @@ namespace HMI.Presentation.Sirtap.Views
             }
 
         }
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+
     }
 }
 

@@ -236,6 +236,10 @@ namespace HMI.CD40.Module.Services
         //RQF36
         [EventPublication(EventTopicNames.ChangedRTXSQU, PublicationScope.Global)]
         public event EventHandler<StateMsg<bool>> ChangedRTXSQU;
+
+        [EventPublication(EventTopicNames.FuerzoLogout, PublicationScope.Global)]
+        public event EventHandler FuerzoLogout;
+
         #endregion
 
         public void Run()
@@ -1704,7 +1708,6 @@ namespace HMI.CD40.Module.Services
 			{
 				General.SafeLaunchEvent(AgendaChangedEngine, this, new RangeMsg<Number>(ag.ToArray()));
 			});
-
             // Eliminar grupos de RTX si los hubiera
             // 20200909. Eliminar esta función.
             //if (Top.Cfg.ResetUsuario)
@@ -1717,6 +1720,11 @@ namespace HMI.CD40.Module.Services
             //	});
             //}
 
+
+            Top.PublisherThread.Enqueue(EventTopicNames.FuerzoLogout, delegate ()
+            {
+                General.SafeLaunchEvent(FuerzoLogout,this);
+            });
         }
 
         private void OnTransferChanged(object sender)

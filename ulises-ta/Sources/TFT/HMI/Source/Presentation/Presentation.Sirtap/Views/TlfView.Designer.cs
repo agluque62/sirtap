@@ -183,7 +183,6 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfTLP.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion

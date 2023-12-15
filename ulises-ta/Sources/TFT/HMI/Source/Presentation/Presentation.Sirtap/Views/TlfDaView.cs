@@ -1220,6 +1220,33 @@ namespace HMI.Presentation.Sirtap.Views
                 this.Controls.Add(button);
             }
         }
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+            {
+                BackColor = Color.Gray;
+                _TlfDaTLP.BackColor = Color.Gray;
+                _TlfButtonsTLP.BackColor = Color.Gray;
+                _TlfDaTLP.ForeColor = Color.Gray;
+                _TlfButtonsTLP.ForeColor = Color.Gray;
+            }
+            else
+            {
+                BackColor = Color.White;
+                _TlfDaTLP.BackColor = Color.White;
+                _TlfButtonsTLP.BackColor = Color.White;
+            }
+        }
+
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
 
 
 

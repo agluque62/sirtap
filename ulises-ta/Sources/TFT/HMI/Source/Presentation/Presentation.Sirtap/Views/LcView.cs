@@ -286,6 +286,24 @@ namespace HMI.Presentation.Sirtap.Views
                 _Logger.Error("ERROR generando parpadeo lento para teclas LC", ex);
             }
         }
+
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+
     }
 }
 

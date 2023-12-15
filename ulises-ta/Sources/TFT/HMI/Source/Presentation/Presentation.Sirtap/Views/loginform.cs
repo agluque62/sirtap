@@ -27,11 +27,18 @@ namespace HMI.Presentation.Sirtap.Views
             _CmdManager = cmdManager;
             _StateManager = stateManager;
             //InitializeComponent();
+            if (stateManager.Tft.ModoNocturno)
+                this.hmiButtonModo.Text = "Modo Diurno";
+            else
+                this.hmiButtonModo.Text = "Modo Nocturno";
+            txtContrasena.Text = "";
+            MostrarModo();
 
         }
         public loginform()
         {
             InitializeComponent();
+            ControlBox = false;
         }
 
         private void pulsa(string tecla)
@@ -146,17 +153,18 @@ namespace HMI.Presentation.Sirtap.Views
         {
             Utilities.IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
             var mision=ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+            _StateManager.Tft.Mision = mision;
             if (mision.Length>0)
             {
-                _StateManager.Tft.Enabled = true;
+                //_StateManager.Tft.Enabled = true;
                 _StateManager.Tft.Login = true;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                _StateManager.Tft.Enabled = true;
-                _StateManager.Tft.Login = true;
+                //_StateManager.Tft.Enabled = true;
+                _StateManager.Tft.Login = false;
             }
             /*
 
@@ -169,7 +177,8 @@ namespace HMI.Presentation.Sirtap.Views
             };
 
             // Ejecuta la operación HttpService
-            string httpResult = await operationService.PerformOperation("HttpServiceSimulated", httpServiceData);
+            string httpResult = await operationServic
+            e.PerformOperation("HttpServiceSimulated", httpServiceData);
             Console.WriteLine("Resultado de la solicitud HTTP: " + httpResult);
 
             //MessageBox.Show(httpResult, "Título del mensaje", MessageBoxButtons.OK);
@@ -185,5 +194,27 @@ namespace HMI.Presentation.Sirtap.Views
             }
             */
         }
+
+        private void hmiButtonModo_MouseUp(object sender, MouseEventArgs e)
+        {
+            _StateManager.Tft.ModoNocturno = !_StateManager.Tft.ModoNocturno;
+            if (_StateManager.Tft.ModoNocturno)
+                hmiButtonModo.Text = "Modo Diurno";
+            else
+                hmiButtonModo.Text = "Modo Nocturno";
+            ChangeColors();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+        
     }
 }
