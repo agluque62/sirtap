@@ -155,9 +155,10 @@ namespace HMI.Presentation.Sirtap.Views
             
             IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
 
-            var mision=ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
-            _StateManager.Tft.Mision = mision;
-            if (mision.Length>0)
+            //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+            var mision = ValidadorCredenciales.Login(txtUsuario.Text, txtContrasena.Text);
+            _StateManager.Tft.Mision = mision.Result;
+            if (mision.Result.Length>0)
             {
                 //_StateManager.Tft.Enabled = true;
                 _StateManager.Tft.Login = true;

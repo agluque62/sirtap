@@ -542,6 +542,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\DFNUCLEO.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\play_no_disponibeN.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

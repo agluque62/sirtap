@@ -114,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpHelper.cs" />
-    <Compile Include="IOperationSErvice1.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="CustomBinaryFormatter.cs" />
     <Compile Include="EventQueue.cs" />

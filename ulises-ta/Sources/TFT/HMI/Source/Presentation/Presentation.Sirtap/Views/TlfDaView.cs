@@ -1248,42 +1248,6 @@ namespace HMI.Presentation.Sirtap.Views
         {
             ChangeColors();
         }
-
-
-
-#if SELECCION_SONIDO_AD
-		private void MainForm_MessageSent(object sender, MessageEventArgs e)
-		{
-			string mensaje = e.Message;
-		}
-		[EventSubscription(EventTopicNames.SeleccionSonido, ThreadOption.Publisher)]
-		public void OnSeleccionSonido(object sender, EventArgs e)
-		{
-			if (false)
-			{
-				DialogForm dialogForm = new DialogForm();
-
-				// Mostrar el formulario de diálogo de manera independiente
-				dialogForm.Show();
-
-				Console.WriteLine("La aplicación principal sigue ejecutándose.");
-
-			}
-			else
-			{
-
-				CSeleccionSonido dlg = new CSeleccionSonido();
-				dlg.MessageSent += MainForm_MessageSent;
-				dlg.setup(_CmdManager, _StateManager);
-				dlg.Width = this.Width;
-				dlg.Height = this.Height;
-				dlg.Size = new Size(this.Width, this.Height);
-				dlg.Location = new Point(700, 700/*this.Location.Y*/);
-				dlg.Show();
-				;// _RdPageBT_DownClick_Confirmada(sender);
-			}
-		}
-#endif
     }
 }
 

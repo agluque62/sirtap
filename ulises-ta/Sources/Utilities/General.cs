@@ -355,70 +355,72 @@ namespace Utilities
 
 	}
 
-
-		// Define la interfaz IOperationService
-		public interface IOperationService
-		{
-			Task<string> PerformOperation(string operation, object data);
-		}
+#if PERFORMOPERATION
+	// Define la interfaz IOperationService
+	public interface IOperationService
+	{
+		Task<string> PerformOperation(string operation, object data);
+	}
 
 	// Implementa la interfaz IOperationService
 	public class OperationService : IOperationService
+	{
+		public async Task<string> PerformOperation(string operation, object data)
 		{
-			public async Task<string> PerformOperation(string operation, object data)
+			switch (operation)
 			{
-				switch (operation)
-				{
-					case "HttpService":
-						return await PerformHttpService((HttpServiceData)data);
-					case "HttpServiceSimulated":
-						return await PerformHttpServiceSimulated((HttpServiceData)data);
-					default:
-						throw new ArgumentException("Operación no válida");
-				}
-			}
-
-			private async Task<string> PerformHttpService(HttpServiceData data)
-			{
-				// Lógica para realizar la solicitud HTTP
-
-				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
-			}
-			private async Task<string> PerformHttpServiceSimulated(HttpServiceData data)
-			{
-				// Lógica para realizar la solicitud HTTP
-				data.ApiUrl = "http://localhost:3000/login";
-				if (data.PostData == $"{{\"username\": \"\", \"password\": \"\"}}")
-					return "OK";
-				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
-			}
-
-			private /*async Task*/string PerformJsonReader(JsonReaderData data)
-			{
-				// Lógica para leer el archivo JSON
-				try
-				{
-					string jsonContent = File.ReadAllText(data.JsonFilePath);
-					return jsonContent;
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine($"Error al leer el archivo JSON: {ex.Message}");
-					throw;
-				}
+				case "HttpService":
+					return await PerformHttpService((HttpServiceData)data);
+				case "HttpServiceSimulated":
+					return await PerformHttpServiceSimulated((HttpServiceData)data);
+				default:
+					throw new ArgumentException("Operación no válida");
 			}
 		}
 
-		public interface IOperationService1
-	    {
-			Task <string> Login(string usuario, string clave);
-			Task Logout();
-	    }
+		private async Task<string> PerformHttpService(HttpServiceData data)
+		{
+			// Lógica para realizar la solicitud HTTP
 
-    public class SimultatedLoginService : IOperationService1
-    {
-        Task<string> IOperationService1.Login(string usuario, string clave)
-        {
+			return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+		}
+		private async Task<string> PerformHttpServiceSimulated(HttpServiceData data)
+		{
+			// Lógica para realizar la solicitud HTTP
+			data.ApiUrl = "http://localhost:3000/login";
+			if (data.PostData == $"{{\"username\": \"\", \"password\": \"\"}}")
+				return "OK";
+			return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+		}
+
+		private /*async Task*/string PerformJsonReader(JsonReaderData data)
+		{
+			// Lógica para leer el archivo JSON
+			try
+			{
+				string jsonContent = File.ReadAllText(data.JsonFilePath);
+				return jsonContent;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error al leer el archivo JSON: {ex.Message}");
+				throw;
+			}
+		}
+	}
+#endif
+
+#if NEW_SERVICE
+	public interface IOperationService1
+	{
+		Task <string> Login(string usuario, string clave);
+		Task Logout();
+	}
+
+	public class SimultatedLoginService : IOperationService1
+	{
+		Task<string> IOperationService1.Login(string usuario, string clave)
+		{
 			if (usuario == "1" && clave == "1")
 				return Task.FromResult("MISION 1");
 			// Define los datos para la operación HttpService
@@ -434,63 +436,79 @@ namespace Utilities
 		}
 
 		Task IOperationService1.Logout()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class RealLoginService : IOperationService1
-    {
-        public Task<string> Login(string usuario, string clave)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Logout()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public interface IValidadorCredenciales
 		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public class RealLoginService : IOperationService1
+	{
+		public Task<string> Login(string usuario, string clave)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task Logout()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+#endif
+
+	public interface IValidadorCredenciales
+	{
 		string SimuladorValidarCredenciales(string usuario, string clave);
 		Task<string> ValidarCredencialeshttp(string usuario, string clave);
-		}
+		Task <string> Login(string usuario, string clave);
+		Task Logout();
+	}
 
-		public class ValidadorCredenciales : IValidadorCredenciales
+	public class ValidadorCredenciales : IValidadorCredenciales
+	{
+		public string SimuladorValidarCredenciales(string usuario, string clave)
 		{
-			public string SimuladorValidarCredenciales(string usuario, string clave)
+			// Lógica de validación de credenciales (puedes personalizarla según tus necesidades)
+			if (usuario == "1" && clave == "1")
 			{
-				// Lógica de validación de credenciales (puedes personalizarla según tus necesidades)
-				if (usuario == "1" && clave == "1")
-				{
-					return "MISION 1";
-				}
-				return "";
+				return "MISION 1";
 			}
-			public async Task<string> ValidarCredencialeshttp(string usuario, string clave)
+			return "";
+		}
+		public async Task<string> ValidarCredencialeshttp(string usuario, string clave)
+		{
+			// Lógica para realizar la solicitud HTTP
+			var data= new HttpServiceData
 			{
-				// Lógica para realizar la solicitud HTTP
-				var data= new HttpServiceData
-				{
-					ApiUrl = "http://localhost:3000/login",
-					PostData = $"{{\"username\": \"{ usuario}\", \"password\": \"{ clave}\"}}"
-				};
-				return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+				ApiUrl = "http://localhost:3000/login",
+				PostData = $"{{\"username\": \"{ usuario}\", \"password\": \"{ clave}\"}}"
+			};
+			return await Utilities.HttpHelper.SendPostRequest(data.ApiUrl, data.PostData);
+		}
+
+        Task<string> IValidadorCredenciales.Login(string usuario, string clave)
+        {
+			// Lógica de validación de credenciales (puedes personalizarla según tus necesidades)
+			if (usuario == "1" && clave == "1")
+			{
+				return Task.FromResult("MISION 1");
 			}
+			else
+				return Task.FromResult("");
+			//throw new NotImplementedException();
 		}
 
-		// Define clases de datos específicas para cada operación
-		public class HttpServiceData
-		{
-			public string ApiUrl { get; set; }
-			public string PostData { get; set; }
-		}
+        Task IValidadorCredenciales.Logout()
+        {
+			return Task.FromResult("");
+            //throw new NotImplementedException();
+        }
+    }
 
-		public class JsonReaderData
-		{
-			public string JsonFilePath { get; set; }
-		}
-	
+	// Define clases de datos específicas para cada operación
+	public class HttpServiceData
+	{
+		public string ApiUrl { get; set; }
+		public string PostData { get; set; }
+	}
 }
