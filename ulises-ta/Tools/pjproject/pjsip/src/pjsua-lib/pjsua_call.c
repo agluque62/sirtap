@@ -1319,6 +1319,7 @@ PJ_DEF(pjmedia_transport*) pjsua_call_get_media_transport(pjsua_call_id cid)
 }
 
 
+#if 0 
 /* Acquire lock to the specified call_id */
 pj_status_t acquire_call(const char *title,
 								 pjsua_call_id call_id,
@@ -1329,9 +1330,9 @@ pj_status_t acquire_call(const char *title,
 	unsigned retry;
 	pjsua_call *call = NULL;
 	pj_bool_t has_pjsua_lock = PJ_FALSE;
-	pj_status_t status = PJ_SUCCESS;
+	pj_status_t status = PJ_SUCCESS;	
 
-	for (retry=0; retry<MAX_RETRY; ++retry) {
+	for (retry=0; retry< MAX_RETRY; ++retry) {
 
 		has_pjsua_lock = PJ_FALSE;
 
@@ -1381,6 +1382,144 @@ pj_status_t acquire_call(const char *title,
 
 	return PJ_SUCCESS;
 }
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Acquire lock to the specified call_id */
+pj_status_t acquire_call(const char* title,
+	pjsua_call_id call_id,
+	pjsua_call** p_call,
+	pjsip_dialog** p_dlg)
+{
+	enum { MAX_RETRY = 50 };
+	enum { MAX_RETRY_ETM = 500 };		//Cuando se trata de ETM, esta funcion la dejo como la original de PJSIP
+	unsigned retry;
+	unsigned max_retry;
+	pjsua_call* call = NULL;
+	pj_bool_t has_pjsua_lock = PJ_FALSE;
+	pj_status_t status = PJ_SUCCESS;
+	pj_bool_t is_etm;
+
+	if (pjsip_endpt_Is_ETM(pjsua_var.endpt))
+	{
+		is_etm = PJ_TRUE;
+		max_retry = MAX_RETRY_ETM;
+	}
+	else
+	{
+		is_etm = PJ_FALSE;
+		max_retry = MAX_RETRY;
+	}
+
+	for (retry = 0; retry < max_retry; ++retry) {
+
+		has_pjsua_lock = PJ_FALSE;
+
+		status = PJSUA_TRY_LOCK();
+		if (status != PJ_SUCCESS) {
+			pj_thread_sleep(retry / 10);
+			if (!is_etm) pj_thread_sleep(20);
+			else if (retry < 100) pj_thread_sleep(10);
+			continue;
+		}
+
+		has_pjsua_lock = PJ_TRUE;
+		call = &pjsua_var.calls[call_id];
+
+		if (call->inv == NULL) {
+			PJSUA_UNLOCK();
+			PJ_LOG(3, (THIS_FILE, "Invalid call_id %d in %s", call_id, title));
+			return PJSIP_ESESSIONTERMINATED;
+		}
+
+		status = pjsip_dlg_try_inc_lock(call->inv->dlg);
+		if (status != PJ_SUCCESS) {
+			PJSUA_UNLOCK();
+			pj_thread_sleep(retry / 10);
+			if (!is_etm) pj_thread_sleep(20);
+			else if (retry < 100) pj_thread_sleep(10);
+			continue;
+		}
+
+		PJSUA_UNLOCK();
+
+		break;
+	}
+
+	if (status != PJ_SUCCESS) {
+		if (has_pjsua_lock == PJ_FALSE)
+			PJ_LOG(1, (THIS_FILE, "Timed-out trying to acquire PJSUA mutex "
+				"(possibly system has deadlocked) in %s",
+				title));
+		else
+			PJ_LOG(1, (THIS_FILE, "Timed-out trying to acquire dialog mutex "
+				"(possibly system has deadlocked) in %s",
+				title));
+		return PJ_ETIMEDOUT;
+	}
+
+	*p_call = call;
+	*p_dlg = call->inv->dlg;
+
+	return PJ_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

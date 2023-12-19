@@ -1214,6 +1214,8 @@ void SipAgent::Stop()
 
 		pj_lock_destroy(_Lock);
 
+		SipAgent::ETM = PJ_FALSE;
+
 		pjsua_destroy();
 
 		if (SipAgent::timePeriodApplied != 0) timeEndPeriod(SipAgent::timePeriodApplied);
@@ -3560,6 +3562,7 @@ pj_bool_t SipAgent::OnRxResponse(pjsip_rx_data *rdata)
  */
 pj_status_t SipAgent::OnWavPlayerEof(pjmedia_port *port, void *userData)
 {
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "FinWavCb"));
 	if (Cb.FinWavCb) Cb.FinWavCb((int)(size_t)userData | CORESIP_WAVPLAYER_ID);
 	DestroyWavPlayer((int)(size_t)userData);
 	return PJ_EEOF;
@@ -3928,6 +3931,7 @@ void SipAgent::OnPager(pjsua_call_id call_id, const pj_str_t *from,
 		pj_str_t tmpbody;
 		pj_strdup_with_null(tmppool, &tmpbody, body);
 
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "PagerCb"));
 		SipAgent::Cb.PagerCb(tmpfrom.ptr, (int)tmpfrom.slen, tmpto.ptr, (int)tmpto.slen, tmpcontact.ptr, (int)tmpcontact.slen,
 			tmpmime_type.ptr, (int)tmpmime_type.slen, tmpbody.ptr, (int)tmpbody.slen);
 

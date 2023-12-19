@@ -118,12 +118,16 @@ void SipCall::Ptt(pjsua_call_id call_id, const CORESIP_PttInfo* info)
 	PJ_CHECK_STATUS(status, ("ERROR adquiriendo call", "[Call=%d]", call_id));
 
 	SipCall* call = (SipCall*)call1->user_data;
-
 	if (call)
 	{
 		pjsua_cancel_timer(&call->PTT_delayed_timer);
 		call->PTT_delayed_timer.id = 0;
-	}
+
+		if (call->_HangUp || call->_Last_pjsip_inv_state == PJSIP_INV_STATE_DISCONNECTED)
+		{
+			PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: Ptt: Sesion no establecida o cerrandose", "[Call=%d]", call_id));
+		}
+	}	
 
 	pjsua_call_info call_info;
 	if (pjsua_call_get_info(call_id, &call_info) != PJ_SUCCESS)
@@ -800,6 +804,9 @@ void SipCall::OnRdRtp(void* stream, void* frame, void* codec, unsigned seq, pj_u
 	SipCall* sipCall = (SipCall*)pjcall->user_data;
 	if (!sipCall) return;
 
+	if (sipCall->_HangUp) return;	//Si se ha solicitado cerrar la sesion entonces no hacemos nada en esta callback
+	if (sipCall->_Last_pjsip_inv_state == PJSIP_INV_STATE_DISCONNECTED) return;
+
 	pjsua_call_info callinfo;
 	if (pjsua_call_get_info(pjcall->index, &callinfo) != PJ_SUCCESS)
 	{
@@ -1108,6 +1115,9 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 
 	SipCall* sipCall = (SipCall*)pjcall->user_data;
 	if (!sipCall) return;
+
+	if (sipCall->_HangUp) return;	//Si se ha solicitado cerrar la sesion entonces no hacemos nada en esta callback
+	if (sipCall->_Last_pjsip_inv_state == PJSIP_INV_STATE_DISCONNECTED) return;
 
 	/*Para ver si somos una radio. Solo para cuando somos un ETM */
 	AccountUserData* accUserData = NULL;
@@ -1818,6 +1828,7 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 			if (SipAgent::Cb.RdInfoCb)
 			{
 				PJ_LOG(5, (__FILE__, "onRdinfochanged: envia a nodebox. dst %s PttType %d PttId %d rx_selected %d Squelch %d", sipCall->DstUri, info.PttType, info.PttId, info.rx_selected, info.Squelch));
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "RdInfoCb %d", ((pjsua_call*)pjcall)->index | CORESIP_CALL_ID));
 				SipAgent::Cb.RdInfoCb(pjcall->index | CORESIP_CALL_ID, &info);
 			}
 		}
@@ -2140,17 +2151,14 @@ void SipCall::OnKaTimeout(void* stream)
 		if (session)
 		{
 			void* call = pjmedia_session_get_user_data((pjmedia_session*)session);
-
 			if (call)
 			{
-				/*
 				SipCall * sipcall = (SipCall*)pjsua_call_get_user_data(((pjsua_call*)call)->index);
 				if (sipcall != NULL)
 				{
-					PJ_LOG(5,(__FILE__, "OnKaTimeout dst %s", sipcall->DstUri));
+					if (sipcall->_HangUp) return;	//Si se ha solicitado cerrar la sesion entonces no hacemos nada en esta callback
 				}
-				*/
-
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "KaTimeoutCb %d", ((pjsua_call*)call)->index | CORESIP_CALL_ID));
 				SipAgent::Cb.KaTimeoutCb(((pjsua_call*)call)->index | CORESIP_CALL_ID);
 			}
 		}
@@ -2187,6 +2195,7 @@ void SipCall::Ptt_off_timer_cb(pj_timer_heap_t* th, pj_timer_entry* te)
 	if (SipAgent::Cb.RdInfoCb)
 	{
 		PJ_LOG(5, (__FILE__, "SipCall::Ptt_off_timer_cb: Fin timer. Envia a nodebox dst %s PttType %d PttId %d rx_selected %d Squelch %d", wp->DstUri, info_aux.PttType, info_aux.PttId, info_aux.rx_selected, info_aux.Squelch));
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "RdInfoCb %d", wp->_Id | CORESIP_CALL_ID));
 		SipAgent::Cb.RdInfoCb(wp->_Id | CORESIP_CALL_ID, &info_aux);
 	}
 }
