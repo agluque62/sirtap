@@ -1385,19 +1385,6 @@ pj_status_t acquire_call(const char *title,
 
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Acquire lock to the specified call_id */
 pj_status_t acquire_call(const char* title,
 	pjsua_call_id call_id,
@@ -1476,51 +1463,6 @@ pj_status_t acquire_call(const char* title,
 
 	return PJ_SUCCESS;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 * Get the conference port identification associated with the call.
