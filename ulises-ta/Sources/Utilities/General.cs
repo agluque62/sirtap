@@ -409,7 +409,50 @@ namespace Utilities
 			}
 		}
 
-		public interface IValidadorCredenciales
+		public interface IOperationService1
+	    {
+			Task <string> Login(string usuario, string clave);
+			Task Logout();
+	    }
+
+    public class SimultatedLoginService : IOperationService1
+    {
+        Task<string> IOperationService1.Login(string usuario, string clave)
+        {
+			if (usuario == "1" && clave == "1")
+				return Task.FromResult("MISION 1");
+			// Define los datos para la operación HttpService
+			var httpServiceData = new HttpServiceData
+			{
+				ApiUrl = "http://localhost:3000/login",
+				PostData = $"{{\"username\": \"{ usuario}\", \"password\": \"{clave}\"}}"
+			};
+			// Ejecuta la operación HttpService
+			string result = Utilities.HttpHelper.SendPostRequest(httpServiceData.ApiUrl, httpServiceData.PostData).Result;
+			return Task.FromResult(result);
+
+		}
+
+		Task IOperationService1.Logout()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RealLoginService : IOperationService1
+    {
+        public Task<string> Login(string usuario, string clave)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Logout()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface IValidadorCredenciales
 		{
 		string SimuladorValidarCredenciales(string usuario, string clave);
 		Task<string> ValidarCredencialeshttp(string usuario, string clave);
@@ -424,10 +467,7 @@ namespace Utilities
 				{
 					return "MISION 1";
 				}
-				else
-				{	
-					return "";
-				}
+				return "";
 			}
 			public async Task<string> ValidarCredencialeshttp(string usuario, string clave)
 			{

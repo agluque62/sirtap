@@ -146,7 +146,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool LcDstEnabled(LcDst dst)
         {
-            return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable;
+            return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
         }
 
         private void Reset(LcButton bt, LcDst dst)

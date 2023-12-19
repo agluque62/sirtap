@@ -187,8 +187,8 @@ namespace HMI.Presentation.Sirtap.Views
             if (dlg.Visible)
                 return;
             dlg.setuploginform(_CmdManager, _StateManager);
-            //DialogResult result = dlg.ShowDialog();
-            dlg.Show();
+            DialogResult result = dlg.ShowDialog();
+            //dlg.Show();
 
         }
 

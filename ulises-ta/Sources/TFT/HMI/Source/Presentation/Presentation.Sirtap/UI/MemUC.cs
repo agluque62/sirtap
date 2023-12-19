@@ -32,7 +32,7 @@ namespace HMI.Presentation.Sirtap.UI
             get
             {
                 return (_MemLB.SelectedIndex >= 0) &&
-                    _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                    _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     (_StateManager.Tlf.Priority.State != FunctionState.Error) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Executing) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Error) &&
@@ -45,11 +45,11 @@ namespace HMI.Presentation.Sirtap.UI
         }
         private bool _CancelEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _MemLBEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
 
         private string _Aceptar // Miguel

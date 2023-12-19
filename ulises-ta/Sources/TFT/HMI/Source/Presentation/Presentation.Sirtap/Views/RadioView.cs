@@ -76,33 +76,33 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool _RdSpeakerEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
         //En Twr el doble altavoz solo si está configurado
         private bool _HfSpeakerEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Radio.DoubleRadioSpeaker; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Radio.DoubleRadioSpeaker && _StateManager.Tft.Login; }
         }
         private bool _RdHeadPhonesEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Tlf.SoloAltavoces; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Tlf.SoloAltavoces && _StateManager.Tft.Login; }
         }
         private bool _PttEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
         private bool _RtxEnabled
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     !_StateManager.Radio.PttOn &&
                     (_StateManager.Radio.GetNumFrAvalilablesForRtx(_RdPageBT.Page * _NumPositionsByPage, _NumPositionsByPage) > 1);
             }
         }
         private bool _RdPageEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Radio.PttOn; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Radio.PttOn && _StateManager.Tft.Login; }
         }
         private string _Rtx // Miguel
         {
@@ -302,7 +302,7 @@ namespace HMI.Presentation.Sirtap.Views
             _PlayBT.Enabled = _ReplayEnabled;
             foreach (RdButton bt in _RdButtons)
             {
-                bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Radio[bt.Id].Unavailable;
+                bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Radio[bt.Id].Unavailable && _StateManager.Tft.Login;
             }
             //LALM 220223
             // Todo obtener la configuracion para poder pintar el control playrecord.
@@ -1024,7 +1024,7 @@ namespace HMI.Presentation.Sirtap.Views
                     bt.EnableTx(false);
                 else
                     bt.EnableTx(true);
-                bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable;
+                bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
             bt.Visible = dst.IsConfigurated;

@@ -37,8 +37,8 @@ namespace Utilities
                     string responseBody = await response.Content.ReadAsStringAsync();
 
                     // Muestra la respuesta
-                    Console.WriteLine($"Status Code: {response.StatusCode}");
-                    Console.WriteLine($"Response Body: {responseBody}");
+                    //Console.WriteLine($"Status Code: {response.StatusCode}");
+                    //Console.WriteLine($"Response Body: {responseBody}");
                     return response.ReasonPhrase;
                 }
                 catch (HttpRequestException ex)

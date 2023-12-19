@@ -153,9 +153,9 @@ namespace HMI.Presentation.Sirtap.Views
 
             _LcSpeakerUDB.Level = _StateManager.LcSpeaker.LevelLC;
             _TlfHeadPhonesUDB.Level = _StateManager.TlfHeadPhones.Level;
-            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _LcSpeakerUDB.DrawX = true;
-            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfPageFirstBT.Enabled = _StateManager.Tft.Enabled;
             _TlfPageSecondBT.Enabled = _StateManager.Tft.Enabled;
 
@@ -186,13 +186,14 @@ namespace HMI.Presentation.Sirtap.Views
 
         }
 
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)
         {
             _Logger.Trace("TlfDAView.OnTftEngineChanged");
-            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
-            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
+            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfPageFirstBT.Enabled = _StateManager.Tft.Enabled;
             _TlfPageSecondBT.Enabled = _StateManager.Tft.Enabled;
 
@@ -570,7 +571,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool TlfDstEnabled(TlfDst dst)
         {
-            return (_StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+            return (_StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     !dst.Unavailable &&
                     (_StateManager.Tlf.Priority.State != FunctionState.Executing) &&
                     ((_StateManager.Tlf.Listen.State == FunctionState.Idle) || (_StateManager.Tlf.Listen.State == FunctionState.Ready)) &&

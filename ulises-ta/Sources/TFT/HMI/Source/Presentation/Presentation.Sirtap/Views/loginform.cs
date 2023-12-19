@@ -149,9 +149,12 @@ namespace HMI.Presentation.Sirtap.Views
 
         }
 
-        private async void _OK_Click(object sender, EventArgs e)
+
+        private void _OK_Click(object sender, EventArgs e)
         {
-            Utilities.IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+            
+            IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+
             var mision=ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
             _StateManager.Tft.Mision = mision;
             if (mision.Length>0)
@@ -163,7 +166,6 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
-                //_StateManager.Tft.Enabled = true;
                 _StateManager.Tft.Login = false;
             }
             /*
