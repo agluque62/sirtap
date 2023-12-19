@@ -148,7 +148,59 @@ namespace HMI.Presentation.Sirtap.Views
         {
 
         }
+        private void MostrarVentanaModal(string mensaje)
+        {
+            using (var errorForm = new Form())
+            {
+                // Configuración para ocultar la barra de título y el ícono
+                errorForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+                errorForm.ControlBox = false;
+                // Establecer el título de la ventana
+                errorForm.Text = "Error";
 
+                var label = new Label();
+                label.Text = mensaje;
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                
+                // Ajustar la apariencia del texto
+                label.Font = new System.Drawing.Font("Arial", 14, FontStyle.Bold);
+                
+                errorForm.Controls.Add(label);
+
+                // Cerrar automáticamente después de 3 segundos
+                var timer = new Timer();
+                timer.Interval = 3000; // 3000 milisegundos = 3 segundos
+                timer.Tick += (s, e) => errorForm.Close();
+                timer.Start();
+
+                errorForm.ShowDialog();
+            }
+        }
+
+        private void MostrarVentanaModal1(string mensaje)
+        {
+            using (var errorForm = new Form())
+            {
+                errorForm.Text = "Error de Autenticación";
+                errorForm.Size = new System.Drawing.Size(500, 150);
+
+                var label = new Label();
+                label.Text = mensaje;
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleCenter;
+
+                errorForm.Controls.Add(label);
+
+                // Cerrar automáticamente después de 3 segundos
+                var timer = new Timer();
+                timer.Interval = 3000; // 3000 milisegundos = 3 segundos
+                timer.Tick += (s, e) => errorForm.Close();
+                timer.Start();
+
+                errorForm.ShowDialog();
+            }
+        }
 
         private void _OK_Click(object sender, EventArgs e)
         {
@@ -167,6 +219,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
+                MostrarVentanaModal("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
                 _StateManager.Tft.Login = false;
             }
             /*
