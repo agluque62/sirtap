@@ -297,7 +297,6 @@ namespace HMI.CD40.Module.Services
                     Top.Tlf.ResourceChanged += OnTlfResourceChanged;
                     //230516
                     Top.Tlf.CambioConferenciaPreprogramada += OnCambioConferenciaPreprogramada;
-                    
                 }
                 if (Top.Lc != null)
                 {
@@ -2093,7 +2092,7 @@ namespace HMI.CD40.Module.Services
 		private void OnSendSnmpTrapString(object sender, SnmpStringMsg<string, string> st)
 		{
 			if (Settings.Default.SNMPEnabled != 0)
-				SnmpStringObject.Get(st.Oid).SendTrap(st.Value);
+				SnmpStringObject.Get(st.Oid)?.SendTrap(st.Value);
 		}
 
         private void OnBriefingChanged(object sender, StateMsg<bool> briefingState)
@@ -2745,8 +2744,17 @@ namespace HMI.CD40.Module.Services
             Top.Tlf.TonosPorLlamada[llamada] = new string[] { tono, tonoprio };
         }
 
+
+
+        public void GenerarHistoricoLoginIncorrectoEngine(string nombre, string error)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
+            {
+                Top.Rd.EnviaAlarmaLoginFail(nombre);
+            });
+        }
         /**
         * Fin de Modificacion */
-#endregion
+        #endregion
     }
 }

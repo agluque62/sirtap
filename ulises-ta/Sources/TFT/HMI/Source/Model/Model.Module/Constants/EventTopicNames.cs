@@ -20,6 +20,7 @@ namespace HMI.Model.Module.Constants
 
 		public const string TftEnabledChanged = "TftEnabledChanged";
 		public const string TftLoginChanged = "TftLoginChanged";
+		public const string TftBadLogin = "TftBadLogin";
 		public const string EngineStateChanged = "EngineStateChanged";
 		public const string ScreenSaverChanged = "ScreenSaverChanged";
 		public const string TitleIdChanged = "TitleIdChanged";

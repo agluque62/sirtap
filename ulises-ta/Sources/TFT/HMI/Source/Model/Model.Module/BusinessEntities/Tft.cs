@@ -12,16 +12,20 @@ namespace HMI.Model.Module.BusinessEntities
 	{
         private bool _Enabled = true;
         private bool _Login = false;
+        private string _LastLogin = "";
         private string _Mision = "";
         private bool _ModoNocturno = !(DateTime.Now.Hour >= 6 && DateTime.Now.Hour< 18);
 
         private bool _Briefing = false;
         private bool _Playing = false;
+        public event GenericEventHandler<SnmpStringMsg<string, string>> SendSnmpTrapString;
 
         [EventPublication(EventTopicNames.TftEnabledChanged, PublicationScope.Global)]
         public event EventHandler TftEnabledChanged;
         [EventPublication(EventTopicNames.TftLoginChanged, PublicationScope.Global)]
         public event EventHandler TftLoginChanged;
+        [EventPublication(EventTopicNames.TftBadLogin, PublicationScope.Global)]
+        public event EventHandler TftBadLogin;
         [EventPublication(EventTopicNames.BriefingChanged, PublicationScope.Global)]
         public event EventHandler BriefingChanged;
         [EventPublication(EventTopicNames.PlayingChanged, PublicationScope.Global)]
@@ -55,6 +59,15 @@ namespace HMI.Model.Module.BusinessEntities
                     _Login = value;
                     General.SafeLaunchEvent(TftLoginChanged, this);
                 }
+            }
+        }
+        public string GenerarHistoricoLoginIncorrecto
+        {
+            set
+            {
+                _LastLogin = value;
+                General.SafeLaunchEvent(TftBadLogin, this._LastLogin);
+
             }
         }
         public bool Briefing

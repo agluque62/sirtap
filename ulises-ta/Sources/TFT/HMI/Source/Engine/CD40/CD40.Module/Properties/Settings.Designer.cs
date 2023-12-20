@@ -948,7 +948,7 @@ namespace HMI.CD40.Module.Properties {
                 return ((bool)(this["PttSinRetener"]));
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(".1.3.6.1.4.1.7916.8.2.3.10.0")]
@@ -958,6 +958,18 @@ namespace HMI.CD40.Module.Properties {
             }
             set {
                 this["RxDesasignadoOid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".1.3.6.1.4.1.7916.8.2.3.11.0")]
+        public string LoginIncorrecto {
+            get {
+                return ((string)(this["LoginIncorrecto"]));
+            }
+            set {
+                this["LoginIncorrecto"] = value;
             }
         }
     }

@@ -1439,5 +1439,5 @@ namespace HMI.Model.Module.Services
 		{
 			_EngineCmdManager.SetToneporllamadaEngine(llamda,tono, tonoprio);
         }
-    }
+	}
 }

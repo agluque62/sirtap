@@ -969,5 +969,13 @@ namespace HMI.Model.Module.Services
 			_StateManager.Tft.SetLogin(false);
 
 		}
+		[EventSubscription(EventTopicNames.TftBadLogin, ThreadOption.UserInterface)]
+		public void OnTftBadLogin(object sender, EventArgs msg)
+        {
+			string user = (string)sender;
+			string error = "";
+			_EngineCmdManager.GenerarHistoricoLoginIncorrectoEngine(user,error);
+		}
+
 	}
 }

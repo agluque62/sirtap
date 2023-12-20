@@ -315,5 +315,8 @@
     <Setting Name="RxDesasignadoOid" Type="System.String" Scope="User">
       <Value Profile="(Default)">.1.3.6.1.4.1.7916.8.2.3.10.0</Value>
     </Setting>
+    <Setting Name="LoginIncorrecto" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.1.3.6.1.4.1.7916.8.2.3.11.0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

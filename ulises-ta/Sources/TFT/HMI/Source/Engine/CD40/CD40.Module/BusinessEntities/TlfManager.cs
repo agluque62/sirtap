@@ -57,6 +57,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<RangeMsg<TlfInfo>> CambioConferenciaPreprogramada;
         //230511
         private TlfConferencePrepro _ConferencePrepro = new TlfConferencePrepro();
+
         public enum TlfRxAudioVia
         {
             NoAudio,

@@ -1,4 +1,5 @@
 ﻿using HMI.Infrastructure.Interface;
+using HMI.Model.Module.Messages;
 using HMI.Model.Module.Services;
 using Microsoft.Practices.CompositeUI;
 using NLog;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilities;
+
 
 namespace HMI.Presentation.Sirtap.Views
 {
@@ -178,29 +180,14 @@ namespace HMI.Presentation.Sirtap.Views
             }
         }
 
-        private void MostrarVentanaModal1(string mensaje)
+
+        void MostrarVentanaModal1(string mensaje)
         {
-            using (var errorForm = new Form())
-            {
-                errorForm.Text = "Error de Autenticación";
-                errorForm.Size = new System.Drawing.Size(500, 150);
+            NotifMsg msg = new NotifMsg("", "Intentelo de nuevo", mensaje, 0, MessageType.Information, MessageButtons.Ok);
+            _StateManager.ShowUIMessage(msg);
 
-                var label = new Label();
-                label.Text = mensaje;
-                label.Dock = DockStyle.Fill;
-                label.TextAlign = ContentAlignment.MiddleCenter;
-
-                errorForm.Controls.Add(label);
-
-                // Cerrar automáticamente después de 3 segundos
-                var timer = new Timer();
-                timer.Interval = 3000; // 3000 milisegundos = 3 segundos
-                timer.Tick += (s, e) => errorForm.Close();
-                timer.Start();
-
-                errorForm.ShowDialog();
-            }
         }
+
 
         private void _OK_Click(object sender, EventArgs e)
         {
@@ -219,8 +206,10 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
-                MostrarVentanaModal("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+                //MostrarVentanaModal("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+                MostrarVentanaModal1("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
                 _StateManager.Tft.Login = false;
+                _StateManager.Tft.GenerarHistoricoLoginIncorrecto=txtUsuario.Text;
             }
             /*
 

@@ -1514,6 +1514,16 @@ namespace HMI.CD40.Module.BusinessEntities
             });
         }
 
+        public void EnviaAlarmaLoginFail(string nombre)
+        {
+            Top.WorkingThread.Enqueue("SendSnmpTrap", delegate ()
+            {
+                string snmpString = $"Login {nombre} Incorrecto";
+                string snmpOid = Settings.Default.LoginIncorrecto;
+                General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+            });
+        }
+
         /// <summary>
         /// 
         /// </summary>
