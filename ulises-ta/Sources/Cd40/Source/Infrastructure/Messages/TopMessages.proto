@@ -131,74 +131,84 @@ message TlmdoGetChannelsAskMsg			//TLMDO_GET_CHANNELS_ASK
 {
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
 }
 
 message TlmdoGetChannelsRspMsg			//TLMDO_GET_CHANNELS_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	repeated string Channels = 3;		//Lista con los canales
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	repeated string Channels = 4;		//Lista con los canales
+	required uint32 Code = 5;
 }
 
 message TlmdoSetChannelAskMsg			//TLMDO_SET_CHANNEL_ASK
 {
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string Channel = 3;		//Canal solicitado
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string Channel = 4;		//Canal solicitado
 }
 
 message TlmdoSetChannelRspMsg			//TLMDO_SET_CHANNEL_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string Channel = 3;		//Canal seleccionado
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string Channel = 4;		//Canal seleccionado
+	required uint32 Code = 5;
 }
 
 message TlmdoSetTxPwrAskMsg				//TLMDO_SET_TXPWR_ASK
 {
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string PowerW = 3;			//Potencia en watios. 0,25 a 50
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string PowerW = 4;			//Potencia en watios. 0,25 a 50
 }
 
 message TlmdoSetTxPwrRspMsg				//TLMDO_SET_TXPWR_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string PowerW = 3;			//Potencia seleccionada
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string PowerW = 4;			//Potencia seleccionada
+	required uint32 Code = 5;
 }
 
 message TlmdoSetTxInhibitAskMsg			//TLMDO_SET_TXINHIBIT_ASK
 {
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required bool Inhibit = 3;			//Si true se inhibe la transmision
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required bool Inhibit = 4;			//Si true se inhibe la transmision
 }
 
 message TlmdoSetTxInhibitRspMsg			//TLMDO_SET_TXINHIBIT_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required bool Inhibit = 3;			//Si true la transmision esta inhibida
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required bool Inhibit = 4;			//Si true la transmision esta inhibida
+	required uint32 Code = 5;
 }
 
 message TlmdoSetWFallocAskMsg			//TLMDO_SET_WFALLOC_ASK
 {
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required bool SQH = 3;				//Si true se fuerza SQH
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required bool SQH = 4;				//Si true se fuerza SQH
 }
 
 message TlmdoSetWFallocRspMsg			//TLMDO_SET_WFALLOC_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required bool SQH = 3;				//Retorna el estado de SQH forzado
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required bool SQH = 4;				//Retorna el estado de SQH forzado
+	required uint32 Code = 5;
 }
 
 message TlmdoSetCryptKeyAskMsg			//TLMDO_SET_CRYPT_KEYS_ASK
@@ -211,15 +221,17 @@ message TlmdoSetCryptKeyAskMsg			//TLMDO_SET_CRYPT_KEYS_ASK
 
 	required string HostId = 1;
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required KeyTypes Keytipe = 3;				//Si true se fuerza SQH
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required KeyTypes Keytipe = 4;				//Si true se fuerza SQH
 }
 
 message TlmdoSetCryptKeyRspMsg			//TLMDO_SET_CRYPT_KEYS_RSP
 {
 	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
 	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe = 3;														
-	required uint32 Code = 4;
+	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe = 4;			
+	required uint32 Code = 5;
 }
 
 

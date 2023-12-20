@@ -518,6 +518,13 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private global::ProtoBuf.IExtension extensionObject;
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
@@ -542,15 +549,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private readonly global::System.Collections.Generic.List<string> _Channels = new global::System.Collections.Generic.List<string>();
-    [global::ProtoBuf.ProtoMember(3, Name=@"Channels", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, Name=@"Channels", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public global::System.Collections.Generic.List<string> Channels
     {
       get { return _Channels; }
     }
   
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
@@ -580,8 +594,15 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private string _Channel;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public string Channel
     {
       get { return _Channel; }
@@ -611,15 +632,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private string _Channel;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public string Channel
     {
       get { return _Channel; }
       set { _Channel = value; }
     }
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
@@ -649,8 +677,15 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private string _PowerW;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public string PowerW
     {
       get { return _PowerW; }
@@ -680,15 +715,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private string _PowerW;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public string PowerW
     {
       get { return _PowerW; }
       set { _PowerW = value; }
     }
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
@@ -718,8 +760,15 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private bool _Inhibit;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public bool Inhibit
     {
       get { return _Inhibit; }
@@ -749,15 +798,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private bool _Inhibit;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public bool Inhibit
     {
       get { return _Inhibit; }
       set { _Inhibit = value; }
     }
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
@@ -787,8 +843,15 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private bool _SQH;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public bool SQH
     {
       get { return _SQH; }
@@ -818,15 +881,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private bool _SQH;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
     public bool SQH
     {
       get { return _SQH; }
       set { _SQH = value; }
     }
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
@@ -856,8 +926,15 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes _Keytipe;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe
     {
       get { return _Keytipe; }
@@ -898,15 +975,22 @@ namespace U5ki.Infrastructure
       get { return _IdFrecuency; }
       set { _IdFrecuency = value; }
     }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
     private U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes _Keytipe;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public U5ki.Infrastructure.TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe
     {
       get { return _Keytipe; }
       set { _Keytipe = value; }
     }
     private uint _Code;
-    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     public uint Code
     {
       get { return _Code; }
