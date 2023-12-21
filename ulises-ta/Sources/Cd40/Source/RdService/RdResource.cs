@@ -809,7 +809,8 @@ namespace U5ki.RdService
         {
             none = 0,
             RCRohde4200 = 1,
-            RCJotron7000 = 2
+            RCJotron7000 = 2,
+            Sirtap
         }
 
         public int _TelemandoType = 0;

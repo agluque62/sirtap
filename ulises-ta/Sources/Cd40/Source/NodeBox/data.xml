@@ -380,9 +380,13 @@
     <English>Equipments tuned to the frequency</English>
     <French>L'équipement réglé sur la fréquence</French>
   </log>
-  <log id="Equipo configurado sin telemando. No se puede sintonizar.">
-    <English>Equipment configured without remote control. It cannot be tuned.</English>
-    <French>Equipement configuré sans télécommande. Il ne peut pas être accordé.</French>
+  <log id="Equipo configurado sin telemando. No se puede sintonizar. {0}">
+    <English>Equipment configured without remote control. It cannot be tuned. {0}</English>
+    <French>Equipement configuré sans télécommande. Il ne peut pas être accordé. {0}</French>
+  </log>
+  <log id="Equipo configurado sin telemando. {0}">
+    <English>Equipment configured without remote control. {0}</English>
+    <French>Equipement configuré sans télécommande. {0}</French>
   </log>
   <log id="Equipo del grupo 1+1 esta deshabilitado. No se puede establecer ni leer su frecuencia por SNMP.">
     <English>Equipment of group 1+1 is disabled. Its frequency cannot be set or get by SNMP.</English>
@@ -407,5 +411,21 @@
   <log id="No se puede cambiar de frecuencia porque algun equipo no soporta telemando.">
     <English>The frequency cannot be changed. Telecontrol is not supported by any device.</English>
     <French>Il n'est pas possible de changer la fréquence car certains équipements ne disposent pas de télécommande.</French>
+  </log>
+  <log id="No se puede aplicar telemando porque algun equipo no lo soporta.">
+    <English>Telecontrol is not supported by any device.</English>
+    <French>Équipements ne disposent pas de télécommande.</French>
+  </log>
+  <log id="Telemando. Ejecutado con error en algún equipo.">
+    <English>Telecontrol executed with error on some device.</English>
+    <French>Télécommande. Exécuté avec erreur sur certaines radios.</French>
+  </log>
+  <log id="Telemando ejecutado con exito. cmd:{0} val:{1}">
+    <English>"Telecontrol executed successfully. cmd:{0} val:{1}"</English>
+    <French>Télécommande exécutée avec succès. cmd:{0} val:{1}</French>
+  </log>
+  <log id="Telemando ejecutado con error. cmd:{0} val:{1}">
+    <English>"Telecontrol executed with error. cmd:{0} val:{1}"</English>
+    <French>Télécommande exécutée avec erreur. cmd:{0} val:{1}</French>
   </log>
 </AppData>

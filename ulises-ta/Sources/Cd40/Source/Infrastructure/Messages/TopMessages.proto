@@ -127,112 +127,57 @@ message SirTapAudAlarmMsg
 	required Category category = 3;
 }
 
-message TlmdoGetChannelsAskMsg			//TLMDO_GET_CHANNELS_ASK
+message TlmdoAsk
 {
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-}
+	enum MsgType
+	{
+		TLMDO_GET_CHANNELS = 1;		//Pide los canales disponibles de la radio. TlmdoGetChannelsAskMsg
+        TLMDO_SET_CHANNEL = 2;		//Seleccion del canal de radio
+        TLMDO_SET_TXPWR = 3;		//Potencia de transmision
+        TLMDO_SET_TXINHIBIT = 4;	//Inhibicion de TX
+        TLMDO_SET_WFALLOC = 5;		//Waveform allocation. TBD
+        TLMDO_SET_CRYPT_KEYS = 6;	//Control de claves de encriptacion
+	}
 
-message TlmdoGetChannelsRspMsg			//TLMDO_GET_CHANNELS_RSP
-{
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	repeated string Channels = 4;		//Lista con los canales
-	required uint32 Code = 5;
-}
-
-message TlmdoSetChannelAskMsg			//TLMDO_SET_CHANNEL_ASK
-{
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required string Channel = 4;		//Canal solicitado
-}
-
-message TlmdoSetChannelRspMsg			//TLMDO_SET_CHANNEL_RSP
-{
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required string Channel = 4;		//Canal seleccionado
-	required uint32 Code = 5;
-}
-
-message TlmdoSetTxPwrAskMsg				//TLMDO_SET_TXPWR_ASK
-{
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required string PowerW = 4;			//Potencia en watios. 0,25 a 50
-}
-
-message TlmdoSetTxPwrRspMsg				//TLMDO_SET_TXPWR_RSP
-{
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required string PowerW = 4;			//Potencia seleccionada
-	required uint32 Code = 5;
-}
-
-message TlmdoSetTxInhibitAskMsg			//TLMDO_SET_TXINHIBIT_ASK
-{
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required bool Inhibit = 4;			//Si true se inhibe la transmision
-}
-
-message TlmdoSetTxInhibitRspMsg			//TLMDO_SET_TXINHIBIT_RSP
-{
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required bool Inhibit = 4;			//Si true la transmision esta inhibida
-	required uint32 Code = 5;
-}
-
-message TlmdoSetWFallocAskMsg			//TLMDO_SET_WFALLOC_ASK
-{
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required bool SQH = 4;				//Si true se fuerza SQH
-}
-
-message TlmdoSetWFallocRspMsg			//TLMDO_SET_WFALLOC_RSP
-{
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required bool SQH = 4;				//Retorna el estado de SQH forzado
-	required uint32 Code = 5;
-}
-
-message TlmdoSetCryptKeyAskMsg			//TLMDO_SET_CRYPT_KEYS_ASK
-{
 	enum KeyTypes
 	{
-		Delete = 0;			//Borrar las claves CRIPTO almacenadas
+		Delete = 0;			//Borrar las claves CRYPTO almacenadas
 		ExternalDev = 1;	//Carga las claves desde un dispositivo externo
 	}
 
-	required string HostId = 1;
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required KeyTypes Keytipe = 4;				//Si true se fuerza SQH
+	required MsgType msgType = 1;
+	required string HostId = 2;
+	required string IdFrecuency = 3;    //Corresponde al identificador unico que llamamos Literal
+	required string IdRecurso = 4;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string Channel = 6;		//Canal solicitado. Mensaje TLMDO_SET_CHANNEL
+	required string PowerW = 7;			//Potencia en watios. 0,25 a 50. Mensaje TLMDO_SET_TXPWR
+	required bool Inhibit = 8;			//Si true se inhibe la transmision. Mensaje TLMDO_SET_TXINHIBIT
+	required bool SQH = 9;				//Si true se fuerza SQH. Mensaje TLMDO_SET_WFALLOC
+	required KeyTypes Keytype = 10;		//Tipo de claves. Mensaje TLMDO_SET_CRYPT_KEYS
 }
 
-message TlmdoSetCryptKeyRspMsg			//TLMDO_SET_CRYPT_KEYS_RSP
+message TlmdoRsp
 {
-	required bool resultado = 1;		//si false entonces no se ha podido ejecutar el comando
-	required string IdFrecuency = 2;    //Corresponde al identificador unico que llamamos Literal
-	required string IdRecurso = 3;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	required TlmdoSetCryptKeyAskMsg.KeyTypes Keytipe = 4;			
-	required uint32 Code = 5;
+	enum CodeTypes
+	{
+		// Codigos de retorno del campo code del mensaje de respuesta
+        TLMDO_CODE_OK = 0;					//Ejecutado con exito
+		TLMDO_CODE_INVALID_OP = 1;			//Operacion no soportada
+        TLMDO_CODE_ERROR = 2;				//No se ha podido ejecutar
+        TLMDO_CODE_NO_RESP = 3;				//La radio no responde
+		TLMDO_CODE_OTHER_IN_PROGRESS = 4;   //Otra operacion de telemando esta en progreso
+	}
+
+	required TlmdoAsk.MsgType msgType = 1;
+	required bool resultado = 2;			//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 3;		//Corresponde al identificador unico que llamamos Literal
+	required string IdRecurso = 4;			//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	required string ChannelList = 5;		//Mensaje TLMDO_GET_CHANNELS.
+	required string Channel = 6;			//Canal asignado. Mensaje TLMDO_SET_CHANNEL
+	required string PowerW = 7;				//Potencia asignada. 0,25 a 50. Mensaje TLMDO_SET_TXPWR
+	required bool Inhibit = 8;				//Inhibit resultante. Mensaje TLMDO_SET_TXINHIBIT
+	required bool SQH = 9;					//SQH resultante. Mensaje TLMDO_SET_WFALLOC
+	required TlmdoAsk.KeyTypes Keytipe = 10;			//Resultante. Mensaje TLMDO_SET_CRYPT_KEYS
+	required CodeTypes Code = 11;
 }
-
-
 

@@ -1388,6 +1388,14 @@ namespace U5ki.RdService
                     });
                     break;
 
+                case Identifiers.TLMDO_ASK:
+                    _EventQueue.Enqueue("TLMDO_ASK", delegate ()
+                    {
+                        TlmdoAsk ask = Serializer.Deserialize<TlmdoAsk>(ms);
+                        ProcessTlmdoAsk(msg.From, ask);
+                    });
+                    break;
+
 
                 ///** 20180316. MNDISABEDNODES */
                 //case Identifiers.MNDISABLED_NODES:
@@ -2195,6 +2203,26 @@ namespace U5ki.RdService
                         rdFr.ProcessChangingFreq(from, msg);
                     }
                 }                
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="msg"></param>
+        private void ProcessTlmdoAsk(string from, TlmdoAsk msg)
+        {
+            if (_Master)
+            {
+                LogInfo<RdService>(String.Format("ProcessTlmdoAsk {0}: iddestino {1}: IdRecurso {2}", msg.HostId, msg.IdFrecuency, msg.IdRecurso));
+                foreach (RdFrecuency rdFr in Frecuencies.Values)
+                {
+                    if (rdFr.IdDestino == msg.IdFrecuency)
+                    {
+                        rdFr.ProcessTlmdoAsk(from, msg);
+                    }
+                }
             }
         }
 

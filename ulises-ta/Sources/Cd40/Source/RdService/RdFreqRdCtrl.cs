@@ -18,6 +18,7 @@ using u5ki.RemoteControlService.OIDs;
 using U5ki.Enums;
 using U5ki.Infrastructure;
 using Utilities;
+using static U5ki.Infrastructure.TlmdoAsk;
 
 namespace U5ki.RdService
 {
@@ -33,6 +34,7 @@ namespace U5ki.RdService
         }
 
         private bool ProcessChangingFreqRunning = false;
+        private bool ProcessTlmdoRunning = false;
 
         public bool ProcessChangingFreq(string from, FrChangeAsk msg)
         {
@@ -599,6 +601,439 @@ namespace U5ki.RdService
 
             return returned_code;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        class subProcessTlmdoAsk_thread
+        {
+            public string from;
+            public TlmdoAsk msg;
+            public TlmdoRsp response;
+        }
+
+        private bool ProcessTlmdoAskRunning = false;
+
+        public bool ProcessTlmdoAsk(string from, TlmdoAsk msg)
+        {
+            bool ret = true;
+
+            TlmdoRsp response = new TlmdoRsp();
+            response.msgType = msg.msgType;
+            response.resultado = false;
+            response.IdFrecuency = msg.IdFrecuency;
+            response.IdRecurso = msg.IdRecurso;
+            response.ChannelList = "";
+            response.Channel = msg.Channel;
+            response.PowerW = msg.PowerW;
+            response.Inhibit = msg.Inhibit;
+            response.SQH = msg.SQH;
+            response.Keytipe = msg.Keytype;
+            response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
+
+            bool allResourcesHaveTelecontrol = true;
+            bool onlyTxResources = false;
+
+            if (msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_TXPWR || 
+                msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_TXINHIBIT ||
+                msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_CRYPT_KEYS)
+            {
+                onlyTxResources = true;     //Este telemando solo se aplica a los del tipo Tx
+            }
+
+            if (msg.IdRecurso.Length > 0)
+            {
+                //Solo se aplica el telemando a un recurso
+                bool not_found = true;
+                foreach (IRdResource res in RdRs.Values)
+                {
+                    if (msg.IdRecurso == res.ID)
+                    {
+                        not_found = false;
+                        if (onlyTxResources && !res.isTx)
+                        {
+                            LogError<RdFrecuency>($"El telemando {msg.msgType.ToString()} no se puede aplicar en el recurso {res.ID} porque no es transmisor.");
+                            LogError<RdFrecuency>("No se puede aplicar telemando porque algun equipo no lo soporta.",
+                                       U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                                       CTranslate.translateResource("No se puede aplicar telemando porque algun equipo no lo soporta."));
+                            RdRegistry.RespondToTlmdo(from, response);
+                            return ret;
+                        }
+                        if (res is RdResourcePair)
+                        {
+                            RdResourcePair respair = res as RdResourcePair;
+                            if (respair.ActiveResource.TelemandoType == RdResource.TelemandoTypes.none)
+                            {
+                                allResourcesHaveTelecontrol = false;
+                            }
+                            if (respair.StandbyResource.TelemandoType == RdResource.TelemandoTypes.none)
+                            {
+                                allResourcesHaveTelecontrol = false;
+                            }
+                        }
+                        else
+                        {
+                            if ((res as RdResource).TelemandoType == RdResource.TelemandoTypes.none)
+                            {
+                                allResourcesHaveTelecontrol = false;
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (!allResourcesHaveTelecontrol || not_found)
+                {
+                    LogError<RdFrecuency>($"El telemando {msg.msgType} no se puede aplicar en el recurso {msg.IdRecurso} porque no soporta telemando o no pertenece al destino.");
+                    LogError<RdFrecuency>("No se puede aplicar telemando porque algun equipo no lo soporta.",
+                                       U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                                       CTranslate.translateResource("No se puede aplicar telemando porque algun equipo no lo soporta."));
+                    RdRegistry.RespondToTlmdo(from, response);
+                    return ret;
+                }
+            }
+            else
+            {
+                foreach (IRdResource res in RdRs.Values)
+                {
+                    if (onlyTxResources && !res.isTx) continue;
+
+                    if (res is RdResourcePair)
+                    {
+                        RdResourcePair respair = res as RdResourcePair;
+                        if (respair.ActiveResource.TelemandoType == RdResource.TelemandoTypes.none)
+                        {
+                            allResourcesHaveTelecontrol = false;
+                            break;
+                        }
+                        if (respair.StandbyResource.TelemandoType == RdResource.TelemandoTypes.none)
+                        {
+                            allResourcesHaveTelecontrol = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if ((res as RdResource).TelemandoType == RdResource.TelemandoTypes.none)
+                        {
+                            allResourcesHaveTelecontrol = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!allResourcesHaveTelecontrol)
+            {
+                LogError<RdFrecuency>("No se puede aplicar telemando porque algun equipo no lo soporta.",
+                                       U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                                       CTranslate.translateResource("No se puede aplicar telemando porque algun equipo no lo soporta."));
+                
+                RdRegistry.RespondToTlmdo(from, response);
+                return ret;
+            }
+
+            if (ProcessTlmdoRunning)
+            {
+                response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_OTHER_IN_PROGRESS;
+                RdRegistry.RespondToTlmdo(from, response);
+                return ret;
+            }
+            ProcessTlmdoRunning = true;
+
+            Func<string, TlmdoAsk, subProcessTlmdoAsk_thread> subProcessTlmdo = SubProcessTlmdo;
+            subProcessTlmdo.BeginInvoke(from, msg, SubProcessTlmdoProcessed, subProcessTlmdo);
+
+            return ret;
+        }
+
+        private subProcessTlmdoAsk_thread SubProcessTlmdo(string from, TlmdoAsk msg)
+        {
+            subProcessTlmdoAsk_thread ret = new subProcessTlmdoAsk_thread();
+
+            TlmdoRsp response = new TlmdoRsp();
+            response.msgType = msg.msgType;
+            response.resultado = false;
+            response.IdFrecuency = msg.IdFrecuency;
+            response.IdRecurso = msg.IdRecurso;
+            response.ChannelList = "";
+            response.Channel = msg.Channel;
+            response.PowerW = msg.PowerW;
+            response.Inhibit = msg.Inhibit;
+            response.SQH = msg.SQH;
+            response.Keytipe = msg.Keytype;
+            response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+
+            ret.from = from;
+            ret.msg = msg;
+            ret.response = response;
+
+            if (from != null && (_TxIds.Count > 0 || _RxIds.Count > 0))
+            {
+                //La frecuencia esta seleccionada en Tx o Rx. Entonces no se puede ejecutar
+                //Si from es null, entonces se invoka la tarea desde el timer y no por un mensaje
+                //Entonces no mandamos respuesta
+                response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
+                ret.from = from;
+                ret.msg = msg;
+                ret.response = response;
+                return ret;
+            }
+
+            if (from != null)
+            {
+                //Si from es null, entonces se invoka la tarea desde el timer no por un mensaje
+                //No ponemos aspas en el destino
+                RdService.evQueueRd.Enqueue("SubProcessTlmdo", delegate ()
+                {
+                    RdRegistry.Publish(_IdDestino, null);
+                });
+            }
+
+            TlmdoRsp.CodeTypes ret_tlmdo = TmdoInAllResources(msg);
+            if (ret_tlmdo != TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
+            {
+                LogError<RdFrecuency>("Telemando. Ejecutado con error en algún equipo.",
+                                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                                        CTranslate.translateResource("Telemando. Ejecutado con error en algún equipo."));
+            }
+
+            return ret;
+        }
+
+        private void SubProcessTlmdoProcessed(IAsyncResult cookie)
+        {
+            var target = (Func<string, FrChangeAsk, subProcessChangingFreq_thread>)cookie.AsyncState;
+
+            subProcessChangingFreq_thread resultProcess = target.EndInvoke(cookie);
+
+            if (resultProcess != null)
+            {
+                RdService.evQueueRd.Enqueue("SubProcessChangingFreqProcessed", delegate ()
+                {
+                    RdRegistry.RespondToChangingFreq(resultProcess.from, resultProcess.result,
+                    resultProcess.msg.IdFrecuency, resultProcess.selectedFrequency, resultProcess.code_returned);
+
+                    SelectedFrequency = resultProcess.selectedFrequency;
+                    if (_FrRs != null)
+                    {
+                        _FrRs.SelectedFrequency = resultProcess.selectedFrequency;
+                        _FrRs.FrequencyStatus = this.Status;
+
+                        RdRegistry.Publish(_IdDestino, _FrRs);
+                        if (_FrRs.FrequencyStatus == RdSrvFrRs.FrequencyStatusType.NotAvailable)
+                            RdRegistry.Publish(_IdDestino, null);
+                    }
+                    ProcessTlmdoRunning = false;
+                    MSTxPersistence.SelectFrequency(_IdDestino, resultProcess.selectedFrequency);
+                });
+            }
+        }
+
+
+
+        private TlmdoRsp.CodeTypes TmdoInAllResources(TlmdoAsk msg)
+        {
+            TlmdoRsp.CodeTypes returned_code = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+
+            foreach (IRdResource res in RdRs.Values)
+            {
+                if (msg.IdRecurso.Length > 0 && res.ID != msg.IdRecurso)
+                {
+                    //El telemando solo se aplica a un recurso cuando IdRecurso del mensaje no esta vacio.
+                    continue;
+                }
+                if (res is RdResourcePair)
+                {
+                    RdResourcePair respair = (RdResourcePair)res;
+                    TlmdoRsp.CodeTypes ret_code_active = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+                    TlmdoRsp.CodeTypes ret_code_standby = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+
+                    if (respair.ActiveResource.TelemandoType == RdResource.TelemandoTypes.none)
+                    {
+                        LogError<RdFrecuency>("Equipo configurado sin telemando. " + respair.ActiveResource.ID,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                            CTranslate.translateResource("Equipo configurado sin telemando. " + respair.ActiveResource.ID));
+                    }
+                    else
+                    {
+                        ret_code_active = TlmdoInAResource(msg, respair.StandbyResource);
+                    }
+
+                    if (respair.StandbyResource.TelemandoType == RdResource.TelemandoTypes.none)
+                    {
+                        LogError<RdFrecuency>("Equipo configurado sin telemando. " + respair.StandbyResource.ID,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                            CTranslate.translateResource("Equipo configurado sin telemando. " + respair.StandbyResource.ID));
+                    }
+                    else
+                    {
+                        ret_code_standby = TlmdoInAResource(msg, respair.StandbyResource);
+                    }
+
+                    //ret_code_standby = Identifiers.FR_CH_REJECTED;                    
+                    //respair.StandbyResource.TunedFrequencyOK = false;
+                    //ret_code_active = Identifiers.FR_CHANGE_OK;
+                    //respair.ActiveResource.TunedFrequencyOK = true;
+
+                    if (ret_code_active == TlmdoRsp.CodeTypes.TLMDO_CODE_OK && ret_code_standby == TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
+                    {
+                        if (ret_code_active > returned_code) returned_code = ret_code_active;
+                    }
+                    else if (ret_code_active == TlmdoRsp.CodeTypes.TLMDO_CODE_OK && ret_code_standby != TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
+                    {
+                        if (ret_code_active > returned_code) returned_code = ret_code_active;
+                    }
+                    else if (ret_code_active != TlmdoRsp.CodeTypes.TLMDO_CODE_OK && ret_code_standby == TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
+                    {
+                        if (ret_code_standby > returned_code) returned_code = ret_code_standby;
+                    }
+                    else
+                    {
+                        if (ret_code_active > returned_code) returned_code = ret_code_active;
+                    }
+                }
+                else
+                {
+                    if ((res as RdResource).TelemandoType == RdResource.TelemandoTypes.none)
+                    {
+                        LogError<RdFrecuency>("Equipo configurado sin telemando. " + res.ID,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                            CTranslate.translateResource("Equipo configurado sin telemando. " + res.ID));
+                    }
+                    else
+                    {
+                        TlmdoRsp.CodeTypes ret_code = TlmdoInAResource(msg, res as RdResource);
+                        if (ret_code > returned_code) returned_code = ret_code;
+                    }
+                }
+            }
+
+            return returned_code;
+        }
+
+        private TlmdoRsp.CodeTypes TlmdoInAResource(TlmdoAsk msg, RdResource res)
+        {
+            //El puerto SNMP es 161, excepto los receptores de Rhode que es 160
+
+            SipUtilities.SipUriParser sipuri = new SipUtilities.SipUriParser(res.Uri1);
+            bool isEmitter = res.isTx;
+            TlmdoRsp.CodeTypes output = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+
+            switch (res.TelemandoType)
+            {
+                case RdResource.TelemandoTypes.RCRohde4200:
+                    {
+                        u5ki.RemoteControlService.RCRohde4200 RC;                        
+                        if (isEmitter)
+                        {
+                            RC = new u5ki.RemoteControlService.RCRohde4200(161) { Id = res.ID };
+                        }
+                        else
+                        {
+                            RC = new u5ki.RemoteControlService.RCRohde4200(160) { Id = res.ID };
+                        }
+                        output = RC.Tlmdo(msg, sipuri.Host, res.Connected);
+                    }
+                    break;
+                case RdResource.TelemandoTypes.RCJotron7000:
+                    {
+                        u5ki.RemoteControlService.RCJotron7000 RC = new u5ki.RemoteControlService.RCJotron7000(161) { Id = res.ID };
+                        output = RC.Tlmdo(msg, sipuri.Host, res.Connected);
+                    }
+                    break;
+                case RdResource.TelemandoTypes.none:
+                    LogError<RdFrecuency>("ChangeFreqInAResource: Resource " + res.ID + " no soporta Telemando");
+                    return output;
+            }
+
+            string log_;
+            switch (output)
+            {
+                case TlmdoRsp.CodeTypes.TLMDO_CODE_OK:
+                    log_ = $"Telemando ejecutado con exito. cmd:{msg.msgType.ToString()} val:{GetTlmdoValueByType(msg)}";
+                    LogInfo<RdFrecuency>(log_,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO, this.Frecuency,
+                            CTranslate.translateResource(log_));
+                    break;
+                default:
+                    log_ = $"Telemando ejecutado con error. cmd:{msg.msgType.ToString()} val:{GetTlmdoValueByType(msg)} error:{output.ToString()}";
+                    LogInfo<RdFrecuency>(log_,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
+                            CTranslate.translateResource(log_));
+                    break;
+            }
+
+            return output;
+        }
+
+        public static String GetTlmdoValueByType(TlmdoAsk msg)
+        {
+            String ret;
+            switch (msg.msgType)
+            {
+                case MsgType.TLMDO_GET_CHANNELS:
+                    ret = "none";
+                    break;
+                case MsgType.TLMDO_SET_CHANNEL:
+                    ret = $"{msg.Channel}";
+                    break;
+                case MsgType.TLMDO_SET_TXPWR:
+                    ret = $"{msg.PowerW}";
+                    break;
+                case MsgType.TLMDO_SET_TXINHIBIT:
+                    ret = $"{msg.Inhibit.ToString()}";
+                    break;
+                case MsgType.TLMDO_SET_WFALLOC:
+                    ret = $"{msg.SQH.ToString()}";
+                    break;
+                case MsgType.TLMDO_SET_CRYPT_KEYS:
+                    ret = $"{msg.Keytype.ToString()}";
+                    break;
+                default:
+                    ret = "none";
+                    break;
+            }
+            return ret;
+        }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 

@@ -127,6 +127,17 @@ namespace u5ki.RemoteControlService
                 }
             });
         }
+
+        public GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true)
+        {
+            return GearOperationStatus.None;
+        }
+
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, Boolean openSession = true)
+        {
+            return TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+        }
+
         /// <summary>
         /// 
         /// </summary>

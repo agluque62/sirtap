@@ -38,9 +38,13 @@ namespace u5ki.RemoteControlService
         void CheckNode(Action<GearOperationStatus> response, BaseNode node);
 
         /// <summary>
-        /// Funcion que nos devuelve si el nodo esta funcional y funcionando como se espera de el.
         /// </summary>
         void FrecuencyGet(Action<String> response, BaseNode node);
+
+        //Funcion de establecimiento de la frecuencia con parametro si es transmisor cuando se requiere.
+        GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true);
+
+        TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, Boolean openSession = true);
 
         // ----------------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------------

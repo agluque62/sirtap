@@ -148,27 +148,8 @@ namespace U5ki.Infrastructure
         public const short SIRTAP_AUD_ALM = 600;    //Alarmas del SIRTAP. Mensaje SirTapAudAlarmMsg
 
         //Mensajes de peticion de telemando
-        public const short TLMDO_GET_CHANNELS_ASK = 601;    //Pide los canales disponibles de la radio. TlmdoGetChannelsAskMsg
-        public const short TLMDO_SET_CHANNEL_ASK = 602;     //Seleccion del canal de radio
-        public const short TLMDO_SET_TXPWR_ASK = 603;       //Potencia de transmision
-        public const short TLMDO_SET_TXINHIBIT_ASK = 604;   //Inhibicion de TX
-        public const short TLMDO_SET_WFALLOC_ASK = 605;     //Waveform allocation. TBD
-        public const short TLMDO_SET_CRYPT_KEYS_ASK = 606;  //Control de claves de encriptacion
-
-        // Respuesta a los mensajes TLMDO
-        public const short TLMDO_GET_CHANNELS_RSP = 651;    //Pide los canales disponibles de la radio. TlmdoGetChannelsAskMsg
-        public const short TLMDO_SET_CHANNEL_RSP = 652;     //Seleccion del canal de radio
-        public const short TLMDO_SET_TXPWR_RSP = 653;       //Potencia de transmision
-        public const short TLMDO_SET_TXINHIBIT_RSP = 654;   //Inhibicion de TX
-        public const short TLMDO_SET_WFALLOC_RSP = 655;     //Waveform allocation. TBD
-        public const short TLMDO_SET_CRYPT_KEYS_RSP = 656;  //Control de claves de encriptacion
-
-        // Codigos de retorno del campo code del mensaje de respuesta
-        public const uint TLMDO_CODE_OK = 520;              //Ejecutado con exito
-        public const uint TLMDO_CODE_ERROR = 521;           //No se ha podido ejecutar
-        public const uint TLMDO_CODE_NO_RESP = 520;         //La radio no responde
-
-
+        public const short TLMDO_ASK = 601;                 //Mensaje de telemando
+        public const short TLMDO_RSP = 602;                 //Mensaje de telemando
 
         /// <summary>
         /// 
