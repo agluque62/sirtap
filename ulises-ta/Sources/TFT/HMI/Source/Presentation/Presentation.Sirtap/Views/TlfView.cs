@@ -178,7 +178,8 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.MessageLogin, ThreadOption.Publisher)]
         public void OnMessageLogin(object sender, EventArgs e)
         {
-            hmiButtonLogin.Text = "LOGOUT";
+            if (_StateManager.Tft.Login)
+                hmiButtonLogin.Text = "LOGOUT";
         }
         public void MostrarDialogoLogin()
         {

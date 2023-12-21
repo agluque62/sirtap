@@ -977,5 +977,12 @@ namespace HMI.Model.Module.Services
 			_EngineCmdManager.GenerarHistoricoLoginIncorrectoEngine(user,error);
 		}
 
+		[EventSubscription(EventTopicNames.TftGoodLogin, ThreadOption.UserInterface)]
+		public void OnTftGoodLogin(object sender, EventArgs msg)
+		{
+			string user = (string)sender;
+			string error = "";
+			_EngineCmdManager.EnviarLoginCorrectoEngine(user, error);
+		}
 	}
 }

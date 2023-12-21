@@ -12,6 +12,7 @@ namespace HMI.Model.Module.BusinessEntities
 	{
         private bool _Enabled = true;
         private bool _Login = false;
+        private string _LoginName = "";
         private string _LastLogin = "";
         private string _Mision = "";
         private bool _ModoNocturno = !(DateTime.Now.Hour >= 6 && DateTime.Now.Hour< 18);
@@ -30,8 +31,10 @@ namespace HMI.Model.Module.BusinessEntities
         public event EventHandler BriefingChanged;
         [EventPublication(EventTopicNames.PlayingChanged, PublicationScope.Global)]
         public event EventHandler PlayingChanged;
+        [EventPublication(EventTopicNames.TftGoodLogin, PublicationScope.Global)]
+        public event EventHandler TftGoodLogin;
 
-		public bool Enabled
+        public bool Enabled
 		{
 			get { return _Enabled; }
 			set 
@@ -58,6 +61,19 @@ namespace HMI.Model.Module.BusinessEntities
                 {
                     _Login = value;
                     General.SafeLaunchEvent(TftLoginChanged, this);
+                }
+            }
+        }
+        public string LoginName
+        {
+            get { return (_Login) ? _LoginName : "" ; }
+            set
+            {
+                if (_LoginName != value)
+                {
+                    _LoginName = value;
+                    //General.SafeLaunchEvent(TftGoodLogin, this._LastLogin);
+                    General.SafeLaunchEvent(TftGoodLogin, this._LoginName);
                 }
             }
         }
@@ -107,5 +123,7 @@ namespace HMI.Model.Module.BusinessEntities
                 _ModoNocturno = value;
             }
         }
+
+        public string LastLogin { get => _LastLogin; set => _LastLogin = value; }
     }
 }

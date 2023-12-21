@@ -421,7 +421,7 @@ namespace Utilities
 	{
 		Task<string> IOperationService1.Login(string usuario, string clave)
 		{
-			if (usuario == "1" && clave == "1")
+			if (usuario == "1" && clave == "1") 
 				return Task.FromResult("MISION 1");
 			// Define los datos para la operación HttpService
 			var httpServiceData = new HttpServiceData
@@ -473,6 +473,10 @@ namespace Utilities
 			{
 				return "MISION 1";
 			}
+			if (usuario == "2" && clave == "2")
+			{
+				return "MISION 2";
+			}
 			return "";
 		}
 		public async Task<string> ValidarCredencialeshttp(string usuario, string clave)
@@ -492,6 +496,10 @@ namespace Utilities
 			if (usuario == "1" && clave == "1")
 			{
 				return Task.FromResult("MISION 1");
+			}
+			if (usuario == "3" && clave == "3")
+			{
+				return Task.FromResult("MISION 3");
 			}
 			else
 				return Task.FromResult("");

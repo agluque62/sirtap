@@ -972,5 +972,29 @@ namespace HMI.CD40.Module.Properties {
                 this["LoginIncorrecto"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".1.3.6.1.4.1.7916.8.2.3.4.0")]
+        public string MsgSirtap {
+            get {
+                return ((string)(this["MsgSirtap"]));
+            }
+            set {
+                this["MsgSirtap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".1.3.6.1.4.1.7916.8.2.3.12.0")]
+        public string LoginCorrecto {
+            get {
+                return ((string)(this["LoginCorrecto"]));
+            }
+            set {
+                this["LoginCorrecto"] = value;
+            }
+        }
     }
 }

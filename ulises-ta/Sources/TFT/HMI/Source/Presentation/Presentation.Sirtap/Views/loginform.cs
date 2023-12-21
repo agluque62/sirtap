@@ -191,8 +191,9 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _OK_Click(object sender, EventArgs e)
         {
-            
+
             IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+
 
             //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
             var mision = ValidadorCredenciales.Login(txtUsuario.Text, txtContrasena.Text);
@@ -201,6 +202,7 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 //_StateManager.Tft.Enabled = true;
                 _StateManager.Tft.Login = true;
+                _StateManager.Tft.LoginName = txtUsuario.Text;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

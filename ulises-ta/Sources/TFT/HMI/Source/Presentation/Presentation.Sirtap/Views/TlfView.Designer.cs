@@ -140,7 +140,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.hmiButtonLogin.Permitted = true;
             this.hmiButtonLogin.Size = new System.Drawing.Size(75, 23);
             this.hmiButtonLogin.TabIndex = 11;
-            this.hmiButtonLogin.Text = "Login-out";
+            this.hmiButtonLogin.Text = "Login";
             this.hmiButtonLogin.Click += new System.EventHandler(this.hmiButtonlogin_Click);
             // 
             // _TlfPageBT

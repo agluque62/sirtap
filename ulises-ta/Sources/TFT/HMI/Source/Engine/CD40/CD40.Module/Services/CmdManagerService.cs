@@ -2753,6 +2753,16 @@ namespace HMI.CD40.Module.Services
                 Top.Rd.EnviaAlarmaLoginFail(nombre);
             });
         }
+
+        public void EnviarLoginCorrectoEngine(string nombre, string error)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
+            {
+                //SnmpStringObject a=new snmpobject();
+                //a.Loginuser = nombre;
+                Top.Rd.EnviarLoginOk(nombre);
+            });
+        }
         /**
         * Fin de Modificacion */
         #endregion

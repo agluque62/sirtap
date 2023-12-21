@@ -318,5 +318,11 @@
     <Setting Name="LoginIncorrecto" Type="System.String" Scope="User">
       <Value Profile="(Default)">.1.3.6.1.4.1.7916.8.2.3.11.0</Value>
     </Setting>
+    <Setting Name="MsgSirtap" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.1.3.6.1.4.1.7916.8.2.3.4.0</Value>
+    </Setting>
+    <Setting Name="LoginCorrecto" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.1.3.6.1.4.1.7916.8.2.3.12.0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
