@@ -48,6 +48,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._SplitUC = new HMI.Presentation.Sirtap.UI.SplitUC();
             this._BrightnessUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._BuzzerUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
+            this.MisionText = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // _InfoBT
@@ -146,10 +147,18 @@ namespace HMI.Presentation.Sirtap.Views
             this._BuzzerUDB.LevelUp += new System.EventHandler(this._BuzzerUDB_LevelUp);
             this._BuzzerUDB.LongClick += new System.EventHandler(this._BuzzerUDB_LongClick);
             // 
+            // MisionText
+            // 
+            this.MisionText.Location = new System.Drawing.Point(378, 4);
+            this.MisionText.Name = "MisionText";
+            this.MisionText.Size = new System.Drawing.Size(100, 20);
+            this.MisionText.TabIndex = 6;
+            // 
             // HeaderView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.MisionText);
             this.Controls.Add(this._MsgLB);
             this.Controls.Add(this._SplitUC);
             this.Controls.Add(this._BrightnessUDB);
@@ -171,6 +180,7 @@ namespace HMI.Presentation.Sirtap.Views
         private HMI.Presentation.Sirtap.UI.UpDownButton _BuzzerUDB;
         private HMI.Presentation.Sirtap.UI.SplitUC _SplitUC;
         private System.Windows.Forms.TextBox _MsgLB;
+        private System.Windows.Forms.TextBox MisionText;
     }
 }
 

@@ -257,6 +257,10 @@ namespace HMI.Presentation.Sirtap.Views
                 MensajePresenciaAltavoces(typeof(RdSpeaker));
                 MensajePresenciaAltavoces(typeof(LcSpeaker));
             }
+            if (_StateManager.Tft.Login)
+                MisionText.Text = _StateManager.Tft.Mision;
+            else
+                MisionText.Text = "-----";
         }
 
         [EventSubscription(EventTopicNames.JacksChanged, ThreadOption.Publisher)]
