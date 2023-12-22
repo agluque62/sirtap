@@ -602,30 +602,8 @@ namespace U5ki.RdService
             return returned_code;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //-----------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------------------------------
 
         class subProcessTlmdoAsk_thread
         {
@@ -810,13 +788,15 @@ namespace U5ki.RdService
                 });
             }
 
-            TlmdoRsp.CodeTypes ret_tlmdo = TmdoInAllResources(msg);
+            TlmdoRsp.CodeTypes ret_tlmdo = TmdoInAllResources(msg, ref response);
             if (ret_tlmdo != TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
             {
                 LogError<RdFrecuency>("Telemando. Ejecutado con error en algún equipo.",
                                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
                                         CTranslate.translateResource("Telemando. Ejecutado con error en algún equipo."));
             }
+
+            response.Code = ret_tlmdo;
 
             return ret;
         }
@@ -852,7 +832,7 @@ namespace U5ki.RdService
 
 
 
-        private TlmdoRsp.CodeTypes TmdoInAllResources(TlmdoAsk msg)
+        private TlmdoRsp.CodeTypes TmdoInAllResources(TlmdoAsk msg, ref TlmdoRsp response)
         {
             TlmdoRsp.CodeTypes returned_code = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
 
@@ -877,7 +857,7 @@ namespace U5ki.RdService
                     }
                     else
                     {
-                        ret_code_active = TlmdoInAResource(msg, respair.StandbyResource);
+                        ret_code_active = TlmdoInAResource(msg, respair.StandbyResource, ref response);
                     }
 
                     if (respair.StandbyResource.TelemandoType == RdResource.TelemandoTypes.none)
@@ -888,7 +868,7 @@ namespace U5ki.RdService
                     }
                     else
                     {
-                        ret_code_standby = TlmdoInAResource(msg, respair.StandbyResource);
+                        ret_code_standby = TlmdoInAResource(msg, respair.StandbyResource, ref response) ;
                     }
 
                     //ret_code_standby = Identifiers.FR_CH_REJECTED;                    
@@ -923,7 +903,7 @@ namespace U5ki.RdService
                     }
                     else
                     {
-                        TlmdoRsp.CodeTypes ret_code = TlmdoInAResource(msg, res as RdResource);
+                        TlmdoRsp.CodeTypes ret_code = TlmdoInAResource(msg, res as RdResource, ref response);
                         if (ret_code > returned_code) returned_code = ret_code;
                     }
                 }
@@ -932,7 +912,7 @@ namespace U5ki.RdService
             return returned_code;
         }
 
-        private TlmdoRsp.CodeTypes TlmdoInAResource(TlmdoAsk msg, RdResource res)
+        private TlmdoRsp.CodeTypes TlmdoInAResource(TlmdoAsk msg, RdResource res, ref TlmdoRsp response)
         {
             //El puerto SNMP es 161, excepto los receptores de Rhode que es 160
 
@@ -953,13 +933,19 @@ namespace U5ki.RdService
                         {
                             RC = new u5ki.RemoteControlService.RCRohde4200(160) { Id = res.ID };
                         }
-                        output = RC.Tlmdo(msg, sipuri.Host, res.Connected);
+                        output = RC.Tlmdo(msg, sipuri.Host, ref response, res.Connected);
                     }
                     break;
                 case RdResource.TelemandoTypes.RCJotron7000:
                     {
                         u5ki.RemoteControlService.RCJotron7000 RC = new u5ki.RemoteControlService.RCJotron7000(161) { Id = res.ID };
-                        output = RC.Tlmdo(msg, sipuri.Host, res.Connected);
+                        output = RC.Tlmdo(msg, sipuri.Host, ref response, res.Connected);
+                    }
+                    break;
+                case RdResource.TelemandoTypes.Sirtap:
+                    {
+                        u5ki.RemoteControlService.Sirtap RC = new u5ki.RemoteControlService.Sirtap(161) { Id = res.ID };
+                        output = RC.Tlmdo(msg, sipuri.Host, isEmitter, ref response, res.Connected);
                     }
                     break;
                 case RdResource.TelemandoTypes.none:

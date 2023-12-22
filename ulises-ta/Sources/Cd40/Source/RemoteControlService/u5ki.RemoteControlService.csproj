@@ -95,6 +95,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NDFSimulado.resx</DependentUpon>
     </Compile>
+    <Compile Include="OIDs\Sirtap.Designer.cs">
+      <DependentUpon>Sirtap.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="OIDs\RCJotron7000.Designer.cs">
       <DependentUpon>RCJotron7000.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -139,6 +144,11 @@
     <EmbeddedResource Include="OIDs\NDFSimulado.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NDFSimulado.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OIDs\Sirtap.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Sirtap.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="OIDs\RCJotron7000.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

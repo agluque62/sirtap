@@ -133,7 +133,7 @@ namespace u5ki.RemoteControlService
             return GearOperationStatus.None;
         }
 
-        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, Boolean openSession = true)
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, ref TlmdoRsp response, Boolean openSession = true)
         {
             return TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
         }
