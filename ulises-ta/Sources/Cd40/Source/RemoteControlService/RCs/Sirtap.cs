@@ -16,6 +16,10 @@ using U5ki.Infrastructure.Resources;
 using Utilities;
 
 using Translate;
+using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
+using System.Runtime.Remoting.Channels;
 
 namespace u5ki.RemoteControlService
 {
@@ -29,6 +33,7 @@ namespace u5ki.RemoteControlService
         public readonly Int32 NUMMAXTimeout = 1;
         public readonly String Community = "public";
         public readonly Int32 SNMPCallTimeout = 500; // Miliseconds
+        public int MAX_CRYPT_KEYS = 30;
 
         /// <summary>
         /// 
@@ -97,17 +102,26 @@ namespace u5ki.RemoteControlService
                     ret = SNMP_TLMDO_GET_CHANNELS(targetIp, ref response);
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_CHANNEL:
-                    ret = TLMDO_SET_CHANNEL(msg, targetIp);
+                    ret = SNMP_TLMDO_SET_CHANNEL(msg, targetIp);
+                    break;
+                case TlmdoAsk.MsgType.TLMDO_SET_FREQUENCY:
+                    ret = SNMP_TLMDO_SET_FREQUENCY(msg, targetIp);
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_TXPWR:
-                    if (isEmitter) ret = TLMDO_SET_TXPWR(msg, targetIp);
+                    if (isEmitter) ret = SNMP_TLMDO_SET_TXPWR(msg, targetIp);
                     else ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_TXINHIBIT:
+                    ret = SNMP_TLMDO_SET_TXINHIBIT(msg, targetIp);
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_WFALLOC:
+                    ret = SNMP_TLMDO_SET_WF(msg, targetIp);
                     break;
-                case TlmdoAsk.MsgType.TLMDO_SET_CRYPT_KEYS:
+                case TlmdoAsk.MsgType.TLMDO_ERASE_CRYPT_KEYS:
+                    ret = SNMP_TLMDO_ERASE_CRYPT_KEYS(msg, targetIp);
+                    break;
+                case TlmdoAsk.MsgType.TLMDO_LOAD_CRYPT_KEYS:
+                    ret = SNMP_TLMDO_LOAD_CRYPT_KEYS(msg, targetIp);
                     break;
             }
 
@@ -118,13 +132,17 @@ namespace u5ki.RemoteControlService
         {
             int i_rtimeout = 0;
             TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
-            string channels = "";
+            string log = "[SNMP][" + "TLMDO_GET_CHANNELS" + "] [" + targetIp + "]";
+            int channels = 0;
             while (i_rtimeout <= NUMMAXTimeout)
             {
                 try
                 {
-                    channels = SnmpClient.GetString(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.GetChannels,
+                    channels = SnmpClient.GetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.GetChannels,
                         SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " [CHANNELS" + channels + "] SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
                 }
                 catch (Exception ex)
                 {
@@ -132,8 +150,7 @@ namespace u5ki.RemoteControlService
                     {
                         if (i_rtimeout >= NUMMAXTimeout)
                         {
-                            string log = "[SNMP][" + "TLMDO_GET_CHANNELS" + "] [" + targetIp + "] TIMEOUT ";
-                            LogWarn<RCJotron7000>(log,
+                            LogError<Sirtap>(log + " TIMEOUT ",
                                 U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                                 Id, CTranslate.translateResource(log));
                             ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
@@ -142,34 +159,35 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        string log = "[SNMP][" + "TLMDO_GET_CHANNELS" + "] [" + targetIp + "] ERROR ";
-                        LogWarn<RCJotron7000>(log,
+                        LogError<Sirtap>(log + " ERROR ",
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
                     }
                 }
             }
 
-            if (ret == TlmdoRsp.CodeTypes.TLMDO_CODE_OK)
-            {
-                response.ChannelList += " " + channels;
-            }
+            response.NumChannels = channels;
 
             return ret;
         }
 
-        private TlmdoRsp.CodeTypes TLMDO_SET_CHANNEL(TlmdoAsk msg, String targetIp)
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_SET_CHANNEL(TlmdoAsk msg, String targetIp)
         {
             int i_rtimeout = 0;
             TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
-            
+            string log = "[SNMP][" + "TLMDO_SET_CHANNEL" + "] [" + targetIp + "] [" + msg.Channel + "]";
+
             while (i_rtimeout <= NUMMAXTimeout)
             {
                 try
                 {
-                    SnmpClient.SetString(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.Frecuency, msg.Channel,
+                    SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.SetGetRadioChannel, msg.Channel,
                         SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
                 }
                 catch (Exception ex)
                 {
@@ -177,8 +195,7 @@ namespace u5ki.RemoteControlService
                     {
                         if (i_rtimeout >= NUMMAXTimeout)
                         {
-                            string log = "[SNMP][" + "TLMDO_SET_CHANNEL" + "] [" + targetIp + "] [" + msg.Channel + "] TIMEOUT ";
-                            LogWarn<RCJotron7000>(log,
+                            LogError<Sirtap>(log + " TIMEOUT ",
                                 U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                                 Id, CTranslate.translateResource(log));
                             ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
@@ -187,11 +204,11 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        string log = "[SNMP][" + "TLMDO_SET_CHANNEL" + "] [" + targetIp + "] [" + msg.Channel + "] ERROR ";
-                        LogWarn<RCJotron7000>(log,
+                        LogError<Sirtap>(log + " ERROR ",
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
                     }
                 }
             }           
@@ -199,23 +216,33 @@ namespace u5ki.RemoteControlService
             return ret;
         }
 
-        private TlmdoRsp.CodeTypes TLMDO_SET_TXPWR(TlmdoAsk msg, String targetIp)
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_SET_FREQUENCY(TlmdoAsk msg, String targetIp)
         {
             int i_rtimeout = 0;
             TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_SET_FREQUENCY" + "] [" + targetIp + "] [ CHANNEL " + msg.Channel + "] [ FREQ " + msg.Frequency + "]";
 
             while (i_rtimeout <= NUMMAXTimeout)
             {
                 try
                 {
-                    SnmpClient.SetInt(
-                        targetIp,
-                        Community,
-                        u5ki.RemoteControlService.OIDs.Sirtap.TxPowerLevel, 
-                        int.Parse(msg.PowerW),
-                        SNMPCallTimeout,
-                        Port,
-                        SNMPVersion);
+                    string sfreq = Regex.Replace(msg.Frequency, "[^0-9]", "");
+                    int ifreq = int.Parse(sfreq);
+                    string oid;
+                    if (msg.Channel == 0) oid = u5ki.RemoteControlService.OIDs.Sirtap.frequencyCh1;
+                    else if (msg.Channel == 1) oid = u5ki.RemoteControlService.OIDs.Sirtap.frequencyCh2;
+                    else
+                    {
+                        LogError<Sirtap>(log + " INVALID CHANNEL ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
+                        break;
+                    }
+                    SnmpClient.SetInt(targetIp, Community, oid, ifreq, SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
                 }
                 catch (Exception ex)
                 {
@@ -223,8 +250,7 @@ namespace u5ki.RemoteControlService
                     {
                         if (i_rtimeout >= NUMMAXTimeout)
                         {
-                            string log = "[SNMP][" + "TLMDO_SET_TXPWR" + "] [" + targetIp + "] [" + msg.Channel + "] TIMEOUT ";
-                            LogWarn<RCJotron7000>(log,
+                            LogError<Sirtap>(log + " TIMEOUT ",
                                 U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                                 Id, CTranslate.translateResource(log));
                             ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
@@ -233,11 +259,254 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        string log = "[SNMP][" + "TLMDO_SET_TXPWR" + "] [" + targetIp + "] [" + msg.Channel + "] ERROR ";
-                        LogWarn<RCJotron7000>(log,
+                        LogError<Sirtap>(log + " ERROR ",
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_SET_TXPWR(TlmdoAsk msg, String targetIp)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_SET_TXPWR" + "] [" + targetIp + "] [ CHANNEL " + msg.Channel + "] [ LEVEL " + msg.PowerW + "]";
+
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    int ipwr = int.Parse(msg.PowerW);
+                    string oid;
+                    if (msg.Channel == 0) oid = u5ki.RemoteControlService.OIDs.Sirtap.powerLevelCh1;
+                    else if (msg.Channel == 1) oid = u5ki.RemoteControlService.OIDs.Sirtap.powerLevelCh2;
+                    else
+                    {
+                        LogError<Sirtap>(log + " INVALID CHANNEL ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
+                        break;
+                    }
+                    SnmpClient.SetInt(targetIp, Community, oid, ipwr, SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        LogError<Sirtap>(log + " ERROR ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_SET_TXINHIBIT(TlmdoAsk msg, String targetIp)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_SET_TXINHIBIT" + "] [" + targetIp + "]";
+
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    int itxinhibit = msg.TxInhibit ? 1 : 0;
+                    string oid = u5ki.RemoteControlService.OIDs.Sirtap.SetTxInhibit;
+                    SnmpClient.SetInt(targetIp, Community, oid, itxinhibit, SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        LogError<Sirtap>(log + " ERROR ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_SET_WF(TlmdoAsk msg, String targetIp)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_SET_WF" + "] [" + targetIp + "] [ CHANNEL " + msg.Channel + "] [ WF " + msg.WF + "]";
+
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    string oid;
+                    if (msg.Channel == 0) oid = u5ki.RemoteControlService.OIDs.Sirtap.WFCh1;
+                    else if (msg.Channel == 1) oid = u5ki.RemoteControlService.OIDs.Sirtap.WFCh2;
+                    else
+                    {
+                        LogError<Sirtap>(log + " INVALID CHANNEL ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
+                        break;
+                    }
+                    SnmpClient.SetString(targetIp, Community, oid, msg.WF, SNMPCallTimeout, Port, SNMPVersion);
+                    string WF_read = SnmpClient.GetString(targetIp, Community, oid, SNMPCallTimeout, Port, SNMPVersion);
+                    if (WF_read != msg.WF)
+                    {
+                        throw new Exception();
+                    }
+
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        LogError<Sirtap>(log + " ERROR ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_ERASE_CRYPT_KEYS(TlmdoAsk msg, String targetIp)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_ERASE_CRYPT_KEYS" + "] [" + targetIp + "]";
+
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.eraseKeys, MAX_CRYPT_KEYS,
+                        SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        LogError<Sirtap>(log + " ERROR ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_LOAD_CRYPT_KEYS(TlmdoAsk msg, String targetIp)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_ERASE_LOAD_KEYS" + "] [" + targetIp + "]";
+
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.loadKeys, MAX_CRYPT_KEYS,
+                        SNMPCallTimeout, Port, SNMPVersion);
+                    LogInfo<Sirtap>(log + " SUCCESS ",
+                        U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                        Id, CTranslate.translateResource(log));
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        LogError<Sirtap>(log + " ERROR ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
                     }
                 }
             }

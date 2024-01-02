@@ -1090,7 +1090,6 @@ namespace U5ki.RdService
         /// <summary>
         /// 
         /// </summary>
-        bool _sync = false;
 #if DEBUG
         public void OnMasterStatusChanged(object sender, bool master)
 #else

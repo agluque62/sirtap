@@ -325,7 +325,7 @@ namespace U5ki.PresenceService.Agentes
                         }
                     });
                 }
-                catch (Exception x)
+                catch
                 {
                 }
                 finally

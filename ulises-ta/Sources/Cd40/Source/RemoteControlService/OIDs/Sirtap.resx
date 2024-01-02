@@ -166,6 +166,10 @@ selectIn(16)	The select input signal is active
 voipstreamInTimeout(17) The radio has one ore more voip streams in timeout
 telsaBusy(18)	The radio has enabled Telsa filter, and Telsafilter is not ready/cmd not present</comment>
   </data>
+  <data name="eraseKeys" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.1.4.9</value>
+    <comment>INTEGER32</comment>
+  </data>
   <data name="Frecuency" xml:space="preserve">
     <value>1.3.6.1.4.1.1234.3.1.2.3.4.0</value>
     <comment>bsFrequencyICAO
@@ -174,12 +178,25 @@ Set the operation frequency of the radio in 'ICAO' channels
 ie. 127000 127005 127010 127015 127025 etc.
 units: kHz</comment>
   </data>
+  <data name="frequencyCh1" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.2.2.3.1</value>
+    <comment>The Frequency for transmission in fixed frequency modes. INTEGER. 30000-511975</comment>
+  </data>
+  <data name="frequencyCh2" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.2.3.3.1</value>
+    <comment>The Frequency for transmission in fixed frequency modes. INTEGER. 30000-511975</comment>
+  </data>
   <data name="GetChannels" xml:space="preserve">
-    <value>1.3.6.1.4.1.1234.1.1.1.1.1.0</value>
+    <value>1.3.6.1.4.1.16215.1.18.1.3.5</value>
+    <comment>Number of channels. INTEGER</comment>
   </data>
   <data name="InServiceMode" xml:space="preserve">
     <value>1.3.6.1.4.1.1234.3.1.2.3.21.0</value>
     <comment>bsInServiceMode true(1) false(2) </comment>
+  </data>
+  <data name="loadKeys" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.1.4.10</value>
+    <comment>INTEGER32</comment>
   </data>
   <data name="Modulation" xml:space="preserve">
     <value>1.3.6.1.4.1.1234.3.1.2.3.9.0</value>
@@ -201,26 +218,31 @@ Provides a way to get or set the current mode (AM/ACARS/…).
     <value>1.3.6.1.4.1.1234.6.1.1.6.0</value>
     <comment>grOpStat  (EUROCONTROL-ATCRADIO-MIB)        String contains : Num Param, StatGoNoGo (0=NoGo, 1=Go), EventLevel (0=Ok, 1=Warning, 2=Error) </comment>
   </data>
-  <data name="RequestFrecuency" xml:space="preserve">
-    <value>1.3.6.1.4.1.1234.3.1.2.3.3.0</value>
-    <comment>Get the operation frequency of the radio in Hz.
-Unit:Hz</comment>
+  <data name="powerLevelCh1" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.2.2.3.2</value>
+    <comment>Transmission power level. ElynxPowerLevel. 0.25 W a 50 W</comment>
+  </data>
+  <data name="powerLevelCh2" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.2.3.3.2</value>
+    <comment>Transmission power level. ElynxPowerLevel. 0.25 W a 50 W</comment>
   </data>
   <data name="SetCryptKeys" xml:space="preserve">
     <value>1.3.6.1.4.1.1234.4.4.4.4.4.0</value>
   </data>
+  <data name="SetGetRadioChannel" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.1.4.14</value>
+    <comment>Obtiene o establece el canal de radio. Valor 0-9.</comment>
+  </data>
   <data name="SetTxInhibit" xml:space="preserve">
-    <value>1.3.6.1.4.1.1234.2.2.2.2.2.0</value>
+    <value>1.3.6.1.4.1.16215.1.18.1.50.2</value>
   </data>
   <data name="SetVFallocSqh" xml:space="preserve">
     <value>1.3.6.1.4.1.1234.3.3.3.3.3.0</value>
   </data>
-  <data name="TxAnaModSource" xml:space="preserve">
-    <value>1.3.6.1.4.1.1234.3.1.2.2.1.2.2.0</value>
-    <comment>Defines the analog modulation input source. Auto(1), Line In(2), Mic(3), ModGen(4), Voip(5).</comment>
+  <data name="WFCh1" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.1.51.2</value>
   </data>
-  <data name="TxPowerLevel" xml:space="preserve">
-    <value>1.3.6.1.4.1.1234.3.1.2.3.14.0</value>
-    <comment>bsForceLowPower true(1) false (2)</comment>
+  <data name="WFCh2" xml:space="preserve">
+    <value>1.3.6.1.4.1.16215.1.18.1.52.2</value>
   </data>
 </root>

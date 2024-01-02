@@ -532,40 +532,50 @@ namespace U5ki.Infrastructure
       get { return _IdRecurso; }
       set { _IdRecurso = value; }
     }
-    private string _Channel;
-    [global::ProtoBuf.ProtoMember(6, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public string Channel
+
+    private int _Channel = default(int);
+    [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int Channel
     {
       get { return _Channel; }
       set { _Channel = value; }
     }
-    private string _PowerW;
-    [global::ProtoBuf.ProtoMember(7, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+
+    private string _Frequency = "";
+    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Frequency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string Frequency
+    {
+      get { return _Frequency; }
+      set { _Frequency = value; }
+    }
+
+    private string _PowerW = "";
+    [global::ProtoBuf.ProtoMember(7, IsRequired = false, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
     public string PowerW
     {
       get { return _PowerW; }
       set { _PowerW = value; }
     }
-    private bool _Inhibit;
-    [global::ProtoBuf.ProtoMember(8, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public bool Inhibit
+
+    private bool _TxInhibit = default(bool);
+    [global::ProtoBuf.ProtoMember(8, IsRequired = false, Name=@"TxInhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue(default(bool))]
+    public bool TxInhibit
     {
-      get { return _Inhibit; }
-      set { _Inhibit = value; }
+      get { return _TxInhibit; }
+      set { _TxInhibit = value; }
     }
-    private bool _SQH;
-    [global::ProtoBuf.ProtoMember(9, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public bool SQH
+
+    private string _WF = "";
+    [global::ProtoBuf.ProtoMember(9, IsRequired = false, Name=@"WF", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string WF
     {
-      get { return _SQH; }
-      set { _SQH = value; }
-    }
-    private U5ki.Infrastructure.TlmdoAsk.KeyTypes _Keytype;
-    [global::ProtoBuf.ProtoMember(10, IsRequired = true, Name=@"Keytype", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public U5ki.Infrastructure.TlmdoAsk.KeyTypes Keytype
-    {
-      get { return _Keytype; }
-      set { _Keytype = value; }
+      get { return _WF; }
+      set { _WF = value; }
     }
     [global::ProtoBuf.ProtoContract(Name=@"MsgType")]
     public enum MsgType
@@ -577,28 +587,23 @@ namespace U5ki.Infrastructure
       [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_CHANNEL", Value=2)]
       TLMDO_SET_CHANNEL = 2,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXPWR", Value=3)]
-      TLMDO_SET_TXPWR = 3,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_FREQUENCY", Value=3)]
+      TLMDO_SET_FREQUENCY = 3,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXINHIBIT", Value=4)]
-      TLMDO_SET_TXINHIBIT = 4,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXPWR", Value=4)]
+      TLMDO_SET_TXPWR = 4,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_WFALLOC", Value=5)]
-      TLMDO_SET_WFALLOC = 5,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXINHIBIT", Value=5)]
+      TLMDO_SET_TXINHIBIT = 5,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_CRYPT_KEYS", Value=6)]
-      TLMDO_SET_CRYPT_KEYS = 6
-    }
-  
-    [global::ProtoBuf.ProtoContract(Name=@"KeyTypes")]
-    public enum KeyTypes
-    {
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_WFALLOC", Value=6)]
+      TLMDO_SET_WFALLOC = 6,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"Delete", Value=0)]
-      Delete = 0,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_ERASE_CRYPT_KEYS", Value=7)]
+      TLMDO_ERASE_CRYPT_KEYS = 7,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"ExternalDev", Value=1)]
-      ExternalDev = 1
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_LOAD_CRYPT_KEYS", Value=8)]
+      TLMDO_LOAD_CRYPT_KEYS = 8
     }
   
     private global::ProtoBuf.IExtension extensionObject;
@@ -639,50 +644,19 @@ namespace U5ki.Infrastructure
       get { return _IdRecurso; }
       set { _IdRecurso = value; }
     }
-    private string _ChannelList;
-    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"ChannelList", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public string ChannelList
+
+    private int _NumChannels = default(int);
+    [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"NumChannels", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int NumChannels
     {
-      get { return _ChannelList; }
-      set { _ChannelList = value; }
+      get { return _NumChannels; }
+      set { _NumChannels = value; }
     }
-    private string _Channel;
-    [global::ProtoBuf.ProtoMember(6, IsRequired = true, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public string Channel
-    {
-      get { return _Channel; }
-      set { _Channel = value; }
-    }
-    private string _PowerW;
-    [global::ProtoBuf.ProtoMember(7, IsRequired = true, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public string PowerW
-    {
-      get { return _PowerW; }
-      set { _PowerW = value; }
-    }
-    private bool _Inhibit;
-    [global::ProtoBuf.ProtoMember(8, IsRequired = true, Name=@"Inhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public bool Inhibit
-    {
-      get { return _Inhibit; }
-      set { _Inhibit = value; }
-    }
-    private bool _SQH;
-    [global::ProtoBuf.ProtoMember(9, IsRequired = true, Name=@"SQH", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public bool SQH
-    {
-      get { return _SQH; }
-      set { _SQH = value; }
-    }
-    private U5ki.Infrastructure.TlmdoAsk.KeyTypes _Keytipe;
-    [global::ProtoBuf.ProtoMember(10, IsRequired = true, Name=@"Keytipe", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public U5ki.Infrastructure.TlmdoAsk.KeyTypes Keytipe
-    {
-      get { return _Keytipe; }
-      set { _Keytipe = value; }
-    }
-    private U5ki.Infrastructure.TlmdoRsp.CodeTypes _Code;
-    [global::ProtoBuf.ProtoMember(11, IsRequired = true, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+
+    private U5ki.Infrastructure.TlmdoRsp.CodeTypes _Code = U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK)]
     public U5ki.Infrastructure.TlmdoRsp.CodeTypes Code
     {
       get { return _Code; }

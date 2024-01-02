@@ -519,7 +519,6 @@ namespace U5ki.NodeBox
         /// <summary>
         /// 
         /// </summary>
-        private UdpClient nbxLocalSocket = null;    // new UdpClient();
         static int cuenta = 0;
         /// <summary>
         /// 20170724. Se incluye informacion de todos los servicios y del puerto WEB...

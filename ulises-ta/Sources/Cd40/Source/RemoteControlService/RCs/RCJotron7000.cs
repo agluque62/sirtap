@@ -1647,7 +1647,7 @@ namespace u5ki.RemoteControlService
             return dBm;
         }
 
-        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, ref TlmdoRsp response, Boolean openSession = true)
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true)
         {
             return TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
         }

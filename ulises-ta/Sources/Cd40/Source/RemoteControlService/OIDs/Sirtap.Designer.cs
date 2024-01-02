@@ -88,6 +88,15 @@ namespace u5ki.RemoteControlService.OIDs {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.4.9.
+        /// </summary>
+        public static string eraseKeys {
+            get {
+                return ResourceManager.GetString("eraseKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.3.1.2.3.4.0.
         /// </summary>
         public static string Frecuency {
@@ -97,7 +106,25 @@ namespace u5ki.RemoteControlService.OIDs {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.1.1.1.1.1.0.
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.2.2.3.1.
+        /// </summary>
+        public static string frequencyCh1 {
+            get {
+                return ResourceManager.GetString("frequencyCh1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.2.3.3.1.
+        /// </summary>
+        public static string frequencyCh2 {
+            get {
+                return ResourceManager.GetString("frequencyCh2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.3.5.
         /// </summary>
         public static string GetChannels {
             get {
@@ -111,6 +138,15 @@ namespace u5ki.RemoteControlService.OIDs {
         public static string InServiceMode {
             get {
                 return ResourceManager.GetString("InServiceMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.4.10.
+        /// </summary>
+        public static string loadKeys {
+            get {
+                return ResourceManager.GetString("loadKeys", resourceCulture);
             }
         }
         
@@ -142,11 +178,20 @@ namespace u5ki.RemoteControlService.OIDs {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.3.1.2.3.3.0.
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.2.2.3.2.
         /// </summary>
-        public static string RequestFrecuency {
+        public static string powerLevelCh1 {
             get {
-                return ResourceManager.GetString("RequestFrecuency", resourceCulture);
+                return ResourceManager.GetString("powerLevelCh1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.2.3.3.2.
+        /// </summary>
+        public static string powerLevelCh2 {
+            get {
+                return ResourceManager.GetString("powerLevelCh2", resourceCulture);
             }
         }
         
@@ -160,7 +205,16 @@ namespace u5ki.RemoteControlService.OIDs {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.2.2.2.2.2.0.
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.4.14.
+        /// </summary>
+        public static string SetGetRadioChannel {
+            get {
+                return ResourceManager.GetString("SetGetRadioChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.50.2.
         /// </summary>
         public static string SetTxInhibit {
             get {
@@ -178,20 +232,20 @@ namespace u5ki.RemoteControlService.OIDs {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.3.1.2.2.1.2.2.0.
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.51.2.
         /// </summary>
-        public static string TxAnaModSource {
+        public static string WFCh1 {
             get {
-                return ResourceManager.GetString("TxAnaModSource", resourceCulture);
+                return ResourceManager.GetString("WFCh1", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.1234.3.1.2.3.14.0.
+        ///   Busca una cadena traducida similar a 1.3.6.1.4.1.16215.1.18.1.52.2.
         /// </summary>
-        public static string TxPowerLevel {
+        public static string WFCh2 {
             get {
-                return ResourceManager.GetString("TxPowerLevel", resourceCulture);
+                return ResourceManager.GetString("WFCh2", resourceCulture);
             }
         }
     }

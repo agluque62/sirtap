@@ -34,8 +34,7 @@ namespace U5ki.RdService
         }
 
         private bool ProcessChangingFreqRunning = false;
-        private bool ProcessTlmdoRunning = false;
-
+        
         public bool ProcessChangingFreq(string from, FrChangeAsk msg)
         {
             bool ret = true;
@@ -612,7 +611,7 @@ namespace U5ki.RdService
             public TlmdoRsp response;
         }
 
-        private bool ProcessTlmdoAskRunning = false;
+        private bool ProcessTlmdoRunning = false;
 
         public bool ProcessTlmdoAsk(string from, TlmdoAsk msg)
         {
@@ -623,12 +622,7 @@ namespace U5ki.RdService
             response.resultado = false;
             response.IdFrecuency = msg.IdFrecuency;
             response.IdRecurso = msg.IdRecurso;
-            response.ChannelList = "";
-            response.Channel = msg.Channel;
-            response.PowerW = msg.PowerW;
-            response.Inhibit = msg.Inhibit;
-            response.SQH = msg.SQH;
-            response.Keytipe = msg.Keytype;
+            response.NumChannels = 0;
             response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
 
             bool allResourcesHaveTelecontrol = true;
@@ -636,7 +630,8 @@ namespace U5ki.RdService
 
             if (msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_TXPWR || 
                 msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_TXINHIBIT ||
-                msg.msgType == TlmdoAsk.MsgType.TLMDO_SET_CRYPT_KEYS)
+                msg.msgType == TlmdoAsk.MsgType.TLMDO_ERASE_CRYPT_KEYS ||
+                msg.msgType == TlmdoAsk.MsgType.TLMDO_LOAD_CRYPT_KEYS)
             {
                 onlyTxResources = true;     //Este telemando solo se aplica a los del tipo Tx
             }
@@ -754,12 +749,7 @@ namespace U5ki.RdService
             response.resultado = false;
             response.IdFrecuency = msg.IdFrecuency;
             response.IdRecurso = msg.IdRecurso;
-            response.ChannelList = "";
-            response.Channel = msg.Channel;
-            response.PowerW = msg.PowerW;
-            response.Inhibit = msg.Inhibit;
-            response.SQH = msg.SQH;
-            response.Keytipe = msg.Keytype;
+            response.NumChannels = 0;
             response.Code = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
 
             ret.from = from;
@@ -933,13 +923,13 @@ namespace U5ki.RdService
                         {
                             RC = new u5ki.RemoteControlService.RCRohde4200(160) { Id = res.ID };
                         }
-                        output = RC.Tlmdo(msg, sipuri.Host, ref response, res.Connected);
+                        output = RC.Tlmdo(msg, sipuri.Host, isEmitter, ref response, res.Connected);
                     }
                     break;
                 case RdResource.TelemandoTypes.RCJotron7000:
                     {
                         u5ki.RemoteControlService.RCJotron7000 RC = new u5ki.RemoteControlService.RCJotron7000(161) { Id = res.ID };
-                        output = RC.Tlmdo(msg, sipuri.Host, ref response, res.Connected);
+                        output = RC.Tlmdo(msg, sipuri.Host, isEmitter, ref response, res.Connected);
                     }
                     break;
                 case RdResource.TelemandoTypes.Sirtap:
@@ -953,54 +943,7 @@ namespace U5ki.RdService
                     return output;
             }
 
-            string log_;
-            switch (output)
-            {
-                case TlmdoRsp.CodeTypes.TLMDO_CODE_OK:
-                    log_ = $"Telemando ejecutado con exito. cmd:{msg.msgType.ToString()} val:{GetTlmdoValueByType(msg)}";
-                    LogInfo<RdFrecuency>(log_,
-                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO, this.Frecuency,
-                            CTranslate.translateResource(log_));
-                    break;
-                default:
-                    log_ = $"Telemando ejecutado con error. cmd:{msg.msgType.ToString()} val:{GetTlmdoValueByType(msg)} error:{output.ToString()}";
-                    LogInfo<RdFrecuency>(log_,
-                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, this.Frecuency,
-                            CTranslate.translateResource(log_));
-                    break;
-            }
-
             return output;
-        }
-
-        public static String GetTlmdoValueByType(TlmdoAsk msg)
-        {
-            String ret;
-            switch (msg.msgType)
-            {
-                case MsgType.TLMDO_GET_CHANNELS:
-                    ret = "none";
-                    break;
-                case MsgType.TLMDO_SET_CHANNEL:
-                    ret = $"{msg.Channel}";
-                    break;
-                case MsgType.TLMDO_SET_TXPWR:
-                    ret = $"{msg.PowerW}";
-                    break;
-                case MsgType.TLMDO_SET_TXINHIBIT:
-                    ret = $"{msg.Inhibit.ToString()}";
-                    break;
-                case MsgType.TLMDO_SET_WFALLOC:
-                    ret = $"{msg.SQH.ToString()}";
-                    break;
-                case MsgType.TLMDO_SET_CRYPT_KEYS:
-                    ret = $"{msg.Keytype.ToString()}";
-                    break;
-                default:
-                    ret = "none";
-                    break;
-            }
-            return ret;
         }
 
         

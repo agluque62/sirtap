@@ -395,7 +395,6 @@ namespace U5ki.NodeBox.WebServer
         #endregion
 
         #region Autenticacion
-        bool MustAuthenticate = true;
         DateTime SessionExpiredAt = DateTime.Now;
         private bool Authenticated(HttpListenerContext context)
         {
@@ -411,13 +410,11 @@ namespace U5ki.NodeBox.WebServer
                     HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
                     if (AuthenticateUser?.Invoke(identity?.Name,identity?.Password)==true)
                     {
-                        MustAuthenticate = true;
                         SessionExpiredAt = DateTime.Now;
                         return true;
                     }
                 }
 
-                MustAuthenticate = false;
                 SessionExpiredAt = DateTime.Now + TimeSpan.FromMinutes(1);
                 /** Operador no autentificado. Presenta peticion de Login / Password. */
                 /** Para presentar la pantalla de peticion LOGIN / PASSWORD... */
@@ -457,7 +454,9 @@ namespace U5ki.NodeBox.WebServer
             ErrorTesting();
 #endif
         }
+#if DEBUG
         bool ErrorTriggered = false;
+#endif
         private void ErrorTesting()
         {
 #if DEBUG
@@ -468,9 +467,9 @@ namespace U5ki.NodeBox.WebServer
             }
 #endif
         }
-        #endregion
+#endregion
 
-        #region Private
+#region Private
 
         string Id => $"On WebAppServer:";
         Task ExecutiveThread { get; set; } = null;
@@ -480,7 +479,7 @@ namespace U5ki.NodeBox.WebServer
         object Locker { get; set; } = new Object();
         static DateTime StartingDate { get; set; } = DateTime.Now;
 
-        #endregion
+#endregion
     }
 }
 
