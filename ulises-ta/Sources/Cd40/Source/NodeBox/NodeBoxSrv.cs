@@ -239,6 +239,15 @@ namespace U5ki.NodeBox
                         server.ServiceMain();
                     } while (Console.ReadKey().Key != ConsoleKey.Escape);
                 }
+                else if ((args.Length == 1) && (args[0] == "-unittest"))
+                {
+                    bConsole = true;
+
+                    do
+                    {
+                        server.ServiceMain();
+                    } while (Console.ReadKey().Key != ConsoleKey.Escape);
+                }
                 else if (args.Length == 0)
                 {
                     ServiceBase.Run(server);

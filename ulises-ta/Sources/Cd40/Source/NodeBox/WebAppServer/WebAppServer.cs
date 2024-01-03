@@ -312,7 +312,8 @@ namespace U5ki.NodeBox.WebServer
         /// </summary>
         protected void SetRequestRootDirectory()
         {
-            string exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
+            //string exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
+            string exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string rootDirectory = Path.GetDirectoryName(exePath);
             Directory.SetCurrentDirectory(rootDirectory);
         }
