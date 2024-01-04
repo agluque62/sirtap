@@ -9,6 +9,8 @@ namespace U5ki.Infrastructure
     /// </summary>
 	public static class Identifiers
     {
+        public const string SimulSirtapGRS = "SimulSirtapGRS";     
+
         /// <summary>
         /// 
         /// </summary>

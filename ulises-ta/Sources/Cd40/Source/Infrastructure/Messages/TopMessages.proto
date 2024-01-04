@@ -146,11 +146,10 @@ message TlmdoAsk
 	required string IdFrecuency = 3;    //Corresponde al identificador unico que llamamos Literal
 	required string IdRecurso = 4;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
 	optional int32 Channel = 5;			//Valor 0-9. Canal seleccionado en el caso del mensaje TLMDO_SET_CHANNEL, 
-										//o canal que se configura en el caso de los mensajes: TLMDO_SET_FREQUENCY, ...
-	optional string Frequency = 6;		//Frecuencia a la que se configura el canal. Mensaje TLMDO_SET_FREQUENCY.
-	optional string PowerW = 7;			//Potencia en watios. 0.25 a 50. Mensaje TLMDO_SET_TXPWR
-	optional bool TxInhibit = 8;		//Si true se inhibe la transmision. Mensaje TLMDO_SET_TXINHIBIT
-	optional string WF = 9;				//Mensaje TLMDO_SET_WFALLOC
+	optional string Frequency = 6;		//Frecuencia a la que se configura el canal. Mensaje TLMDO_SET_FREQUENCY. En el mensaje hay que especificar el Channel
+	optional string PowerW = 7;			//Potencia en watios del canal. 0.25 a 50. Mensaje TLMDO_SET_TXPWR. En el mensaje hay que especificar el Channel.
+	optional bool TxInhibit = 8;		//Si true se inhibe la transmision al transmisor independientemente del canal. Mensaje TLMDO_SET_TXINHIBIT. 
+	optional string WF = 9;				//Mensaje TLMDO_SET_WFALLOC. En el mensaje hay que especificar el Channel.
 }
 
 message TlmdoRsp

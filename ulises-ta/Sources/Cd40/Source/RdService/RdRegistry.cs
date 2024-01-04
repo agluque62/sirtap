@@ -396,8 +396,7 @@ namespace U5ki.RdService
                 Serializer.Serialize(ms, response);
                 byte[] data = ms.ToArray();
 
-                _Registry.Channel.Send(Identifiers.FR_RXTX_CHANGE_RESPONSE_MSG, data, to != null ? to : Identifiers.TopTopic);
-                //_Registry.Channel.Send(Identifiers.SITE_CHANGING_RSP, data, Identifiers.TopTopic);
+                _Registry.Channel.Send(Identifiers.TLMDO_RSP, data, to != null ? to : Identifiers.TopTopic);
             }
         }
 
