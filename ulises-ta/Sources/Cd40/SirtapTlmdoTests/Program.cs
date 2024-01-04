@@ -115,11 +115,14 @@ namespace TlmdoSirtapTest
 
         static void Main(string[] args)
         {
+            Console.CancelKeyPress += Console_CancelKeyPress;
+
             Console.WriteLine("Telemando Test");
             InitRegistry();
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_GET_CHANNELS. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo1 = new TlmdoAsk();
             tlmdo1.msgType = TlmdoAsk.MsgType.TLMDO_GET_CHANNELS;
@@ -133,6 +136,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo2 = new TlmdoAsk();
             tlmdo2.msgType = TlmdoAsk.MsgType.TLMDO_SET_CHANNEL;
@@ -147,6 +151,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_FREQUENCY. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo3 = new TlmdoAsk();
             tlmdo3.msgType = TlmdoAsk.MsgType.TLMDO_SET_FREQUENCY;
@@ -162,6 +167,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_TXPWR. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo4 = new TlmdoAsk();
             tlmdo4.msgType = TlmdoAsk.MsgType.TLMDO_SET_TXPWR;
@@ -177,6 +183,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_TXINHIBIT. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo5 = new TlmdoAsk();
             tlmdo5.msgType = TlmdoAsk.MsgType.TLMDO_SET_TXINHIBIT;
@@ -191,6 +198,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_WFALLOC. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo6 = new TlmdoAsk();
             tlmdo6.msgType = TlmdoAsk.MsgType.TLMDO_SET_WFALLOC;
@@ -206,6 +214,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_ERASE_CRYPT_KEYS. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo7 = new TlmdoAsk();
             tlmdo7.msgType = TlmdoAsk.MsgType.TLMDO_ERASE_CRYPT_KEYS;
@@ -219,6 +228,7 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_LOAD_CRYPT_KEYS. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             TlmdoAsk tlmdo8 = new TlmdoAsk();
             tlmdo8.msgType = TlmdoAsk.MsgType.TLMDO_LOAD_CRYPT_KEYS;
@@ -232,8 +242,16 @@ namespace TlmdoSirtapTest
 
             Console.WriteLine("*****************   Prueba finalizada. Pulsa una tecla");
             Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
 
             EndRegistry();
+        }
+
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true;
+            Console.WriteLine("Programa interrumpido");
+            System.Environment.Exit(1);
         }
     }
 }
