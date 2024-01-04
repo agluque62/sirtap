@@ -159,7 +159,7 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        LogError<Sirtap>(log + " ERROR ",
+                        LogError<Sirtap>(log + " " + ex.Message,
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
@@ -204,7 +204,7 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        LogError<Sirtap>(log + " ERROR ",
+                        LogError<Sirtap>(log + " " + ex.Message,
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
@@ -259,7 +259,7 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        LogError<Sirtap>(log + " ERROR ",
+                        LogError<Sirtap>(log + " " + ex.Message,
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
@@ -313,7 +313,7 @@ namespace u5ki.RemoteControlService
                     }
                     else
                     {
-                        LogError<Sirtap>(log + " ERROR ",
+                        LogError<Sirtap>(log + " " + ex.Message,
                             U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
                             Id, CTranslate.translateResource(log));
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;

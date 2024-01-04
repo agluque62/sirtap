@@ -19,6 +19,7 @@ using U5ki.Enums;
 using U5ki.Infrastructure;
 using Utilities;
 using static U5ki.Infrastructure.TlmdoAsk;
+using static U5ki.RdService.RdResource;
 
 namespace U5ki.RdService
 {
@@ -793,34 +794,19 @@ namespace U5ki.RdService
 
         private void SubProcessTlmdoProcessed(IAsyncResult cookie)
         {
-            var target = (Func<string, FrChangeAsk, subProcessChangingFreq_thread>)cookie.AsyncState;
+            var target = (Func<string, TlmdoAsk, subProcessTlmdoAsk_thread>)cookie.AsyncState;
 
-            subProcessChangingFreq_thread resultProcess = target.EndInvoke(cookie);
+            subProcessTlmdoAsk_thread resultProcess = target.EndInvoke(cookie);
 
             if (resultProcess != null)
             {
-                RdService.evQueueRd.Enqueue("SubProcessChangingFreqProcessed", delegate ()
+                RdService.evQueueRd.Enqueue("SubProcessTlmdoProcessed", delegate ()
                 {
-                    RdRegistry.RespondToChangingFreq(resultProcess.from, resultProcess.result,
-                    resultProcess.msg.IdFrecuency, resultProcess.selectedFrequency, resultProcess.code_returned);
-
-                    SelectedFrequency = resultProcess.selectedFrequency;
-                    if (_FrRs != null)
-                    {
-                        _FrRs.SelectedFrequency = resultProcess.selectedFrequency;
-                        _FrRs.FrequencyStatus = this.Status;
-
-                        RdRegistry.Publish(_IdDestino, _FrRs);
-                        if (_FrRs.FrequencyStatus == RdSrvFrRs.FrequencyStatusType.NotAvailable)
-                            RdRegistry.Publish(_IdDestino, null);
-                    }
+                    RdRegistry.RespondToTlmdo(resultProcess.from, resultProcess.response);
                     ProcessTlmdoRunning = false;
-                    MSTxPersistence.SelectFrequency(_IdDestino, resultProcess.selectedFrequency);
                 });
             }
         }
-
-
 
         private TlmdoRsp.CodeTypes TmdoInAllResources(TlmdoAsk msg, ref TlmdoRsp response)
         {
@@ -909,8 +895,16 @@ namespace U5ki.RdService
             SipUtilities.SipUriParser sipuri = new SipUtilities.SipUriParser(res.Uri1);
             bool isEmitter = res.isTx;
             TlmdoRsp.CodeTypes output = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+            TelemandoTypes telemandoType = res.TelemandoType;
+            if (res.ID == Identifiers.SimulSirtapGRS)
+            {
+                //Si el recurso es el de un simulador de radio Sirtap para los test entonces forzamos 
+                //El tipo de telemando como de sirtap, ya que en la configuracion todavia no llega ese
+                //tipo de dato.
+                telemandoType = TelemandoTypes.Sirtap;
+            }
 
-            switch (res.TelemandoType)
+            switch (telemandoType)
             {
                 case RdResource.TelemandoTypes.RCRohde4200:
                     {
