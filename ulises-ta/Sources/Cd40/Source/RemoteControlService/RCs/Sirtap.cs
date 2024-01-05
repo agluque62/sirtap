@@ -143,6 +143,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " [CHANNELS" + channels + "] SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -188,6 +189,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -243,6 +245,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -297,6 +300,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -341,6 +345,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -400,6 +405,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -443,6 +449,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -486,6 +493,7 @@ namespace u5ki.RemoteControlService
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
+                    break;
                 }
                 catch (Exception ex)
                 {
