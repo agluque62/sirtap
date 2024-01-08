@@ -65,10 +65,29 @@ namespace TlmdoSirtapTest
                     Console.WriteLine("-----TLMDO_RSP receved---------------------------------------------------------------");
                     Console.WriteLine(JsonConvert.SerializeObject(msg));
                     MemoryStream ms = new MemoryStream(msg.Data, 0, msg.Length);
-                    TlmdoRsp ask = Serializer.Deserialize<TlmdoRsp>(ms);
+                    TlmdoRsp rsp = Serializer.Deserialize<TlmdoRsp>(ms);
                     Console.WriteLine("TlmdoRsp receved");
-                    Console.WriteLine(JsonConvert.SerializeObject(ask));
-                    string s = $"msgType: {ask.msgType.ToString()} code: {ask.Code.ToString()}";
+                    Console.WriteLine(JsonConvert.SerializeObject(rsp));
+                    string s = $"msgType: {rsp.msgType.ToString()} code: {rsp.Code.ToString()}";
+
+                    switch (rsp.msgType)
+                    {
+                        case TlmdoAsk.MsgType.TLMDO_GET_CHANNELS:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_SET_CHANNEL:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_SET_TXPWR:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_SET_TXINHIBIT:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_SET_WFALLOC:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_ERASE_CRYPT_KEYS:
+                            break;
+                        case TlmdoAsk.MsgType.TLMDO_LOAD_CRYPT_KEYS:
+                            break;
+                    }
+
                     Console.WriteLine(JsonConvert.SerializeObject(s));
                     Console.WriteLine("-------------------------------------------------------------------------------------");
                     sem.Release();
@@ -134,7 +153,7 @@ namespace TlmdoSirtapTest
 
             if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
 
-            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL. Pulsa una tecla +++++++++++++");
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL 0. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
             Console.WriteLine("Esperando respuesta");
 
@@ -143,13 +162,52 @@ namespace TlmdoSirtapTest
             tlmdo2.IdFrecuency = IdFrecuencyToTest;
             tlmdo2.HostId = "test";
             tlmdo2.IdRecurso = "";
+            tlmdo2.Channel = 0;
+
+            SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo2);
+            if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL 1. Pulsa una tecla +++++++++++++");
+            Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
+
+            tlmdo2.msgType = TlmdoAsk.MsgType.TLMDO_SET_CHANNEL;
+            tlmdo2.IdFrecuency = IdFrecuencyToTest;
+            tlmdo2.HostId = "test";
+            tlmdo2.IdRecurso = "";
             tlmdo2.Channel = 1;
 
             SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo2);
-
             if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
 
-            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_FREQUENCY. Pulsa una tecla +++++++++++++");
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL 2. Pulsa una tecla +++++++++++++");
+            Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
+
+            tlmdo2.msgType = TlmdoAsk.MsgType.TLMDO_SET_CHANNEL;
+            tlmdo2.IdFrecuency = IdFrecuencyToTest;
+            tlmdo2.HostId = "test";
+            tlmdo2.IdRecurso = "";
+            tlmdo2.Channel = 2;
+
+            SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo2);
+            if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_CHANNEL 3. Pulsa una tecla +++++++++++++");
+            Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
+
+            tlmdo2.msgType = TlmdoAsk.MsgType.TLMDO_SET_CHANNEL;
+            tlmdo2.IdFrecuency = IdFrecuencyToTest;
+            tlmdo2.HostId = "test";
+            tlmdo2.IdRecurso = "";
+            tlmdo2.Channel = 3;
+
+            SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo2);
+            if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
+            //Rango frecuencias 30000 - 511975
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_FREQUENCY 20.000. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
             Console.WriteLine("Esperando respuesta");
 
@@ -159,11 +217,39 @@ namespace TlmdoSirtapTest
             tlmdo3.HostId = "test";
             tlmdo3.IdRecurso = "";
             tlmdo3.Channel = 1;
-            tlmdo3.Frequency = "200.000";
+            tlmdo3.Frequency = "20.000";
 
             SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo3);
-
             if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_FREQUENCY 30.000. Pulsa una tecla +++++++++++++");
+            Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
+
+            tlmdo3.msgType = TlmdoAsk.MsgType.TLMDO_SET_FREQUENCY;
+            tlmdo3.IdFrecuency = IdFrecuencyToTest;
+            tlmdo3.HostId = "test";
+            tlmdo3.IdRecurso = "";
+            tlmdo3.Channel = 1;
+            tlmdo3.Frequency = "30.000";
+
+            SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo3);
+            if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
+            Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_FREQUENCY 511.975. Pulsa una tecla +++++++++++++");
+            Console.ReadKey();
+            Console.WriteLine("Esperando respuesta");
+
+            tlmdo3.msgType = TlmdoAsk.MsgType.TLMDO_SET_FREQUENCY;
+            tlmdo3.IdFrecuency = IdFrecuencyToTest;
+            tlmdo3.HostId = "test";
+            tlmdo3.IdRecurso = "";
+            tlmdo3.Channel = 1;
+            tlmdo3.Frequency = "511.975";
+
+            SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo3);
+            if (sem.WaitOne(5000) == false) Console.WriteLine("SIN RESPUESTA");
+
 
             Console.WriteLine("+++++++++++++ Prueba TLMDO_SET_TXPWR. Pulsa una tecla +++++++++++++");
             Console.ReadKey();
