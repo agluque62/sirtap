@@ -175,7 +175,7 @@ namespace TlmdoSirtapTest
             tlmdo4.HostId = "test";
             tlmdo4.IdRecurso = "";
             tlmdo4.Channel = 1;
-            tlmdo4.PowerW = "0.50";
+            tlmdo4.PowerW = "30";
 
             SirTapRegistry.Send(Identifiers.RdMasterTopic, Identifiers.TLMDO_ASK, tlmdo4);
 
