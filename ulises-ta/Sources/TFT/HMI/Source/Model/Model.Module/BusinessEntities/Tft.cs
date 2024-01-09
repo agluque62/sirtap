@@ -12,20 +12,29 @@ namespace HMI.Model.Module.BusinessEntities
 	{
         private bool _Enabled = true;
         private bool _Login = false;
+        private string _LoginName = "";
+        private string _LastLogin = "";
+        private string _Mision = "";
+        private bool _ModoNocturno = !(DateTime.Now.Hour >= 6 && DateTime.Now.Hour< 18);
 
         private bool _Briefing = false;
         private bool _Playing = false;
+        public event GenericEventHandler<SnmpStringMsg<string, string>> SendSnmpTrapString;
 
         [EventPublication(EventTopicNames.TftEnabledChanged, PublicationScope.Global)]
         public event EventHandler TftEnabledChanged;
         [EventPublication(EventTopicNames.TftLoginChanged, PublicationScope.Global)]
         public event EventHandler TftLoginChanged;
+        [EventPublication(EventTopicNames.TftBadLogin, PublicationScope.Global)]
+        public event EventHandler TftBadLogin;
         [EventPublication(EventTopicNames.BriefingChanged, PublicationScope.Global)]
         public event EventHandler BriefingChanged;
         [EventPublication(EventTopicNames.PlayingChanged, PublicationScope.Global)]
         public event EventHandler PlayingChanged;
+        [EventPublication(EventTopicNames.TftGoodLogin, PublicationScope.Global)]
+        public event EventHandler TftGoodLogin;
 
-		public bool Enabled
+        public bool Enabled
 		{
 			get { return _Enabled; }
 			set 
@@ -38,6 +47,11 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 		}
 
+        public void  SetLogin(bool valor)
+        {
+            _Login = valor;
+            General.SafeLaunchEvent(TftLoginChanged, this);
+        }
         public bool Login
         {
             get { return _Login; }
@@ -48,6 +62,28 @@ namespace HMI.Model.Module.BusinessEntities
                     _Login = value;
                     General.SafeLaunchEvent(TftLoginChanged, this);
                 }
+            }
+        }
+        public string LoginName
+        {
+            get { return (_Login) ? _LoginName : "" ; }
+            set
+            {
+                if (_LoginName != value)
+                {
+                    _LoginName = value;
+                    //General.SafeLaunchEvent(TftGoodLogin, this._LastLogin);
+                    General.SafeLaunchEvent(TftGoodLogin, this._LoginName);
+                }
+            }
+        }
+        public string GenerarHistoricoLoginIncorrecto
+        {
+            set
+            {
+                _LastLogin = value;
+                General.SafeLaunchEvent(TftBadLogin, this._LastLogin);
+
             }
         }
         public bool Briefing
@@ -77,5 +113,17 @@ namespace HMI.Model.Module.BusinessEntities
                 }
             }
         }
+
+        public string Mision { get => _Mision; set => _Mision = value; }
+        public bool ModoNocturno
+        {
+            get => _ModoNocturno;
+            set
+            {
+                _ModoNocturno = value;
+            }
+        }
+
+        public string LastLogin { get => _LastLogin; set => _LastLogin = value; }
     }
 }

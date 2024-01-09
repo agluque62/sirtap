@@ -73,6 +73,6 @@ namespace HMI.Model.Module.Services
 		void SeleccionSonidoClick();
 #endif
 		void SetToneporllamadaModel(string llamda, string tono, string tonoprio);
-		
+
 	}
 }

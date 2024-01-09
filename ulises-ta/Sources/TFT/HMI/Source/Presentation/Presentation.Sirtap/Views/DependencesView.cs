@@ -49,38 +49,38 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool _PathEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _DependencesEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _TypeEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _AgvnEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _RtbEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _FunctionEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _CloseEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _CallEnabled
         {
             get
             {
                 return (_AgvnTB.Text.Length > 0) &&
-                    _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                    _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     (_StateManager.Tlf.Priority.State != FunctionState.Error) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Executing) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Error) &&

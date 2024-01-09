@@ -80,7 +80,7 @@ namespace HMI.Model.Module.Services
 
 		public void DisableTft()
 		{
-			if (_StateManager.Tft.Enabled)
+			if (_StateManager.Tft.Enabled && _StateManager.Tft.Login )
 			{
 				_StateManager.Radio.SetRtx(0,0);
 				if (_StateManager.Tlf.Priority.State == FunctionState.Ready)
@@ -1439,5 +1439,5 @@ namespace HMI.Model.Module.Services
 		{
 			_EngineCmdManager.SetToneporllamadaEngine(llamda,tono, tonoprio);
         }
-    }
+	}
 }

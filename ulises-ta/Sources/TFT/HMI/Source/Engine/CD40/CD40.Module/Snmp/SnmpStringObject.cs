@@ -8,6 +8,7 @@ namespace HMI.CD40.Module.Snmp
 {
 	sealed class SnmpStringObject : ScalarObject
 	{
+		static private string loginuser="";
 		public string Value
 		{
 			get { return _data.ToString(); }
@@ -21,6 +22,7 @@ namespace HMI.CD40.Module.Snmp
 				if ((_trapsEps != null) && (_trapsEps.Length > 0))
 				{
 					// SnmpAgent.Trap(Variable.Id, _data, _trapsEps);
+					SnmpAgent.User = loginuser;
 					SnmpAgent.TrapFromTo(Properties.Settings.Default.SipIp, Variable.Id, _data, _trapsEps);
 				}
 			}
@@ -50,7 +52,9 @@ namespace HMI.CD40.Module.Snmp
 			}
 		}
 
-		public SnmpStringObject(string oid, string value, params IPEndPoint[] trapsEps)
+        public string Loginuser { get => loginuser; set => loginuser = value; }
+
+        public SnmpStringObject(string oid, string value, params IPEndPoint[] trapsEps)
 			: base(oid)
 		{
 			_data = new OctetString(value);

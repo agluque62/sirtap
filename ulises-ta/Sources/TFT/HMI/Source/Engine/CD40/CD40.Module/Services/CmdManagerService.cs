@@ -236,6 +236,10 @@ namespace HMI.CD40.Module.Services
         //RQF36
         [EventPublication(EventTopicNames.ChangedRTXSQU, PublicationScope.Global)]
         public event EventHandler<StateMsg<bool>> ChangedRTXSQU;
+
+        [EventPublication(EventTopicNames.FuerzoLogout, PublicationScope.Global)]
+        public event EventHandler FuerzoLogout;
+
         #endregion
 
         public void Run()
@@ -293,7 +297,6 @@ namespace HMI.CD40.Module.Services
                     Top.Tlf.ResourceChanged += OnTlfResourceChanged;
                     //230516
                     Top.Tlf.CambioConferenciaPreprogramada += OnCambioConferenciaPreprogramada;
-                    
                 }
                 if (Top.Lc != null)
                 {
@@ -1704,7 +1707,6 @@ namespace HMI.CD40.Module.Services
 			{
 				General.SafeLaunchEvent(AgendaChangedEngine, this, new RangeMsg<Number>(ag.ToArray()));
 			});
-
             // Eliminar grupos de RTX si los hubiera
             // 20200909. Eliminar esta función.
             //if (Top.Cfg.ResetUsuario)
@@ -1717,6 +1719,11 @@ namespace HMI.CD40.Module.Services
             //	});
             //}
 
+
+            Top.PublisherThread.Enqueue(EventTopicNames.FuerzoLogout, delegate ()
+            {
+                General.SafeLaunchEvent(FuerzoLogout,this);
+            });
         }
 
         private void OnTransferChanged(object sender)
@@ -2085,7 +2092,7 @@ namespace HMI.CD40.Module.Services
 		private void OnSendSnmpTrapString(object sender, SnmpStringMsg<string, string> st)
 		{
 			if (Settings.Default.SNMPEnabled != 0)
-				SnmpStringObject.Get(st.Oid).SendTrap(st.Value);
+				SnmpStringObject.Get(st.Oid)?.SendTrap(st.Value);
 		}
 
         private void OnBriefingChanged(object sender, StateMsg<bool> briefingState)
@@ -2737,8 +2744,27 @@ namespace HMI.CD40.Module.Services
             Top.Tlf.TonosPorLlamada[llamada] = new string[] { tono, tonoprio };
         }
 
+
+
+        public void GenerarHistoricoLoginIncorrectoEngine(string nombre, string error)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
+            {
+                Top.Rd.EnviaAlarmaLoginFail(nombre);
+            });
+        }
+
+        public void EnviarLoginCorrectoEngine(string nombre, string error)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
+            {
+                //SnmpStringObject a=new snmpobject();
+                //a.Loginuser = nombre;
+                Top.Rd.EnviarLoginOk(nombre);
+            });
+        }
         /**
         * Fin de Modificacion */
-#endregion
+        #endregion
     }
 }

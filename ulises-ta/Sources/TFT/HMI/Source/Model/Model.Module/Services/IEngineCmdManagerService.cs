@@ -97,6 +97,7 @@ namespace HMI.Model.Module.Services
         bool HayConferenciaPreprogramada();
 
 		void SetToneporllamadaEngine(string llamada, string tono, string tonoprio);
-
+		void GenerarHistoricoLoginIncorrectoEngine(string user, string error);
+		void EnviarLoginCorrectoEngine(string user, string error);
     }
 }
