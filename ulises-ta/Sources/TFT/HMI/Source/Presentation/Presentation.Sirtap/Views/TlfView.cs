@@ -86,6 +86,8 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _TlfTLP_Paint(object sender, PaintEventArgs e)
         {
+            if ((_StateManager.Tft.Login == false) || (_StateManager.Tft.Mision == ""))
+                _StateManager.Tft.SetLogin(false);
 
         }
 
