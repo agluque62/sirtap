@@ -258,9 +258,18 @@ namespace HMI.Presentation.Sirtap.Views
                 MensajePresenciaAltavoces(typeof(LcSpeaker));
             }
             if (_StateManager.Tft.Login)
+            {
+
                 MisionText.Text = _StateManager.Tft.Mision;
+                _TitleBT.Text = MisionText.Text;
+            }
             else
+            {
                 MisionText.Text = "-----";
+                _TitleBT.Text = _StateManager.Title.Id;
+                _TitleBT.Text = GenIdAgrupacion(_StateManager.Title.Id);
+
+            }
         }
 
         [EventSubscription(EventTopicNames.JacksChanged, ThreadOption.Publisher)]
