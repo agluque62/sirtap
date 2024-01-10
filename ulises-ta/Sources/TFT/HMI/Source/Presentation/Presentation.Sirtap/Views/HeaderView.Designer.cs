@@ -149,7 +149,7 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // MisionText
             // 
-            this.MisionText.Location = new System.Drawing.Point(378, 4);
+            this.MisionText.Location = new System.Drawing.Point(10, 67);
             this.MisionText.Name = "MisionText";
             this.MisionText.Size = new System.Drawing.Size(100, 20);
             this.MisionText.TabIndex = 6;

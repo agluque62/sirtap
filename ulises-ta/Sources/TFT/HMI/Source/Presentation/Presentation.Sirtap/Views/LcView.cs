@@ -111,6 +111,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
         }
 
+        [EventSubscription(EventTopicNames.TftGoodLogin, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)

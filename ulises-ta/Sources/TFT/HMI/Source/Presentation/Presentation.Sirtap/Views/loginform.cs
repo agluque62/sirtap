@@ -109,9 +109,17 @@ namespace HMI.Presentation.Sirtap.Views
         private void _LogClv_Click(object sender, EventArgs e)
         {
             if (sellogin)
+            {
                 _LogClv.Text = "Usuario";
+                txtContrasena.Enabled = true;
+                txtUsuario.Enabled = false;
+            }
             else
+            {
                 _LogClv.Text = "Clave";
+                txtContrasena.Enabled = false;
+                txtUsuario.Enabled = true;
+            }
             _LogClv.Update();
 
             sellogin = !sellogin;
@@ -262,6 +270,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             ChangeColors();
         }
-        
+
+
     }
 }
