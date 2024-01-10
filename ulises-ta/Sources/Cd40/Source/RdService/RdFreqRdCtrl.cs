@@ -928,7 +928,19 @@ namespace U5ki.RdService
                     break;
                 case RdResource.TelemandoTypes.Sirtap:
                     {
-                        u5ki.RemoteControlService.Sirtap RC = new u5ki.RemoteControlService.Sirtap(161) { Id = res.ID };
+                        u5ki.RemoteControlService.Sirtap RC;
+                        try
+                        {
+                            RC = new u5ki.RemoteControlService.Sirtap(161, Lextm.SharpSnmpLib.VersionCode.V3,
+                                res.SNMPV3Credentials.auth_type, res.SNMPV3Credentials.priv_type,
+                                res.SNMPV3Credentials.username, res.SNMPV3Credentials.authpass, res.SNMPV3Credentials.privpass)
+                            { Id = res.ID };
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError<RdFrecuency>("ChangeFreqInAResource: Sirtap" + ex.Message);
+                            return output;
+                        }
                         output = RC.Tlmdo(msg, sipuri.Host, isEmitter, ref response, res.Connected);
                     }
                     break;

@@ -51,7 +51,7 @@ namespace U5ki.Infrastructure
         private static object GetOne(
             string ip, string community, string oid, int timeout,
             Int32 port, VersionCode snmpVersion,
-            SnmpType? param1Type, Object param1Value = null)
+            SnmpType? param1Type, Object param1Value = null, string username = null, IPrivacyProvider priv = null)
         {
             List<Variable> lst = new List<Variable>();
             ObjectIdentifier OID = new ObjectIdentifier(oid);
@@ -66,12 +66,14 @@ namespace U5ki.Infrastructure
 
             if (snmpVersion == VersionCode.V3)
             {
-                var auth = new SHA1AuthenticationProvider(new OctetString("authkey1"));
-                var priv = new AESPrivacyProvider(new OctetString("privkey1"), auth);
-                //Discovery discovery = Messenger.GetNextDiscovery(SnmpType.GetRequestPdu);
+                if (username == null || priv == null )
+                {
+                    throw new SnmpException("SNMP V3 requires username and priv");
+                }
+
                 Discovery discovery = Messenger.NextDiscovery;
                 ReportMessage report = discovery.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
-                GetRequestMessage message = new GetRequestMessage(snmpVersion, Messenger.NextMessageId, Messenger.NextRequestId, new OctetString("usr-md5-aes"), lst, priv, Messenger.MaxMessageSize, report);
+                GetRequestMessage message = new GetRequestMessage(snmpVersion, Messenger.NextMessageId, Messenger.NextRequestId, new OctetString(username), lst, priv, Messenger.MaxMessageSize, report);
                 ISnmpMessage reply = message.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
                 if (reply.Pdu().ErrorStatus.ToInt32() != 0) // != ErrorCode.NoError
                 {
@@ -115,7 +117,7 @@ namespace U5ki.Infrastructure
         private static object SetOne(
             string ip, string community, string oid, int timeout,
             Int32 port, VersionCode snmpVersion,
-            SnmpType param1Type, Object param1Value)
+            SnmpType param1Type, Object param1Value, string username = null, IPrivacyProvider priv = null)
         {
             List<Variable> lst = new List<Variable>();
 
@@ -126,28 +128,53 @@ namespace U5ki.Infrastructure
                     new ObjectIdentifier(oid),
                     paramValue));
 
-            return Messenger.Set(
-                snmpVersion,
-                new IPEndPoint(IPAddress.Parse(ip), port),
-                new OctetString(community),
-                lst,
-                timeout);
+            if (snmpVersion == VersionCode.V3)
+            {
+                if (username == null || priv == null)
+                {
+                    throw new SnmpException("SNMP V3 requires username and priv");
+                }
+
+                Discovery discovery = Messenger.NextDiscovery;
+                ReportMessage report = discovery.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                SetRequestMessage request = new SetRequestMessage(snmpVersion, Messenger.NextMessageId, Messenger.NextRequestId, new OctetString(username), lst, priv, Messenger.MaxMessageSize, report);
+                ISnmpMessage reply = request.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                if (reply.Pdu().ErrorStatus.ToInt32() != 0) // != ErrorCode.NoError
+                {
+                    throw Error.Create(
+                        "error in response",
+                        IPAddress.Parse(ip),
+                        reply);
+                }
+                var pdu = reply.Pdu();
+                return pdu.Variables;
+            }
+            else
+            {
+                return Messenger.Set(
+                    snmpVersion,
+                    new IPEndPoint(IPAddress.Parse(ip), port),
+                    new OctetString(community),
+                    lst,
+                    timeout);
+            }
         }
 
         #endregion
 
         #region Defined Type Methods
 
-        public static int GetInt(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static int GetInt(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
             return Convert.ToInt32(
-                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Integer32));
+                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Integer32, username: username, priv: priv));
         }
-        public static void SetInt(string ip, string community, string oid, int valor, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, Boolean tryGetInt = true)
+        public static void SetInt(string ip, string community, string oid, int valor, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, Boolean tryGetInt = true, string username = null, IPrivacyProvider priv = null)
         {
             try
             {
-                SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Integer32, valor);
+                SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Integer32, valor, username: username, priv: priv);
             }
             catch (SnmpException ex)
             {
@@ -162,51 +189,87 @@ namespace U5ki.Infrastructure
             }
         }
 
-        public static UInt32 GetGauge32(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static UInt32 GetGauge32(string ip, string community, string oid, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
             return Convert.ToUInt32(
-                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Gauge32));
+                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Gauge32, username: username, priv:priv));
         }
-        public static void SetGauge32(string ip, string community, string oid, UInt32 valor, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static void SetGauge32(string ip, string community, string oid, UInt32 valor, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
-            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Gauge32, valor);
+            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Gauge32, valor, username: username, priv: priv);
         }
 
-        public static UInt32 GetCounter32(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static UInt32 GetCounter32(string ip, string community, string oid, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
             return Convert.ToUInt32(
-                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter32));
+                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter32, username: username, priv: priv));
         }
-        public static void SetCounter32(string ip, string community, string oid, UInt32 valor, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static void SetCounter32(string ip, string community, string oid, UInt32 valor, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
-            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter32, valor);
+            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter32, valor, username: username, priv: priv);
         }
 
-        public static UInt64 GetCounter64(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static UInt64 GetCounter64(string ip, string community, string oid, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
             return Convert.ToUInt64(
-                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter64));
+                GetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter64, username: username, priv: priv));
         }
-        public static void SetCounter64(string ip, string community, string oid, UInt64 valor, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static void SetCounter64(string ip, string community, string oid, UInt64 valor, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
-            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter64, valor);
+            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.Counter64, valor, username: username, priv: priv);
         }
 
-        public static string GetString(string ip, string community, string oid, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static string GetString(string ip, string community, string oid, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
             List<Variable> lst = new List<Variable>();
             ObjectIdentifier ido = new ObjectIdentifier(oid);
 
             lst.Add(new Variable(ido, new OctetString("")));
 
-            /** Cambia la Frecuencia en el agente */
-            List<Variable> result = (
-                List<Variable>)Messenger.Get(
-                    snmpVersion,
-                    new IPEndPoint(IPAddress.Parse(ip), port),
-                    new OctetString(community),
-                    lst, 
-                    timeout);
+            List<Variable> result;
+
+            if (snmpVersion == VersionCode.V3)
+            {
+                if (username == null || priv == null)
+                {
+                    throw new SnmpException("SNMP V3 requires username and priv");
+                }
+
+                Discovery discovery = Messenger.NextDiscovery;
+                ReportMessage report = discovery.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                GetRequestMessage message = new GetRequestMessage(snmpVersion, Messenger.NextMessageId, Messenger.NextRequestId, new OctetString(username), lst, priv, Messenger.MaxMessageSize, report);
+                ISnmpMessage reply = message.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                if (reply.Pdu().ErrorStatus.ToInt32() != 0) // != ErrorCode.NoError
+                {
+                    throw Error.Create(
+                        "error in response",
+                        IPAddress.Parse(ip),
+                        reply);
+                }
+
+                var pdu = reply.Pdu();
+
+                result = (List<Variable>)pdu.Variables;
+            }
+            else
+            {
+                result = (
+                    List<Variable>)Messenger.Get(
+                        snmpVersion,
+                        new IPEndPoint(
+                            IPAddress.Parse(ip),
+                            port),
+                        new OctetString(community),
+                        lst,
+                        timeout);
+            }
 
             if (result.Count <= 0)
                 throw new SnmpException(string.Format("CienteSnmp.GetString: result.count <= 0: {0}---{1}", ip, oid));
@@ -218,9 +281,10 @@ namespace U5ki.Infrastructure
         }
 
 
-        public static void SetString(string ip, string community, string oid, string valor, int timeout, Int32 port = 161, VersionCode snmpVersion = VersionCode.V1)
+        public static void SetString(string ip, string community, string oid, string valor, int timeout, 
+            Int32 port = 161, VersionCode snmpVersion = VersionCode.V1, string username = null, IPrivacyProvider priv = null)
         {
-            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.OctetString, valor);
+            SetOne(ip, community, oid, timeout, port, snmpVersion, SnmpType.OctetString, valor, username: username, priv: priv);
         }
 
         /** */

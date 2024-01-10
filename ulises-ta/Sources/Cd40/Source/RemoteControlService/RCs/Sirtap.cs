@@ -20,6 +20,7 @@ using System.Security.Cryptography;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
 using System.Runtime.Remoting.Channels;
+using Lextm.SharpSnmpLib.Security;
 
 namespace u5ki.RemoteControlService
 {
@@ -29,11 +30,19 @@ namespace u5ki.RemoteControlService
     public class Sirtap : BaseCode, IRemoteControl
     {
         public readonly Int32 Port = 160;
-        public readonly VersionCode SNMPVersion = VersionCode.V3;
+        public readonly VersionCode SNMPVersion = VersionCode.V1;
         public readonly Int32 NUMMAXTimeout = 1;
         public readonly String Community = "public";
         public readonly Int32 SNMPCallTimeout = 500; // Miliseconds
         public int MAX_CRYPT_KEYS = 30;
+
+        public u5ki.RemoteControlService.SNMPV3_priv_types Priv_type = u5ki.RemoteControlService.SNMPV3_priv_types.none;
+        public u5ki.RemoteControlService.SNMPV3_auth_types Auth_type = u5ki.RemoteControlService.SNMPV3_auth_types.none;
+        public string Username = null;
+        public string Authpass = null;
+        public string Privpass = null;
+        IAuthenticationProvider Auth = null;
+        IPrivacyProvider Priv = null;
 
         /// <summary>
         /// 
@@ -54,10 +63,48 @@ namespace u5ki.RemoteControlService
         /// </summary>
         /// <param name="port"></param>
         /// <param name="sNMPVersion"></param>
-        public Sirtap(Int32 port, VersionCode sNMPVersion)
+        public Sirtap(Int32 port, VersionCode sNMPVersion,
+            u5ki.RemoteControlService.SNMPV3_auth_types auth_type = SNMPV3_auth_types.none,
+            u5ki.RemoteControlService.SNMPV3_priv_types priv_type = SNMPV3_priv_types.none,            
+            string username = null, string authpass = null, string privpass = null)
         {
             Port = port;
-            SNMPVersion = sNMPVersion;
+            SNMPVersion = sNMPVersion;            
+            if (sNMPVersion == VersionCode.V3)
+            {
+                if (auth_type != SNMPV3_auth_types.none && priv_type != SNMPV3_priv_types.none &&
+                    username != null && privpass != null && authpass != null)
+                {
+                    switch (auth_type)
+                    {
+                        case SNMPV3_auth_types.SHA1:
+                            Auth = new SHA1AuthenticationProvider(new OctetString("authkey1"));
+                            break;
+                        case SNMPV3_auth_types.MD5:
+                            Auth = new MD5AuthenticationProvider(new OctetString("authkey1"));
+                            break;
+                    }
+                    switch (priv_type)
+                    {
+                        case SNMPV3_priv_types.AES:
+                            Priv = new AESPrivacyProvider(new OctetString("privkey1"), Auth);
+                            break;
+                        case SNMPV3_priv_types.DES:
+                            Priv = new DESPrivacyProvider(new OctetString("privkey1"), Auth);
+                            break;
+                    }
+
+                    Priv_type = priv_type;
+                    Auth_type = auth_type;
+                    Username = username;
+                    Privpass = privpass;
+                    Authpass = authpass;
+                }
+                else
+                {
+                    throw new Exception("SNMP V3 requires all parameters");
+                }
+            }
         }
 
         /// <summary>
@@ -139,7 +186,7 @@ namespace u5ki.RemoteControlService
                 try
                 {
                     channels = SnmpClient.GetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.GetChannels,
-                        SNMPCallTimeout, Port, SNMPVersion);
+                        SNMPCallTimeout, Port, SNMPVersion, Username, Priv);
                     LogInfo<Sirtap>(log + " [CHANNELS" + channels + "] SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -185,7 +232,7 @@ namespace u5ki.RemoteControlService
                 try
                 {
                     SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.SetGetRadioChannel, msg.Channel,
-                        SNMPCallTimeout, Port, SNMPVersion);
+                        SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -241,7 +288,7 @@ namespace u5ki.RemoteControlService
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
                         break;
                     }
-                    SnmpClient.SetInt(targetIp, Community, oid, ifreq, SNMPCallTimeout, Port, SNMPVersion);
+                    SnmpClient.SetInt(targetIp, Community, oid, ifreq, SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -296,7 +343,7 @@ namespace u5ki.RemoteControlService
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
                         break;
                     }
-                    SnmpClient.SetInt(targetIp, Community, oid, ipwr, SNMPCallTimeout, Port, SNMPVersion);
+                    SnmpClient.SetInt(targetIp, Community, oid, ipwr, SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -341,7 +388,7 @@ namespace u5ki.RemoteControlService
                 {
                     int itxinhibit = msg.TxInhibit ? 1 : 0;
                     string oid = u5ki.RemoteControlService.OIDs.Sirtap.SetTxInhibit;
-                    SnmpClient.SetInt(targetIp, Community, oid, itxinhibit, SNMPCallTimeout, Port, SNMPVersion);
+                    SnmpClient.SetInt(targetIp, Community, oid, itxinhibit, SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -395,8 +442,8 @@ namespace u5ki.RemoteControlService
                         ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
                         break;
                     }
-                    SnmpClient.SetString(targetIp, Community, oid, msg.WF, SNMPCallTimeout, Port, SNMPVersion);
-                    string WF_read = SnmpClient.GetString(targetIp, Community, oid, SNMPCallTimeout, Port, SNMPVersion);
+                    SnmpClient.SetString(targetIp, Community, oid, msg.WF, SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
+                    string WF_read = SnmpClient.GetString(targetIp, Community, oid, SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     if (WF_read != msg.WF)
                     {
                         throw new Exception();
@@ -445,7 +492,7 @@ namespace u5ki.RemoteControlService
                 try
                 {
                     SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.eraseKeys, MAX_CRYPT_KEYS,
-                        SNMPCallTimeout, Port, SNMPVersion);
+                        SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));
@@ -489,7 +536,7 @@ namespace u5ki.RemoteControlService
                 try
                 {
                     SnmpClient.SetInt(targetIp, Community, u5ki.RemoteControlService.OIDs.Sirtap.loadKeys, MAX_CRYPT_KEYS,
-                        SNMPCallTimeout, Port, SNMPVersion);
+                        SNMPCallTimeout, Port, SNMPVersion, username: Username, priv: Priv);
                     LogInfo<Sirtap>(log + " SUCCESS ",
                         U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
                         Id, CTranslate.translateResource(log));

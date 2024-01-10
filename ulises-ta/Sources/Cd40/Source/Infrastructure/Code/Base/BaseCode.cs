@@ -13,7 +13,7 @@ namespace U5ki.Infrastructure
     /// Objecto inicial del arbol de objetos.
     /// </summary>
     public class BaseCode
-    {
+    {       
         /// <summary>
         /// 20171002. AGL. Para el idioma...
         /// </summary>
@@ -443,7 +443,7 @@ namespace U5ki.Infrastructure
                                 Logger _logger = NLog.LogManager.GetLogger(evento.Item1);
                                 _logger.Log(evento.Item2, evento.Item3);
                             }
-                            catch(Exception x)
+                            catch
                             {
                             }
                         }

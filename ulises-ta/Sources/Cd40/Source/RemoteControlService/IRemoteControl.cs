@@ -8,6 +8,19 @@ using U5ki.Infrastructure;
 
 namespace u5ki.RemoteControlService
 {
+    public enum SNMPV3_auth_types
+    {
+        SHA1,
+        MD5,
+        none
+    }
+
+    public enum SNMPV3_priv_types
+    {
+        AES,
+        DES,
+        none
+    }
 
     /// <summary>
     /// Clase que engloba las funcionalidades publicas del Telemando o Control Remoto.
@@ -22,7 +35,7 @@ namespace u5ki.RemoteControlService
     /// TODO: En la funciones simples, sustituir el objeto Node por parametros concretos haciendo overload.
     /// </remarks>
     public interface IRemoteControl
-    {
+    {    
         /// <summary>
         /// 20160809. Para Relacionarlos con los GEAR de alto nivel...
         /// </summary>

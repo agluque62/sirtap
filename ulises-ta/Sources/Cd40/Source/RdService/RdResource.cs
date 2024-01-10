@@ -32,6 +32,17 @@ namespace U5ki.RdService
     /// </summary>
     public class RdResource: BaseCode, IDisposable , IRdResource
 	{
+        public class SNMPV3CredentialsParams
+        {
+            public u5ki.RemoteControlService.SNMPV3_priv_types priv_type = u5ki.RemoteControlService.SNMPV3_priv_types.AES;
+            public u5ki.RemoteControlService.SNMPV3_auth_types auth_type = u5ki.RemoteControlService.SNMPV3_auth_types.SHA1;
+            public string username = "usr-sha-aes";
+            public string authpass = "authkey1";
+            public string privpass = "privkey1";
+        }
+
+        public SNMPV3CredentialsParams SNMPV3Credentials = new SNMPV3CredentialsParams();
+
         /************************************************************************/
         /** 201702-FD. AGL. Nuevos Atributos de Configuracion y Estado. *********/
         public class NewRdResourceParams
