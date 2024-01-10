@@ -11,6 +11,8 @@ using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib.Objects;
 using Lextm.SharpSnmpLib.Pipeline;
+using Lextm.SharpSnmpLib.Security;
+using System.Reflection.Emit;
 
 namespace U5ki.Infrastructure
 {
@@ -60,15 +62,41 @@ namespace U5ki.Infrastructure
                     OID,
                     paramValue));
 
-            List<Variable> result = (
-                List<Variable>)Messenger.Get(
-                    snmpVersion,
-                    new IPEndPoint(
+            List<Variable> result;
+
+            if (snmpVersion == VersionCode.V3)
+            {
+                var auth = new SHA1AuthenticationProvider(new OctetString("authkey1"));
+                var priv = new AESPrivacyProvider(new OctetString("privkey1"), auth);
+                //Discovery discovery = Messenger.GetNextDiscovery(SnmpType.GetRequestPdu);
+                Discovery discovery = Messenger.NextDiscovery;
+                ReportMessage report = discovery.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                GetRequestMessage message = new GetRequestMessage(snmpVersion, Messenger.NextMessageId, Messenger.NextRequestId, new OctetString("usr-md5-aes"), lst, priv, Messenger.MaxMessageSize, report);
+                ISnmpMessage reply = message.GetResponse(timeout, new IPEndPoint(IPAddress.Parse(ip), port));
+                if (reply.Pdu().ErrorStatus.ToInt32() != 0) // != ErrorCode.NoError
+                {
+                    throw Error.Create(
+                        "error in response",
                         IPAddress.Parse(ip),
-                        port),
-                    new OctetString(community),
-                    lst,
-                    timeout);
+                        reply);
+                }
+
+                var pdu = reply.Pdu();
+
+                result = (List<Variable>) pdu.Variables;
+            }
+            else
+            {
+                result = (
+                    List<Variable>)Messenger.Get(
+                        snmpVersion,
+                        new IPEndPoint(
+                            IPAddress.Parse(ip),
+                            port),
+                        new OctetString(community),
+                        lst,
+                        timeout);
+            }
 
             if (result.Count <= 0)
                 throw new SnmpException(string.Format("CienteSnmp.GetInt: result.count <= 0: {0}---{1}", ip, oid));

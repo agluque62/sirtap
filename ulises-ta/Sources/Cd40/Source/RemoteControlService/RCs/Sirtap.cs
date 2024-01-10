@@ -29,7 +29,7 @@ namespace u5ki.RemoteControlService
     public class Sirtap : BaseCode, IRemoteControl
     {
         public readonly Int32 Port = 160;
-        public readonly VersionCode SNMPVersion = VersionCode.V1;
+        public readonly VersionCode SNMPVersion = VersionCode.V3;
         public readonly Int32 NUMMAXTimeout = 1;
         public readonly String Community = "public";
         public readonly Int32 SNMPCallTimeout = 500; // Miliseconds
