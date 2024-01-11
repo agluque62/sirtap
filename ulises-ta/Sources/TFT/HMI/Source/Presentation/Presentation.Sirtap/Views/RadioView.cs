@@ -1028,7 +1028,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
-            bt.Visible = dst.IsConfigurated;
+            bt.Visible = dst.IsConfigurated&&_StateManager.Tft.Mision!="";
         }
 
         private void _RdSpeakerUDB_LevelDown(object sender, EventArgs e)
@@ -1692,7 +1692,7 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         public void OnLoginChanged(object sender, EventArgs e)
         {
-            MostrarModo();
+            MostrarModo(sender);
         }
         private void ChangeColors()
         {
@@ -1701,9 +1701,11 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+        private void MostrarModo(object sender)
         {
             ChangeColors();
+            _CmdManager.RdLoadNextPage(0, 6);
+            _CmdManager.RdLoadPrevPage(8, 6);
         }
 
     }

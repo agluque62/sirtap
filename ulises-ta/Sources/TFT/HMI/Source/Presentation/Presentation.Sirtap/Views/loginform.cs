@@ -34,7 +34,7 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 this.hmiButtonModo.Text = "Modo Nocturno";
             txtContrasena.Text = "";
-            MostrarModo();
+            MostrarModo(null);
 
         }
         public loginform()
@@ -266,7 +266,7 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+        private void MostrarModo(object sender)
         {
             ChangeColors();
         }

@@ -172,7 +172,7 @@ namespace HMI.Presentation.Sirtap.Views
             else
             {
                 MostrarDialogoLogin();
-                MostrarModo();
+                MostrarModo(sender);
             }
         }
 
@@ -198,7 +198,7 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         public void OnLoginChanged(object sender, EventArgs e)
         {
-            MostrarModo();
+            MostrarModo(sender);
             if ((_StateManager.Tft.Login==false) || (_StateManager.Tft.Mision == ""))
                 MostrarDialogoLogin();
         }
@@ -209,7 +209,7 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+        private void MostrarModo(object sender)
         {
             ChangeColors();
         }
