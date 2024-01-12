@@ -222,6 +222,14 @@ namespace CD40.BD.Entidades
             get { return _MultiFrecuencia; }
             set { _MultiFrecuencia = value; }
         }
+
+        // Destino Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
 
         public DestinosRadio()
@@ -339,6 +347,9 @@ namespace CD40.BD.Entidades
                     // RQF 8422
                     if (dr["MultiFrecuencia"] != System.DBNull.Value)
                         r.MultiFrecuencia = (bool)dr["MultiFrecuencia"];
+
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = Convert.ToBoolean(dr["Seguro"]);
                     ListaResultado.Add(r);
                 }
             }
@@ -353,7 +364,7 @@ namespace CD40.BD.Entidades
 
             strConsulta.Append("INSERT INTO DestinosRadio (IdSistema,IdDestino,TipoDestino,TipoFrec,ExclusividadTXRX,Frecuencia,MetodoCalculoClimax,VentanaSeleccionBss,SincronizaGrupoClimax,AudioPrimerSqBss,");
             strConsulta.Append("FrecuenciaNoDesasignable,VentanaReposoZonaTxDefecto,PrioridadSesionSip,MetodosBssOfrecidos,CldSupervisionTime,CnfModoDestino,CnfTipoFrecuencia,ModoTransmision,");
-            strConsulta.Append("EmplazamientoDefecto,TiempoVueltaADefecto,PorcentajeRSSI, ConRedundancia, DescDestino, PasivoRetransmision, MultiFrecuencia) ");
+            strConsulta.Append("EmplazamientoDefecto,TiempoVueltaADefecto,PorcentajeRSSI, ConRedundancia, DescDestino, PasivoRetransmision, MultiFrecuencia, Seguro) ");
             strConsulta.AppendFormat(" VALUES ('{0}','{1}',{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},'{15}','{16}',{17}", IdSistema, IdDestino, TipoDestino, TipoFrec, ExclusividadTXRX,
                 Frecuencia, MetodoCalculoClimax, VentanaSeleccionBss, SincronizaGrupoClimax, AudioPrimerSqBss,
                 FrecuenciaNoDesasignable, VentanaReposoZonaTxDefecto, PrioridadSesionSip, MetodosBssOfrecidos, CldSupervisionTime,
@@ -369,7 +380,8 @@ namespace CD40.BD.Entidades
             strConsulta.AppendFormat(",'{0}'", ConRedundancia);
             strConsulta.AppendFormat(",'{0}'", DescDestino); // RQF-34
             strConsulta.AppendFormat(",{0}", PasivoRetransmision); // RQF 2823
-            strConsulta.AppendFormat(",{0})", MultiFrecuencia); // RQF 8422
+            strConsulta.AppendFormat(",{0}", MultiFrecuencia); // RQF 8422
+            strConsulta.AppendFormat(",{0})", Seguro); // 
 
 
             consulta[0] = strConsulta.ToString();
@@ -402,7 +414,7 @@ namespace CD40.BD.Entidades
                                    IdSistema,IdDestino,TipoDestino,TipoFrec,ExclusividadTXRX,Frecuencia,MetodoCalculoClimax);
             strConsulta.AppendFormat(",VentanaSeleccionBss={0},SincronizaGrupoClimax={1},AudioPrimerSqBss={2},FrecuenciaNoDesasignable={3} ,VentanaReposoZonaTxDefecto={4},PrioridadSesionSip={5},MetodosBssOfrecidos={6},CldSupervisionTime={7}",
                                     VentanaSeleccionBss,SincronizaGrupoClimax,AudioPrimerSqBss, FrecuenciaNoDesasignable, VentanaReposoZonaTxDefecto,PrioridadSesionSip,MetodosBssOfrecidos,CldSupervisionTime);
-            strConsulta.AppendFormat(",CnfModoDestino='{0}',CnfTipoFrecuencia='{1}', ModoTransmision={2}, DescDestino='{3}', PasivoRetransmision={4}, MultiFrecuencia={5}, ", CnfModoDestino, CnfTipoFrecuencia, ((ModoTransmision == null) ? "null" : ("'" + ModoTransmision + "'")), DescDestino, PasivoRetransmision, MultiFrecuencia);
+            strConsulta.AppendFormat(",CnfModoDestino='{0}',CnfTipoFrecuencia='{1}', ModoTransmision={2}, DescDestino='{3}', PasivoRetransmision={4}, MultiFrecuencia={5}, Seguro= {6}, ", CnfModoDestino, CnfTipoFrecuencia, ((ModoTransmision == null) ? "null" : ("'" + ModoTransmision + "'")), DescDestino, PasivoRetransmision, MultiFrecuencia, Seguro);
 
             if (!string.IsNullOrEmpty(EmplazamientoDefecto) && string.Compare(EmplazamientoDefecto,"0")!=0)
                 strConsulta.AppendFormat("EmplazamientoDefecto='{0}', TiempoVueltaADefecto={1} ", EmplazamientoDefecto, Convert.ToInt16(TiempoVueltaADefecto));

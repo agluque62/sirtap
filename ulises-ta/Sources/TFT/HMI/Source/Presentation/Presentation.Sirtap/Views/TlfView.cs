@@ -47,6 +47,7 @@ namespace HMI.Presentation.Sirtap.Views
     {
         private IModelCmdManagerService _CmdManager = null;
         private StateManagerService _StateManager = null;
+        private loginform dlg = null;
         private static Logger _Logger = LogManager.GetCurrentClassLogger();
         public TlfView([ServiceDependency] IModelCmdManagerService cmdManager, [ServiceDependency] StateManagerService stateManager)
         {
@@ -85,6 +86,8 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _TlfTLP_Paint(object sender, PaintEventArgs e)
         {
+            if ((_StateManager.Tft.Login == false) || (_StateManager.Tft.Mision == ""))
+                _StateManager.Tft.SetLogin(false);
 
         }
 
@@ -159,9 +162,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
-                loginform dlg = new loginform();
-                dlg.setuploginform(_CmdManager, _StateManager);
-                DialogResult result = dlg.ShowDialog();
+                MostrarDialogoLogin();
             }
             if (_StateManager.Tft.Login)
             {
@@ -170,27 +171,50 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
-                hmiButtonLogin.Text = "LOGIN";
-                hmiButtonLogin.Update();
-                _StateManager.Tft.Enabled = false;//boton rojo.
+                MostrarDialogoLogin();
+                MostrarModo();
             }
         }
 
-    [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
+        [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.MessageLogin, ThreadOption.Publisher)]
         public void OnMessageLogin(object sender, EventArgs e)
         {
             if (_StateManager.Tft.Login)
-            {
                 hmiButtonLogin.Text = "LOGOUT";
-                _StateManager.Tft.Enabled = true;
-            }
-            else
-            {
-                hmiButtonLogin.Text = "LOGIN";
-                _StateManager.Tft.Enabled = false;
-            }
         }
+        public void MostrarDialogoLogin()
+        {
+            if (dlg==null) 
+                dlg = new loginform();
+            if (dlg.Visible)
+                return;
+            dlg.setuploginform(_CmdManager, _StateManager);
+            DialogResult result = dlg.ShowDialog();
+            //dlg.Show();
+
+        }
+
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+            if ((_StateManager.Tft.Login==false) || (_StateManager.Tft.Mision == ""))
+                MostrarDialogoLogin();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+
+
     }
 }
 

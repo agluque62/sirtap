@@ -20,6 +20,8 @@ namespace HMI.Model.Module.Constants
 
 		public const string TftEnabledChanged = "TftEnabledChanged";
 		public const string TftLoginChanged = "TftLoginChanged";
+		public const string TftBadLogin = "TftBadLogin";
+		public const string TftGoodLogin = "TftGoodLogin";
 		public const string EngineStateChanged = "EngineStateChanged";
 		public const string ScreenSaverChanged = "ScreenSaverChanged";
 		public const string TitleIdChanged = "TitleIdChanged";
@@ -186,8 +188,9 @@ namespace HMI.Model.Module.Constants
 		//LAlM 211008
 		//#2629 Presentar via utilizada en llamada saliente.
 		public const string TlfResStateEngine = "TlfResStateEngine";
-        //230228
-        //public const string RdListaFrecuencias = "RdListaFrecuencias";
+		//230228
+		//public const string RdListaFrecuencias = "RdListaFrecuencias";
+		public const string FuerzoLogout = "FuerzoLogout";
 #endregion
     }
 }

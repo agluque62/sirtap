@@ -1,4 +1,5 @@
 ﻿using HMI.Infrastructure.Interface;
+using HMI.Model.Module.Messages;
 using HMI.Model.Module.Services;
 using Microsoft.Practices.CompositeUI;
 using NLog;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilities;
 
+
 namespace HMI.Presentation.Sirtap.Views
 {
     public partial class loginform : Form
@@ -27,11 +29,18 @@ namespace HMI.Presentation.Sirtap.Views
             _CmdManager = cmdManager;
             _StateManager = stateManager;
             //InitializeComponent();
+            if (stateManager.Tft.ModoNocturno)
+                this.hmiButtonModo.Text = "Modo Diurno";
+            else
+                this.hmiButtonModo.Text = "Modo Nocturno";
+            txtContrasena.Text = "";
+            MostrarModo();
 
         }
         public loginform()
         {
             InitializeComponent();
+            ControlBox = false;
         }
 
         private void pulsa(string tecla)
@@ -100,9 +109,17 @@ namespace HMI.Presentation.Sirtap.Views
         private void _LogClv_Click(object sender, EventArgs e)
         {
             if (sellogin)
+            {
                 _LogClv.Text = "Usuario";
+                txtContrasena.Enabled = true;
+                txtUsuario.Enabled = false;
+            }
             else
+            {
                 _LogClv.Text = "Clave";
+                txtContrasena.Enabled = false;
+                txtUsuario.Enabled = true;
+            }
             _LogClv.Update();
 
             sellogin = !sellogin;
@@ -141,11 +158,72 @@ namespace HMI.Presentation.Sirtap.Views
         {
 
         }
-
-        private async void _OK_Click(object sender, EventArgs e)
+        private void MostrarVentanaModal(string mensaje)
         {
-            Utilities.IOperationService operationService = new Utilities.OperationService();
+            using (var errorForm = new Form())
+            {
+                // Configuración para ocultar la barra de título y el ícono
+                errorForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+                errorForm.ControlBox = false;
+                // Establecer el título de la ventana
+                errorForm.Text = "Error";
 
+                var label = new Label();
+                label.Text = mensaje;
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                
+                // Ajustar la apariencia del texto
+                label.Font = new System.Drawing.Font("Arial", 14, FontStyle.Bold);
+                
+                errorForm.Controls.Add(label);
+
+                // Cerrar automáticamente después de 3 segundos
+                var timer = new Timer();
+                timer.Interval = 3000; // 3000 milisegundos = 3 segundos
+                timer.Tick += (s, e) => errorForm.Close();
+                timer.Start();
+
+                errorForm.ShowDialog();
+            }
+        }
+
+
+        void MostrarVentanaModal1(string mensaje)
+        {
+            NotifMsg msg = new NotifMsg("", "Intentelo de nuevo", mensaje, 0, MessageType.Information, MessageButtons.Ok);
+            _StateManager.ShowUIMessage(msg);
+
+        }
+
+
+        private void _OK_Click(object sender, EventArgs e)
+        {
+
+            IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+
+
+            //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+            var mision = ValidadorCredenciales.Login(txtUsuario.Text, txtContrasena.Text);
+            _StateManager.Tft.Mision = mision.Result;
+            if (mision.Result.Length>0)
+            {
+                //_StateManager.Tft.Enabled = true;
+                _StateManager.Tft.Login = true;
+                _StateManager.Tft.LoginName = txtUsuario.Text;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                //MostrarVentanaModal("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+                MostrarVentanaModal1("Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+                _StateManager.Tft.Login = false;
+                _StateManager.Tft.GenerarHistoricoLoginIncorrecto=txtUsuario.Text;
+            }
+            /*
+
+            Utilities.IOperationService operationService = new Utilities.OperationService();
             // Define los datos para la operación HttpService
             var httpServiceData = new HttpServiceData
             {
@@ -154,7 +232,8 @@ namespace HMI.Presentation.Sirtap.Views
             };
 
             // Ejecuta la operación HttpService
-            string httpResult = await operationService.PerformOperation("HttpServiceSimulated", httpServiceData);
+            string httpResult = await operationServic
+            e.PerformOperation("HttpServiceSimulated", httpServiceData);
             Console.WriteLine("Resultado de la solicitud HTTP: " + httpResult);
 
             //MessageBox.Show(httpResult, "Título del mensaje", MessageBoxButtons.OK);
@@ -168,9 +247,30 @@ namespace HMI.Presentation.Sirtap.Views
                 _StateManager.Tft.Enabled = false;
                 _StateManager.Tft.Login = false;
             }
-            this.DialogResult = DialogResult.OK;
-            this.Close();
-            
+            */
         }
+
+        private void hmiButtonModo_MouseUp(object sender, MouseEventArgs e)
+        {
+            _StateManager.Tft.ModoNocturno = !_StateManager.Tft.ModoNocturno;
+            if (_StateManager.Tft.ModoNocturno)
+                hmiButtonModo.Text = "Modo Diurno";
+            else
+                hmiButtonModo.Text = "Modo Nocturno";
+            ChangeColors();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+
+
     }
 }

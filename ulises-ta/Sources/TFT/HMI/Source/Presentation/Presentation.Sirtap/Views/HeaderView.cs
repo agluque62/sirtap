@@ -51,19 +51,19 @@ namespace HMI.Presentation.Sirtap.Views
         }
         private bool _SplitEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
         private bool _InfoEnabled
         {
-            get { return _StateManager.Tft.Enabled && (_StateManager.Tlf.Listen.State == FunctionState.Idle && !_StateManager.Tlf.ListenBy.IsListen); }
+            get { return _StateManager.Tft.Enabled && (_StateManager.Tlf.Listen.State == FunctionState.Idle && !_StateManager.Tlf.ListenBy.IsListen && _StateManager.Tft.Login); }
         }
         private bool _BrightnessEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Brightness.Open; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Brightness.Open && _StateManager.Tft.Login; }
         }
         private bool _BuzzerEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
 
         private string _Info // Miguel
@@ -241,6 +241,7 @@ namespace HMI.Presentation.Sirtap.Views
                 BackColor = _StateManager.Scv.ProxyState ? VisualStyle.HeaderBlue : VisualStyle.HeaderKhaki;
         }
 
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEnabledChanged(object sender, EventArgs e)
@@ -255,6 +256,19 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 MensajePresenciaAltavoces(typeof(RdSpeaker));
                 MensajePresenciaAltavoces(typeof(LcSpeaker));
+            }
+            if (_StateManager.Tft.Login)
+            {
+
+                MisionText.Text = _StateManager.Tft.Mision;
+                _TitleBT.Text = MisionText.Text;
+            }
+            else
+            {
+                MisionText.Text = "-----";
+                _TitleBT.Text = _StateManager.Title.Id;
+                _TitleBT.Text = GenIdAgrupacion(_StateManager.Title.Id);
+
             }
         }
 
@@ -694,12 +708,6 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _BuzzerUDB_LongClick(object sender, EventArgs e)
         {
-#if SELECCION_SONIDO_AD
-			if (!_StateManager.Buzzer.Enabled)
-            {
-				_CmdManager.SeleccionSonidoClick();
-			}
-#endif
             bool enabled = !_StateManager.Buzzer.Enabled;
 
             try

@@ -88,7 +88,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     const string TIPO_REC_M_N_TX = "5";
     const string TIPO_REC_M_N_RXTX = "6";
     const string TIPO_REC_EQUIPO_EXT = "7";
-
+    const string TIPO_REC_RXTX_SIRTAP = "10";
     static int[] Tabla_idbss = new int[16];
     
     protected new void Page_Load(object sender, EventArgs e)
@@ -149,7 +149,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
             NumPaginaActiva = 0;
             iTipoRecursoOriginal = -1;
-            PresentaMultifrecuencia(false);
+            //PresentaMultifrecuencia(false);
 
             CargarZonas();
             CargarMetodosBSS();
@@ -322,8 +322,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         OnButton_Click(IBGenerales, null);
 
         TxtIdRecurso.Text = "";
-        DListTipo.SelectedValue = TIPO_REC_RXTX;    // 2 - Audio Tx-Rx
-
+        //DListTipo.SelectedValue = TIPO_REC_RXTX;    // 2 - Audio Tx-Rx
+        // 20240110 SIRTAP
+        DListTipo.SelectedValue = TIPO_REC_RXTX_SIRTAP;
         //Se inicializa a sin destino asociado. La cadena se lee del fichero de recursos
         TBDestino.Text = GetLocalResourceObject("TBDestinoResource1.Text").ToString();
         TBDescDestino.Text = GetLocalResourceObject("TBDestinoResource1.Text").ToString();  // RQF-34
@@ -331,7 +332,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
         if (DLTifx.Items.Count > 0)
             DLTifx.SelectedIndex = 0;
-//        CheckDiffServ.Checked = false;
+
         TxtServidorSIP.Text = "";
         CheckSupresionSilencio.Checked = true;
         
@@ -369,7 +370,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         TxtRXGRSDelay.Text = "0";
         DListTablasCalidad.SelectedIndex = 0;
         //MVO: Por defecto, el tipo de equipo es pasarela
-        RBLTipoEquipo.SelectedValue = HW_TIPO_PASARELA;
+        //RBLTipoEquipo.SelectedValue = HW_TIPO_PASARELA;
+        //DDTelemando.SelectedValue = "0";
+
+        RBLTipoEquipo.SelectedValue = HW_TIPO_EQUIPO_EXTERNO;
         DDTelemando.SelectedValue = "0";
 
 
@@ -414,7 +418,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         GVRangos.DataBind();
         //GVRangos_NM.DataBind();
         // RQF 8422
-        PresentaMultifrecuencia(false);
+        //PresentaMultifrecuencia(false);
 
 		MuestraEquipoDelRecurso();
 
@@ -518,7 +522,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                         //Solo visible para las pasarelas
                         CheckBoxEventosPTT_SQ.Visible = true;
                         // RQF 8422
-                        PresentaMultifrecuencia(false);
+                        //PresentaMultifrecuencia(false);
                     }
                     else if ((rec.IdEquipo != null) && (rec.IdEquipo != ""))
                     {
@@ -531,8 +535,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                         IBVoip.CssClass = "buttonImageDisabled";
                         IBAudio.CssClass = "buttonImageDisabled";
                         IBFuncionalidad.CssClass = "buttonImageDisabled";
-                        PresentaMultifrecuencia(true);
+                        //PresentaMultifrecuencia(true);
                     }
+
+                    CBSeguro.Checked = rec.Seguro;
                     break;
                 }
 
@@ -1122,7 +1128,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 
 		LblEquipoExterno.Visible = !muestraTifx;
 		DDLEquipoExternos.Visible = !muestraTifx;
-        PresentaMultifrecuencia(!muestraTifx);
+        //PresentaMultifrecuencia(!muestraTifx);
 	}
 
     private void EsconderMenu()
@@ -1182,6 +1188,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         DListFlujosAudio.Enabled = habilita;
 
         HabilitaTablaTifx(habilita);
+        CBSeguro.Enabled = habilita;
     }
 
     private void HabilitaTablaTifx(bool habilita)
@@ -1476,6 +1483,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 				n.IdEquipo = DDLEquipoExternos.SelectedValue;
 				n.IdTifX = null;
 			}
+
+            // TPD Validación parámetro Seguro SIRTAP.
+            n.Seguro = CBSeguro.Checked;
 
 			if (!Modificando) //Recurso nuevo
 			{
@@ -1935,6 +1945,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         LError.Text = string.Empty;
 
         string StrSistema = (string)Session["idsistema"];
+        // 20240110 SIRTAP
+        DListZonas.SelectedIndex = 1;
+        DListEmplazamiento.SelectedIndex = 1;
 
         if (!Modificando && TxtIdRecurso.Enabled && bIdentificadorAsignado(StrSistema, TxtIdRecurso.Text))
         {
@@ -2035,7 +2048,18 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         }
 
         HabilitarValidacion(true);
+        HabilitaModoSeguroSirtap();
 	}
+
+    //20240110
+    protected void HabilitaModoSeguroSirtap()
+    {
+        if (TBDescDestino.Text != GetLocalResourceObject("TBDestinoResource1.Text").ToString())
+        {
+            CBSeguro.Enabled = false;
+        }
+    }
+
 
     protected void BtEliminar_Click(object sender, EventArgs e)
     {
@@ -2420,9 +2444,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         TxtUmbralVAD.Enabled = !valor;
 		TxtTXGRSDelay.Enabled = !valor;
         TxtRXGRSDelay.Enabled = !valor; 
-
-		//TxtKAM.Enabled = !valor;
-		//TxtKAP.Enabled = !valor;
 	}
     
     private void HabilitarValidacion(bool valor)
@@ -2430,7 +2451,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         RequiredFieldValidator2.Enabled = valor;
         ValidationSummary1.Visible = valor;
         RequiredFieldValidator1.Visible = valor;
-		//RequiredFieldValidator2.Visible = valor;
         RequiredFieldValidator3.Visible = valor;
         RequiredFieldValidator4.Visible = valor;
         RequiredFieldValidator5.Visible = valor;
@@ -2461,7 +2481,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 		RequiredFieldValidator16.Visible = valor;
 		RangeValidator1.Visible = valor;
 		RangeValidator2.Visible = valor;
-		//LError.Visible = valor;
     }
 
 	protected void RBLTipoEquipo_SelectedIndexChanged(object sender, EventArgs e)
@@ -2479,7 +2498,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 			LblEquipoExterno.Visible = false;
 			DDLEquipoExternos.Visible = false;
             // RQF 8422
-            PresentaMultifrecuencia(false);
+            //PresentaMultifrecuencia(false);
 
             CheckBoxEventosPTT_SQ.Visible = true;
             CheckBoxEventosPTT_SQ.Checked = false;
@@ -2509,7 +2528,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 			LblEquipoExterno.Visible = true;
 			DDLEquipoExternos.Visible = true;
             // RQF 8422
-            PresentaMultifrecuencia(true);
+            //PresentaMultifrecuencia(true);
             IBVoip.Enabled = IBAudio.Enabled = IBFuncionalidad.Enabled = false; // AUDIO N+M;
             IBVoip.CssClass = "buttonImageDisabled";
             IBAudio.CssClass = "buttonImageDisabled";
@@ -2758,7 +2777,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         Accordion1.Visible = DListTipo.SelectedValue == "3"; // AUDIO RX TX HF
         if (DListTipo.SelectedValue == "3" || DListTipo.SelectedValue == "4")
         {
-            PresentaMultifrecuencia(false);
+            //PresentaMultifrecuencia(false);
         }
                 
         Label24.Visible = DListMetodoBSS.Visible = (CheckBSS.Visible && CheckBSS.Checked);
@@ -3091,5 +3110,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         }
     }
 
+    protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
+    {
+
+    }
 }
 

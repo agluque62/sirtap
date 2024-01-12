@@ -1514,6 +1514,32 @@ namespace HMI.CD40.Module.BusinessEntities
             });
         }
 
+        public void EnviaAlarmaLoginFail(string nombre)
+        {
+            Top.WorkingThread.Enqueue("SendSnmpTrap", delegate ()
+            {
+                string snmpString = $"Login {nombre} Incorrecto";
+                string snmpOid = Settings.Default.LoginIncorrecto;
+                SetLoginSNMP("");
+                General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+            });
+        }
+        public void SetLoginSNMP(string nombre)
+        {
+            SnmpStringObject.Get(Settings.Default.NtpClientStatus_Oid).Loginuser = nombre;
+        }
+
+        public void EnviarLoginOk(string nombre)
+        {
+            Top.WorkingThread.Enqueue("SendSnmpTrap", delegate ()
+            {
+                string snmpString = $"Login {nombre} Correcto";
+                string snmpOid = Settings.Default.LoginCorrecto;
+                SetLoginSNMP(nombre);
+                General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+            });
+        }
+
         /// <summary>
         /// 
         /// </summary>

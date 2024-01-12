@@ -24,6 +24,12 @@
         <asp:TextBox ID="TBDestino" runat="server" ReadOnly="True"  MaxLength="32" Style="left: 12px; position: absolute; top: 42px; z-index: 106; height: 21px; width: 205px;"
             meta:resourcekey="TBDestinoResource1"></asp:TextBox>
 
+        <asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 361px; position: absolute;
+            top: 22px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+            AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial"
+            meta:resourcekey="LSeguroResource1"/>
+
+
         <asp:Label ID="Label3" runat="server" Style="left: 12px; position: absolute; top: 68px; z-index: 103;"
             Text="Prefijo:" meta:resourcekey="Label3Resource1"></asp:Label>
         <asp:DropDownList ID="DDLPrefijo" runat="server" AppendDataBoundItems="True" Style="left: 12px; position: absolute; top: 88px; z-index: 107;"

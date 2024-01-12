@@ -212,7 +212,7 @@ public partial class CD40 : System.Web.UI.MasterPage
         if (pbSinTelefoniaATS && iPaso >= 5)
         {
             //Nos saltamos los botones BtnTroncales y Encaminamientos que están en la posición 5 y 6
-            iPaso = iPaso + 2;
+            iPaso += 2;
         }
 
         switch (iPaso)

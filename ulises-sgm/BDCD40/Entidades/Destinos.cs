@@ -29,15 +29,11 @@ namespace CD40.BD.Entidades
             get { return _TipoDestino; }
             set { _TipoDestino = value; }
         }
-
         #endregion
 
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public Destinos()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -59,7 +55,6 @@ namespace CD40.BD.Entidades
         {
             ListaResultado.Clear();
 
-            //DataSetResultado = this.DataSetSelectSQL();
             if (ds != null)
             {
                 foreach (System.Data.DataRow dr in ds.Tables[0].Rows)
@@ -72,7 +67,6 @@ namespace CD40.BD.Entidades
                         r.IdDestino = (string)dr["IdDestino"];
                     if (dr["TipoDestino"] != System.DBNull.Value)
                         r.TipoDestino = (uint)dr["TipoDestino"];
-
                     ListaResultado.Add(r);
                 }
             }
@@ -86,7 +80,7 @@ namespace CD40.BD.Entidades
             Consulta.Remove(0, Consulta.Length);
             Consulta.Append("INSERT INTO Destinos VALUES ('" + IdSistema + "','" +
                                                          IdDestino + "'," +
-                                                         TipoDestino + ")");
+                                                         TipoDestino + ")" );
 
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "Destinos");
@@ -136,13 +130,5 @@ namespace CD40.BD.Entidades
 
 			return consulta;
 		}
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM Destinos WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

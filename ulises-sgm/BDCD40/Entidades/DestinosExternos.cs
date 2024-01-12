@@ -162,9 +162,9 @@ namespace CD40.BD.Entidades
             Consulta.Remove(0, Consulta.Length);
             
             if (IdGrupo==null)
-                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo=null WHERE idDestino='{0}'", IdDestino));
+                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo=null, Seguro = {1} WHERE idDestino='{0}'", IdDestino, Seguro));
             else
-                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo='{0}' WHERE idDestino='{1}'", IdGrupo, IdDestino));
+                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo='{0}', Seguro = {2} WHERE idDestino='{1}'", IdGrupo, IdDestino, Seguro));
             consulta[2] = Consulta.ToString();
             return consulta;
 		}

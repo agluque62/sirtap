@@ -72,7 +72,7 @@ namespace HMI.Presentation.Sirtap.Views
                 }
                 else if (_StateManager.Tlf.Unhang.State == UnhangState.Idle)
                     return false;
-                if (!_StateManager.Tft.Enabled || !_StateManager.Engine.Operative ||
+                if (!_StateManager.Tft.Enabled || !_StateManager.Engine.Operative || !_StateManager.Tft.Login ||
                     (_StateManager.Tlf.Priority.State == FunctionState.Error) ||
                     (_StateManager.Tlf.Listen.State == FunctionState.Executing) || (_StateManager.Tlf.Listen.State == FunctionState.Error) ||
                     (_StateManager.Tlf.Transfer.State == FunctionState.Executing) || (_StateManager.Tlf.Transfer.State == FunctionState.Error))
@@ -110,7 +110,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                if (!_StateManager.Tft.Enabled || !_StateManager.Engine.Operative ||
+                if (!_StateManager.Tft.Enabled || !_StateManager.Engine.Operative || !_StateManager.Tft.Login ||
                     (_StateManager.Tlf.Priority.State == FunctionState.Error) ||
                     (_StateManager.Tlf.Listen.State == FunctionState.Executing) || (_StateManager.Tlf.Listen.State == FunctionState.Error) ||
                     (_StateManager.Tlf.Transfer.State == FunctionState.Executing) || (_StateManager.Tlf.Transfer.State == FunctionState.Error))
@@ -150,13 +150,13 @@ namespace HMI.Presentation.Sirtap.Views
         }
         private bool _MemEnabled
         {
-            get { return _StateManager.Tft.Enabled; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Tft.Login; }
         }
         private bool _NumEnabled
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     (_StateManager.Tlf.Priority.State != FunctionState.Error) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Executing) &&
                     (_StateManager.Tlf.Listen.State != FunctionState.Error) &&
@@ -249,6 +249,7 @@ namespace HMI.Presentation.Sirtap.Views
             _MemBT.Text = _MEM; // Miguel
         }
 
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)

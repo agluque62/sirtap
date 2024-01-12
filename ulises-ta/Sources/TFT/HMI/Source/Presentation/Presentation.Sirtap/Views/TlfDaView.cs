@@ -153,9 +153,9 @@ namespace HMI.Presentation.Sirtap.Views
 
             _LcSpeakerUDB.Level = _StateManager.LcSpeaker.LevelLC;
             _TlfHeadPhonesUDB.Level = _StateManager.TlfHeadPhones.Level;
-            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _LcSpeakerUDB.DrawX = true;
-            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfPageFirstBT.Enabled = _StateManager.Tft.Enabled;
             _TlfPageSecondBT.Enabled = _StateManager.Tft.Enabled;
 
@@ -186,13 +186,14 @@ namespace HMI.Presentation.Sirtap.Views
 
         }
 
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)
         {
             _Logger.Trace("TlfDAView.OnTftEngineChanged");
-            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
-            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative;
+            _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
+            _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfPageFirstBT.Enabled = _StateManager.Tft.Enabled;
             _TlfPageSecondBT.Enabled = _StateManager.Tft.Enabled;
 
@@ -570,7 +571,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool TlfDstEnabled(TlfDst dst)
         {
-            return (_StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+            return (_StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     !dst.Unavailable &&
                     (_StateManager.Tlf.Priority.State != FunctionState.Executing) &&
                     ((_StateManager.Tlf.Listen.State == FunctionState.Idle) || (_StateManager.Tlf.Listen.State == FunctionState.Ready)) &&
@@ -1220,42 +1221,33 @@ namespace HMI.Presentation.Sirtap.Views
                 this.Controls.Add(button);
             }
         }
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+            {
+                BackColor = Color.Gray;
+                _TlfDaTLP.BackColor = Color.Gray;
+                _TlfButtonsTLP.BackColor = Color.Gray;
+                _TlfDaTLP.ForeColor = Color.Gray;
+                _TlfButtonsTLP.ForeColor = Color.Gray;
+            }
+            else
+            {
+                BackColor = Color.White;
+                _TlfDaTLP.BackColor = Color.White;
+                _TlfButtonsTLP.BackColor = Color.White;
+            }
+        }
 
-
-
-#if SELECCION_SONIDO_AD
-		private void MainForm_MessageSent(object sender, MessageEventArgs e)
-		{
-			string mensaje = e.Message;
-		}
-		[EventSubscription(EventTopicNames.SeleccionSonido, ThreadOption.Publisher)]
-		public void OnSeleccionSonido(object sender, EventArgs e)
-		{
-			if (false)
-			{
-				DialogForm dialogForm = new DialogForm();
-
-				// Mostrar el formulario de diálogo de manera independiente
-				dialogForm.Show();
-
-				Console.WriteLine("La aplicación principal sigue ejecutándose.");
-
-			}
-			else
-			{
-
-				CSeleccionSonido dlg = new CSeleccionSonido();
-				dlg.MessageSent += MainForm_MessageSent;
-				dlg.setup(_CmdManager, _StateManager);
-				dlg.Width = this.Width;
-				dlg.Height = this.Height;
-				dlg.Size = new Size(this.Width, this.Height);
-				dlg.Location = new Point(700, 700/*this.Location.Y*/);
-				dlg.Show();
-				;// _RdPageBT_DownClick_Confirmada(sender);
-			}
-		}
-#endif
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
     }
 }
 

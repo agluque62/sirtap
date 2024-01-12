@@ -130,7 +130,7 @@ public partial class DestinosRadio : PageBaseCD40.PageCD40	// System.Web.UI.Page
         {
             ListRecursosLibres.Items.Clear();
 
-            ServiciosCD40.Tablas[] d = ServicioCD40.RecursosSinAsignarAEnlaces1((string)Session["idsistema"], 0, null);
+            ServiciosCD40.Tablas[] d = ServicioCD40.RecursosSinAsignarAEnlaces1((string)Session["idsistema"], 0, null, false);
             if (d !=null)
                 for (int i = 0; i < d.Length; i++)
                 {

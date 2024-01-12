@@ -31,7 +31,9 @@ namespace HMI.CD40.Module.Snmp
 			get { return SnmpAgent._store; }
 		}
 
-		public static void Init(string ip)
+        public static string User { get => _user; set => _user = value; }
+
+        public static void Init(string ip)
 		{
             // Cambiar al puerto estándar SNMP 161
 			Init(ip,null,161,262);
@@ -264,13 +266,17 @@ namespace HMI.CD40.Module.Snmp
 				}
 			});
 		}
-
 		/** 20210305. Para poder seleccionar la fuente del TRAP... */
 		public static void TrapFromTo(string ipFrom, ObjectIdentifier oid, ISnmpData data, params IPEndPoint[] eps)
 		{
 			using (var sender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
 			{
-				var variables = new List<Variable>() { new Variable(oid, data) };
+				var usuario = new OctetString(User);
+				var oidusuario = new ObjectIdentifier(Settings.Default.MsgSirtap);
+				var varusuario= new Variable(oidusuario, usuario);
+
+				var variables = new List<Variable>() {varusuario, new Variable(oid, data) };
+				//var variables = new List<Variable>() { new Variable(oid, data) };
 				var endPointLocal = new IPEndPoint(IPAddress.Parse(ipFrom), 0);
 
 				sender.Bind(endPointLocal);
@@ -296,6 +302,7 @@ namespace HMI.CD40.Module.Snmp
 		private static ObjectStore _store;
 		private static SynchronizationContext _context;
 		private static bool _closed;
+		private static string _user = "";
 
 		private static void TrapV1Received(object sender, TrapV1MessageReceivedEventArgs e)
 		{

@@ -630,7 +630,8 @@ namespace HMI.CD40.Module.BusinessEntities
 				SnmpIntObject.Get(Settings.Default.StandbyPanelOid).Value = status ? 0 : 1;
 		}
 
-		#region Private Members
+        
+        #region Private Members
         private static bool _ScreenSaverEnabled = false;
 		private static Logger _Logger = LogManager.GetCurrentClassLogger();
 

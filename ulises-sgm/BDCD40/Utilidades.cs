@@ -898,7 +898,7 @@ namespace CD40.BD
         //}
 
         //Devuelve la lista de recursos radio sin asignar 
-        public DataSet GetRecursosRadioSinAsignarAEnlaces(string idSistema, string strIdEmpl, MySqlTransaction tran)
+        public DataSet GetRecursosRadioSinAsignarAEnlaces(string idSistema, string strIdEmpl, bool seguro, MySqlTransaction tran)
         {
             StringBuilder strConsulta = new StringBuilder();
 
@@ -922,10 +922,10 @@ namespace CD40.BD
             try
             {
                 // RQF 8422
-                strConsulta.Append("SELECT RR.IdSistema, RR.IdRecurso, R.Tipo FROM Recursos R,RecursosRadio RR ");
+                strConsulta.Append("SELECT RR.IdSistema, RR.IdRecurso, R.Tipo, R.Seguro FROM Recursos R,RecursosRadio RR ");
                 strConsulta.Append("LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso ");
-                strConsulta.Append("WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema  AND R.TipoRecurso=RR.TipoRecurso AND ");
-                strConsulta.AppendFormat("RR.IdSistema='{0}' AND RR.IdDestino IS NULL  ", idSistema);
+                strConsulta.Append("WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND ");
+                strConsulta.AppendFormat("RR.IdSistema='{0}' AND RR.IdDestino IS NULL AND R.Seguro= {1} ", idSistema, seguro);
                 strConsulta.Append("AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) ");
 
 

@@ -28,13 +28,18 @@
                 Style="left: 172px; position: absolute; top: 42px" Enabled="False"
                 meta:resourcekey="RequiredFieldIdentificadorResource1">*</asp:RequiredFieldValidator>
 
+			<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 119; left: 14px; position: absolute;
+					        top: 120px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+				AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial"
+				meta:resourcekey="LSeguroResource1"/>
+
           <asp:CheckBox ID="CheckFrecNoDesasignable" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 139px"
                 Text="Frec. no desasignable" TextAlign="Left" Width="153px"
-                Visible="True" meta:resourcekey="CheckFrecNoDesasignableResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
+                Visible="false" Enabled="false" meta:resourcekey="CheckFrecNoDesasignableResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
 
           <asp:CheckBox ID="CheckPasivoRetransmision" runat="server" Style="z-index: 122; left: 14px; position: absolute; top: 184px"
                 Text="Pasivo Retrans." TextAlign="Left" Width="153px"
-                Visible="True" meta:resourcekey="CheckPasivoRetransmisionResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
+                Visible="false" Enabled="false" meta:resourcekey="CheckPasivoRetransmisionResource1" Font-Size="Medium" Height="14px" Font-Names="Arial" />
 
             <asp:Label ID="Label6" runat="server" Style="z-index: 111; left: 10px; position: absolute; top: 211px"
                 Text="Emplazamientos" Visible="false" meta:resourcekey="Label6Resource1"></asp:Label>
@@ -123,9 +128,9 @@
             </asp:Table>
 
             <asp:Label ID="LbModoTransmision" runat="server" Style="z-index: 101; left: 188px; position: absolute; top: 165px"
-                Text="Modo de Transmisión:" Visible="True" meta:resourcekey="LbModoTransmisionResource"></asp:Label>
+                Text="Modo de Transmisión:" Visible="false" Enabled="false" meta:resourcekey="LbModoTransmisionResource"></asp:Label>
             <asp:DropDownList ID="DListModoTransmision" runat="server" Style="z-index: 105; left: 188px; height: 22px; position: absolute; top: 183px"
-                Width="145px" Visible="True" OnSelectedIndexChanged="DListModoTransmision_SelectedIndexChanged" AutoPostBack="True"
+                Width="145px" Visible="false" Enabled="false" OnSelectedIndexChanged="DListModoTransmision_SelectedIndexChanged" AutoPostBack="True"
                 meta:resourcekey="DListModoTransmisionRes" class="select">
                 <asp:ListItem Value="C" meta:resourcekey="ListItemModoTransmisionClimaxRes">Climax</asp:ListItem>
                 <asp:ListItem Value="R" meta:resourcekey="ListItemModoTransmisionUltRecepcionRes">Última Recepción</asp:ListItem>
@@ -162,12 +167,12 @@
                  OnSelectedIndexChanged="DListModoDestino_SelectedIndexChanged" AutoPostBack="True"
                  meta:resourcekey="DListModoDestinoResource1" class="select" ToolTip="Normal, FD">
                         <asp:ListItem Value="0"  meta:resourcekey="DListModoDestinoItemRes1">Normal</asp:ListItem>
-                        <asp:ListItem Value="2" meta:resourcekey="DListModoDestinoItemRes2">MultiEmp</asp:ListItem>
+                       <%-- <asp:ListItem Value="2" meta:resourcekey="DListModoDestinoItemRes2">MultiEmp</asp:ListItem> --%>
              </asp:DropDownList>
 
               <asp:Label ID="Label7" runat="server" Style="z-index: 102; left: 382px; position: absolute; top: 22px; height: 18px; width: 155px;"
-             Text="Prioridad Sesión SIP:" meta:resourcekey="Label7Resource1"></asp:Label>
-             <asp:DropDownList ID="DListPrioridadSIP" runat="server" Style="z-index: 103; left: 382px; position: absolute; top: 42px; height: 22px; width: 105px;" 
+             Text="Prioridad Sesión SIP:" Visible="false" Enabled="false" meta:resourcekey="Label7Resource1"></asp:Label>
+             <asp:DropDownList ID="DListPrioridadSIP" Visible="false" Enabled="false" runat="server" Style="z-index: 103; left: 382px; position: absolute; top: 42px; height: 22px; width: 105px;" 
                         OnSelectedIndexChanged="DListPrioridadSIP_SelectedIndexChanged" AutoPostBack="True"
                         meta:resourcekey="DListGrupoResource1" class="select" ToolTip="Normal, Emergencia">
                         <asp:ListItem Value="2" meta:resourcekey="DListPrioridadSIPItemRes1">Normal</asp:ListItem>
@@ -175,16 +180,16 @@
              </asp:DropDownList>
 
             <asp:Label ID="LbRedundancia" runat="server" Style="z-index: 102; left: 543px; position: absolute; top: 22px; height: 18px; width: 155px;"
-             Text="1+1" meta:resourcekey="CheckedRedundanciaResource1"></asp:Label>
+             Text="1+1" Visible="false" Enabled="false" meta:resourcekey="CheckedRedundanciaResource1"></asp:Label>
              <asp:CheckBox ID="CheckBoxRedundancia" runat="server" Style="z-index: 103; left: 543px; position: absolute; top: 42px; width: 20px;"
                  OnCheckedChanged="CBRedundancia_CheckedChanged" AutoPostBack="true"
-                    Visible="True"/>
+                    Visible="false" Enabled="false"/>
 
             <asp:Label ID="LbMultiFrecuencia" runat="server" Style="z-index: 102; left: 282px; position: absolute; top: 22px; height: 18px; width: 155px;"
-             Text="MultiFrec." meta:resourcekey="CheckedMultiFrecuenciaResource1"></asp:Label>
+             Text="MultiFrec."   Visible="False" Enabled="false" meta:resourcekey="CheckedMultiFrecuenciaResource1"></asp:Label>
              <asp:CheckBox ID="CheckMultiFrecuencia" runat="server" Style="z-index: 103; left: 302px; position: absolute; top: 42px; width: 20px;"
                  OnCheckedChanged="CBMultiFrecuencia_CheckedChanged" AutoPostBack="true"
-                    Visible="True"/>
+                    Visible="False" Enabled=" False"/>
 
             <asp:Label ID="LbMFGestionMF" runat="server" Style="z-index: 111; left: 173px; position: absolute; top: 72px"
                 Text="Gestión Multifrecuencia" Visible="False" meta:resourcekey="LbMFGestionMFResource1"></asp:Label>
@@ -231,8 +236,8 @@
                 meta:resourcekey="IButMFDefectoResource1" />
 
              <asp:Label ID="Label9" runat="server" Style="z-index: 102; left: 598px; position: absolute; top: 22px; height: 18px; width: 155px;"
-             Text="Método Climax:" meta:resourcekey="Label10Resource"></asp:Label>
-             <asp:DropDownList ID="DListMetodoClimax" runat="server" Style="z-index: 103; left: 600px; position: absolute; top: 42px; height: 22px; width: 88px;" OnSelectedIndexChanged="DListMetodoClimax_SelectedIndexChanged"
+             Text="Método Climax:" Visible="false" Enabled="false" meta:resourcekey="Label10Resource"></asp:Label>
+             <asp:DropDownList ID="DListMetodoClimax" Visible="false" Enabled="false" runat="server" Style="z-index: 103; left: 600px; position: absolute; top: 42px; height: 22px; width: 88px;" OnSelectedIndexChanged="DListMetodoClimax_SelectedIndexChanged"
                         meta:resourcekey="DListMetodoClimaxResource1" class="select" ToolTip="Relativo, Absoluto">
                         <asp:ListItem Value="0"  meta:resourcekey="DListMetodoClimaxItemRes1">Relativo</asp:ListItem>
                         <asp:ListItem Value="1"  meta:resourcekey="DListMetodoClimaxItemRes2">Absoluto</asp:ListItem>                        
@@ -244,9 +249,9 @@
                    meta:resourcekey="CheckBox1SquelchResource1" Visible="False" />
 
 
-            <asp:Label ID="Label44" runat="server" Text="Periodo cálculo de retardo (s):" Style="left:382px; top:129px; position:absolute; width:auto"
+            <asp:Label ID="Label44" runat="server" Visible="false" Enabled="false" Text="Periodo cálculo de retardo (s):" Style="left:382px; top:129px; position:absolute; width:auto"
                 meta:resourcekey="Label44Resource1"></asp:Label>
-                <asp:TextBox ID="TextBoxCLD" runat="server" Width="88px" Style="z-index: auto; top: 129px; left: 610px; position: absolute;"
+                <asp:TextBox ID="TextBoxCLD" Visible="false" Enabled="false" runat="server" Width="88px" Style="z-index: auto; top: 129px; left: 610px; position: absolute;"
                 meta:resourcekey="TxtTiempoCLDResource1">1</asp:TextBox>
             <asp:RequiredFieldValidator ID="RequiredFieldValidator18" runat="server" ControlToValidate="TextBoxCLD" Style="z-index: auto; top: 98px; left: 280px; position: absolute;"
             ErrorMessage="El periodo de cálculo CLD debe estar comprendido entre 0 y 60 segundos."
@@ -260,10 +265,10 @@
 			MinimumValue="0" Style="z-index: 207; left: 280px; position: absolute; top: 98px; width: 8px;"
 			Type="Double" meta:resourcekey="RVTxtCLDResource1">*</asp:RangeValidator>
 
-            <asp:Label ID="Label11" runat="server" meta:resourcekey="Label11Resource1" Style="z-index: 116; left: 382px; position: absolute; top: 75px; right: 208px; height: 19px;" Text="Ventana BSS (ms):"></asp:Label>
-            <asp:TextBox ID="TextVentanaBSS" runat="server" Style="z-index: 117; left: 382px; position: absolute; top: 95px; height: 22px; width: 87px;" MaxLength="32" meta:resourcekey="TxtVentanaBSS" Text="50"></asp:TextBox>
+            <asp:Label ID="Label11" runat="server" Visible="false" Enabled="false" meta:resourcekey="Label11Resource1" Style="z-index: 116; left: 382px; position: absolute; top: 75px; right: 208px; height: 19px;" Text="Ventana BSS (ms):"></asp:Label>
+            <asp:TextBox ID="TextVentanaBSS" Visible="false" Enabled="false" runat="server" Style="z-index: 117; left: 382px; position: absolute; top: 95px; height: 22px; width: 87px;" MaxLength="32" meta:resourcekey="TxtVentanaBSS" Text="50"></asp:TextBox>
 
-              <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" 
+              <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" Visible="false" Enabled="false"
 							     ControlToValidate="TextVentanaBSS" Style="z-index: 117; left: 470px; position: absolute; top: 98px"
 							     meta:resourcekey="RequiredFieldValidator4Resource1">*</asp:RequiredFieldValidator>
 					<asp:CompareValidator ID="CompareValidator2" runat="server" ControlToValidate="TextVentanaBSS"
@@ -273,9 +278,9 @@
 					    ErrorMessage="La ventana de selección BSS debe estar comprendido entre 200 y 2000 ms" MaximumValue="2000"
 					    MinimumValue="200" Style="z-index: 117; left: 490px; position: absolute; top: 95px"
 					    Type="Double" meta:resourcekey="RVTxtVentanaBSS">*</asp:RangeValidator>
-             <asp:Label ID="Label12" runat="server" Style="z-index: 102; left: 543px; position: absolute; top: 75px; width: 180px;"
+             <asp:Label ID="Label12" Visible="false" Enabled="false" runat="server" Style="z-index: 102; left: 543px; position: absolute; top: 75px; width: 180px;"
                 Text="Métodos BSS:" meta:resourcekey="Label12Resource"></asp:Label>
-             <asp:DropDownList ID="DDLMetodosBssOfrecidos" runat="server" AutoPostBack="True" Style="z-index: 103; left: 543px; position: absolute; top: 95px; width: 145px;" 
+             <asp:DropDownList ID="DDLMetodosBssOfrecidos"  Visible="false" Enabled="false" runat="server" AutoPostBack="True" Style="z-index: 103; left: 543px; position: absolute; top: 95px; width: 145px;" 
                         class="select" OnSelectedIndexChanged="DDLMetodosBssOfrecidos_SelectedIndexChanged" meta:resourcekey="DDLMetodosBsssResource1">
                         <asp:ListItem Value="0"  meta:resourcekey="DDLMetodosBssItemRes1">Ninguno</asp:ListItem>
                         <asp:ListItem Value="1"  meta:resourcekey="DDLMetodosBssItemRes2">RSSI</asp:ListItem>
@@ -288,6 +293,7 @@
                 <asp:ListItem Value="2" meta:resourcekey="ListTipoRec_Audio_RXTX">Audio RX TX</asp:ListItem>
                 <asp:ListItem Value="3" meta:resourcekey="ListTipoRec_Audio_HF">Audio HF-TX</asp:ListItem>
                 <asp:ListItem Value="4" meta:resourcekey="ListTipoRec_Audio_MN">Audio M+N</asp:ListItem>
+                <asp:ListItem Value="10" meta:resourcekey="ListTipoRec_Audio_RXTX_SIRTAP">Audio RX TX SIRTAP</asp:ListItem>
                 <%--//20200525 JOI  #4470 Version 2.6.0 no se implementa--%>
             <%--<asp:ListItem Value="7" meta:resourcekey="ListTipoRec_Audio_EE_RX">
                 Audio EE RX</asp:ListItem>
@@ -296,12 +302,12 @@
 
             <%--// 20211210 #2857 Analisis centralizado QIDX--%>
             </asp:DropDownList>
-            <asp:Label ID="LBPorCentral"  runat="server" Style="z-index: 104; left: 723px; position: absolute; top: 75px; height: auto; width: auto;"
+            <asp:Label ID="LBPorCentral"  Visible="false" Enabled="false" runat="server" Style="z-index: 104; left: 723px; position: absolute; top: 75px; height: auto; width: auto;"
                 Text="%RSSI Ext." meta:resourcekey="LBPorCentralResource"></asp:Label>
 
-            <asp:DropDownList ID="DLPorcentajeRSSI" runat="server" class="select" Enabled="False" 
+            <asp:DropDownList ID="DLPorcentajeRSSI" runat="server" class="select" Visible="false" Enabled="false" 
                 meta:resourcekey="DLPorcentajeRSSIResource" Style="z-index: 105; left: 723px; 
-                position: absolute; top: 95px; height: 19px; width: 50px;" Visible="False">
+                position: absolute; top: 95px; height: 19px; width: 50px;">
                 <asp:ListItem Value="0">0</asp:ListItem>
                 <asp:ListItem Value="10">10</asp:ListItem>
                 <asp:ListItem Value="20">20</asp:ListItem>

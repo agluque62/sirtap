@@ -59,7 +59,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Tlf.Priority.State != FunctionState.Idle) ||
                     (((_StateManager.Permissions & Permissions.Priority) == Permissions.Priority) &&
                      _StateManager.Jacks.SomeJack &&
@@ -74,7 +74,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Tlf.PickUp.State != FunctionState.Idle) ||
                     _StateManager.Jacks.SomeJack &&
                     (((_StateManager.Permissions & Permissions.Capture) == Permissions.Capture) &&
@@ -94,7 +94,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Tlf.Listen.State != FunctionState.Idle) ||
                     (((_StateManager.Permissions & Permissions.Listen) == Permissions.Listen) &&
                      _StateManager.Jacks.SomeJack &&
@@ -114,7 +114,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Permissions & Permissions.Hold) == Permissions.Hold) &&
                      _StateManager.Jacks.SomeJack &&
                     (_StateManager.Tlf.Priority.State == FunctionState.Idle) &&
@@ -129,7 +129,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Tlf.Transfer.State != FunctionState.Idle) ||
                     (((_StateManager.Permissions & Permissions.Transfer) == Permissions.Transfer) &&
                      _StateManager.Jacks.SomeJack &&
@@ -145,7 +145,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                     ((_StateManager.Tlf.Forward.State != FunctionState.Idle) ||
                     _StateManager.Jacks.SomeJack &&
                     (((_StateManager.Permissions & Permissions.Forward) == Permissions.Forward) &&
@@ -165,7 +165,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             get
             {
-                return _StateManager.Tft.Enabled;
+                return _StateManager.Tft.Enabled && _StateManager.Tft.Login;
             }
         }
         private bool _MoreEnabled
@@ -178,7 +178,7 @@ namespace HMI.Presentation.Sirtap.Views
                     return false;
                 if (!_PriorityBT.Permitted && !_HoldBT.Permitted && !_TransferBT.Permitted)//ningun boton permitido en pagina 0
                     return false;
-                return _StateManager.Tft.Enabled && Settings.Default.EnableMore;
+                return _StateManager.Tft.Enabled && Settings.Default.EnableMore && _StateManager.Tft.Login;
             }
         }
         private bool _CancelEnabled
@@ -186,7 +186,7 @@ namespace HMI.Presentation.Sirtap.Views
 
             get
             {
-                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative &&
+                return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login &&
                   _CmdManager.CancelTlfClick(true);//#2816 LALM 220615
                                                    //RQF-18# Permitir Anular en escucha.
                                                    //&& (_StateManager.Tlf.Listen.State == FunctionState.Idle && !_StateManager.Tlf.ListenBy.IsListen)
@@ -195,7 +195,7 @@ namespace HMI.Presentation.Sirtap.Views
         }
         private bool _TlfSpeakerBtEnabled
         {
-            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tlf.AltavozTlfHabilitado && _StateManager.LcSpeaker.Presencia && _StateManager.Jacks.SomeJack; }
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tlf.AltavozTlfHabilitado && _StateManager.LcSpeaker.Presencia && _StateManager.Jacks.SomeJack && _StateManager.Tft.Login; }
         }
         private string _Prioridad   // Miguel
         {
@@ -320,6 +320,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
         }
 
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)

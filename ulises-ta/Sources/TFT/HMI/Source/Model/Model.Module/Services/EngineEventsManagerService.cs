@@ -134,7 +134,7 @@ namespace HMI.Model.Module.Services
 				_HangupCallsTimer.Enabled = false;
 
 				_StateManager.Tft.Enabled = true;
-				_StateManager.Tft.Login = false;
+				//_StateManager.Tft.Login = false;
 				_StateManager.ScreenSaver.On = false;
 
 				_EngineCmdManager.SendTrapScreenSaver(false);
@@ -740,10 +740,9 @@ namespace HMI.Model.Module.Services
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.AgendaChangedEngine, msg);
 
             _StateManager.Agenda.Reset(msg);
+		}
 
-        }
-
-        [EventSubscription(EventTopicNames.NumberBookChangedEngine, ThreadOption.UserInterface)]
+		[EventSubscription(EventTopicNames.NumberBookChangedEngine, ThreadOption.UserInterface)]
         public void OnNumberBookChangedEngine(object sender, RangeMsg<Area> msg)
         {
             _Logger.Trace("Procesando {0}", EventTopicNames.NumberBookChangedEngine);
@@ -959,6 +958,31 @@ namespace HMI.Model.Module.Services
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.RedirectedCallEngine, position);
 
 			_StateManager.Tlf.Priority.RedirectCall(int.Parse(position.Id));
+		}
+
+		[EventSubscription(EventTopicNames.FuerzoLogout, ThreadOption.UserInterface)]
+		public void OnFuerzoLogout(object sender, EventArgs msg)
+
+		{
+			_Logger.Trace("Procesando {0}", EventTopicNames.FuerzoLogout);
+
+			_StateManager.Tft.SetLogin(false);
+
+		}
+		[EventSubscription(EventTopicNames.TftBadLogin, ThreadOption.UserInterface)]
+		public void OnTftBadLogin(object sender, EventArgs msg)
+        {
+			string user = (string)sender;
+			string error = "";
+			_EngineCmdManager.GenerarHistoricoLoginIncorrectoEngine(user,error);
+		}
+
+		[EventSubscription(EventTopicNames.TftGoodLogin, ThreadOption.UserInterface)]
+		public void OnTftGoodLogin(object sender, EventArgs msg)
+		{
+			string user = (string)sender;
+			string error = "";
+			_EngineCmdManager.EnviarLoginCorrectoEngine(user, error);
 		}
 	}
 }

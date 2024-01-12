@@ -111,6 +111,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
         }
 
+        [EventSubscription(EventTopicNames.TftGoodLogin, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.TftEnabledChanged, ThreadOption.Publisher)]
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)
@@ -146,7 +147,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private bool LcDstEnabled(LcDst dst)
         {
-            return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable;
+            return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
         }
 
         private void Reset(LcButton bt, LcDst dst)
@@ -286,6 +287,24 @@ namespace HMI.Presentation.Sirtap.Views
                 _Logger.Error("ERROR generando parpadeo lento para teclas LC", ex);
             }
         }
+
+        [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
+        public void OnLoginChanged(object sender, EventArgs e)
+        {
+            MostrarModo();
+        }
+        private void ChangeColors()
+        {
+            if (_StateManager.Tft.ModoNocturno)
+                BackColor = Color.Gray;
+            else
+                BackColor = Color.White;
+        }
+        private void MostrarModo()
+        {
+            ChangeColors();
+        }
+
     }
 }
 
