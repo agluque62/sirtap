@@ -199,7 +199,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _OK_Click(object sender, EventArgs e)
         {
-
+            _CmdManager.TftSolicitaSesion(txtUsuario.Text, txtContrasena.Text);
             IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
 
 

@@ -571,7 +571,15 @@ namespace HMI.Model.Module.Services
 			_StateManager.TlfHeadPhones.Level = msg.Level;
 		}
 
-        [EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
+		[EventSubscription(EventTopicNames.TftMisionChanged, ThreadOption.UserInterface)]
+		public void OnTftMisionChangeda(object sender, StateMsg<string> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChanged, msg);
+
+			_StateManager.TftMision.Mision = msg.State;
+		}
+		
+		[EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
         public void OnTlfSpeakerLevelEngine(object sender, LevelMsg<LcSpeaker> msg)
         {
             _Logger.Trace("Procesando {0}: {1}", EventTopicNames.TlfSpeakerLevelEngine, msg);
@@ -848,6 +856,7 @@ namespace HMI.Model.Module.Services
                         _EngineCmdManager.ModoSoloAltavoces();
                     if (_StateManager.Radio.DoubleRadioSpeaker)
                         _EngineCmdManager.SetDoubleRadioSpeaker();
+					_EngineCmdManager.SetSesionSirtap(_StateManager.TftMision.Mision);
 				}
 			}
 			else

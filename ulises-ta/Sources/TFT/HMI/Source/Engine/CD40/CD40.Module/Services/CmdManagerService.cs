@@ -240,6 +240,9 @@ namespace HMI.CD40.Module.Services
         [EventPublication(EventTopicNames.FuerzoLogout, PublicationScope.Global)]
         public event EventHandler FuerzoLogout;
 
+        [EventPublication(EventTopicNames.TftMisionChanged, PublicationScope.Global)]
+        public event EventHandler <StateMsg<string>> TFTMisisonChangedf;
+
         #endregion
 
         public void Run()
@@ -811,6 +814,38 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+        public void SetSesionSirtap(string sesion)
+        {
+            //Top.WorkingThread.Enqueue("SetTlfHeadPhonesLevel", delegate ()
+            //{
+            //    if (Top.Mixer.SetTlfHeadPhonesLevel(level))
+            //    {
+            //        Top.PublisherThread.Enqueue(EventTopicNames.TlfHeadPhonesLevelEngine, delegate ()
+            //        {
+            //            General.SafeLaunchEvent(TlfHeadPhonesLevelEngine, this, new LevelMsg<TlfHeadPhones>(level));
+            //        });
+            //    }
+            //});
+        }
+        public void SolicitaLoginPassword(string txtUsuario, string txtContrasena)
+        {
+            Top.WorkingThread.Enqueue("SolicitaLoginPassword", delegate ()
+            {
+                IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+                //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+                var mision = ValidadorCredenciales.Login(txtUsuario, txtContrasena);
+                SetSesionSirtap(mision.Result);
+                General.SafeLaunchEvent(TFTMisisonChangedf, this, new StateMsg<string> (mision.Result));
+                //if (Top.Mixer.SetTlfHeadPhonesLevel(level))
+                //{
+                //    Top.PublisherThread.Enqueue(EventTopicNames.TlfHeadPhonesLevelEngine, delegate ()
+                //    {
+                //        General.SafeLaunchEvent(TlfHeadPhonesLevelEngine, this, new LevelMsg<TlfHeadPhones>(level));
+                //    });
+                //}
+            });
+
+        }
         public void SetTlfSpeakerLevel(int level)
         {
             Top.WorkingThread.Enqueue("SetTlfSpeakerLevel", delegate ()

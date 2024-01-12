@@ -76,6 +76,7 @@ namespace HMI.Model.Module.Constants
 		public const string TempReplayChanged = "TempReplayChanged";
 		public const string CouplingInProgressError = "CouplingInProgressError";
 		public const string MessageLogin= "MessageLogin";
+		public const string TftMisionChanged = "TftMisionChanged";
 		#endregion
 
 		#region Presentation Events
@@ -191,6 +192,7 @@ namespace HMI.Model.Module.Constants
 		//230228
 		//public const string RdListaFrecuencias = "RdListaFrecuencias";
 		public const string FuerzoLogout = "FuerzoLogout";
+		public const string TftMisionSetEngine = "TftMisionSetEngine";
 #endregion
-    }
+	}
 }

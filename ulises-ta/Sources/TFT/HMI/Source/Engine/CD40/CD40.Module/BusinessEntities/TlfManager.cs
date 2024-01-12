@@ -48,6 +48,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<RangeMsg<LlamadaHistorica>> HistoricalOfLocalCallsEngine;
         public event GenericEventHandler<PositionIdMsg> RedirectedCall;
         public event GenericEventHandler<Dictionary<string, string[]>> TlfRingChanged;//230629
+       
         //230516
         public event GenericEventHandler<RangeMsg<TlfInfo>> ConferenciaPreprogramada;
         //lalm 211007

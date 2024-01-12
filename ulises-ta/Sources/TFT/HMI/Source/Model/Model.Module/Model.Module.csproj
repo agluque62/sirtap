@@ -117,6 +117,7 @@
     <Compile Include="BusinessEntities\Scv.cs" />
     <Compile Include="BusinessEntities\Split.cs" />
     <Compile Include="BusinessEntities\Tft.cs" />
+    <Compile Include="BusinessEntities\TftMision.cs" />
     <Compile Include="BusinessEntities\Title.cs" />
     <Compile Include="BusinessEntities\Tlf.cs" />
     <Compile Include="BusinessEntities\RdSpeaker.cs" />

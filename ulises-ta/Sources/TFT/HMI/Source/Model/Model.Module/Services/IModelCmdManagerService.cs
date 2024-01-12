@@ -34,6 +34,7 @@ namespace HMI.Model.Module.Services
 		void LcSet(int id, bool on);
 		void LcSetSpeakerLevel(int level);
 		void TlfSetHeadPhonesLevel(int level);
+		void TftSolicitaSesion(string usuario, string clave);
         void TlfSetSpeakerLevel(int level);
         void TlfLoadDaPage(int page);
 		void TlfClick(int id);

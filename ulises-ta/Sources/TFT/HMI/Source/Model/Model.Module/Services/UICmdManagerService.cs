@@ -563,8 +563,14 @@ namespace HMI.Model.Module.Services
 		{
 			_EngineCmdManager.SetTlfHeadPhonesLevel(level);
 		}
+		public void TftSolicitaSesion(string user, string clave)
+		{
+			//quitar esto y poner lo correspondiente
+			//_EngineCmdManager.SetTlfHeadPhonesLevel(0);
+			_EngineCmdManager.SolicitaLoginPassword(user, clave);
+		}
 
-        public void TlfSetSpeakerLevel(int level)
+		public void TlfSetSpeakerLevel(int level)
         {
             _EngineCmdManager.SetTlfSpeakerLevel(level);
         }

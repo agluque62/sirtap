@@ -1028,7 +1028,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
-            bt.Visible = dst.IsConfigurated&&_StateManager.Tft.Mision!="";
+            bt.Visible = dst.IsConfigurated&&_StateManager.Tft.Mision.Length>0;
         }
 
         private void _RdSpeakerUDB_LevelDown(object sender, EventArgs e)

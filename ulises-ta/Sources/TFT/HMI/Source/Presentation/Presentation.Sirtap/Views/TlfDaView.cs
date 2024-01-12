@@ -627,7 +627,7 @@ namespace HMI.Presentation.Sirtap.Views
                 //por eso se deshabilita su AD cuando se pulsa la tecla prioridad.
             }
 
-            bt.Visible = dst.IsConfigurated && _StateManager.Tft.Mision != "";
+            bt.Visible = dst.IsConfigurated && _StateManager.Tft.Mision.Length>0 && _StateManager.Tft.Login;
         }
 
         private void ResetBtPage(HMIButton bt)
@@ -1247,8 +1247,9 @@ namespace HMI.Presentation.Sirtap.Views
         private void MostrarModo(object sender)
         {
             ChangeColors();
- 
+
             OnTlfChanged(sender, new RangeMsg(0, Tlf.NumDestinations));
+            OnTlfChanged(sender, new RangeMsg(0, 6));
 
         }
     }

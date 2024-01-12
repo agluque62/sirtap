@@ -41,7 +41,9 @@ namespace HMI.Model.Module.Services
 		void EndTlfConf();
         void EndTlfAll();
 		void SetTlfHeadPhonesLevel(int level);
-        void SetTlfSpeakerLevel(int level);
+		void SetSesionSirtap(string sesion);
+		void SolicitaLoginPassword(string user, string clave);
+		void SetTlfSpeakerLevel(int level);
         void SetLcSpeakerLevel(int level);
 		void ListenTo(int id);
 		void ListenTo(string number);
