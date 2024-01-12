@@ -908,7 +908,7 @@ namespace CD40.BD
         //(Description = "Pasándole el identificador del sistema, retorna una lista de recursos radio sin asignar a enlaces.")
         // 18/01/2017
         // Se amplia la consulta con la posibilidad de consultar por emplazamiento
-        public static DataSet RecursosRadioSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema, string site = null)
+        public static DataSet RecursosRadioSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema, bool seguro, string site = null)
         {
             if (mySqlConnectionToCd40 != null)
             {
@@ -918,13 +918,14 @@ namespace CD40.BD
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_Sistema", MySqlDbType.Text);
                 MySqlParameter p2 = new MySqlParameter("id_Site", MySqlDbType.Text);
-                p1.Direction = System.Data.ParameterDirection.Input;
+                MySqlParameter p3 = new MySqlParameter("Seguro", MySqlDbType.Int16);
                 p1.Direction = System.Data.ParameterDirection.Input;
                 p1.Value = id_sistema;
                 p2.Value = site;
+                p3.Value = seguro;
                 myCommand.Parameters.Add(p1);
                 myCommand.Parameters.Add(p2);
-
+                myCommand.Parameters.Add(p3);
                 try
                 {
                     if (myCommand.Connection.State != ConnectionState.Open)
@@ -955,7 +956,7 @@ namespace CD40.BD
         }
 
         //(Description = "Pasándole el identificador del sistema, retorna una lista de recursos telefonía sin asignar a enlaces.")
-        public static DataSet RecursosTFSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema)
+        public static DataSet RecursosTFSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema, bool seguro)
         {
             if (mySqlConnectionToCd40 != null)
             {
@@ -998,7 +999,7 @@ namespace CD40.BD
         }
 
         //(Description = "Pasándole el identificador del sistema, retorna una lista de recursos radio sin asignar a enlaces.")
-        public static DataSet RecursosLCENSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema)
+        public static DataSet RecursosLCENSinAsignarAEnlaces(MySqlConnection mySqlConnectionToCd40, string id_sistema, bool seguro)
         {
             if (mySqlConnectionToCd40 != null)
             {
@@ -1264,7 +1265,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
-
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
                             listaDestinos.Add((Tablas)r);
                         }
                         myCommand.Connection.Close();
@@ -1289,6 +1291,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                             listaDestinos.Add((Tablas)r);
                         }
@@ -1345,6 +1349,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                             listaDestinos.Add((Tablas)r);
                         }
@@ -1370,6 +1376,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                             listaDestinos.Add((Tablas)r);
                         }
@@ -1433,6 +1441,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                             listaDestinos.Add((Tablas)r);
                         }
@@ -1458,6 +1468,8 @@ namespace CD40.BD
                                 r.IdPrefijo = (uint)dr["IdPrefijo"];
                             if (dr["IdGrupo"] != System.DBNull.Value)
                                 r.IdGrupo = (string)dr["IdGrupo"];
+                            if (dr["Seguro"] != System.DBNull.Value)
+                                r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                             listaDestinos.Add((Tablas)r);
                         }

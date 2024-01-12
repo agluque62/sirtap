@@ -65,7 +65,7 @@ namespace CD40.BD.Entidades
 
 		public override string DataSetSelectSQL()
 		{
-			Consulta.Remove(0, Consulta.Length);
+			Consulta.Remove(0, Consulta.Length);// HOLAAA
             if (IdSistema != null && IdSector != null && IdNucleo != null && Prefijo!=uint.MaxValue && Nombre != null)
                 Consulta.Append("SELECT * FROM Agenda WHERE IdSistema='" + IdSistema + "' AND IdSector='" + IdSector + "' AND IdNucleo='" + IdNucleo + "' AND Prefijo=" + Prefijo + 
                                 " AND Nombre='" + Nombre + "' ORDER BY Nombre");

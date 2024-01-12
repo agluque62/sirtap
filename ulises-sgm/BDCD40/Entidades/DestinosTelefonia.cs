@@ -23,6 +23,14 @@ namespace CD40.BD.Entidades
             set { _IdGrupo = value; }
         }
 
+        // Destino Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        } 
+
         #endregion
 
         public DestinosTelefonia()
@@ -67,6 +75,8 @@ namespace CD40.BD.Entidades
                         r.IdPrefijo = (uint)dr["IdPrefijo"];
                     if (dr["IdGrupo"] != System.DBNull.Value)
                         r.IdGrupo = (string)dr["IdGrupo"];
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                     ListaResultado.Add(r);
                 }
@@ -84,7 +94,8 @@ namespace CD40.BD.Entidades
                                                          IdDestino + "'," +
                                                          TipoDestino + "," +
                                                          IdPrefijo + "," +
-                                                         ((IdGrupo == null) ? "null" : ("'" + IdGrupo + "'")) +
+                                                         ((IdGrupo == null) ? "null," : ("'" + IdGrupo + "',")) +
+                                                         Seguro +
                                                          ")");
 
 			consulta[0] = Consulta.ToString();
@@ -101,7 +112,8 @@ namespace CD40.BD.Entidades
                                             "IdDestino='" + IdDestino + "'," +
                                             "TipoDestino=" + TipoDestino + "," +
                                             "IdPrefijo=" + IdPrefijo + "," +
-                                            "IdGrupo=" + ((IdGrupo == null) ? "null " : ("'" + IdGrupo + "' ")) +
+                                            "IdGrupo=" + ((IdGrupo == null) ? "null," : ("'" + IdGrupo + "', ")) +
+                                            "Seguro=" + Seguro + " " +
                                             "WHERE IdDestino='" + IdDestino + "' AND " + "IdSistema='" + IdSistema + "'");
 
 			consulta[0] = Consulta.ToString();

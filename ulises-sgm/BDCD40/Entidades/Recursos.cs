@@ -55,7 +55,13 @@ namespace CD40.BD.Entidades
             get { return _IpRed1; }
             set { _IpRed1 = value; }
         }
-        
+        // Recurso Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }      
         #endregion
 
 		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
@@ -160,6 +166,8 @@ namespace CD40.BD.Entidades
                         r.PuertoSip = Convert.ToUInt32(dr["SipPort"]); 
                     if (dr["IpRed1"] != System.DBNull.Value)
                         r.IpRed1 = (string)(dr["IpRed1"]);
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = Convert.ToBoolean(dr["Seguro"]);
 
                     ListaResultado.Add(r);
                 }
@@ -173,7 +181,7 @@ namespace CD40.BD.Entidades
 
             Consulta.Remove(0, Consulta.Length);
 			Consulta.Append("INSERT INTO Recursos (IdSistema,IdRecurso,TipoRecurso,IdEquipos,IdTIFX,Tipo," +
-                            "Interface,SlotPasarela,NumDispositivoSlot,ServidorSIP,Diffserv)" +
+                            "Interface,SlotPasarela,NumDispositivoSlot,ServidorSIP,Diffserv,Seguro)" +
                             " VALUES ('" + IdSistema + "','" +
                                          IdRecurso + "'," +
                                          TipoRecurso + "," +
@@ -184,7 +192,7 @@ namespace CD40.BD.Entidades
                                          SlotPasarela + "," +
                                          NumDispositivoSlot + "," +
                                          ((ServidorSIP == null) ? "null," : ("'" + ServidorSIP + "',")) +
-                                         Diffserv + ")" );
+                                         Diffserv + "," + Seguro +  ")" );
 
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "Recursos");
@@ -206,7 +214,8 @@ namespace CD40.BD.Entidades
                                             "SlotPasarela=" + SlotPasarela + "," +
                                             "NumDispositivoSlot=" + NumDispositivoSlot + "," +
                                             "ServidorSIP=" + ((ServidorSIP == null) ? "null, " : ("'" + ServidorSIP + "',")) +
-                                            "Diffserv=" + Diffserv + 
+                                            "Diffserv=" + Diffserv + "," +
+                                            "Seguro=" + Seguro +
                                             // Quitamos TipoRecurso del WHERE porque puede que haya cambiado el tipo de interfaz
                                             // en un recurso de telefonía de LCEN a otro de telefonía o vv. en cuyo caso, el update no lo encontraría
                                             " WHERE IdRecurso='" + IdRecurso + "' AND IdSistema='" + IdSistema + "'"

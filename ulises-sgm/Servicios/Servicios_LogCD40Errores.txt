@@ -1,0 +1,161 @@
+2024-01-11 16:17:34,388 [5] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:17:34,389 [5] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-11 16:17:50,973 [11] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:17:50,973 [11] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-11 16:21:10,958 [5] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:21:10,958 [5] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-11 16:21:15,323 [11] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:21:15,323 [11] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-11 16:21:23,516 [11] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:21:23,516 [11] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-11 16:22:57,480 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-11 16:22:57,481 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=0
+2024-01-11 16:22:57,481 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=0
+2024-01-11 16:23:03,709 [11] ERROR File (GestorBaseDatos-GetDataSet): error al ejecutar la consulta: SELECT RR.IdSistema, RR.IdRecurso, R.Tipo R.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=HFP.IdSistema and RR.IdRecurso = HFP.IdRecurso WHERE R.IdRecurso = RR.IdRecurso AND R.IdSistema=RR.IdSistema AND R.TipoRecurso=RR.TipoRecurso AND RR.IdSistema='departamento' AND RR.IdDestino IS NULL AND R.Seguro= False AND (HFP.idRecurso IS NULL OR (HFP.idRecurso IS NOT NULL AND ( (R.Tipo>=4 AND R.Tipo<=6 and HFP.TipoModo=0) OR R.Tipo<4 OR R.Tipo>6))) 
+2024-01-11 16:23:03,709 [11] ERROR File (GestorBaseDatos-GetDataSet):
+MySql.Data.MySqlClient.MySqlException (0x80004005): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.Seguro FROM Recursos R,RecursosRadio RR LEFT JOIN hfparams HFP ON RR.IdSistema=' at line 1
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.FillInternal(DataSet dataset, DataTable[] datatables, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, Int32 startRecord, Int32 maxRecords, String srcTable, IDbCommand command, CommandBehavior behavior)
+   at System.Data.Common.DbDataAdapter.Fill(DataSet dataSet, String srcTable)
+   at CD40.BD.GestorBaseDatos.GetDataSet(String consulta, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 165
+2024-01-12 08:39:28,827 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 08:39:28,886 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=0
+2024-01-12 08:39:28,886 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=0
+2024-01-12 08:39:47,321 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 08:39:47,322 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=0
+2024-01-12 08:39:47,322 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=0
+2024-01-12 08:40:05,427 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 08:40:05,428 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=0
+2024-01-12 08:40:05,428 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=0
+2024-01-12 08:40:16,192 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 08:40:16,192 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=0
+2024-01-12 08:40:16,192 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=0
+2024-01-12 12:09:28,938 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-01-12 12:09:28,941 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=1
+2024-01-12 12:09:28,941 [5] DEBUG File RegeneraSectorizaciones j=0: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-01-12 12:09:29,552 [5] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-01-12 12:09:29,552 [5] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-01-12 12:09:29,582 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=1
+2024-01-12 12:09:48,273 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 12:09:48,273 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=1
+2024-01-12 12:09:48,273 [5] DEBUG File RegeneraSectorizaciones j=0: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-01-12 12:09:48,274 [5] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-01-12 12:09:48,274 [5] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-01-12 12:09:48,274 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=1
+2024-01-12 12:09:59,696 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-01-12 12:09:59,696 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=1
+2024-01-12 12:09:59,696 [5] DEBUG File RegeneraSectorizaciones j=0: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-01-12 12:09:59,696 [5] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-01-12 12:09:59,696 [5] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-01-12 12:09:59,696 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=1
+2024-01-12 12:10:28,054 [14] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-01-12 12:10:28,054 [14] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-01-12 12:10:58,586 [13] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-01-12 12:11:01,831 [13] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-01-12 12:11:01,833 [13] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-01-12 12:11:01,835 [13] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=12/01/2024 12:11:01
+2024-01-12 12:11:01,835 [13] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-01-12 12:11:01,836 [13] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-01-12 12:11:01,836 [13] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('12/01/2024 12:11:01','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-01-12 12:11:01,836 [13] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-01-12 12:11:01,836 [13] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-01-12 12:11:01,837 [13] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=12/01/2024 12:11:01
+2024-01-12 12:11:01,837 [13] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-01-12 12:11:01,837 [13] DEBUG File Sectorización insertada
+2024-01-12 12:11:01,837 [13] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=12/01/2024 12:11:01,sactaPresente=False 
+2024-01-12 12:11:01,840 [13] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-01-12 12:11:01,896 [13] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-01-12 12:11:01,896 [13] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-01-12 12:11:01,896 [13] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-01-12 12:11:01,901 [13] DEBUG File Se libera la transaccion
+2024-01-12 12:11:01,901 [13] DEBUG File Transaccion liberada
+2024-01-12 12:11:01,901 [13] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-01-12 12:11:01,901 [13] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-01-12 12:11:09,221 [13] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-01-12 12:11:09,221 [13] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-01-12 12:11:09,223 [13] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
