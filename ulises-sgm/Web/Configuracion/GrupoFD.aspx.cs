@@ -36,7 +36,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
     const string TIPO_RECURSO_EE_RX = "7";
     const string TIPO_RECURSO_EE_TX = "8";
     const string TIPO_RECURSO_EE_RXTX = "9";
-
+    const string TIPO_RECURSO_RXTX_SIRTAP = "10";
     
     const string DESTINORADIO_TIPOFRECUENCIA_VHF = "0";
     const string DESTINORADIO_TIPOFRECUENCIA_UHF = "1";
@@ -60,8 +60,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
 
     const string FORMATO_LB_RECURSOS = "{0, -20} {1, -15} {2,-10}";
     //20201014  #4539 const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -15}";
-    const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -20} {2,-15} {3,-10} ";
-
+    //const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -20} {2,-15} {3,-10} ";
+    const string FORMATO_LB_RECURSOS_LIBRES = "{0, -20} {1, -20} {2,-15} ";
     private static ServiciosCD40.Tablas[] datos;
     
     private static ILog _logDebugView;
@@ -203,7 +203,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
     protected void BtNuevo_Click(object sender, EventArgs e)
     {
         Panel1.Enabled = true;
-
+        CBSeguro.Enabled = true;
         RequiredFieldIdentificador.Enabled = RequiredFieldIdentificador.Visible = true;
         errores.Visible = true;
         MostrarMenu();
@@ -348,11 +348,11 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             if (!porEmplazamiento || string.IsNullOrEmpty(DListEmplazamiento.Text))
             {
                 DListEmplazamiento.SelectedIndex = 0;
-                d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, null);
+                d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, null, CBSeguro.Checked);
             }
             else
             {
-                d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, DListEmplazamiento.Text);
+                d = ServicioCD40.RecursosSinAsignarAEnlaces1(strSistema, 0, DListEmplazamiento.Text, CBSeguro.Checked);
             }
             ServiciosCD40.RecursosRadio recRd = new ServiciosCD40.RecursosRadio();
 
@@ -449,7 +449,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                                 {
                                     stxtMultiFrec = String.Empty;
                                 }
-                                ListRecursosMFLibres.Items.Add(stxtMultiFrec);
+                                //ListRecursosMFLibres.Items.Add(stxtMultiFrec);
                             }
                             strEmplazamiento = ((ServiciosCD40.RecursosRadio)l2[0]).IdEmplazamiento;
                             ListEmplazamientosLibres.Items.Add(strEmplazamiento);
@@ -460,14 +460,14 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         {
                             //Se visaliza el recurso libre con el tipo
                             //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo);
-                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo, strEmplazamiento, stxtMultiFrec);
+                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strTipo, strEmplazamiento);//, stxtMultiFrec);
                             lbItem.Attributes.Add("title", strEmplazamiento);
                         }
                         else
                         {
                             //Se visaliza el recurso libre con el emplazamiento
                             //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento);
-                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento, strTipo, stxtMultiFrec);
+                            strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, rec.IdRecurso, strEmplazamiento, strTipo);//, stxtMultiFrec);
                             lbItem.Attributes.Add("title", strTipo);
                         }
                         strTexto.Replace(" ", "\u00A0");
@@ -574,7 +574,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         {
                             stxtMultiFrec = String.Empty;
                         }
-                        ListRecursosMF.Items.Add(stxtMultiFrec);
+                       // ListRecursosMF.Items.Add(stxtMultiFrec);
                     }
 
                     ListEmplazamientos.Items.Add(rec.IdEmplazamiento);
@@ -749,6 +749,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         string sModoDest=string.Empty;
         string sTipo=string.Empty;
         MostrarMenu();
+        CBSeguro.Enabled = false;
         TxtIdEnlace.ReadOnly = true;
         TxtIdEnlace.Enabled = false;
         DListTipo.Enabled = true;
@@ -769,11 +770,12 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         if (null != datos)
         {
             for (int i = 0; i < datos.Length; i++)
-            {
-                
+            {               
                 // RQF-34 
                 if (String.Compare((((ServiciosCD40.DestinosRadio)datos[i]).IdDestino), dataItem.Value) == 0)
                 {
+                    CBSeguro.Checked = ((ServiciosCD40.DestinosRadio)datos[i]).Seguro;
+
                     BtEliminar_ConfirmButtonExtender.ConfirmText = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarDestino"), ((ServiciosCD40.DestinosRadio)datos[i]).DescDestino);
                     sIdDestinosRadioKey = ((ServiciosCD40.DestinosRadio)datos[i]).IdDestino; // RQF-34
                     TxtIdEnlace.Text = ((ServiciosCD40.DestinosRadio)datos[i]).DescDestino;
@@ -1424,7 +1426,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             n.MetodosBssOfrecidos = Convert.ToInt32(DDLMetodosBssOfrecidos.SelectedValue);
             // 20211210 #2857 Analisis centralizado QIDX
             n.PorcentajeRSSI = DLPorcentajeRSSI.SelectedValue;
-
+            // TPD Validación parámetro Seguro SIRTAP.
+            n.Seguro = CBSeguro.Checked;
             //En el tipo frecuencia HF, la frecuencia sintonizada es obligatoria
             if (DESTINORADIO_TIPOFRECUENCIA_HF == DListTipo.SelectedValue && TblTunedFreq.Visible)
             {
@@ -1688,6 +1691,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         CargarRecursosSinAsignar();
         IButQuitar.Visible = true;
         IButAsignar.Visible = true;
+        if (!DestinoAsignadoATft(ListBox1.SelectedValue.ToString()))
+            CBSeguro.Enabled = true;
     }
 
     protected void BtEliminar_Click(object sender, EventArgs e)
@@ -1842,7 +1847,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         numTx++;
                     else if ((String.Compare(ListTipos.Items[i].Value, TIPO_RECURSO_RXTX) == 0) ||
                              (String.Compare(ListTipos.Items[i].Value, TIPO_RECURSO_M_N_RXTX) == 0) ||
-                             (String.Compare(ListTipos.Items[i].Value, TIPO_RECURSO_EE_RXTX) == 0))
+                             (String.Compare(ListTipos.Items[i].Value, TIPO_RECURSO_EE_RXTX) == 0) ||
+                             (String.Compare(ListTipos.Items[i].Value, TIPO_RECURSO_RXTX_SIRTAP) == 0))
                     {
                         //numTxRx++;
                         numRx++;
@@ -2057,6 +2063,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         case TIPO_RECURSO_RXTX:
                         case TIPO_RECURSO_M_N_RXTX:
                         case TIPO_RECURSO_EE_RXTX:
+                        case TIPO_RECURSO_RXTX_SIRTAP:
                             dicEmplazamientos[strNombreEmp].ListRecRxTx.Add(rec);
                             break;
 
@@ -2484,6 +2491,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                         case TIPO_RECURSO_RXTX:
                         case TIPO_RECURSO_M_N_RXTX:
                         case TIPO_RECURSO_EE_RXTX:
+                        case TIPO_RECURSO_RXTX_SIRTAP:
                             ((CDato)ListaEmplazamientos[strNombreEmp]).iNumRx++;
                             ((CDato)ListaEmplazamientos[strNombreEmp]).iNumTx++;
                             iNumTxAux++;
@@ -2640,10 +2648,10 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                     StringBuilder strTexto = new StringBuilder();
                     ListItem itemTipoLibre = ListTiposLibres.Items[i];
                     ListItem itemEmplazamientoLibre = ListEmplazamientosLibres.Items[i];
-                    ListItem itemRecursoMFLibre = ListRecursosMFLibres.Items[i];
+                    //ListItem itemRecursoMFLibre = ListRecursosMFLibres.Items[i];
                     lbItem.Value = ListRecursosLibres.Items[i].Value;
 
-                    strTexto.AppendFormat(FORMATO_LB_RECURSOS, recRd.IdRecurso, itemTipoLibre.Text, itemEmplazamientoLibre.Text, itemRecursoMFLibre.Text);
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS, recRd.IdRecurso, itemTipoLibre.Text, itemEmplazamientoLibre.Text);//, itemRecursoMFLibre.Text);
                     strTexto.Replace(" ", "\u00A0");
                     lbItem.Text = strTexto.ToString();
                     ListRecursos.Items.Add(lbItem);
@@ -2658,11 +2666,11 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
 
                     int index = ListRecursosLibres.SelectedIndex;
                     // RQF 8422
-                    if (MostrarMultifrecuencia())
-                    {
-                        if (ListRecursosMFLibres.Items.Count > 0 && index < ListRecursosMFLibres.Items.Count)
-                            ListRecursosMFLibres.Items.RemoveAt(index);
-                    }
+                    //if (MostrarMultifrecuencia())
+                    //{
+                    //    if (ListRecursosMFLibres.Items.Count > 0 && index < ListRecursosMFLibres.Items.Count)
+                    //        ListRecursosMFLibres.Items.RemoveAt(index);
+                    //}
                     ListRecursosLibres.Items.RemoveAt(index);
                     if (ListEmplazamientosLibres.Items.Count > 0 && index<ListEmplazamientosLibres.Items.Count)
                         ListEmplazamientosLibres.Items.RemoveAt(index);
@@ -2670,9 +2678,9 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                     if (ListTiposLibres.Items.Count > 0 && index < ListTiposLibres.Items.Count)
                         ListTiposLibres.Items.RemoveAt(index);
                     i--;
+                    ControlaValorSeguro();
                 }
     }
-
 
     /// <summary>
     /// Eliminar el recurso asignado
@@ -2749,24 +2757,25 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                 {
                     //Se visualiza el recurso libre con el tipo
                     //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text);
-                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text, ListEmplazamientos.Items[i].Text, ListRecursosMF.Items[i].Text);
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListTipos.Items[i].Text, ListEmplazamientos.Items[i].Text);//, ListRecursosMF.Items[i].Text);
                     lbItem.Attributes.Add("title", ListEmplazamientos.Items[i].Text);
                 }
                 else
                 {
                     //Se visaliza el recurso libre con el emplazamiento
                     //20201014  #4539 strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text);
-                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text, ListTipos.Items[i].Text, ListRecursosMF.Items[i].Text);
+                    strTexto.AppendFormat(FORMATO_LB_RECURSOS_LIBRES, ListRecursos.Items[i].Value, ListEmplazamientos.Items[i].Text, ListTipos.Items[i].Text);//, ListRecursosMF.Items[i].Text);
                     lbItem.Attributes.Add("title", ListTipos.Items[i].Text);
                 }
                 strTexto.Replace(" ", "\u00A0");
                 lbItem.Text = strTexto.ToString();
+
                 lbItem.Value = ListRecursos.Items[i].Value;
 
                 ListRecursosLibres.Items.Add(lbItem);
                 ListTiposLibres.Items.Add(ListTipos.Items[i]);
                 ListEmplazamientosLibres.Items.Add(ListEmplazamientos.Items[i]); 
-                ListRecursosMFLibres.Items.Add(ListRecursosMF.Items[i]);
+              //  ListRecursosMFLibres.Items.Add(ListRecursosMF.Items[i]);
                 ListEmplazamientos.Items[i].Selected = true;
                 ListTipos.Items[i].Selected = true;
                 index = ListRecursos.SelectedIndex;
@@ -2774,13 +2783,14 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                 ListRecursos.Items.RemoveAt(index);
                 ListEmplazamientos.Items.RemoveAt(index);
                 ListTipos.Items.RemoveAt(index);
-                ListRecursosMF.Items.RemoveAt(index);
+                //ListRecursosMF.Items.RemoveAt(index);
                 i--;
             }
         }
 
         if (ListRecursos.Items.Count > 0)
             ListRecursos.SelectedIndex = 0;
+        ControlaValorSeguro();
     }
     private bool DestinoAsignadoATft(string destino)
     {
@@ -3484,17 +3494,21 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             }
         }
 
-        Label9.Visible = DListMetodoClimax.Visible = presenta_MetodoClimax;
-        
-        
+        Label9.Visible = DListMetodoClimax.Visible = presenta_MetodoClimax;       
         LbEmplazamientoDefecto.Visible = presenta_UltimaRX;
         DListEmplazamientoDefecto.Visible = presenta_UltimaRX;
         LbTiempoVueltaADefecto.Visible = presenta_UltimaRX;
         TxtTiempoVueltaADefecto.Visible = presenta_UltimaRX;
-
         DListModoTransmision.Visible = presenta;
         LbModoTransmision.Visible = presenta;
         DListModoTransmision.Visible = presenta;
     }
-
+    protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
+    {
+        CargarRecursosSinAsignar();
+    }
+    private void ControlaValorSeguro()
+    {
+        CBSeguro.Enabled = (ListRecursos.Items.Count == 0);
+    }
 }

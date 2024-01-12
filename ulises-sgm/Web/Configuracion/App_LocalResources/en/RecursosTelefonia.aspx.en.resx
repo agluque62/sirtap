@@ -1860,4 +1860,16 @@
   <data name="RVTBTxUmbralADResource1.ToolTip" xml:space="preserve">
     <value />
   </data>
+  <data name="ListItemResourceNoSeguro.Text" xml:space="preserve">
+    <value>No Secure</value>
+  </data>
+  <data name="ListItemResourceSeguro.Text" xml:space="preserve">
+    <value>Secure</value>
+  </data>
+  <data name="LSeguroResource1.Text" xml:space="preserve">
+    <value>Secure:</value>
+  </data>
+  <data name="LSeguroResource1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
 </root>

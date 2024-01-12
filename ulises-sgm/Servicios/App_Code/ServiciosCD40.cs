@@ -661,19 +661,19 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <returns></returns>
     [WebMethod(Description = "Pasándole el identificador del sistema y el tipo de enlace (Radio, Interno o Instantáneo), retorna una lista de recursos compatibles" +
                             " con el tipo del enlace y sin asignar a ningún enlace")]
-    public DataSet RecursosSinAsignarAEnlaces(string id_sistema, int tipoEnlace)
+    public DataSet RecursosSinAsignarAEnlaces(string id_sistema, int tipoEnlace, bool seguro)
     {
         DataSet dsRecursos;
         switch ((Tipos.Tipo_Enlace)tipoEnlace)
         {
             case Tipos.Tipo_Enlace.TE_EXTERNO:
-                dsRecursos = Procedimientos.RecursosRadioSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema);
+                dsRecursos = Procedimientos.RecursosRadioSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema, seguro);
                 break;
             case Tipos.Tipo_Enlace.TE_INTERNO:
-                dsRecursos = Procedimientos.RecursosTFSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema);
+                dsRecursos = Procedimientos.RecursosTFSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema, seguro);
                 break;
             case Tipos.Tipo_Enlace.TE_LCEN:
-                dsRecursos = Procedimientos.RecursosLCENSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema);
+                dsRecursos = Procedimientos.RecursosLCENSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema, seguro);
                 break;
             default:
                 return null;
@@ -689,7 +689,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <returns></returns>
     [WebMethod(Description = "Pasándole el identificador del sistema y el tipo de enlace (Radio , Interno o Instantáneo), retorna una lista de recursos compatibles" +
                         " con el tipo del enlace y sin asignar a ningún enlace")]
-    public Tablas[] RecursosSinAsignarAEnlaces1(string id_sistema, int tipoEnlace, string site)
+    public Tablas[] RecursosSinAsignarAEnlaces1(string id_sistema, int tipoEnlace, string site, bool seguro)
     {
         Tablas[] listaRecursos;
         DataSet dsRecursos;
@@ -699,13 +699,13 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         {
             case Tipos.Tipo_Enlace.TE_EXTERNO:
                 CD40.BD.Utilidades objUtil = new CD40.BD.Utilidades(GestorBDCD40.ConexionMySql);
-                dsRecursos = objUtil.GetRecursosRadioSinAsignarAEnlaces(id_sistema, site, null);
+                dsRecursos = objUtil.GetRecursosRadioSinAsignarAEnlaces(id_sistema, site, seguro, null); //20240110 SIRTAP
                 break;
             case Tipos.Tipo_Enlace.TE_INTERNO:
-                dsRecursos = Procedimientos.RecursosTFSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema);
+                dsRecursos = Procedimientos.RecursosTFSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema, seguro);
                 break;
             case Tipos.Tipo_Enlace.TE_LCEN:
-                dsRecursos = Procedimientos.RecursosLCENSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema);
+                dsRecursos = Procedimientos.RecursosLCENSinAsignarAEnlaces(GestorBDCD40.ConexionMySql, id_sistema, seguro);
                 break;
             default:
                 return null;

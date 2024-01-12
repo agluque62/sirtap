@@ -32,14 +32,8 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
         position: absolute; top: 550px"
             OnSelectedIndexChanged="FiltroTipoRD_SelectedIndexChanged" SkinID="MascaraFiltroTipo" 
             meta:resourcekey="FiltroTipoRDResource">
-                <asp:ListItem Value="0" meta:resourcekey="ListItemFiltroTipoRDResource0">Tipo Interface:</asp:ListItem>
-                <asp:ListItem Value="1" meta:resourcekey="ListItemFiltroTipoRDResource1">RX</asp:ListItem>
-                <asp:ListItem Value="2" meta:resourcekey="ListItemFiltroTipoRDResource2">TX</asp:ListItem>
-                <asp:ListItem Value="3" meta:resourcekey="ListItemFiltroTipoRDResource3">TX-RX</asp:ListItem>
-                <asp:ListItem Value="4" meta:resourcekey="ListItemFiltroTipoRDResource4">HF-TX</asp:ListItem>
-                <asp:ListItem Value="5" meta:resourcekey="ListItemFiltroTipoRDResource5">Audio M+N</asp:ListItem>               
+       <asp:ListItem Value="10" meta:resourcekey="ListItemFiltroTipoRDResource8">Audio TX-RX SIRTAP</asp:ListItem>
     </asp:DropDownList>
-<%--<asp:ListItem Value="8" meta:resourcekey="ListItemFiltroTipoRDResource8">Audio EE</asp:ListItem>--%>
     <asp:TextBox ID="FiltroNombreRD" runat="server" visible="false"
         Style="z-index: 100; left: 20px; width:172px; position: absolute; top: 550px" meta:resourcekey="FiltroNombreRDResource">
         </asp:TextBox>
@@ -116,16 +110,8 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                         <asp:ListItem Value="2" meta:resourcekey="ListTipo_Audio_RXTX">Audio RX TX</asp:ListItem>
                         <asp:ListItem Value="3" meta:resourcekey="ListTipo_Audio_HF">Audio HF-TX</asp:ListItem>
                         <asp:ListItem Value="4" meta:resourcekey="ListTipo_Audio_NM">Audio M+N</asp:ListItem>
-                   <%--//20200525 JOI  #4470 Version 2.6.0 no se implementa--%>
-                   <%--     <asp:ListItem Value="7" meta:resourcekey="ListTipo_Audio_EE">Audio EE</asp:ListItem> --%>
+                        <asp:ListItem Value="10" meta:resourcekey="ListTipo_Audio_RXTX_SIRTAP">Audio RX TX SIRTAP</asp:ListItem>
                     </asp:DropDownList>
-					
-                        <%-- <asp:ListItem meta:resourcekey="ListItemResource4" Value="7">Datos RX</asp:ListItem>
-                        <asp:ListItem meta:resourcekey="ListItemResource5" Value="8">Datos TX</asp:ListItem>
-                        <asp:ListItem meta:resourcekey="ListItemResource6" Value="9">Datos RX TX</asp:ListItem> --%>
-					                    
-                        <!--<asp:ListItem Value="5" style="display:none" meta:resourcekey="ListTipo_Audio_NM_Tx">Audio M+N Tx</asp:ListItem>
-                        <asp:ListItem Value="6" meta:resourcekey="ListTipo_Audio_NM_RTx">Audio M+N RxTx</asp:ListItem>-->
 
                     <asp:Label ID="LDestino" runat="server" Style="left: 20px; position: absolute; top: 113px; z-index: 104;"
                         Text="Destino: " Width="53px" meta:resourcekey="LDestinoResource1"></asp:Label>
@@ -166,25 +152,29 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                        </asp:DropDownList>
 
                      <asp:Label ID="Label8" runat="server" Style="z-index: 106; left: 20px; position: absolute; top: 213px"
-                        Text="Emplazamiento:" meta:resourcekey="Label6Resource1"></asp:Label>
+                        Text="Emplazamiento:" Enabled="False" Visible ="False" meta:resourcekey="Label6Resource1"></asp:Label>
                     
-                    <asp:DropDownList ID="DListEmplazamiento" runat="server" Enabled="False" Style="z-index: 107; left: 20px; position: absolute; top: 233px"
+                    <asp:DropDownList ID="DListEmplazamiento" runat="server"  Style="z-index: 107; left: 20px; position: absolute; top: 233px"
                         Width="155px"  class="select"
-                        AppendDataBoundItems="True" meta:resourcekey="DListEmplazamientoResource1">
+                        AppendDataBoundItems="True" Enabled="False" Visible ="False" resourcekey="DListEmplazamientoResource1">
                         <asp:ListItem Value="0" meta:resourcekey="ListItemResource8">&lt;Selecciona emplazamiento&gt;</asp:ListItem>
                     </asp:DropDownList>
 
 
                      <asp:Label ID="LabelZona" runat="server" Style="z-index: 102; left: 20px; position: absolute; top: 263px; height: 18px; width: 155px;"
-                    Text="Zonas:" meta:resourcekey="LabelZonasResource1"></asp:Label>
+                    Text="Zonas:" Enabled="False" Visible ="False"  meta:resourcekey="LabelZonasResource1"></asp:Label>
                     
                     <asp:DropDownList ID="DListZonas" runat="server" Style="z-index: 103; left: 20px; position: absolute; top: 283px"
-                        Width="155px" class="select" AutoPostBack="False" Enabled="False"                        
-                        AppendDataBoundItems="True" meta:resourcekey="DListZonasResource1">
+                        Width="155px" class="select" AutoPostBack="False"                         
+                        AppendDataBoundItems="True" Enabled="False" Visible ="False" meta:resourcekey="DListZonasResource1">
                         <asp:ListItem Value="0" meta:resourcekey="ListItemResource34">&lt;Selecciona zona&gt;</asp:ListItem>
                     </asp:DropDownList>
 
-                     
+  				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 20px; position: absolute;
+					  top: 324px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial" 
+					meta:resourcekey="LSeguroResource1"/>
+                   
 
 <%--                    <asp:Label ID="Label44" runat="server" Text="Tiempo CLD (seg):" Style="left:20px; top:313px; position:absolute; width:auto"
                         ForeColor="Black" meta:resourcekey="Label44Resource1"></asp:Label>
@@ -1220,9 +1210,10 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                 <asp:RadioButtonList ID="RBLTipoEquipo" runat="server" AutoPostBack="True" OnSelectedIndexChanged="RBLTipoEquipo_SelectedIndexChanged"
                     Style="z-index: 199; left: 23px; position: absolute; top: 17px;  height: 63px" Enabled="False"
                     BorderStyle="Groove" meta:resourcekey="RBLTipoEquipoResource1">
-                    <asp:ListItem Selected="True" Value="0" meta:resourcekey="ListItemResource32">Pasarela</asp:ListItem>
-                    <asp:ListItem Value="1" meta:resourcekey="ListItemResource33">Equipo Externo</asp:ListItem>
+                   <%-- <asp:ListItem Selected="True" Value="0" meta:resourcekey="ListItemResource32">Pasarela</asp:ListItem> --%>
+                    <asp:ListItem Selected="True" Value="1" meta:resourcekey="ListItemResource33">Equipo Externo</asp:ListItem>
                 </asp:RadioButtonList>
+
                 <asp:Label ID="LblEquipoExterno" runat="server" Style="z-index: 200; left: 210px; position: absolute; top: 25px"
                     Text="Equipo Externo"
                     meta:resourcekey="LblEquipoExternoResource1"></asp:Label>
@@ -1238,7 +1229,7 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
 
 				<asp:DropDownList ID="DDTelemando" runat="server" Style="z-index: 201; left: 10px; position: absolute; top: 125px; height:auto"
                     Width="180px" AppendDataBoundItems="True" class="select"
-                    Enabled="False" Visible = "False" AutoPostBack="True">
+                    Enabled="False" Visible="False" AutoPostBack="True">
                     <asp:ListItem Value="0" meta:resourcekey="ListItemFiltroTelemandoResource0">Sin Telemando</asp:ListItem>
                     <asp:ListItem Value="1" meta:resourcekey="ListItemFiltroTelemandoResource1">ROHDE 4200</asp:ListItem>
                     <asp:ListItem Value="2" meta:resourcekey="ListItemFiltroTelemandoResource2">JOTRON 7000</asp:ListItem>
@@ -1249,18 +1240,24 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
     <asp:Button ID="IBGenerales" runat="server" SkinId="ButtonTab"
 		OnClick="OnButton_Click" Style="z-index: 110; left: 276px; position: absolute;
 		top: 41px" meta:resourcekey="IBGeneralesResource1" />
-	<asp:Button ID="IBVoip" runat="server"  SkinId="ButtonTab"
+    <%--SIRTAP--%>
+    <asp:Button ID="IBAsignacion" runat="server"  SkinId="ButtonTab"
+		OnClick="OnButton_Click" Style="z-index: 114; left: 380px; position: absolute;
+		top: 41px" meta:resourcekey="IBAsignacionResource1" />
+
+	<asp:Button ID="IBVoip" runat="server"  SkinId="ButtonTab" Enabled="False" Visible = "False"
 		OnClick="OnButton_Click" Style="z-index: 111; left: 380px; position: absolute;
 		top: 41px" meta:resourcekey="IBVoipResource1" />
-	<asp:Button ID="IBAudio" runat="server"  SkinId="ButtonTab"
+	<asp:Button ID="IBAudio" runat="server"  SkinId="ButtonTab" Enabled="False" Visible = "False"
 		OnClick="OnButton_Click" Style="z-index: 112; left: 484px; position: absolute;
 		top: 41px" meta:resourcekey="IBAudioResource1" />
-    <asp:Button ID="IBFuncionalidad" runat="server"  SkinId="ButtonTab"
+    <asp:Button ID="IBFuncionalidad" runat="server"  SkinId="ButtonTab" Enabled="False" Visible = "False"
 		OnClick="OnButton_Click" Style="z-index: 113; left: 588px; position: absolute;
 		top: 41px" meta:resourcekey="IBFuncionalidadResource1" />
+    <%--
 	<asp:Button ID="IBAsignacion" runat="server"  SkinId="ButtonTab"
 		OnClick="OnButton_Click" Style="z-index: 114; left: 692px; position: absolute;
-		top: 41px" meta:resourcekey="IBAsignacionResource1" />
+		top: 41px" meta:resourcekey="IBAsignacionResource1" /> --%>
 
 </asp:Content>
 

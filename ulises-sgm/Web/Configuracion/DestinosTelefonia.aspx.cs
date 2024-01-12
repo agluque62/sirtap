@@ -204,17 +204,17 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
         if (habilita)
         {
             LBDestinos.Enabled = false;
-
+            CBSeguro.Enabled = true;
             //Si se está dando de alta un nuevo destino
             if (!Modificando)
             {
                 TBDestino.Text = "";
                 TBDestino.ReadOnly = false;
+                CBSeguro.Checked = false;
                 DDLPrefijo.SelectedValue = "-1";
                 TBGrupo.Text = "";
                 DDLGrupo.SelectedValue = "-1";
                 TBAbonado.Text = "";
-
                 if (DDLPrefijo.SelectedValue != "1" && DDLPrefijo.SelectedValue != "3" && DDLPrefijo.SelectedValue != "-1")
                 {
                     LbGrupo.Visible = true;
@@ -353,18 +353,6 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     {
         try
         {
-			/*
-			// Si el grupo no está en la lista, se añade a la base de datos.
-            if (TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null)
-            {
-                ServiciosCD40.GruposTelefonia gTel = new ServiciosCD40.GruposTelefonia();
-                gTel.IdSistema = (string)Session["idsistema"];
-                gTel.IdGrupo = TBGrupo.Text;
-
-				if (ServiceServiciosCD40.InsertSQL(gTel) < 0)
-                    logDebugView.Warn("(DestinosTelefonia-AnadeDestino): No se han podido insertar el Grupo de Telefonia(InsertSQL)");
-            }
-			*/
 
             ServiciosCD40.DestinosExternos dExterno = new ServiciosCD40.DestinosExternos();
             dExterno.IdSistema = (string)Session["idsistema"];
@@ -380,72 +368,9 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             // Aunque IdGrupo no es de la tabla DestinosExternos, la clase hereda de 
             // DestinosTelefonía y se hace una llamada a base.Insert()
 			dExterno.IdGrupo = (TBGrupo.Text.Length > 0) ? TBGrupo.Text : null;
-
-            
+            dExterno.Seguro = CBSeguro.Checked;        
 			ServiceServiciosCD40.AnadeDestino(dExterno, TBRecurso.Text, TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null);
-
-			/*
-			if (ServiceServiciosCD40.InsertSQL(dExterno) < 0)
-                logDebugView.Warn("(DestinosTelefonia-AnadeDestino): No se han podido insertar el Destino Externo de Telefonia(InsertSQL)");                
-            if (dExterno.IdPrefijo == 1)  // LCEN
-                ActualizaRecursoLCEN(dExterno, TBRecurso.Text);
-            else if (dExterno.IdPrefijo == 32)    // PP
-                ActualizaRecursoTelefonia(dExterno, TBRecurso.Text);
-			*/
-
-		
-			#region Sincroniza CD30
-			Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-            KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-            if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-            {
-                SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                int prefijoRed=0;
-                switch (Convert.ToUInt32(DDLPrefijo.SelectedValue))
-                {
-                    case 1://LCEN
-                        prefijoRed = 2;
-                        if (TBAbonado.Text.Length > 0) TBAbonado.Text = "";
-                        break;
-                    case 32://PP
-                        prefijoRed = 5;
-                        if (TBAbonado.Text.Length > 0) TBAbonado.Text = "";
-                        break;
-                    case 3://ATS
-                        prefijoRed = 3;                        
-                        break;
-                    case 4://RTB
-                        prefijoRed = 4;
-                        break;
-                    case 6://PABX
-                        prefijoRed = 6;
-                        break;
-                    case 8:
-                        prefijoRed = 8;
-                        break;
-                    case 9:
-                        prefijoRed = 9;
-                        break;
-                    default:
-                        break;
-                }
-                if (prefijoRed != 0)
-                {
-                    switch (sincro.AltaDestino(TBDestino.Text, prefijoRed, TBRecurso.Text, (TBGrupo.Text.Length > 0 ? Int32.Parse(TBGrupo.Text) : 0), (TBAbonado.Text.Length > 0) ? TBAbonado.Text : ""))
-                    {
-                        case 127:
-                            cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                            break;
-                        case 128:
-                            cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-			}
-			#endregion
-		}
+    }
         catch (Exception e)
         {
             logDebugView.Error("(DestinosTelefonia-AnadeDestino):", e);
@@ -471,94 +396,9 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
         // Aunque IdGrupo no es de la tabla DestinosExternos, 
         // la clase hereda de DestinosTelefonía y se hace una llamada a base.Update()
 		dExterno.IdGrupo = (TBGrupo.Text.Length > 0) ? TBGrupo.Text : null;
-		ServiceServiciosCD40.ActualizaDestino(dExterno, TBRecurso.Text, TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null);
-        
-		#region Sincroniza CD30
-		Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-		KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-		if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-		{
-			SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-			int prefijoRed = 0;
-			switch (Convert.ToUInt32(DDLPrefijo.SelectedValue))
-			{
-				case 1://LCEN
-					prefijoRed = 2;
-					if (TBAbonado.Text.Length > 0) TBAbonado.Text = "";
-					break;
-				case 32://PP
-					prefijoRed = 5;
-					if (TBAbonado.Text.Length > 0) TBAbonado.Text = "";
-					break;
-				case 3://ATS
-					prefijoRed = 3;
-					break;
-				case 8:
-					prefijoRed = 8;
-					break;
-				case 9:
-					prefijoRed = 9;
-					break;
-				default:
-					break;
-			}
-			if (prefijoRed != 0)
-			{
-				switch (sincro.ModificacionDestino(TBDestino.Text, prefijoRed, TBRecurso.Text, (TBGrupo.Text.Length > 0 ? Int32.Parse(TBGrupo.Text) : 0), (TBAbonado.Text.Length > 0) ? TBAbonado.Text : ""))
-				{
-					case 127:
-						cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-						break;
-					case 128:
-						cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-						break;
-					default:
-						break;
-				}
-			}
-		}
-		#endregion
-	}
-
-	/*
-    private void ActualizaRecursoTelefonia(ServiciosCD40.DestinosExternos dExterno, string idRecurso)
-    {
-        try
-        {
-            ServiciosCD40.RecursosTF rTelefonia = new ServiciosCD40.RecursosTF();
-            rTelefonia.IdSistema = dExterno.IdSistema;
-            rTelefonia.IdRecurso = idRecurso;
-            rTelefonia.IdDestino = dExterno.IdDestino;
-            rTelefonia.IdPrefijo = dExterno.IdPrefijo;
-            rTelefonia.TipoDestino = dExterno.TipoDestino;
-
-			ServiceServiciosCD40.AsignaDestinoARecurso((ServiciosCD40.ParametrosRecursoGeneral)rTelefonia);
-        }
-        catch (Exception e)
-        {
-            logDebugView.Error("(DestinosTelefonia-ActualizaRecursoTelefonia):", e);
-        }
+        dExterno.Seguro = CBSeguro.Checked;
+		ServiceServiciosCD40.ActualizaDestino(dExterno, TBRecurso.Text, TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null);    
     }
-
-    private void ActualizaRecursoLCEN(ServiciosCD40.DestinosExternos dExterno, string idRecurso)
-    {
-        try
-        {
-            ServiciosCD40.RecursosLCEN rTelefonia = new ServiciosCD40.RecursosLCEN();
-            rTelefonia.IdSistema = dExterno.IdSistema;
-            rTelefonia.IdRecurso = idRecurso;
-            rTelefonia.IdDestino = dExterno.IdDestino;
-            rTelefonia.IdPrefijo = dExterno.IdPrefijo;
-            rTelefonia.TipoDestino = dExterno.TipoDestino;
-
-			ServiceServiciosCD40.AsignaDestinoARecurso((ServiciosCD40.ParametrosRecursoGeneral)rTelefonia);
-        }
-        catch (Exception e)
-        {
-            logDebugView.Error("(DestinosTelefonia-ActualizaRecursoLCEN):", e);
-        }
-    }
-	*/
 
     /// <summary>
     /// 
@@ -643,51 +483,6 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                    
                 }
 
-
-                #region Sincroniza CD30
-                Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                {
-                    SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                    int prefijoRed = 0;
-                    switch (Convert.ToUInt32(DDLPrefijo.SelectedValue))
-                    {
-                        case 1://LCEN
-                            prefijoRed = 2;
-                            break;
-                        case 32://PP
-                            prefijoRed = 5;
-                            break;
-                        case 3://ATS
-                            prefijoRed = 3;
-                            break;
-                        case 8:
-                            prefijoRed = 8;
-                            break;
-                        case 9:
-                            prefijoRed = 9;
-                            break;
-                        default:
-                            break;
-                    }
-                    if (prefijoRed != 0)
-                    {
-                        switch (sincro.BajaDestino(TBDestino.Text, prefijoRed))
-                        {
-                            case 127:
-                                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                break;
-                            case 128:
-                                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                #endregion
-
                 NuevoDestino(false);
                 MuestraDatos();
 
@@ -712,7 +507,6 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     protected void BCancelar_Click(object sender, EventArgs e)
     {
         CancelarCambios();
-        //cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "CancelarCambios"), "cancelparam");        
     }
 
     /// <summary>
@@ -729,7 +523,6 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     protected override void CancelarCambios()
     {
 		NuevoDestino(false);
-        //EsconderMenu();
         BAnadir.Visible = false;
         BCancelar.Visible = false;
 		BEliminar.Visible = BModificar.Visible = PermisoSegunPerfil && LBDestinos.Items.Count > 0;
@@ -760,17 +553,11 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             TBSector.Visible = false;
             TBATS.Visible = false;
             TBNumero.Visible = false;
-			//MostrarMenu();
-
-			//            BEliminar.Enabled = PermisoSegunPerfil;
-
+            CBSeguro.Enabled = false;
 			Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
 			KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
 			Session["idsistema"] = s.Value;
 			System.Data.DataRow dr = ServiceServiciosCD40.DestinosDeTelefoniaEnElSistema(s.Value).Tables[0].Rows[LBDestinos.SelectedIndex];
-
-			//            BModificar.Enabled = LBDestinos.SelectedIndex != -1;
-			//            BModificar.Visible = LBDestinos.SelectedIndex != -1 && PermisoSegunPerfil;
 
             BEliminar_ConfirmButtonExtender.ConfirmText = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarDestino"), LBDestinos.SelectedValue);
             
@@ -780,6 +567,8 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             iIdPrefijo=Convert.ToUInt32(dr["IdPrefijo"]);
 
 			DDLPrefijo.SelectedValue = Convert.ToString((uint)dr["IdPrefijo"]);
+            
+            CBSeguro.Checked = Convert.ToBoolean(dr["Seguro"]);
 
             if (iIdPrefijo != 1 && iIdPrefijo != 3)
             {
@@ -1013,7 +802,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 DDLRecursos.Items.RemoveAt(1);
             }
             //DDLRecursos.Items.Add(new ListItem((string)GetLocalResourceObject("ListItemResource5"),"-1"));
-			DDLRecursos.DataSource = ServiceServiciosCD40.RecursosSinAsignarAEnlaces((string)Session["idsistema"], (prefijo == 32) ? 1 : 2); // TF o LCEN
+			DDLRecursos.DataSource = ServiceServiciosCD40.RecursosSinAsignarAEnlaces((string)Session["idsistema"], (prefijo == 32) ? 1 : 2,false); // TF o LCEN // 20240110 SIRTAP
             DDLRecursos.DataTextField = "IDRecurso";
             DDLRecursos.DataBind();
         }
@@ -1041,32 +830,17 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     /// </summary>
     private void MostrarMenu()
     {
-		//Label2.Visible = true;
-		//Label3.Visible = true;
-		//Label4.Visible = true;
-        //Label5.Visible = true;
-        //LblRecurso.Visible = true;
-        //LblRecursosLibres.Visible = true;
-        //TBDestino.Visible = true;
-        //TBGrupo.Visible = true;
-		DDLGrupo.Visible = true;
-        //TBAbonado.Visible = true;
 
-        //TBRecurso.Visible = true;
-        //DDLPrefijo.Visible = true;
-        //DDLRecursos.Visible = true;
+		DDLGrupo.Visible = true;
+
     }
 
     /// <summary>
     /// 
     /// </summary>
     private void EsconderMenu()
-    {
-		//Label5.Visible = false;
+    {	
 		DDLGrupo.Visible = false;
-        //TBAbonado.Visible = false;
-        //DDLPrefijo.Visible = false;
-        //DDLRecursos.Visible = true;
     }
 
     /// <summary>
@@ -1239,4 +1013,10 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
         }*/
         return basociado;
     }
+
+    protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
+    {
+
+    }
+
 }
