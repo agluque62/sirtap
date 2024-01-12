@@ -204,12 +204,14 @@ void SignalGen::SendToneToCall(int call_id, unsigned int frequency, float volume
 
 	//Se actualizan los volumenes de todos los tonos activos si frequency es cero, y si es distinto ce cero solo el de la frecuencia
 	bool freq_found = false;
+	tone_info* tone_found = NULL;
 	std::map <int, tone_info*> Playing_tones_map_to_erase;
 	for (it = sipcall->Playing_tones_map.begin(); it != sipcall->Playing_tones_map.end(); ++it)
 	{
+		tone_info* tone = NULL;
 		if (frequency == 0 || (frequency != 0 && frequency == it->first))
 		{
-			tone_info* tone = it->second;
+			tone = it->second;			
 			if (lineal_volume > 0)
 			{
 				if (tone->Update_tone(lineal_volume) != 0)
@@ -228,6 +230,7 @@ void SignalGen::SendToneToCall(int call_id, unsigned int frequency, float volume
 		if (frequency != 0 && frequency == it->first)
 		{
 			freq_found = true;
+			tone_found = tone;
 			break;
 		}
 	}
@@ -245,28 +248,37 @@ void SignalGen::SendToneToCall(int call_id, unsigned int frequency, float volume
 		delete tone;
 	}
 
-	if (frequency != 0 && !freq_found && lineal_volume > 0)
+	if (frequency != 0 && lineal_volume > 0)
 	{
-		//Creamos un tono nuevo
-
 		tone_info* tone = NULL;
-		try
+		if (!freq_found)
 		{
-			tone = new tone_info(frequency, lineal_volume);
+			//Creamos un tono nuevo			
+			try
+			{
+				tone = new tone_info(frequency, lineal_volume);
+			}
+			catch (...)
+			{
+				if (tone != NULL) delete tone;
+				pjsip_dlg_dec_lock(dlg);
+				PJ_CHECK_STATUS(PJ_ENOMEM, ("ERROR: SignalGen::SendToneToCall: Tone cannot be created"));
+			}
 		}
-		catch (...)
+		else
 		{
-			if (tone != NULL) delete tone;
-			pjsip_dlg_dec_lock(dlg);
-			PJ_CHECK_STATUS(PJ_ENOMEM, ("ERROR: SignalGen::SendToneToCall: Tone cannot be created"));
-		}		
+			tone = tone_found;
+		}
 
-		st = pjsua_conf_connect(tone->slot_id, pjsua_call_get_conf_port(call_id));
-		if (st != PJ_SUCCESS)
+		if (tone != NULL)
 		{
-			if (tone != NULL) delete tone;
-			pjsip_dlg_dec_lock(dlg);
-			PJ_CHECK_STATUS(st, ("ERROR: SignalGen::SendToneToCall: pjsua_conf_connect returns error"));
+			st = pjsua_conf_connect(tone->slot_id, pjsua_call_get_conf_port(call_id));
+			if (st != PJ_SUCCESS)
+			{
+				if (tone != NULL) delete tone;
+				pjsip_dlg_dec_lock(dlg);
+				PJ_CHECK_STATUS(st, ("ERROR: SignalGen::SendToneToCall: pjsua_conf_connect returns error"));
+			}
 		}
 
 		sipcall->Playing_tones_map[frequency] = tone;
