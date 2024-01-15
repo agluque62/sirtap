@@ -390,6 +390,9 @@ namespace HMI.Model.Module.Services
 			}
 		}
 
+
+		// Esta funcion carga el numero de pagina en funcion del numero de pagina secuencial que se le da.
+		// no puede ser llamado por sirtap.
 		public void RdLoadNextPage(int oldPage, int numPosByPage)
 		{
 			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
@@ -408,6 +411,26 @@ namespace HMI.Model.Module.Services
 
 				newPage = (newPage + 1) % numPages;
 			}
+		}
+		public void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage)
+        {
+			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
+			//int newPage = (oldPage + 1) % numPages;
+
+			while (newPage != oldPage)
+			{
+				for (int i = newPage * numPosByPage, to = Math.Min(Radio.NumDestinations, (newPage + 1) * numPosByPage); i < to; i++)
+				{
+					if (_StateManager.Radio[i].IsConfigurated)
+					{
+						_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+						return;
+					}
+				}
+
+				newPage = (newPage + 1) % numPages;
+			}
+
 		}
 
 		public void RdLoadPrevPage(int oldPage, int numPosByPage)

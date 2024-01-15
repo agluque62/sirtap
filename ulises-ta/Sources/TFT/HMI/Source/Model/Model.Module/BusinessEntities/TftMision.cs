@@ -26,13 +26,13 @@ namespace HMI.Model.Module.BusinessEntities
 					string msg = _Mision;
 					if (_Mision == "MISION 1")
 					{
-						SetPagRadio(new List<(int, bool)> { (1, true), (3, true), (5, true), (7, true), (9, true) });
-						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (8, true), (10, true), (12, true) });
+						SetPagRadio(new List<(int, bool)> { (0, true), (3, true), (5, true), (7, true), (9, true) });
+						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (8, true) });
 						SetPagLc(new bool[] { true, false, true, false, false, false });
 					}
 					else if (_Mision == "MISION 3")
 					{
-						SetPagRadio(new List<(int, bool)> { (1, true), (5, false), (9, true), (13, true), (17, true) });
+						SetPagRadio(new List<(int, bool)> { (1, true), (2,false), (3, true), (5, true) });
 						SetPagTlf(new List<(int, bool)> { (2, false), (6, true), (10, true), (14, true), (18, true) });
 						SetPagLc(new bool[] { true, true, true, false, false, false });
 					}
@@ -50,9 +50,12 @@ namespace HMI.Model.Module.BusinessEntities
 		private List<(int, bool)> _pagrad;
 		private List<(int, bool)> _pagtlf;
 		private bool[] _paglc;
+		private int _NumberOfPagesRad =0;
 		private void SetPagRadio(List<(int, bool)> lista)
 		{
 			_pagrad = lista;
+			NumberOfPagesRad = lista.Count;
+
 		}
 		private void SetPagTlf(List <(int, bool)>lista)
 		{
@@ -69,6 +72,10 @@ namespace HMI.Model.Module.BusinessEntities
 				return _pagrad;
 			}
 			set => _pagrad = value;
+		}
+		public int GetNumberOfPagesRd()
+        {
+			return NumberOfPagesRad;
 		}
 		public List<(int, bool)> Pagtlf
 		{
@@ -87,7 +94,9 @@ namespace HMI.Model.Module.BusinessEntities
 			set => _paglc = value;
 		}
 
-		public TftMision()
+        public int NumberOfPagesRad { get => _NumberOfPagesRad; set => _NumberOfPagesRad = value; }
+
+        public TftMision()
 		{
 			_Mision = "";
 		}

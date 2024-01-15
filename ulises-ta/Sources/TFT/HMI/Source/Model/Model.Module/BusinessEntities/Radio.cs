@@ -1136,6 +1136,12 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			return -1;
 		}
+		public int GetNumberMaxOfPagesRd()
+		{
+			int numpag = NumDestinations / PageSize;
+			return numpag;
+		}
+
 		public int GetNumberOfPagesRd()
 		{
 			int numpag = NumDestinations / PageSize;

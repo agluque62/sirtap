@@ -36,6 +36,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using Utilities;
+using System.Linq;
 
 namespace HMI.Presentation.Sirtap.Views
 {
@@ -1220,12 +1221,48 @@ namespace HMI.Presentation.Sirtap.Views
             set { _last = value; }
         }
 
+
+           /// <summary>
+           /// actualPage es la referencia a la pagina con o sin recursos.
+           /// </summary>
+           /// <param name="actualPage"></param>
+           /// <param name="inferior"></param>
+           /// <returns></returns>
+        private int BuscarPagina(int actualPage, bool inferior = false)
+        {
+            int numero_paginas_radiocr = _StateManager.Radio.GetNumberOfPagesRd();// paginas con recursos
+            int numero_paginas_radiocsr = _StateManager.Radio.GetNumberMaxOfPagesRd();//paginas con o sin recursos
+            int numero_paginas_radiopm = _StateManager.TftMision.GetNumberOfPagesRd(); //paginas en la mison.
+            int numero_paginas_radio = numero_paginas_radiocsr;
+            List<(int, bool)> _pagrad = _StateManager.TftMision.Pagrad;
+            int? primeraPaginaSuperior = null;
+            if (!inferior)
+                primeraPaginaSuperior = _pagrad
+                .Where(p => p.Item1 > actualPage)
+                .Select(p => (int?)p.Item1)
+                .FirstOrDefault();
+            else
+                primeraPaginaSuperior = _pagrad
+                .Where(p => p.Item1 < actualPage)
+                .Select(p => (int?)p.Item1)
+                .LastOrDefault();
+
+            if (!primeraPaginaSuperior.HasValue)
+            {
+                if (!inferior)
+                    primeraPaginaSuperior = -1;
+                else
+                    primeraPaginaSuperior = numero_paginas_radio;
+            }
+            return (int)primeraPaginaSuperior;
+        }
+
         private void _RdPageBT_UpClick(object sender)
         {
             //LALM 210224 
             bool up = true;
             TimeSpan tick = new TimeSpan(0, 0, 10);//10 segundos
-            int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
+            //int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
             bool confirma = global::HMI.Presentation.Sirtap.Properties.Settings.Default.ConfCambioPagRad;
             if (confirma && _StateManager.Radio.GetNumPages() > 1)
             {
@@ -1246,7 +1283,8 @@ namespace HMI.Presentation.Sirtap.Views
             //LALM 210224
             bool up = false;
             TimeSpan tick = new TimeSpan(0, 0, 10);//10 segundos
-            int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
+            //int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
+            int numero_paginas_radio = _StateManager.TftMision.GetNumberOfPagesRd();
             bool confirma = global::HMI.Presentation.Sirtap.Properties.Settings.Default.ConfCambioPagRad;
             if (confirma && _StateManager.Radio.GetNumPages() > 1)
             {
@@ -1267,10 +1305,15 @@ namespace HMI.Presentation.Sirtap.Views
         {
 
             int actualPage = _RdPageBT.Page;
-
+            int newPage = BuscarPagina(actualPage, false);
+            if (newPage == -1)
+                newPage = BuscarPagina(-1, false);
+            if (newPage == -1)
+                newPage = -1;
             try
             {
-                _CmdManager.RdLoadNextPage(actualPage, _NumPositionsByPage);
+                //_CmdManager.RdLoadNextPageSirtap(actualPage, nextPage, _NumPositionsByPage);
+                _CmdManager.RdLoadPageSirtap(actualPage, newPage, _NumPositionsByPage);
             }
             catch (Exception ex)
             {
@@ -1282,6 +1325,8 @@ namespace HMI.Presentation.Sirtap.Views
         //LALM 210224
         private void _RdPageBT_DownClick_Confirmada(object sender)
         {
+            int numero_paginas_radio = _StateManager.TftMision.GetNumberOfPagesRd();
+            
             int actualPage = _RdPageBT.Page;
 
             try
