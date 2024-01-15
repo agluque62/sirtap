@@ -264,9 +264,13 @@ namespace HMI.Presentation.Sirtap.Views
                 OcultaPaticipantes();
             if (_Page != e.Page)
             {
-                Debug.Assert(e.Page < 28);
+                Debug.Assert(e.Page < 28 && e.Page>0);
+                if (e.Page==-1)
+                {
+                    int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6 + 1;// Radio.GetNumberOfPagesRd();
+                    _Page = numero_paginas_tlf+1;
 
-                _Page = e.Page;
+                }
                 int absPageBegin = _Page * _NumPositionsByPage;
                 
                 if (_Page == 0)
