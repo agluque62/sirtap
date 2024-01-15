@@ -313,7 +313,6 @@ namespace u5ki.SirTapAudAlm
 
                     Byte[] data = new Byte[256];
                     bytes = stream.Read(data, 0, data.Length);
-                    LogInfo<SirTapAudAlm>($"################################################## Mensaje recibido bytes {bytes}");
                     if (bytes > 0)
                     {
                         MemoryStream ms = new MemoryStream(data);

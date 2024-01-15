@@ -382,6 +382,24 @@ namespace U5ki.RdService
             }
         }
 
+        public static void RespondToTlmdo(string to, TlmdoRsp response)
+        {
+            if (to == null)
+                return;
+
+            if (!_Master)
+                return;
+
+            if (_Registry != null)
+            {
+                MemoryStream ms = new MemoryStream();
+                Serializer.Serialize(ms, response);
+                byte[] data = ms.ToArray();
+
+                _Registry.Channel.Send(Identifiers.TLMDO_RSP, data, to != null ? to : Identifiers.TopTopic);
+            }
+        }
+
 #if _HF_GLOBAL_STATUS_
         public static void SendHFStatus(HFStatus std)
         {

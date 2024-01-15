@@ -499,4 +499,192 @@ namespace U5ki.Infrastructure
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoAsk")]
+  public partial class TlmdoAsk : global::ProtoBuf.IExtensible
+  {
+    public TlmdoAsk() {}
+    
+    private U5ki.Infrastructure.TlmdoAsk.MsgType _msgType;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"msgType", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.TlmdoAsk.MsgType msgType
+    {
+      get { return _msgType; }
+      set { _msgType = value; }
+    }
+    private string _HostId;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"HostId", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string HostId
+    {
+      get { return _HostId; }
+      set { _HostId = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
+
+    private int _Channel = default(int);
+    [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"Channel", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int Channel
+    {
+      get { return _Channel; }
+      set { _Channel = value; }
+    }
+
+    private string _Frequency = "";
+    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Frequency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string Frequency
+    {
+      get { return _Frequency; }
+      set { _Frequency = value; }
+    }
+
+    private string _PowerW = "";
+    [global::ProtoBuf.ProtoMember(7, IsRequired = false, Name=@"PowerW", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string PowerW
+    {
+      get { return _PowerW; }
+      set { _PowerW = value; }
+    }
+
+    private bool _TxInhibit = default(bool);
+    [global::ProtoBuf.ProtoMember(8, IsRequired = false, Name=@"TxInhibit", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue(default(bool))]
+    public bool TxInhibit
+    {
+      get { return _TxInhibit; }
+      set { _TxInhibit = value; }
+    }
+
+    private string _WF = "";
+    [global::ProtoBuf.ProtoMember(9, IsRequired = false, Name=@"WF", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string WF
+    {
+      get { return _WF; }
+      set { _WF = value; }
+    }
+    [global::ProtoBuf.ProtoContract(Name=@"MsgType")]
+    public enum MsgType
+    {
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_GET_CHANNELS", Value=1)]
+      TLMDO_GET_CHANNELS = 1,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_CHANNEL", Value=2)]
+      TLMDO_SET_CHANNEL = 2,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_FREQUENCY", Value=3)]
+      TLMDO_SET_FREQUENCY = 3,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXPWR", Value=4)]
+      TLMDO_SET_TXPWR = 4,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXINHIBIT", Value=5)]
+      TLMDO_SET_TXINHIBIT = 5,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_WFALLOC", Value=6)]
+      TLMDO_SET_WFALLOC = 6,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_ERASE_CRYPT_KEYS", Value=7)]
+      TLMDO_ERASE_CRYPT_KEYS = 7,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_LOAD_CRYPT_KEYS", Value=8)]
+      TLMDO_LOAD_CRYPT_KEYS = 8
+    }
+  
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"TlmdoRsp")]
+  public partial class TlmdoRsp : global::ProtoBuf.IExtensible
+  {
+    public TlmdoRsp() {}
+    
+    private U5ki.Infrastructure.TlmdoAsk.MsgType _msgType;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"msgType", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.TlmdoAsk.MsgType msgType
+    {
+      get { return _msgType; }
+      set { _msgType = value; }
+    }
+    private bool _resultado;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"resultado", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public bool resultado
+    {
+      get { return _resultado; }
+      set { _resultado = value; }
+    }
+    private string _IdFrecuency;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"IdFrecuency", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdFrecuency
+    {
+      get { return _IdFrecuency; }
+      set { _IdFrecuency = value; }
+    }
+    private string _IdRecurso;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"IdRecurso", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdRecurso
+    {
+      get { return _IdRecurso; }
+      set { _IdRecurso = value; }
+    }
+
+    private int _NumChannels = default(int);
+    [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"NumChannels", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int NumChannels
+    {
+      get { return _NumChannels; }
+      set { _NumChannels = value; }
+    }
+
+    private U5ki.Infrastructure.TlmdoRsp.CodeTypes _Code = U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK)]
+    public U5ki.Infrastructure.TlmdoRsp.CodeTypes Code
+    {
+      get { return _Code; }
+      set { _Code = value; }
+    }
+    [global::ProtoBuf.ProtoContract(Name=@"CodeTypes")]
+    public enum CodeTypes
+    {
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_CODE_OK", Value=0)]
+      TLMDO_CODE_OK = 0,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_CODE_INVALID_OP", Value=1)]
+      TLMDO_CODE_INVALID_OP = 1,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_CODE_ERROR", Value=2)]
+      TLMDO_CODE_ERROR = 2,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_CODE_NO_RESP", Value=3)]
+      TLMDO_CODE_NO_RESP = 3,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_CODE_OTHER_IN_PROGRESS", Value=4)]
+      TLMDO_CODE_OTHER_IN_PROGRESS = 4
+    }
+  
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

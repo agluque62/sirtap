@@ -505,6 +505,7 @@ void OptionsMod::send_CFWD_callback(void *token, pjsip_event *e)
 			body[0] = '\0';
 			if (SipAgent::Cb.CfwrOptResponseCb)
 			{
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CfwrOptResponseCb"));
 				SipAgent::Cb.CfwrOptResponseCb(acc_id_for_incomming | CORESIP_ACC_ID, dstUri, callid, PJSIP_SC_BAD_REQUEST, cfwr_options_type, body);
 			}
 		}
@@ -512,6 +513,7 @@ void OptionsMod::send_CFWD_callback(void *token, pjsip_event *e)
 		{
 			if (SipAgent::Cb.CfwrOptResponseCb)
 			{
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CfwrOptResponseCb"));
 				SipAgent::Cb.CfwrOptResponseCb(acc_id_for_incomming | CORESIP_ACC_ID, dstUri, callid, tsx->status_code, cfwr_options_type, body);
 			}
 		}
@@ -739,6 +741,7 @@ pj_bool_t OptionsMod::ProcessOptCfwrRequest(pjsip_rx_data* rdata)
 			//Enviamos a la aplicacion el contenido del OPTIONS y un manejador de la respuesta (en este caso es dlg). 
 			//La aplicacion llamara a la funcion que envie la respuesta con este manejador
 			//Retornamos
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CfwrOptReceivedCb"));
 			SipAgent::Cb.CfwrOptReceivedCb(acc_id_for_incomming | CORESIP_ACC_ID, from_uri, cfwr_options_type, body, (unsigned int) r);
 			return PJ_TRUE;
 		}
@@ -966,6 +969,7 @@ pj_bool_t OptionsMod::OnRxResponse(pjsip_rx_data* rdata)
 
 		if (SipAgent::Cb.OptionsReceiveCb)
 		{
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "OptionsReceiveCb dstUri %s", dstUri));
 			SipAgent::Cb.OptionsReceiveCb(dstUri, callid, msg->line.status.code, supported, allow);
 		}
 	}

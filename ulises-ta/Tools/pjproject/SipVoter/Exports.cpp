@@ -209,6 +209,7 @@ CORESIP_API int	CORESIP_Set_Ed137_version(char ED137Radioversion, char ED137Phon
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Set_Ed137_version %c %c", ED137Radioversion, ED137Radioversion));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -224,13 +225,14 @@ CORESIP_API int	CORESIP_Set_Ed137_version(char ED137Radioversion, char ED137Phon
 			}
 		}
 		else
-		{
+		{			
 			SipAgent::Set_Ed137_version(ED137Radioversion, ED137Phoneversion);
 		}
 	}
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Set_Ed137_version result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -242,6 +244,7 @@ CORESIP_API int	CORESIP_Force_Ed137_version_header(int force, char* ED137Radiove
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Force_Ed137_version_header %d %s", force, ED137Radioversion? ED137Radioversion:""));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -264,6 +267,7 @@ CORESIP_API int	CORESIP_Force_Ed137_version_header(int force, char* ED137Radiove
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Force_Ed137_version_header result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -275,6 +279,7 @@ CORESIP_API int	CORESIP_Get_Ed137_version(char *ED137Radioversion, char *ED137Ph
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Get_Ed137_version"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -297,6 +302,7 @@ CORESIP_API int	CORESIP_Get_Ed137_version(char *ED137Radioversion, char *ED137Ph
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Get_Ed137_version result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -308,6 +314,7 @@ CORESIP_API int	CORESIP_SetSipPort(int port, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetSipPort %d", port));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -330,6 +337,7 @@ CORESIP_API int	CORESIP_SetSipPort(int port, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetSipPort result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -341,6 +349,7 @@ CORESIP_API int CORESIP_SetLogLevel(unsigned level, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetLogLevel %u", level));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -363,6 +372,7 @@ CORESIP_API int CORESIP_SetLogLevel(unsigned level, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetLogLevel result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -374,6 +384,7 @@ CORESIP_API int CORESIP_SetParams(const int* MaxForwards, const int* Options_ans
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetParams %d, %d", MaxForwards ? *MaxForwards : -1, Options_answer_code ? *Options_answer_code : -1));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -396,6 +407,7 @@ CORESIP_API int CORESIP_SetParams(const int* MaxForwards, const int* Options_ans
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetParams result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -407,6 +419,7 @@ CORESIP_API int	CORESIP_SetJitterBuffer(unsigned adaptive, unsigned initial_pref
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetJitterBuffer %u,%u,%u,%u,%u", adaptive, initial_prefetch, min_prefetch, max_prefetch, discard));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 2000);
 
 	Try
@@ -429,6 +442,7 @@ CORESIP_API int	CORESIP_SetJitterBuffer(unsigned adaptive, unsigned initial_pref
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetJitterBuffer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -452,6 +466,7 @@ CORESIP_API int CORESIP_CreateAccount(const char * acc, int defaultAcc, int * ac
 		if (--tries <= 0) break;
 	}
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccount %s,%d", acc ? acc : "NULL", defaultAcc));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -474,6 +489,7 @@ CORESIP_API int CORESIP_CreateAccount(const char * acc, int defaultAcc, int * ac
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccount result accId %d ret %d, %s", accId ? *accId:-1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -485,6 +501,7 @@ CORESIP_API int CORESIP_CreateAccountForceContact(const char* acc, int defaultAc
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountForceContact %s,%d", acc ? acc : "NULL", defaultAcc));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -507,6 +524,7 @@ CORESIP_API int CORESIP_CreateAccountForceContact(const char* acc, int defaultAc
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountForceContact result accId %d ret %d, %s", accId ? *accId : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -518,6 +536,7 @@ CORESIP_API int CORESIP_CreateAccountProxyRouting(const char * acc, int defaultA
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountProxyRouting %s,%d", acc ? acc : "NULL", defaultAcc));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -540,6 +559,7 @@ CORESIP_API int CORESIP_CreateAccountProxyRouting(const char * acc, int defaultA
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountProxyRouting result accId %d ret %d, %s", accId ? *accId : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -552,6 +572,7 @@ CORESIP_API int CORESIP_CreateAccountAndRegisterInProxy(const char * acc, int de
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountAndRegisterInProxy %s,%d", acc ? acc : "NULL", defaultAcc));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -574,6 +595,7 @@ CORESIP_API int CORESIP_CreateAccountAndRegisterInProxy(const char * acc, int de
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountAndRegisterInProxy result accId %d ret %d, %s", accId ? *accId : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -586,6 +608,7 @@ CORESIP_API int CORESIP_CreateAccountAndRegisterInProxyForceContact(const char* 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountAndRegisterInProxyForceContact %s,%d", acc ? acc : "NULL", defaultAcc));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -608,6 +631,7 @@ CORESIP_API int CORESIP_CreateAccountAndRegisterInProxyForceContact(const char* 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateAccountAndRegisterInProxyForceContact result accId %d ret %d, %s", accId ? *accId : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -619,6 +643,7 @@ CORESIP_API int CORESIP_DestroyAccount(int accId, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyAccount %d", accId));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -654,6 +679,7 @@ CORESIP_API int CORESIP_DestroyAccount(int accId, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyAccount result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -665,6 +691,7 @@ CORESIP_API int CORESIP_SetTipoGRS(int accId, CORESIP_CallFlagsMask FlagGRS, int
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetTipoGRS %d,0x%x,%d", accId, FlagGRS, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -692,6 +719,7 @@ CORESIP_API int CORESIP_SetTipoGRS(int accId, CORESIP_CallFlagsMask FlagGRS, int
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetTipoGRS result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -705,6 +733,9 @@ CORESIP_API int CORESIP_SetGRSParams(int accId, char* RdFr, unsigned int *Tj1, u
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetGRSParams %d,%s,%d,%d,%d,%s,%d,%d,%d", accId, RdFr ? RdFr : "NULL", Tj1 ? *Tj1 : -1, Ts1 ? *Ts1 : -1, Ts2 ? *Ts2 : -1,
+		preferred_grs_bss_method ? preferred_grs_bss_method : "NULL", preferred_grs_bss_method_code ? *preferred_grs_bss_method_code : -1,
+		forced_ptt_id ? *forced_ptt_id : -1, selcal_supported? *selcal_supported:-1));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -742,6 +773,7 @@ CORESIP_API int CORESIP_SetGRSParams(int accId, char* RdFr, unsigned int *Tj1, u
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetGRSParams result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -753,6 +785,7 @@ CORESIP_API int CORESIP_GRS_Force_Ptt_Mute(int call, CORESIP_PttType PttType, un
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_Ptt_Mute %d,%d,%d,%d", call, PttType, PttId, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -786,6 +819,7 @@ CORESIP_API int CORESIP_GRS_Force_Ptt_Mute(int call, CORESIP_PttType PttType, un
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_Ptt_Mute result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -797,6 +831,7 @@ CORESIP_API int CORESIP_GRS_Force_Ptt(int call, CORESIP_PttType PttType, unsigne
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_Ptt %d,%d,%d", call, PttType, PttId));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -822,7 +857,7 @@ CORESIP_API int CORESIP_GRS_Force_Ptt(int call, CORESIP_PttType PttType, unsigne
 				{
 					error->Code = 0;
 					strcpy(error->File, __FILE__);
-					sprintf(error->Info, "CORESIP_GRS_Force_Ptt_Mute: Invalid call id 0x%X", call);
+					sprintf(error->Info, "CORESIP_GRS_Force_Ptt: Invalid call id 0x%X", call);
 				}
 			}
 		}
@@ -830,6 +865,7 @@ CORESIP_API int CORESIP_GRS_Force_Ptt(int call, CORESIP_PttType PttType, unsigne
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_Ptt result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -841,6 +877,7 @@ CORESIP_API int CORESIP_GRS_Force_SCT(int call, bool on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_SCT %d,%d", call, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -874,6 +911,7 @@ CORESIP_API int CORESIP_GRS_Force_SCT(int call, bool on, CORESIP_Error* error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GRS_Force_SCT result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -885,6 +923,7 @@ CORESIP_API int CORESIP_Force_PTTS(int call, bool on, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Force_PTTS %d,%d", call, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -918,6 +957,7 @@ CORESIP_API int CORESIP_Force_PTTS(int call, bool on, CORESIP_Error* error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Force_PTTS result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -929,6 +969,7 @@ CORESIP_API int CORESIP_AddSndDevice(const CORESIP_SndDeviceInfo * info, int * d
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AddSndDevice"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -951,6 +992,7 @@ CORESIP_API int CORESIP_AddSndDevice(const CORESIP_SndDeviceInfo * info, int * d
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AddSndDevice result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -962,6 +1004,7 @@ CORESIP_API int CORESIP_CreateWavPlayer(const char * file, unsigned loop, int * 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateWavPlayer %s,%u", file?file:"NULL", loop));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -984,6 +1027,7 @@ CORESIP_API int CORESIP_CreateWavPlayer(const char * file, unsigned loop, int * 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateWavPlayer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -995,6 +1039,7 @@ CORESIP_API int CORESIP_DestroyWavPlayer(int wavPlayer, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyWavPlayer %d", wavPlayer));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1018,6 +1063,7 @@ CORESIP_API int CORESIP_DestroyWavPlayer(int wavPlayer, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyWavPlayer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1029,6 +1075,7 @@ CORESIP_API int CORESIP_CreateWavRecorder(const char * file, int * wavRecorder, 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateWavRecorder %s", file?file:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1051,6 +1098,7 @@ CORESIP_API int CORESIP_CreateWavRecorder(const char * file, int * wavRecorder, 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateWavRecorder result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1062,6 +1110,7 @@ CORESIP_API int CORESIP_DestroyWavRecorder(int wavRecorder, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyWavRecorder %d", wavRecorder));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1085,6 +1134,7 @@ CORESIP_API int CORESIP_DestroyWavRecorder(int wavRecorder, CORESIP_Error * erro
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyWavRecorder result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1097,6 +1147,7 @@ CORESIP_API int CORESIP_CreateRdRxPort(const CORESIP_RdRxPortInfo * info, const 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateRdRxPort"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1119,6 +1170,7 @@ CORESIP_API int CORESIP_CreateRdRxPort(const CORESIP_RdRxPortInfo * info, const 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateRdRxPort result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1130,6 +1182,7 @@ CORESIP_API int CORESIP_DestroyRdRxPort(int rdRxPort, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyRdRxPort"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1152,6 +1205,7 @@ CORESIP_API int CORESIP_DestroyRdRxPort(int rdRxPort, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyRdRxPort result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1163,6 +1217,7 @@ CORESIP_API int CORESIP_CreateSndRxPort(const char * id, int * sndRxPort, CORESI
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyRdRxPort"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1185,6 +1240,7 @@ CORESIP_API int CORESIP_CreateSndRxPort(const char * id, int * sndRxPort, CORESI
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateSndRxPort result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1196,6 +1252,7 @@ CORESIP_API int CORESIP_DestroySndRxPort(int sndRxPort, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroySndRxPort"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1218,6 +1275,7 @@ CORESIP_API int CORESIP_DestroySndRxPort(int sndRxPort, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroySndRxPort result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1229,6 +1287,7 @@ CORESIP_API int CORESIP_BridgeLink(int src, int dst, int on, CORESIP_Error * err
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_BridgeLink src 0x%x, dst 0x%x, on %d", src, dst, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1252,6 +1311,7 @@ CORESIP_API int CORESIP_BridgeLink(int src, int dst, int on, CORESIP_Error * err
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_BridgeLink result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1263,6 +1323,7 @@ CORESIP_API int CORESIP_SendToRemote(int dev, int on, const char * id, const cha
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendToRemote"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1285,6 +1346,7 @@ CORESIP_API int CORESIP_SendToRemote(int dev, int on, const char * id, const cha
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendToRemote result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1296,6 +1358,7 @@ CORESIP_API int CORESIP_ReceiveFromRemote(const char * localIp, const char * mca
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_ReceiveFromRemote"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1318,6 +1381,7 @@ CORESIP_API int CORESIP_ReceiveFromRemote(const char * localIp, const char * mca
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_ReceiveFromRemote result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1329,6 +1393,7 @@ CORESIP_API int CORESIP_SetVolume(int id, unsigned volume, CORESIP_Error * error
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetVolume id %d v %u", id, volume));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1351,6 +1416,7 @@ CORESIP_API int CORESIP_SetVolume(int id, unsigned volume, CORESIP_Error * error
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetVolume result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1362,6 +1428,7 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * err
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetVolume id %d", id));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1384,6 +1451,7 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * err
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetVolume result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1395,6 +1463,13 @@ CORESIP_API int CORESIP_CallMake(const CORESIP_CallInfo * info, const CORESIP_Ca
 {
 	int ret = CORESIP_OK;	
 
+	if (TRACE_ALL_CALLS)
+	{
+		char dstUri[CORESIP_MAX_URI_LENGTH + 1];
+		if (outInfo) pj_memcpy(dstUri, outInfo->DstUri, sizeof(dstUri));
+		dstUri[CORESIP_MAX_URI_LENGTH] = '\0';
+		PJ_LOG(3, (__FILE__, "CORESIP_CallMake AccountId %d DstUri %s", info ? info->AccountId : -1, dstUri));
+	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1417,6 +1492,7 @@ CORESIP_API int CORESIP_CallMake(const CORESIP_CallInfo * info, const CORESIP_Ca
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallMake result callid %d ret %d, %s", call ? *call : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1428,6 +1504,7 @@ CORESIP_API int CORESIP_CallAnswer(int call, unsigned code, int addToConference,
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallAnswer %d,%u,%d,%u,%s", call, code, addToConference, reason_code, reason_text? reason_text:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1461,6 +1538,7 @@ CORESIP_API int CORESIP_CallAnswer(int call, unsigned code, int addToConference,
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallAnswer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1472,6 +1550,7 @@ CORESIP_API int CORESIP_CallMovedTemporallyAnswer(int call, const char *dst, con
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallMovedTemporallyAnswer %d,%s,%s", call, dst?dst:"NULL", reason ? reason : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1506,6 +1585,7 @@ CORESIP_API int CORESIP_CallMovedTemporallyAnswer(int call, const char *dst, con
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallMovedTemporallyAnswer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1518,6 +1598,7 @@ CORESIP_API int CORESIP_CallProccessRedirect(int call, const char *dstUri, CORES
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallProccessRedirect"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1551,6 +1632,7 @@ CORESIP_API int CORESIP_CallProccessRedirect(int call, const char *dstUri, CORES
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallProccessRedirect result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1562,6 +1644,7 @@ CORESIP_API int CORESIP_CallHangup(int call, unsigned code, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallHangup call %d, code %u", call, code));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1595,6 +1678,7 @@ CORESIP_API int CORESIP_CallHangup(int call, unsigned code, CORESIP_Error * erro
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallHangup result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1606,6 +1690,7 @@ CORESIP_API int CORESIP_CallHold(int call, int hold, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallHold call %d, hold %d", call, hold));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1639,6 +1724,7 @@ CORESIP_API int CORESIP_CallHold(int call, int hold, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallHold result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1650,6 +1736,8 @@ CORESIP_API int CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallTyp
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallReinvite call %d CallType_SDP %d TxRx_SDP %d etm_vcs_bss_methods %s ForceSDPSendRecvAttr %d", 
+		call, CallType_SDP, TxRx_SDP, etm_vcs_bss_methods? etm_vcs_bss_methods :"NULL", ForceSDPSendRecvAttr));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1672,6 +1760,7 @@ CORESIP_API int CORESIP_CallReinvite(int call, CORESIP_Error* error, int CallTyp
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallReinvite result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1683,6 +1772,8 @@ CORESIP_API int CORESIP_CallTransfer(int call, int dstCall, const char * dst, co
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallTransfer %d,%d,%s,%s",
+		call, dstCall, dst ? dst : "NULL", display_name? display_name:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1716,6 +1807,7 @@ CORESIP_API int CORESIP_CallTransfer(int call, int dstCall, const char * dst, co
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallTransfer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1729,6 +1821,12 @@ CORESIP_API int CORESIP_CallPtt(int call, const CORESIP_PttInfo * info, CORESIP_
 
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS)
+	{
+		if (info) PJ_LOG(3, (__FILE__, "CORESIP_CallPtt call %d PttId %u PttType %d PttMute %u Qidx %u Squ %u",
+			call, info->PttId, info->PttType, info->PttMute, info->Qidx, info->Squ));
+		else PJ_LOG(3, (__FILE__, "CORESIP_CallPtt call %d info NULL", call));
+	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1762,6 +1860,7 @@ CORESIP_API int CORESIP_CallPtt(int call, const CORESIP_PttInfo * info, CORESIP_
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallPtt result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1775,6 +1874,12 @@ CORESIP_API int CORESIP_CallPtt_Delayed(int call, const CORESIP_PttInfo* info, u
 
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS)
+	{
+		if (info) PJ_LOG(3, (__FILE__, "CORESIP_CallPtt_Delayed call %d PttId %u PttType %d PttMute %u Qidx %u Squ %u delay_ms %u",
+			call, info->PttId, info->PttType, info->PttMute, info->Qidx, info->Squ, delay_ms));
+		else PJ_LOG(3, (__FILE__, "CORESIP_CallPtt_Delayed call %d info NULL", call));
+	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1808,6 +1913,7 @@ CORESIP_API int CORESIP_CallPtt_Delayed(int call, const CORESIP_PttInfo* info, u
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallPtt_Delayed result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1819,6 +1925,7 @@ CORESIP_API int CORESIP_CallSendInfo(int call, const char * info, CORESIP_Error 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallSendInfo call %d info %s", call, info ? info : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1852,6 +1959,7 @@ CORESIP_API int CORESIP_CallSendInfo(int call, const char * info, CORESIP_Error 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallSendInfo result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1908,6 +2016,7 @@ CORESIP_API int CORESIP_CallConference(int call, int conf, CORESIP_Error * error
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallConference call %d conf %d", call, conf));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1941,6 +2050,7 @@ CORESIP_API int CORESIP_CallConference(int call, int conf, CORESIP_Error * error
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallConference result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1952,6 +2062,7 @@ CORESIP_API int CORESIP_CallSendConfInfo(int call, const CORESIP_ConfInfo * info
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallSendConfInfo call %d", call));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1985,6 +2096,7 @@ CORESIP_API int CORESIP_CallSendConfInfo(int call, const CORESIP_ConfInfo * info
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CallSendConfInfo result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -1996,6 +2108,7 @@ CORESIP_API int CORESIP_SendConfInfoFromAcc(int accId, const CORESIP_ConfInfo * 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendConfInfoFromAcc accId %d", accId));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2018,6 +2131,7 @@ CORESIP_API int CORESIP_SendConfInfoFromAcc(int accId, const CORESIP_ConfInfo * 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendConfInfoFromAcc result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2029,6 +2143,7 @@ CORESIP_API int CORESIP_TransferAnswer(const char * tsxKey, void * txData, void 
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_TransferAnswer"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2051,6 +2166,7 @@ CORESIP_API int CORESIP_TransferAnswer(const char * tsxKey, void * txData, void 
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_TransferAnswer result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2062,6 +2178,7 @@ CORESIP_API int CORESIP_TransferNotify(void * evSub, unsigned code, CORESIP_Erro
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_TransferNotify evsub %p code %u", evSub, code));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2084,6 +2201,7 @@ CORESIP_API int CORESIP_TransferNotify(void * evSub, unsigned code, CORESIP_Erro
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_TransferNotify result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2098,6 +2216,7 @@ CORESIP_API int CORESIP_SendOptionsMsg(const char * dst, char * callid, int isRa
 
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsMsg dst %s", dst?dst:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2120,6 +2239,7 @@ CORESIP_API int CORESIP_SendOptionsMsg(const char * dst, char * callid, int isRa
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsMsg result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2132,6 +2252,7 @@ CORESIP_API int CORESIP_SendOptionsCFWD(int accId, const char* dst, CORESIP_CFWR
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsCFWD"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2154,6 +2275,7 @@ CORESIP_API int CORESIP_SendOptionsCFWD(int accId, const char* dst, CORESIP_CFWR
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsCFWD result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2166,6 +2288,7 @@ CORESIP_API int CORESIP_SendResponseCFWD(int st_code, const char* body, unsigned
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendResponseCFWD"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2188,6 +2311,7 @@ CORESIP_API int CORESIP_SendResponseCFWD(int st_code, const char* body, unsigned
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendResponseCFWD result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2200,6 +2324,7 @@ CORESIP_API int CORESIP_SendOptionsMsgProxy(const char * dst, char * callid, int
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsMsgProxy dst %s", dst?dst:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2222,6 +2347,7 @@ CORESIP_API int CORESIP_SendOptionsMsgProxy(const char * dst, char * callid, int
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendOptionsMsgProxy result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2234,6 +2360,7 @@ CORESIP_API int CORESIP_Wav2RemoteStart(const char *filename, const char * id, c
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Wav2RemoteStart %s", filename ? filename : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2256,6 +2383,7 @@ CORESIP_API int CORESIP_Wav2RemoteStart(const char *filename, const char * id, c
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Wav2RemoteStart result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2267,6 +2395,7 @@ CORESIP_API int CORESIP_Wav2RemoteEnd(void *obj, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Wav2RemoteEnd"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2289,6 +2418,7 @@ CORESIP_API int CORESIP_Wav2RemoteEnd(void *obj, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Wav2RemoteEnd result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2300,6 +2430,7 @@ CORESIP_API int CORESIP_RdPttEvent(bool on, const char *freqId, int dev, CORESIP
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RdPttEvent"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2323,6 +2454,7 @@ CORESIP_API int CORESIP_RdPttEvent(bool on, const char *freqId, int dev, CORESIP
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RdPttEvent result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2335,6 +2467,7 @@ CORESIP_API int CORESIP_RdSquEvent(bool on, const char *freqId, const char *reso
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RdSquEvent"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2357,6 +2490,7 @@ CORESIP_API int CORESIP_RdSquEvent(bool on, const char *freqId, const char *reso
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RdSquEvent result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2368,6 +2502,7 @@ CORESIP_API int CORESIP_RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * erro
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RecorderCmd cmd %d", cmd));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2390,6 +2525,7 @@ CORESIP_API int CORESIP_RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * erro
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_RecorderCmd result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2401,6 +2537,7 @@ CORESIP_API int CORESIP_CreatePresenceSubscription(char *dest_uri, CORESIP_Error
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreatePresenceSubscription %s", dest_uri? dest_uri:"NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -2423,6 +2560,7 @@ CORESIP_API int CORESIP_CreatePresenceSubscription(char *dest_uri, CORESIP_Error
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreatePresenceSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2434,6 +2572,7 @@ CORESIP_API int CORESIP_DestroyPresenceSubscription(char *dest_uri, CORESIP_Erro
 {
 	int ret = CORESIP_OK;
 	
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyPresenceSubscription %s", dest_uri ? dest_uri : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2456,6 +2595,7 @@ CORESIP_API int CORESIP_DestroyPresenceSubscription(char *dest_uri, CORESIP_Erro
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyPresenceSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2467,6 +2607,8 @@ CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, int call, char *
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateConferenceSubscription accId %d call %d dest_uri %s by_proxy %d", 
+		accId, call, dest_uri?dest_uri:"NULL", by_proxy));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -2509,6 +2651,7 @@ CORESIP_API int CORESIP_CreateConferenceSubscription(int accId, int call, char *
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateConferenceSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2520,6 +2663,7 @@ CORESIP_API int CORESIP_DestroyConferenceSubscription(char *dest_uri, CORESIP_Er
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyConferenceSubscription dest_uri %s", dest_uri ? dest_uri : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -2542,6 +2686,7 @@ CORESIP_API int CORESIP_DestroyConferenceSubscription(char *dest_uri, CORESIP_Er
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyConferenceSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2553,6 +2698,8 @@ CORESIP_API int CORESIP_CreateDialogSubscription(int accId, char *dest_uri, pj_b
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateDialogSubscription accId %d dest_uri %s by_proxy %d",
+		accId, dest_uri ? dest_uri : "NULL", by_proxy));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -2575,6 +2722,7 @@ CORESIP_API int CORESIP_CreateDialogSubscription(int accId, char *dest_uri, pj_b
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateDialogSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2586,6 +2734,7 @@ CORESIP_API int CORESIP_DestroyDialogSubscription(char* dest_uri, CORESIP_Error*
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyDialogSubscription dest_uri %s", dest_uri ? dest_uri : "NULL"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2608,6 +2757,7 @@ CORESIP_API int CORESIP_DestroyDialogSubscription(char* dest_uri, CORESIP_Error*
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyDialogSubscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2619,6 +2769,8 @@ CORESIP_API int CORESIP_SendWG67Subscription(int accId, char* dest_uri, int expi
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendWG67Subscription accId %d dest_uri %s expires %d noRefresh %d",
+		accId, dest_uri ? dest_uri : "NULL", expires, noRefresh));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2651,6 +2803,7 @@ CORESIP_API int CORESIP_SendWG67Subscription(int accId, char* dest_uri, int expi
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendWG67Subscription result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2662,6 +2815,8 @@ CORESIP_API int CORESIP_SetWG67SubscriptionParameters(int accId, char* dest_uri,
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetWG67SubscriptionParameters accId %d dest_uri %s noRefresh %d",
+		accId, dest_uri ? dest_uri : "NULL", noRefresh));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2694,6 +2849,7 @@ CORESIP_API int CORESIP_SetWG67SubscriptionParameters(int accId, char* dest_uri,
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetWG67SubscriptionParameters result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2705,6 +2861,8 @@ CORESIP_API int CORESIP_Set_WG67_Notifier_Parameters(int notify_enabled, int man
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Set_WG67_Notifier_Parameters notify_enabled %d manual %d minimum_expires %d maximum_expires %d",
+		notify_enabled, manual, minimum_expires, maximum_expires));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2727,6 +2885,7 @@ CORESIP_API int CORESIP_Set_WG67_Notifier_Parameters(int notify_enabled, int man
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Set_WG67_Notifier_Parameters result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2739,6 +2898,31 @@ CORESIP_API int CORESIP_Set_WG67_notify_status(int accId, char* subscriberUri, C
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS)
+	{
+		char subsuri[CORESIP_MAX_URI_LENGTH + 1];
+		if (subscriberUri)
+		{
+			pj_memcpy(subsuri, subscriberUri, sizeof(subsuri));
+			subsuri[CORESIP_MAX_URI_LENGTH] = '\0';
+		}
+		else
+		{
+			pj_ansi_strcpy(subsuri, "NULL");
+		}
+		PJ_LOG(3, (__FILE__, "CORESIP_Set_WG67_notify_status accId %d subscriberUri %s", accId, subsuri));		
+	}
+	if ((TRACE_ALL_CALLS) && subsState)
+	{
+		char reason[CORESIP_MAX_URI_LENGTH + 1];
+		pj_memcpy(reason, subsState->reason, sizeof(subsState->reason));
+		reason[CORESIP_MAX_URI_LENGTH] = '\0';
+		char subscription_state[CORESIP_MAX_URI_LENGTH + 1];
+		pj_memcpy(subscription_state, subsState->subscription_state, sizeof(subsState->subscription_state));
+		subscription_state[CORESIP_MAX_URI_LENGTH] = '\0';
+		PJ_LOG(3, (__FILE__, "CORESIP_Set_WG67_notify_status expires %d reason %s retry_after %d subscription_state %s",
+			subsState->expires, reason, subsState->retry_after, subscription_state));
+	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2771,6 +2955,7 @@ CORESIP_API int CORESIP_Set_WG67_notify_status(int accId, char* subscriberUri, C
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Set_WG67_notify_status result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2782,6 +2967,7 @@ CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscript
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Get_GRS_WG67SubscriptionsList accId %d", accId));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2815,6 +3001,7 @@ CORESIP_API int CORESIP_Get_GRS_WG67SubscriptionsList(int accId, int* nSubscript
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_Get_GRS_WG67SubscriptionsList result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2827,6 +3014,7 @@ CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, int jitter_buff_size
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateGenericPort jitter_buff_size %d", jitter_buff_size));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2849,6 +3037,7 @@ CORESIP_API int CORESIP_CreateGenericPort(int* gen_port_id, int jitter_buff_size
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateGenericPort result gen_port_id %d ret %d, %s", gen_port_id ? *gen_port_id : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -2860,6 +3049,7 @@ CORESIP_API int CORESIP_DestroyGenericPort(int gen_port_id, CORESIP_Error* error
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyGenericPort gen_port_id %d", gen_port_id));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -2882,6 +3072,7 @@ CORESIP_API int CORESIP_DestroyGenericPort(int gen_port_id, CORESIP_Error* error
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyGenericPort result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3022,6 +3213,8 @@ CORESIP_API int CORESIP_SendInstantMessage(int acc_id, char *dest_uri, char *tex
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendInstantMessage acc_id %d dest_uri %s text %s by_proxy %d", 
+		acc_id, dest_uri? dest_uri:"NULL", text?text:"NULL", by_proxy));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -3044,6 +3237,7 @@ CORESIP_API int CORESIP_SendInstantMessage(int acc_id, char *dest_uri, char *tex
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendInstantMessage result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3056,6 +3250,7 @@ CORESIP_API int CORESIP_EchoCancellerLCMic(bool on, CORESIP_Error * error)
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_EchoCancellerLCMic"));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 	
 	Try
@@ -3078,6 +3273,7 @@ CORESIP_API int CORESIP_EchoCancellerLCMic(bool on, CORESIP_Error * error)
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_EchoCancellerLCMic result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3086,6 +3282,15 @@ CORESIP_API int CORESIP_SetImpairments(int call, CORESIP_Impairments * impairmen
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS)
+	{
+		if (impairments == NULL) PJ_LOG(3, (__FILE__, "CORESIP_SetImpairments call %d impairments NULL"));
+		else
+		{
+			PJ_LOG(3, (__FILE__, "CORESIP_SetImpairments call %d Duplicados %d LatMax %d LatMin %d Perdidos %d",
+				call, impairments->Duplicados, impairments->LatMax, impairments->LatMin, impairments->Perdidos));
+		}
+	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3108,6 +3313,7 @@ CORESIP_API int CORESIP_SetImpairments(int call, CORESIP_Impairments * impairmen
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetImpairments result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3116,6 +3322,8 @@ CORESIP_API int CORESIP_SetCallParameters(int call, int *disableKeepAlives, int*
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetCallParameters call %d disableKeepAlives %d forced_cld %d",
+		call, disableKeepAlives ? *disableKeepAlives : -1, forced_cld ? *forced_cld : -1));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3138,6 +3346,7 @@ CORESIP_API int CORESIP_SetCallParameters(int call, int *disableKeepAlives, int*
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetCallParameters result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3149,6 +3358,7 @@ CORESIP_API int CORESIP_SetConfirmPtt(int call, pj_bool_t val, CORESIP_Error* er
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetConfirmPtt call %d val %d", call, val));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3171,6 +3381,7 @@ CORESIP_API int CORESIP_SetConfirmPtt(int call, pj_bool_t val, CORESIP_Error* er
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetConfirmPtt result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3182,6 +3393,7 @@ CORESIP_API int CORESIP_GetNetworkDelay(int call, unsigned int* delay_ms, CORESI
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetNetworkDelay call %d", call));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3204,6 +3416,7 @@ CORESIP_API int CORESIP_GetNetworkDelay(int call, unsigned int* delay_ms, CORESI
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetNetworkDelay result delay_ms %d ret %d, %s", delay_ms? *delay_ms:-1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3215,6 +3428,7 @@ CORESIP_API int CORESIP_SendToneToCall(int call, unsigned int frequency, float v
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendToneToCall call %d frequency %u volume_dbm0 %f on %d", call, frequency, volume_dbm0, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3237,6 +3451,7 @@ CORESIP_API int CORESIP_SendToneToCall(int call, unsigned int frequency, float v
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendToneToCall result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3248,6 +3463,7 @@ CORESIP_API int CORESIP_SendNoiseToCall(int call, float volume_dbm0, int on, COR
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendNoiseToCall call %d volume_dbm0 %f on %d", call, volume_dbm0, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3270,6 +3486,7 @@ CORESIP_API int CORESIP_SendNoiseToCall(int call, float volume_dbm0, int on, COR
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendNoiseToCall result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3281,6 +3498,7 @@ CORESIP_API int CORESIP_SendPinkNoiseToCall(int call, float volume_dbm0, int on,
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendPinkNoiseToCall call %d volume_dbm0 %f on %d", call, volume_dbm0, on));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3303,6 +3521,7 @@ CORESIP_API int CORESIP_SendPinkNoiseToCall(int call, float volume_dbm0, int on,
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendPinkNoiseToCall result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3314,6 +3533,7 @@ CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map* digit_m
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendDTMF call %d", call));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3336,6 +3556,7 @@ CORESIP_API int CORESIP_SendDTMF(int call, const CORESIP_tone_digit_map* digit_m
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendDTMF result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
@@ -3347,6 +3568,7 @@ CORESIP_API int CORESIP_SendSELCAL(int call, const char* selcalValue, CORESIP_Er
 {
 	int ret = CORESIP_OK;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendSELCAL call %d %s", call, selcalValue));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -3369,6 +3591,7 @@ CORESIP_API int CORESIP_SendSELCAL(int call, const char* selcalValue, CORESIP_Er
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SendSELCAL result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }

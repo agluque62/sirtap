@@ -1520,6 +1520,7 @@ pj_bool_t WG67Subs::SubscriptionRxRequest(pjsip_rx_data* rdata, pjsip_dialog* dl
 					SubscriberUri[0] = '\0';
 				}
 				sub_user_data->in_WG67SubscriptionReceivedCb = PJ_TRUE;
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "WG67SubscriptionReceivedCb SubscriberUri %s", SubscriberUri));
 				SipAgent::Cb.WG67SubscriptionReceivedCb(accid | CORESIP_ACC_ID, SubscriberUri);
 				sub_user_data->in_WG67SubscriptionReceivedCb = PJ_FALSE;
 			}
@@ -2193,6 +2194,7 @@ void WG67Subs::CallSubscribeCallback(CORESIP_WG67_Subscription_Info* last_info, 
 	{
 		if (SipAgent::Cb.WG67SubscriptionStateCb)
 		{
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "WG67SubscriptionStateCb"));
 			SipAgent::Cb.WG67SubscriptionStateCb(current_info);
 		}
 

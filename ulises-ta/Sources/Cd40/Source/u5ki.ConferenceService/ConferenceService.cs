@@ -25,18 +25,18 @@ namespace u5ki.ConferenceService
     {
         private class bkkNotifyStatusParamInfo
         {
-            public string user;                     // user extension
-            public string status;                      // status code
-            public string other_number;             // the extension of the other user in the call
-            public string room_id;                  // room ID of the call, required by some request methods below as rid
-            public string talker_id;                // talker ID of the user, required by some request methods below as tid
-            public string user_display_name;        // the display name of the user
-            public string other_user_display_name;  // the display name of the other user in the call
-            public string time;                     // the time stamp of the call
-            public string logid;                    // the ID number, which is the same as the number in the request method
-            public string rescode;                  // response code, used only in the disconnected call response with status -1
-            public string disconnected_by;          // 1 or 0, used only in the disconnected call response with status -1. “1” means the session is disconnected by the UA and “0” means the session is disconnected by PBX.
-            public string q850code;                 // q850 code, used only in the disconnected call response with status -1
+            public string user { get; set; }                     // user extension
+            public string status { get; set; }                   // status code
+            public string other_number { get; set; }             // the extension of the other user in the call
+            public string room_id { get; set; }                  // room ID of the call, required by some request methods below as rid
+            public string talker_id { get; set; }                // talker ID of the user, required by some request methods below as tid
+            public string user_display_name { get; set; }        // the display name of the user
+            public string other_user_display_name { get; set; }  // the display name of the other user in the call
+            public string time { get; set; }                     // the time stamp of the call
+            public string logid { get; set; }                    // the ID number, which is the same as the number in the request method
+            public string rescode { get; set; }                  // response code, used only in the disconnected call response with status -1
+            public string disconnected_by { get; set; }          // 1 or 0, used only in the disconnected call response with status -1. “1” means the session is disconnected by the UA and “0” means the session is disconnected by PBX.
+            public string q850code { get; set; }                 // q850 code, used only in the disconnected call response with status -1
         };
 
         //Status codes:
@@ -372,7 +372,7 @@ namespace u5ki.ConferenceService
         {
             pbxws = null;
             if (BrekekeAddress == null) return;
-            if (BrekekeWebPort == null) return;
+            //if (BrekekeWebPort == null) return;
 
             pbxUrl = String.Format("ws://{0}:{1}/pbx/ws?login_user={2}&login_password={3}&user=*&status=True",
                 BrekekeAddress, BrekekeWebPort,
@@ -558,7 +558,7 @@ namespace u5ki.ConferenceService
                     }
                 }
             }
-            catch (Exception x)
+            catch 
             {                
             }
 
@@ -580,7 +580,7 @@ namespace u5ki.ConferenceService
                     }
                 }
             }
-            catch(Exception x)
+            catch
             {
             }
                         

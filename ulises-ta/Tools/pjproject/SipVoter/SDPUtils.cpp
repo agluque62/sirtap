@@ -423,11 +423,25 @@ void SDPUtils::OnCreateSdp(pj_pool_t* pool, int call_id, void* local_sdp, void* 
 			{
 				pjmedia_sdp_attr* attr = pjmedia_sdp_media_find_attr2(sdp->media[0], "sendrecv", NULL);
 				if (attr != NULL)
-					attr->name = gSendOnly;
+				{
+					if (callinfo.id != PJSUA_INVALID_ID)
+					{
+						if (callinfo.role == PJSIP_ROLE_UAC) attr->name = gSendOnly;
+						else attr->name = gRecvOnly;
+					}
+					else
+					{
+						//En este caso la llamada no ha sido establecida, nosotros somos los que actuamos de uac
+						// es decir, los que llamamos
+						attr->name = gSendOnly;
+					}
+				}
 			}
 		}
 		else if (rdata && !SipAgent::EnableMonitoring)
 		{
+			//call es NULL, es el primer INVITE que recibimos con UAS
+
 			pjsip_subject_hdr* subject = (pjsip_subject_hdr*)pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &gSubjectHdr, NULL);
 			if (subject && (pj_stricmp(&subject->hvalue, &gSubject[CORESIP_CALL_IA]) == 0))
 			{

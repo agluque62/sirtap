@@ -16,6 +16,7 @@ using Utilities;
 using Lextm.SharpSnmpLib;
 
 using Translate;
+using NLog.Targets;
 
 namespace u5ki.RemoteControlService
 {
@@ -269,7 +270,8 @@ namespace u5ki.RemoteControlService
                     // Fecuency
                     output = SNMPFrecuencySet(
                         parsed.IP,
-                        parsed.Frecuency);
+                        parsed.Frecuency,
+                        isEmitter);
 
                     // Channel Spacing
                     if (output == GearOperationStatus.OK)
@@ -865,7 +867,7 @@ namespace u5ki.RemoteControlService
         /// <param name="frecuency"></param>
         /// <param name="openSession"></param>
         /// <returns></returns>
-        public GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, Boolean openSession = true)
+        public GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true)
         {
             String logMethod = "FRECUENCY SET";
 #if DEBUG
@@ -1581,6 +1583,13 @@ namespace u5ki.RemoteControlService
             }
             return (Int32)watt;
         }
+
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true)
+        {
+            return TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+        }
+
+
         // JOI: 20171031 ERROR #3231 
         #endregion
 

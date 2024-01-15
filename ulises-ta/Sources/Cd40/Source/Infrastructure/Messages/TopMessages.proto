@@ -127,3 +127,48 @@ message SirTapAudAlarmMsg
 	required Category category = 3;
 }
 
+message TlmdoAsk
+{
+	enum MsgType
+	{
+		TLMDO_GET_CHANNELS = 1;		//Pide numero de canales de la radio
+        TLMDO_SET_CHANNEL = 2;		//Seleccion del canal de radio
+		TLMDO_SET_FREQUENCY = 3;	//Selecciona la frecuencia del canal
+        TLMDO_SET_TXPWR = 4;		//Potencia de transmision
+        TLMDO_SET_TXINHIBIT = 5;	//Inhibicion de TX
+        TLMDO_SET_WFALLOC = 6;		//Waveform allocation. TBD
+        TLMDO_ERASE_CRYPT_KEYS = 7;	//Borra claves de encriptacion
+		TLMDO_LOAD_CRYPT_KEYS = 8;	//Carga claves de encriptacion
+	}
+
+	required MsgType msgType = 1;
+	required string HostId = 2;
+	required string IdFrecuency = 3;    //Corresponde al identificador unico que llamamos Literal
+	required string IdRecurso = 4;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	optional int32 Channel = 5;			//Valor 0-9. Canal seleccionado en el caso del mensaje TLMDO_SET_CHANNEL, 
+	optional string Frequency = 6;		//Frecuencia a la que se configura el canal. Mensaje TLMDO_SET_FREQUENCY. En el mensaje hay que especificar el Channel
+	optional string PowerW = 7;			//Potencia en watios del canal. 0.25 a 50. Mensaje TLMDO_SET_TXPWR. En el mensaje hay que especificar el Channel.
+	optional bool TxInhibit = 8;		//Si true se inhibe la transmision al transmisor independientemente del canal. Mensaje TLMDO_SET_TXINHIBIT. 
+	optional string WF = 9;				//Mensaje TLMDO_SET_WFALLOC. En el mensaje hay que especificar el Channel.
+}
+
+message TlmdoRsp
+{
+	enum CodeTypes
+	{
+		// Codigos de retorno del campo code del mensaje de respuesta
+        TLMDO_CODE_OK = 0;					//Ejecutado con exito
+		TLMDO_CODE_INVALID_OP = 1;			//Operacion no soportada
+        TLMDO_CODE_ERROR = 2;				//No se ha podido ejecutar
+        TLMDO_CODE_NO_RESP = 3;				//La radio no responde
+		TLMDO_CODE_OTHER_IN_PROGRESS = 4;   //Otra operacion de telemando esta en progreso
+	}
+
+	required TlmdoAsk.MsgType msgType = 1;
+	required bool resultado = 2;				//si false entonces no se ha podido ejecutar el comando
+	required string IdFrecuency = 3;			//Corresponde al identificador unico que llamamos Literal
+	required string IdRecurso = 4;				//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
+	optional int32 NumChannels = 5;				//Numero de canales de la radio. Mensaje TLMDO_GET_CHANNELS.
+	optional CodeTypes Code = 6;
+}
+

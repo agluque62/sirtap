@@ -319,6 +319,7 @@ void DlgSubs::on_rx_notify(pjsip_evsub *sub, pjsip_rx_data *rdata, int *p_st_cod
 
 	if (SipAgent::Cb.DialogNotifyCb)
 	{
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "DialogNotifyCb"));
 		SipAgent::Cb.DialogNotifyCb((const char *) rdata->msg_info.msg->body->data, rdata->msg_info.msg->body->len);
 	}
 

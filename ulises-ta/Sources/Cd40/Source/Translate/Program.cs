@@ -144,7 +144,7 @@ namespace Translate
                         else
                             return msg;//Sino encuentra el id devuelve lo que entra
                     }
-                    catch (Exception e)
+                    catch
                     {
                         return msg;//Sino encuentra el id devuelve lo que entra
                     }
@@ -182,7 +182,7 @@ namespace Translate
                             else
                                 translatedMsg = msg;//Sino encuentra el id devuelve lo que entra
                         }
-                        catch (Exception e)
+                        catch 
                         {
                             translatedMsg = msg;//Sino encuentra el id devuelve lo que entra
                         }
