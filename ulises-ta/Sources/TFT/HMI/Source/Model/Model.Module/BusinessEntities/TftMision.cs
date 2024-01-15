@@ -12,8 +12,8 @@ namespace HMI.Model.Module.BusinessEntities
     {
 		private string _Mision = "";
 
-		[EventPublication(EventTopicNames.TftMisionChanged, PublicationScope.Global)]
-		public event EventHandler TftMisionChanged;
+		//[EventPublication(EventTopicNames.TftMisionChangedf2, PublicationScope.Global)]
+		//public event EventHandler TftMisionChangedf2;
 
 		public string Mision
 		{
@@ -24,9 +24,67 @@ namespace HMI.Model.Module.BusinessEntities
 				{
 					_Mision = value;
 					string msg = _Mision;
-					//General.SafeLaunchEvent(TftMisionChanged, _Mision);
+					if (_Mision == "MISION 1")
+					{
+						SetPagRadio(new List<(int, bool)> { (1, true), (3, true), (5, true), (7, true), (9, true) });
+						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (8, true), (10, true), (12, true) });
+						SetPagLc(new bool[] { true, false, true, false, false, false });
+					}
+					else if (_Mision == "MISION 3")
+					{
+						SetPagRadio(new List<(int, bool)> { (1, true), (5, false), (9, true), (13, true), (17, true) });
+						SetPagTlf(new List<(int, bool)> { (2, false), (6, true), (10, true), (14, true), (18, true) });
+						SetPagLc(new bool[] { true, true, true, false, false, false });
+					}
+					else
+					{
+						SetPagRadio(new List<(int, bool)> { });
+						SetPagTlf(new List<(int, bool)> { });
+						SetPagLc(new bool[] { });
+					}
+					//General.SafeLaunchEvent(TftMisionChangedf2, this);
 				}
 			}
+		}
+
+		private List<(int, bool)> _pagrad;
+		private List<(int, bool)> _pagtlf;
+		private bool[] _paglc;
+		private void SetPagRadio(List<(int, bool)> lista)
+		{
+			_pagrad = lista;
+		}
+		private void SetPagTlf(List <(int, bool)>lista)
+		{
+			_pagtlf = lista;
+		}
+		private void SetPagLc(bool[] lista)
+		{
+			_paglc = lista;
+		}
+		public List<(int, bool)> Pagrad
+		{
+			get
+			{
+				return _pagrad;
+			}
+			set => _pagrad = value;
+		}
+		public List<(int, bool)> Pagtlf
+		{
+			get
+			{
+				return _pagtlf;
+			}
+			set => _pagtlf = value;
+		}
+		public bool[] PagLc
+		{
+			get
+			{
+				return _paglc;
+			}
+			set => _paglc = value;
 		}
 
 		public TftMision()

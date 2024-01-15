@@ -37,7 +37,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Interop;
 using Utilities;
-
+using System.Linq;
 
 
 namespace HMI.Presentation.Sirtap.Views
@@ -91,7 +91,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         }
 
-        private void _TlfPageBT_DownClick(object sender)
+        private void _TlfPageBT_UpClick(object sender)
         {
             bool up = false;
             int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
@@ -101,10 +101,42 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 _TlfPageBT.Page = 0;
             actualPage = _TlfPageBT.Page;
+            actualPage = BuscarPagina(actualPage);
+            if (actualPage==-1)
+                actualPage = BuscarPagina(-1);
+            if (actualPage == -1)
+                ;//no presentar nada.
+            _TlfPageBT.Page = actualPage;//control.
             _CmdManager.TlfLoadDaPage(actualPage);
         }
 
-        private void _TlfPageBT_UpClick(object sender)
+
+        private int BuscarPagina(int actualPage,bool inferior=false)
+        {
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6 + 1;// Radio.GetNumberOfPagesRd();
+            List< (int, bool)> _pagtlf = _StateManager.TftMision.Pagtlf;
+            int? primeraPaginaSuperior;
+            if (!inferior)
+                primeraPaginaSuperior= _pagtlf
+                .Where(p => p.Item1 > actualPage)
+                .Select(p => (int?)p.Item1)
+                .FirstOrDefault();
+            else
+                primeraPaginaSuperior = _pagtlf
+                .Where(p => p.Item1 < actualPage)
+                .Select(p => (int?)p.Item1)
+                .LastOrDefault();
+
+            if (!primeraPaginaSuperior.HasValue)
+            {
+                if (!inferior)
+                    primeraPaginaSuperior = -1;
+                else
+                    primeraPaginaSuperior = numero_paginas_tlf;
+            }
+            return (int)primeraPaginaSuperior;
+        }
+        private void _TlfPageBT_DownClick(object sender)
         {
             bool up = true;
             int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
@@ -114,6 +146,14 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 _TlfPageBT.Page = actualPage - 1;
             actualPage = _TlfPageBT.Page;
+            //actualPage = BuscarPagina(actualPage);
+            actualPage = BuscarPagina(actualPage,true);
+            _TlfPageBT.Page = actualPage;
+            if (actualPage == numero_paginas_tlf)
+                actualPage = BuscarPagina(numero_paginas_tlf,true);
+            if (actualPage == -1)
+                ;//no presentar nada.
+
             _CmdManager.TlfLoadDaPage(actualPage);
 
         }
@@ -159,6 +199,7 @@ namespace HMI.Presentation.Sirtap.Views
             if (_StateManager.Tft.Login)
             {
                 _StateManager.Tft.Login = false;
+                _CmdManager.TlfLoadDaPage(-1);
             }
             else
             {
@@ -168,12 +209,16 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 hmiButtonLogin.Text = "LOGOUT";
                 hmiButtonLogin.Update();
+
             }
             else
             {
                 MostrarDialogoLogin();
                 MostrarModo(sender);
             }
+            // De mometo para refrescar la pagina
+            // paso a la siguiente.
+            _TlfPageBT_UpClick(sender);
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]

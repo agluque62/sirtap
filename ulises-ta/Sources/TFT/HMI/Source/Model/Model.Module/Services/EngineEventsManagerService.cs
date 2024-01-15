@@ -572,13 +572,21 @@ namespace HMI.Model.Module.Services
 		}
 
 		[EventSubscription(EventTopicNames.TftMisionChanged, ThreadOption.UserInterface)]
-		public void OnTftMisionChangeda(object sender, StateMsg<string> msg)
+		public void OnTftMisionChanged(object sender, StateMsg<string> msg)
 		{
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChanged, msg);
 
 			_StateManager.TftMision.Mision = msg.State;
 		}
-		
+
+		[EventSubscription(EventTopicNames.TftMisionChangedf2, ThreadOption.UserInterface)]
+		public void OnTftMisionChangedf2(object sender, StateMsg<TftMision> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChangedf2, msg);
+
+			_StateManager.TftMision.Mision = msg.State.Mision;
+		}
+
 		[EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
         public void OnTlfSpeakerLevelEngine(object sender, LevelMsg<LcSpeaker> msg)
         {
@@ -991,6 +999,7 @@ namespace HMI.Model.Module.Services
 		{
 			string user = (string)sender;
 			string error = "";
+			// envia trap a historicos
 			_EngineCmdManager.EnviarLoginCorrectoEngine(user, error);
 		}
 	}

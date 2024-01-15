@@ -77,6 +77,7 @@ namespace HMI.Model.Module.Constants
 		public const string CouplingInProgressError = "CouplingInProgressError";
 		public const string MessageLogin= "MessageLogin";
 		public const string TftMisionChanged = "TftMisionChanged";
+		public const string TftMisionChangedf2 = "TftMisionChangedf2";
 		#endregion
 
 		#region Presentation Events

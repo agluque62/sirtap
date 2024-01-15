@@ -241,7 +241,10 @@ namespace HMI.CD40.Module.Services
         public event EventHandler FuerzoLogout;
 
         [EventPublication(EventTopicNames.TftMisionChanged, PublicationScope.Global)]
-        public event EventHandler <StateMsg<string>> TFTMisisonChangedf;
+        public event EventHandler<StateMsg<string>> TftMisionChanged;
+
+        [EventPublication(EventTopicNames.TftMisionChangedf2, PublicationScope.Global)]
+        public event EventHandler<StateMsg<TftMision>> TftMisionChangedf2;
 
         #endregion
 
@@ -835,7 +838,7 @@ namespace HMI.CD40.Module.Services
                 //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
                 var mision = ValidadorCredenciales.Login(txtUsuario, txtContrasena);
                 SetSesionSirtap(mision.Result);
-                General.SafeLaunchEvent(TFTMisisonChangedf, this, new StateMsg<string> (mision.Result));
+                General.SafeLaunchEvent(TftMisionChanged ,this, new StateMsg<string> (mision.Result));
                 //if (Top.Mixer.SetTlfHeadPhonesLevel(level))
                 //{
                 //    Top.PublisherThread.Enqueue(EventTopicNames.TlfHeadPhonesLevelEngine, delegate ()
@@ -2780,7 +2783,7 @@ namespace HMI.CD40.Module.Services
         }
 
 
-
+        // Envia trap a historicos
         public void GenerarHistoricoLoginIncorrectoEngine(string nombre, string error)
         {
             HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
@@ -2789,12 +2792,12 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+
+        // Envia trap a historicos
         public void EnviarLoginCorrectoEngine(string nombre, string error)
         {
             HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
             {
-                //SnmpStringObject a=new snmpobject();
-                //a.Loginuser = nombre;
                 Top.Rd.EnviarLoginOk(nombre);
             });
         }
