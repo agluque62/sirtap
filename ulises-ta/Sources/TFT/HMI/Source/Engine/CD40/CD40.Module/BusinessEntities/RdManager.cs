@@ -692,6 +692,7 @@ namespace HMI.CD40.Module.BusinessEntities
         /// 
         /// </summary>
         /// <param name="sender"></param>
+        int contador=0;
 		private void OnConfigChanged(object sender)
 		{
 			_ChangingCfg = true;
@@ -731,7 +732,9 @@ namespace HMI.CD40.Module.BusinessEntities
                             sf.setSelectedFrecuency(link.DefaultFrequency);
 
                             RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
-                            
+                            //posInfo.Seguro = new Random().Next(2) == 0;
+                            posInfo.Seguro = (contador++ / 2 == 0);
+
                             /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                             posInfo.KeyAlias = rd.KeyAlias;
                             //LALM 220329 introduzco DescDestino.
@@ -755,6 +758,9 @@ namespace HMI.CD40.Module.BusinessEntities
                         //List <string> listpossiblefrec = new List<string>();
                         selectable_frequencies sf= new selectable_frequencies();
                         RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
+                        posInfo.Seguro= new Random().Next(2) == 0;
+                        posInfo.Seguro = (contador++ / 2)==0;
+
                         /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                         posInfo.KeyAlias = rd.KeyAlias;
                         //LALM 210223 Errores #4756 prioridad

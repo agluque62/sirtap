@@ -26,6 +26,7 @@ namespace HMI.Model.Module.UI
 		private int _Id = 0;
 		private Rectangle _PttRect = new Rectangle();
 		private Rectangle _SquelchRect = new Rectangle();
+		private Rectangle _CandadoRect = new Rectangle();
 		private Font _SmallFont = new Font("Microsoft Sans Serif", 7.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
         private Font _MediumFontBold = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
         private Font _SmallFontBold1 = new Font("Microsoft Sans Serif", 7.25F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
@@ -33,12 +34,14 @@ namespace HMI.Model.Module.UI
         private Font _BigFont = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
 		private Image _PttImage = null;
 		private Image _SquelchImage = null;
+		private Image _CandadoImage = null;
 		private string _Frecuency = "";
 		private string _Alias = "";
 		//RQF34 
 		private string _IdFrecuency = "";
 		private string _NameFrecuency = "";
 		private string _FrecSeleccionada = "";
+		private  bool _seguro;
 
 		private int _RtxGroup = 0;
 		private Timer _Timer = new Timer();
@@ -117,10 +120,20 @@ namespace HMI.Model.Module.UI
 		public Image SquelchImage
 		{
 			get { return _SquelchImage; }
-			set 
-			{ 
+			set
+			{
 				_SquelchImage = value;
 				Invalidate(_SquelchRect);
+			}
+		}
+
+		public Image CandadoImage
+		{
+			get { return _CandadoImage; }
+			set
+			{
+				_CandadoImage = value;
+				Invalidate(_CandadoRect);
 			}
 		}
 
@@ -163,6 +176,9 @@ namespace HMI.Model.Module.UI
 
         public bool Multifrecuencia { get => _multifrecuencia; set => _multifrecuencia = value; }
         public List<string> FrecuencaSel { get => _frecuenciasel; }
+        public bool Seguro { get => _seguro; 
+			set => _seguro = value; }
+
         public void SetFrecuenciaSel(List<string>v,string defaultfrecuency="")
 		{
 			_frecuenciasel = v;
@@ -208,6 +224,10 @@ namespace HMI.Model.Module.UI
             Reset(idfrecuency,frecuency, alias, drawX, allAsOneBt, rtxGroup, ptt, squelch, audio, title, tx, rx, txForeColor, rxForeColor, titleForeColor, state);
         }
 
+		public void SetImageCandado(Image candado)
+        {
+			_CandadoImage = candado;
+		}
 		//LALM 210223  Errores #4756 prioridad.
 		// Inserto un nuevo parametro prioridad.
 		public void Reset(string frecuency, string alias, bool drawX, bool allAsOneBt, int rtxGroup, Image ptt, Image squelch, Image audio, Color title, Color tx, Color rx, Color txForeColor, 
@@ -218,6 +238,7 @@ namespace HMI.Model.Module.UI
 			_RtxGroup = rtxGroup;
 			_PttImage = ptt;
 			_SquelchImage = squelch;
+			
 
 			
 
@@ -372,8 +393,9 @@ namespace HMI.Model.Module.UI
             _PttRect = new Rectangle(1, 5, 25, 25);
             _SquelchRect = new Rectangle(Width - 22, 5, 25, 25);
 #endif
+            _CandadoRect = new Rectangle(Width - 22, 5, 25, 25);
 
-            _TxBtnInfo.Rect = new Rectangle(0, top, width, Height - top);
+			_TxBtnInfo.Rect = new Rectangle(0, top, width, Height - top);
 			_RxBtnInfo.Rect = new Rectangle(width, top, Width - width, Height - top);
 			_TitleBtnInfo.Rect = new Rectangle(0, 0, Width , top);
 		}
@@ -581,7 +603,8 @@ namespace HMI.Model.Module.UI
 				e.Graphics.DrawImage(_SquelchImage, _SquelchRect.X, _SquelchRect.Y);
 #endif
 
-                if (_QidxValue >= 0)
+
+				if (_QidxValue >= 0)
                 {
                     Rectangle txtRect = ClientRectangle;
                     txtRect.Offset(32, 2);
@@ -592,8 +615,12 @@ namespace HMI.Model.Module.UI
                         BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, _QidxValue.ToString(), _MediumFontBold, ContentAlignment.TopCenter, Color.Magenta);
                 }
             }
+			if (_CandadoImage != null)
+			{
+				e.Graphics.DrawImage(_CandadoImage, _CandadoRect.X, _CandadoRect.Y);//cambiar por candadoRect
+			}
 
-            BtnRenderer.Draw(e.Graphics, _TxBtnInfo[stBT1]);
+			BtnRenderer.Draw(e.Graphics, _TxBtnInfo[stBT1]);
             BtnRenderer.Draw(e.Graphics, _RxBtnInfo[stBT2]);
 
 			//221103 En multifrecuencia, se habilita el boton de radio siempre.
@@ -701,8 +728,17 @@ namespace HMI.Model.Module.UI
 				BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, Lit_presentar, fontToUse, ContentAlignment.TopCenter, ForeColor);
 
             }
+			{
+				Rectangle txtRect = ClientRectangle;
+				txtRect.Offset(32, +2);
+				if (Seguro)
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "seguro", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+				else
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "No seguro", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
 
-            if (_RtxGroup > 0)
+			}
+
+			if (_RtxGroup > 0)
 			{
 				string rtxGroup = ((char)('G' + _RtxGroup - 1)).ToString();
                 // LALM: Modo Nocturno 210201

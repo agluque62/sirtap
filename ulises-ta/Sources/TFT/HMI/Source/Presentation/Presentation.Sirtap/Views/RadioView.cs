@@ -325,6 +325,14 @@ namespace HMI.Presentation.Sirtap.Views
                 _RtxBT.Location = new System.Drawing.Point(_PlayBT.Location.X + _PlayBT.Size.Width + 3, 3);
 
             }
+            int contador = 0;
+            foreach (RdButton bt in _RdButtons)
+            {
+                if (_StateManager.Radio[bt.Id].NameFrecuency.Length > 0)
+                    //bt.Seguro = _StateManager.Radio[bt.Id].Seguro;
+                    bt.Seguro = (contador++ / 2 == 0);
+            }
+
         }
 
         private bool _ReplayOnlyRadioVisible
@@ -839,6 +847,7 @@ namespace HMI.Presentation.Sirtap.Views
                 Color titleForeColor = VisualStyle.Colors.Black;
                 Image ptt = null;
                 Image squelch = null;
+                Image iseguro = null;
                 Image audio = null;
                 int rtxGroup = 0;
                 bool allAsOneBt = false;
@@ -959,7 +968,7 @@ namespace HMI.Presentation.Sirtap.Views
                             _SquelchBlinkTimer.Enabled = true;
                             break;
                     }
-
+                    
                     switch (dst.AudioVia)
                     {
                         case RdRxAudioVia.Speaker:

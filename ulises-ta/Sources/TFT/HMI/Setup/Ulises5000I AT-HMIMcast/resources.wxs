@@ -76,6 +76,9 @@
             <Component Id="cmp3A1F9C14E6B494A221DBDE7906A1BB49" Directory="dirC142AAC0964B0B323DA41FCB5AFA837A" Guid="*">
                 <File Id="fil6EF53F58CA432969417200586BE5B997" KeyPath="yes" Source="$(var.SourcePath)\BuzzerUp.gif" />
             </Component>
+            <Component Id="cmp2DDFB31739AC8C4C7E23E0C649FEEEE8" Directory="dirC142AAC0964B0B323DA41FCB5AFA837A" Guid="*">
+                <File Id="fil766648262C8AD3F2B2D099DEF42AD693" KeyPath="yes" Source="$(var.SourcePath)\candado.png" />
+            </Component>
             <Component Id="cmpCD5CCD96ACB52212B17C0FEDE1C4C4E3" Directory="dirC142AAC0964B0B323DA41FCB5AFA837A" Guid="*">
                 <File Id="filF61CB5FEAEF562B14793F0A56C3F08DE" KeyPath="yes" Source="$(var.SourcePath)\CascosAlumno.gif" />
             </Component>
