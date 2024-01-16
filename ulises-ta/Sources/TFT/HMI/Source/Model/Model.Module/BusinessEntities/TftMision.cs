@@ -26,14 +26,14 @@ namespace HMI.Model.Module.BusinessEntities
 					string msg = _Mision;
 					if (_Mision == "MISION 1")
 					{
-						SetPagRadio(new List<(int, bool)> { (0, true), (3, true), (5, true), (7, true), (9, true) });
-						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (8, true) });
+						SetPagRadio(new List<(int, bool)> { (1, true), (3, true), (5, true), (7, true), (9, true) });
+						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (6, true) });
 						SetPagLc(new bool[] { true, false, true, false, false, false });
 					}
 					else if (_Mision == "MISION 3")
 					{
-						SetPagRadio(new List<(int, bool)> { (1, true), (2,false), (3, true), (5, true) });
-						SetPagTlf(new List<(int, bool)> { (2, false), (6, true), (10, true), (14, true), (18, true) });
+						SetPagRadio(new List<(int, bool)> { (2, true), (4,false), (6, true), (8, true) });
+						SetPagTlf(new List<(int, bool)> { (1, false), (3, true), (5, true), (7, true), (9, true) });
 						SetPagLc(new bool[] { true, true, true, false, false, false });
 					}
 					else
@@ -95,10 +95,37 @@ namespace HMI.Model.Module.BusinessEntities
 		}
 
         public int NumberOfPagesRad { get => _NumberOfPagesRad; set => _NumberOfPagesRad = value; }
-
-        public TftMision()
+		public int ordenpaginaradio(int numero_pagina_buscada)
 		{
-			_Mision = "";
+			int orden_pagina = -1;
+			for (int i = 0; i < Pagrad?.Count; i++)
+			{
+				if (Pagrad[i].Item1 == numero_pagina_buscada)
+				{
+					orden_pagina = i; // Sumamos 1 ya que los índices suelen empezar desde 0
+					break;
+				}
+			}
+			return orden_pagina;
+		}
+		public int ordenpaginatlf(int numero_pagina_buscada)
+		{
+			int orden_pagina = -1;
+			for (int i = 0; i < Pagtlf?.Count; i++)
+			{
+				if (Pagtlf[i].Item1 == numero_pagina_buscada)
+				{
+					orden_pagina = i; // Sumamos 1 ya que los índices suelen empezar desde 0
+					break;
+				}
+			}
+			return orden_pagina;
+		}
+		public int paginaorden(int ordenpagina)
+		{
+			if (ordenpagina>0)
+				return Pagrad[ordenpagina].Item1;
+			return -1;
 		}
 	}
 }

@@ -416,7 +416,9 @@ namespace HMI.Model.Module.Services
         {
 			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
 			//int newPage = (oldPage + 1) % numPages;
-
+			// simplemente cargo la pagina indicada
+			_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+			return;
 			while (newPage != oldPage)
 			{
 				for (int i = newPage * numPosByPage, to = Math.Min(Radio.NumDestinations, (newPage + 1) * numPosByPage); i < to; i++)

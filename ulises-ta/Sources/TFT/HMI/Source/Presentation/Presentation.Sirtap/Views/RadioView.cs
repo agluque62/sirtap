@@ -479,6 +479,8 @@ namespace HMI.Presentation.Sirtap.Views
         public void OnRdPageChanged(object sender, EventArgs e)
         {
             _RdPageBT.Page = _StateManager.Radio.Page;
+            // 230116 Aqui se cambia el numero de pagia por el orden de pagina en a mision.
+            _RdPageBT.OrderPage = _StateManager.TftMision.ordenpaginaradio(_RdPageBT.Page);
             int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
 
             for (int i = 0; i < _NumPositionsByPage; i++)
@@ -1233,7 +1235,9 @@ namespace HMI.Presentation.Sirtap.Views
             int numero_paginas_radiocr = _StateManager.Radio.GetNumberOfPagesRd();// paginas con recursos
             int numero_paginas_radiocsr = _StateManager.Radio.GetNumberMaxOfPagesRd();//paginas con o sin recursos
             int numero_paginas_radiopm = _StateManager.TftMision.GetNumberOfPagesRd(); //paginas en la mison.
-            int numero_paginas_radio = numero_paginas_radiocsr;
+            int numero_pagina_mas_alto = _StateManager.TftMision.Pagrad[_StateManager.TftMision.Pagrad.Count - 1].Item1;
+
+            int numero_paginas_radio = numero_pagina_mas_alto;
             List<(int, bool)> _pagrad = _StateManager.TftMision.Pagrad;
             int? primeraPaginaSuperior = null;
             if (!inferior)
@@ -1328,10 +1332,16 @@ namespace HMI.Presentation.Sirtap.Views
             int numero_paginas_radio = _StateManager.TftMision.GetNumberOfPagesRd();
             
             int actualPage = _RdPageBT.Page;
+            int newPage = BuscarPagina(actualPage, true);
+            if (newPage == -1)
+                newPage = BuscarPagina(numero_paginas_radio, true);
+            if (newPage == -1)
+                newPage = -1;
 
             try
             {
-                _CmdManager.RdLoadPrevPage(actualPage, _NumPositionsByPage);
+                //_CmdManager.RdLoadPrevPage(actualPage, _NumPositionsByPage);
+                _CmdManager.RdLoadPageSirtap(actualPage, newPage,_NumPositionsByPage);
             }
             catch (Exception ex)
             {

@@ -140,6 +140,17 @@ namespace HMI.Presentation.Sirtap.UI
         [Browsable(false),
         DefaultValue(0)
         ]
+        public int OrderPage
+        {
+            set
+            {
+                if (_Page != value)
+                {
+                    _BtnInfo.Text = (value + 1).ToString();
+                    Invalidate();
+                }
+            }
+        }
         public int Page
         {
             get { return _Page; }
@@ -150,6 +161,7 @@ namespace HMI.Presentation.Sirtap.UI
                     Debug.Assert(value >= 0);
 
                     _Page = value;
+                    _BtnInfo.Text = (_Page + 1).ToString();
                     _BtnInfo.Text = (_Page + 1).ToString();
                     Invalidate();
                 }
