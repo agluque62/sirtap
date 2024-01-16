@@ -94,12 +94,15 @@ namespace HMI.Presentation.Sirtap.Views
         private void _TlfPageBT_UpClick(object sender)
         {
             bool up = false;
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
+            //int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
+            int numero_pagina_mas_alto = _StateManager.TftMision.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+
+            int numero_paginas_tlf = numero_pagina_mas_alto;
             int actualPage = _TlfPageBT.Page;
-            if (actualPage < numero_paginas_tlf-2)
-                _TlfPageBT.Page = actualPage + 1;
-            else
-                _TlfPageBT.Page = 0;
+            //if (actualPage < numero_paginas_tlf-2)
+            //    _TlfPageBT.Page = actualPage + 1;
+            //else
+            //    _TlfPageBT.Page = 0;
             actualPage = _TlfPageBT.Page;
             actualPage = BuscarPagina(actualPage);
             if (actualPage==-1)
@@ -107,13 +110,16 @@ namespace HMI.Presentation.Sirtap.Views
             if (actualPage == -1)
                 ;//no presentar nada.
             _TlfPageBT.Page = actualPage;//control.
+            _TlfPageBT.OrderPage = _StateManager.TftMision.ordenpaginatlf(_TlfPageBT.Page);
             _CmdManager.TlfLoadDaPage(actualPage);
         }
 
 
         private int BuscarPagina(int actualPage,bool inferior=false)
         {
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6 + 1;// Radio.GetNumberOfPagesRd();
+            int numero_pagina_mas_alto = _StateManager.TftMision.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+
+            int numero_paginas_tlf = numero_pagina_mas_alto;
             List< (int, bool)> _pagtlf = _StateManager.TftMision.Pagtlf;
             int? primeraPaginaSuperior;
             if (!inferior)
@@ -149,6 +155,7 @@ namespace HMI.Presentation.Sirtap.Views
             //actualPage = BuscarPagina(actualPage);
             actualPage = BuscarPagina(actualPage,true);
             _TlfPageBT.Page = actualPage;
+            _TlfPageBT.OrderPage = _StateManager.TftMision.ordenpaginatlf(_TlfPageBT.Page);
             if (actualPage == numero_paginas_tlf)
                 actualPage = BuscarPagina(numero_paginas_tlf,true);
             if (actualPage == -1)

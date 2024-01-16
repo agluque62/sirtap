@@ -176,6 +176,9 @@
     <Compile Include="UI\newControlRecord.Designer.cs">
       <DependentUpon>newControlRecord.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\TlfPageButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\RdPageButton.cs">
       <SubType>Component</SubType>
     </Compile>

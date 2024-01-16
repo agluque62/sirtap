@@ -26,8 +26,8 @@ namespace HMI.Model.Module.BusinessEntities
 					string msg = _Mision;
 					if (_Mision == "MISION 1")
 					{
-						SetPagRadio(new List<(int, bool)> { (1, true), (3, true), (5, true), (7, true), (9, true) });
-						SetPagTlf(new List<(int, bool)> { (2, true), (4, true), (6, true) });
+						SetPagRadio(new List<(int, bool)> { (0, true), (1, true), (2, true) });
+						SetPagTlf(new List<(int, bool)> { (0, true), (2, true), (4, true) });
 						SetPagLc(new bool[] { true, false, true, false, false, false });
 					}
 					else if (_Mision == "MISION 3")

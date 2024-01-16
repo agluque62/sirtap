@@ -44,7 +44,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             System.Windows.Forms.TableLayoutPanel _TlfTLP;
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this._TlfPageBT = new HMI.Presentation.Sirtap.UI.RdPageButton();
+            this._TlfPageBT = new HMI.Presentation.Sirtap.UI.TlfPageButton();
             this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this.hmiButtonLogin = new HMI.Model.Module.UI.HMIButton();
             this._TlfFunctionsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
@@ -189,7 +189,7 @@ namespace HMI.Presentation.Sirtap.Views
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfFunctionsWS;
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfNumbersWS;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private UI.RdPageButton _TlfPageBT;
+        private UI.TlfPageButton _TlfPageBT;
         private UI.UpDownButton _TlfHeadPhonesUDB;
         private Model.Module.UI.HMIButton hmiButton1;
         //private System.Windows.Forms.Button buttonlogin;

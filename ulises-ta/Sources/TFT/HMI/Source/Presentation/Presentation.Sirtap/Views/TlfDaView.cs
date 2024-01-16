@@ -264,6 +264,7 @@ namespace HMI.Presentation.Sirtap.Views
                 OcultaPaticipantes();
             if (_Page != e.Page)
             {
+                _Page = e.Page;
                 Debug.Assert(e.Page < 28 && e.Page>0);
                 if (e.Page==-1)
                 {
