@@ -114,9 +114,9 @@ namespace HMI.Presentation.Sirtap.Views
 
             //_TitleBT.BackgroundImage = _StateManager.Title.Logo;
             if (!VisualStyle.ModoNocturno)
-                _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.Logo, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightJacks));
+                ;// _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.Logo, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightJacks));
             else
-                _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.LogoMn, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightLogo));
+                ;// _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.LogoMn, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightLogo));
             _TitleBT.Text = _StateManager.Title.Id;
             _TitleBT.DrawX = !_StateManager.Engine.Operative;
             //LALM 210212 Cambio colores del bitmap de AENA.

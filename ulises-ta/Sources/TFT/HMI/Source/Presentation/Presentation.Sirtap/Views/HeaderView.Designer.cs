@@ -74,7 +74,7 @@ namespace HMI.Presentation.Sirtap.Views
             | System.Windows.Forms.AnchorStyles.Left)));
             this._TitleBT.DrawX = false;
             this._TitleBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._TitleBT.ImageNormal = global::HMI.Presentation.Sirtap.Properties.Resources.Aena;
+            //this._TitleBT.ImageNormal = global::HMI.Presentation.Sirtap.Properties.Resources.Aena;
             this._TitleBT.IsButtonTlf = false;
             this._TitleBT.IsConferencePreprogramada = false;
             this._TitleBT.Location = new System.Drawing.Point(10, 3);
