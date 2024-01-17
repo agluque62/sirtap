@@ -11,6 +11,7 @@
 #define CORESIP_SNDDEV_ID			0x20000000
 #define CORESIP_WAVPLAYER_ID		0x10000000
 #define CORESIP_RDRXPORT_ID			0x08000000
+#define CORESIP_RTPPORT_ID			0x05000000
 #define CORESIP_SNDRXPORT_ID		0x04000000
 #define CORESIP_GENPORT_ID			0x03000000
 #define CORESIP_ACC_ID				0x02000000
@@ -43,6 +44,7 @@
 #include "DlgSubs.h"
 #include "WG67Subs.h"
 #include "GenericPort.h"
+#include "RTPport.h"
 #include <map>
 #include <string>
 

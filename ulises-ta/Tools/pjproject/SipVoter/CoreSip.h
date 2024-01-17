@@ -1735,6 +1735,23 @@ extern "C" {
 	*/
 	CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned int *volume, CORESIP_Error* error);
 
+	/*
+	Funcion que Crea un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto que se retorna.
+	@param dst_ip. IP de destino del flujo RTP
+	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
+	@param dst_port. Puerto de destino del flujo RTP.
+	@param payload_type. Valor 0: PCMU, valor 8: PCMA
+	@param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
+	*/
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_Error* error);
+
+	/*
+	Funcion que destruir un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto que se retorna.
+	*/
+	CORESIP_API int CORESIP_DestroyRTPport(int rtpport_id, CORESIP_Error* error);
+
 
 #ifdef __cplusplus
 }
