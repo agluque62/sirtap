@@ -562,6 +562,9 @@ namespace HMI.Model.Module.BusinessEntities
 		[EventPublication(EventTopicNames.RdPageChanged, PublicationScope.Global)]
 		public event EventHandler RdPageChanged;
 
+		[EventPublication(EventTopicNames.RdPageClear, PublicationScope.Global)]
+		public event EventHandler RdPageClear;
+
 		[EventPublication(EventTopicNames.PttOnChanged, PublicationScope.Global)]
 		public event EventHandler PttOnChanged;
 

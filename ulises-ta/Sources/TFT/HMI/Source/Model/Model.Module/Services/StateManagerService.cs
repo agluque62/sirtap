@@ -43,7 +43,8 @@ namespace HMI.Model.Module.Services
         private bool _ManagingSite;
 		private PlayState _PlayBt;
 		private Dictionary<string, string[]> _tonosPorLlamada = new Dictionary<string, string[]>();
-		private TftMision _TftMision = new TftMision();
+		private TftMision _TftMisionkkk = null;
+		public TftMision TftMision = new TftMision();
         [EventPublication(EventTopicNames.ShowNotifMsgUI, PublicationScope.Global)]
 		public event EventHandler<NotifMsg> ShowNotifMsgUI;
 
@@ -259,12 +260,12 @@ namespace HMI.Model.Module.Services
 		{
 			return tonosPorLlamada[tipo_llamada];
 		}
-		[CreateNew]
-		public TftMision TftMision
-		{
-			get { return _TftMision; }
-			set { _TftMision = value; }
-		}
+		//[CreateNew]
+		//public TftMision TftMisionkkk
+		//{
+		//	get { return _TftMisionkkk; }
+		//	set { _TftMisionkkk = value;}
+		//}
 
 	}
 }

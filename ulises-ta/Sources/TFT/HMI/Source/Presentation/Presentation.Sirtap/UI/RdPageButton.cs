@@ -162,7 +162,7 @@ namespace HMI.Presentation.Sirtap.UI
 
                     _Page = value;
                     _BtnInfo.Text = (_Page + 1).ToString();
-                    _BtnInfo.Text = (_Page + 1).ToString();
+
                     Invalidate();
                 }
             }

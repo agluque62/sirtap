@@ -86,7 +86,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _TlfTLP_Paint(object sender, PaintEventArgs e)
         {
-            if ((_StateManager.Tft.Login == false) || (_StateManager.Tft.Mision == ""))
+            if ((_StateManager.Tft.Login == false) || (_StateManager.TftMision.Mision== ""))
                 _StateManager.Tft.SetLogin(false);
 
         }
@@ -95,7 +95,8 @@ namespace HMI.Presentation.Sirtap.Views
         {
             bool up = false;
             //int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
-            int numero_pagina_mas_alto = _StateManager.TftMision.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+            int n = _StateManager.TftMision.Pagtlf.Count;
+            int numero_pagina_mas_alto = _StateManager.TftMision.numero_pagina_mas_alto_tlf();
 
             int numero_paginas_tlf = numero_pagina_mas_alto;
             int actualPage = _TlfPageBT.Page;
@@ -117,7 +118,8 @@ namespace HMI.Presentation.Sirtap.Views
 
         private int BuscarPagina(int actualPage,bool inferior=false)
         {
-            int numero_pagina_mas_alto = _StateManager.TftMision.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+            //int numero_pagina_mas_alto = _StateManager.TftMision.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+            int numero_pagina_mas_alto = _StateManager.TftMision.numero_pagina_mas_alto_tlf();
 
             int numero_paginas_tlf = numero_pagina_mas_alto;
             List< (int, bool)> _pagtlf = _StateManager.TftMision.Pagtlf;
@@ -205,8 +207,10 @@ namespace HMI.Presentation.Sirtap.Views
         {
             if (_StateManager.Tft.Login)
             {
+                _StateManager.TftMision.Mision = "";// adelanto esto.
+
                 _StateManager.Tft.Login = false;
-                _CmdManager.TlfLoadDaPage(-1);
+                //_CmdManager.TlfLoadDaPage(-1);
             }
             else
             {
@@ -225,7 +229,8 @@ namespace HMI.Presentation.Sirtap.Views
             }
             // De mometo para refrescar la pagina
             // paso a la siguiente.
-            _TlfPageBT_UpClick(sender);
+            //_TlfPageBT_UpClick(sender);
+            //_CmdManager.RdLoadPageSirtap(0, 0, 6);
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
@@ -252,8 +257,11 @@ namespace HMI.Presentation.Sirtap.Views
         public void OnLoginChanged(object sender, EventArgs e)
         {
             MostrarModo(sender);
-            if ((_StateManager.Tft.Login==false) || (_StateManager.Tft.Mision == ""))
+            if ((_StateManager.Tft.Login==false) || (_StateManager.TftMision.Mision == ""))
+            {
+                _StateManager.TftMision.Mision = "";
                 MostrarDialogoLogin();
+            }
         }
         private void ChangeColors()
         {

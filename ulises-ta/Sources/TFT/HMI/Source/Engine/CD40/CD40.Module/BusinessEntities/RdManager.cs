@@ -289,13 +289,13 @@ namespace HMI.CD40.Module.BusinessEntities
 		public void SetRdPage(int oldPage, int newPage, int numPosByPage)
         {
             _Page = newPage;
-
+            if (oldPage>=0)
             for (int i = oldPage * numPosByPage, to = Math.Min(_RdPositions.Length, (oldPage + 1) * numPosByPage); i < to; i++)
             {
                 _RdPositions[i].SetRx(false);
                 _RdPositions[i].SetTx(false, false);
             }
-
+            if (newPage>=0)
             for (int i = newPage * numPosByPage, to = Math.Min(_RdPositions.Length, (newPage + 1) * numPosByPage); i < to; i++)
             {
                 if (_RdPositions[i].Monitoring)
@@ -303,6 +303,7 @@ namespace HMI.CD40.Module.BusinessEntities
             }
 
             //RQF-14
+            if (newPage >= 0)
             for (int i = newPage * numPosByPage, to = Math.Min(_RdPositions.Length, (newPage + 1) * numPosByPage); i < to; i++)
             {
                 if (_RdPositions[i].FrecuenciaNoDesasignable)
@@ -1584,7 +1585,7 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <param name="e"></param>
         private void SupervisorFrecuenciaNoDesasignable(object sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("SupervisorFrecuenciaNoDesasignable se ejecutó. Hora: " + DateTime.Now);
+            //Console.WriteLine("SupervisorFrecuenciaNoDesasignable se ejecutó. Hora: " + DateTime.Now);
             int page = _Page;
             var cfg = Top.Cfg;
             var rdPositions = _RdPositions;

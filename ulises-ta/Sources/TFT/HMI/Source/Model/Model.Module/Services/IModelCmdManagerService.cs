@@ -24,6 +24,7 @@ namespace HMI.Model.Module.Services
 		void RdSetPtt(bool on);
 		void RdLoadNextPage(int oldPage, int numPosByPage);
 		void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage);
+		void RdVisualizaPageSirtap();
 		void RdLoadPrevPage(int oldPage, int numPosByPage);
 		void RdSwitchRtxState(int id);
         void RdSwitchTxState(int id);

@@ -306,6 +306,15 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !_StateManager.Radio[bt.Id].Unavailable && _StateManager.Tft.Login;
             }
+            this._RdButtonsTLP.Visible = _StateManager.Tft.Login;
+            foreach (HMI.Model.Module.UI.RdButton bt in _RdButtons)
+            {
+                if (!_StateManager.Tft.Login)
+                    bt.Visible = false;
+                else if (_StateManager.Radio[bt.Id].IsConfigurated)
+                    ;// bt.Visible = true;
+            }
+
             //LALM 220223
             // Todo obtener la configuracion para poder pintar el control playrecord.
             // Vendrá en la configuracion. ahora mismo se pone y se quita con poner el nombre de DirectorioGLPRxRadio
@@ -333,6 +342,15 @@ namespace HMI.Presentation.Sirtap.Views
                     bt.Seguro = (contador++ / 2 == 0);
             }
 
+            if (sender is HMI.Model.Module.BusinessEntities.Tft)
+            {
+                HMI.Model.Module.BusinessEntities.Tft s = (HMI.Model.Module.BusinessEntities.Tft)sender;
+                if (!s.Login)
+                    _RdButtonsTLP.Enabled = false;
+                else
+                    _RdButtonsTLP.Enabled = true;
+
+            }
         }
 
         private bool _ReplayOnlyRadioVisible
@@ -482,12 +500,38 @@ namespace HMI.Presentation.Sirtap.Views
                 Reset(bt, dst);
             }
         }
+        private RdDst dstnoconf()
+        {
+            RdDst dst = null;
+            for (int i = 0; i < _StateManager.Radio.Destinations.Count(); i++)
+            {
+                dst = _StateManager.Radio[i];
+                if (!_StateManager.Radio[i].IsConfigurated)
+                    break;
+            }
+            return dst;
+        }
+        [EventSubscription(EventTopicNames.RdPageClear, ThreadOption.Publisher)]
+        public void OnRdPageClear(object sender, EventArgs e)
+        {
+            RdDst dst = dstnoconf();
+            //_RdPageBT.Page = _StateManager.Radio.Page;
+            //_RdPageBT.OrderPage = _StateManager.TftMision.ordenpaginaradio(_RdPageBT.Page);
+            int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
+
+            for (int i = 0; i < _NumPositionsByPage; i++)
+            {
+                RdButton bt = _RdButtons[i + absPageBegin];
+                Reset(bt, dst);
+            }
+
+        }
 
         [EventSubscription(EventTopicNames.RdPageChanged, ThreadOption.Publisher)]
         public void OnRdPageChanged(object sender, EventArgs e)
         {
             _RdPageBT.Page = _StateManager.Radio.Page;
-            // 230116 Aqui se cambia el numero de pagia por el orden de pagina en a mision.
+            // 240116 Aqui se cambia el numero de pagina por el orden de pagina en a mision.
             _RdPageBT.OrderPage = _StateManager.TftMision.ordenpaginaradio(_RdPageBT.Page);
             int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
 
@@ -495,7 +539,6 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 RdButton bt = _RdButtons[i];
                 RdDst dst = _StateManager.Radio[i + absPageBegin];
-
                 Reset(bt, dst);
             }
         }
@@ -1040,7 +1083,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
-            bt.Visible = dst.IsConfigurated&&_StateManager.Tft.Mision.Length>0;
+            bt.Visible = dst.IsConfigurated&&_StateManager.TftMision.Mision.Length>0;
         }
 
         private void _RdSpeakerUDB_LevelDown(object sender, EventArgs e)
@@ -1244,7 +1287,8 @@ namespace HMI.Presentation.Sirtap.Views
             int numero_paginas_radiocr = _StateManager.Radio.GetNumberOfPagesRd();// paginas con recursos
             int numero_paginas_radiocsr = _StateManager.Radio.GetNumberMaxOfPagesRd();//paginas con o sin recursos
             int numero_paginas_radiopm = _StateManager.TftMision.GetNumberOfPagesRd(); //paginas en la mison.
-            int numero_pagina_mas_alto = _StateManager.TftMision.Pagrad[_StateManager.TftMision.Pagrad.Count - 1].Item1;
+            //int numero_pagina_mas_alto = _StateManager.TftMision.Pagrad[_StateManager.TftMision.Pagrad.Count - 1].Item1;
+            int numero_pagina_mas_alto = _StateManager.TftMision.numero_pagina_mas_alto_rad();
 
             int numero_paginas_radio = numero_pagina_mas_alto;
             List<(int, bool)> _pagrad = _StateManager.TftMision.Pagrad;
@@ -1756,7 +1800,13 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         public void OnLoginChanged(object sender, EventArgs e)
         {
-            MostrarModo(sender);
+            if (sender is HMI.Model.Module.BusinessEntities.Tft)
+            {
+                HMI.Model.Module.BusinessEntities.Tft tftObject = (HMI.Model.Module.BusinessEntities.Tft)sender;
+
+
+                MostrarModo(sender, tftObject.Login);
+            }
         }
         private void ChangeColors()
         {
@@ -1765,11 +1815,12 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo(object sender)
+        private void MostrarModo(object sender,bool login)
         {
             ChangeColors();
-            _CmdManager.RdLoadNextPage(0, 6);
-            _CmdManager.RdLoadPrevPage(8, 6);
+            //_CmdManager.RdLoadPageSirtap(0,0, 6);
+            if (login)  
+                _CmdManager.RdVisualizaPageSirtap();
         }
 
     }

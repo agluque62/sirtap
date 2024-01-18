@@ -39,6 +39,7 @@ namespace HMI.Model.Module.Constants
 		public const string RtxChanged = "RtxChanged";
 		public const string RadioChanged = "RadioChanged";
 		public const string RdPageChanged = "RdPageChanged";
+		public const string RdPageClear = "RdPageClear";
 		public const string LcChanged = "LcChanged";
 		public const string TlfChanged = "TlfChanged";
 		public const string LcSpeakerLevelChanged = "LcSpeakerLevelChanged";

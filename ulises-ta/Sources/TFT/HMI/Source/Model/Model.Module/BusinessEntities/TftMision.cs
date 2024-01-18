@@ -5,18 +5,37 @@ using Microsoft.Practices.CompositeUI.EventBroker;
 using HMI.Model.Module.Constants;
 using HMI.Model.Module.Properties;
 using Utilities;
+using HMI.Model.Module.Messages;
 
 namespace HMI.Model.Module.BusinessEntities
 {
     public sealed class TftMision
     {
+		
 		private string _Mision = "";
+		private List<(int, bool)> _pagrad;
+		private List<(int, bool)> _pagtlf;
+		private bool[] _paglc;
+		private int _NumberOfPagesRad = 0;
+		public static int NumDestinations = Settings.Default.NumRdDestinations;
 
-		//[EventPublication(EventTopicNames.TftMisionChangedf2, PublicationScope.Global)]
-		//public event EventHandler TftMisionChangedf2;
+		private LcDst[] _Dst = new LcDst[NumDestinations];
+		public event GenericEventHandler StChanged;
+
+		public TftMision()
+		{
+			_Mision = "";
+		}
+		[EventPublication(EventTopicNames.RdPageClear, PublicationScope.Global)]
+		public event EventHandler RdPageClear;
+		[EventPublication(EventTopicNames.TftMisionChangedf2, PublicationScope.Global)]
+		public event EventHandler TftMisionChangedf2;
+		[EventPublication(EventTopicNames.RadioChanged, PublicationScope.Global)]
+		public event EventHandler<RangeMsg> RadioChanged;
 
 		public string Mision
 		{
+
 			get { return _Mision; }
 			set
 			{
@@ -29,6 +48,9 @@ namespace HMI.Model.Module.BusinessEntities
 						SetPagRadio(new List<(int, bool)> { (0, true), (1, true), (2, true) });
 						SetPagTlf(new List<(int, bool)> { (0, true), (2, true), (4, true) });
 						SetPagLc(new bool[] { true, false, true, false, false, false });
+						General.SafeLaunchEvent(RadioChanged, this, new RangeMsg(0, NumDestinations));
+						//_StateManager.Radio.ResetAssignatedState();
+						//General.SafeLaunchEvent(RadioChanged, this);
 					}
 					else if (_Mision == "MISION 3")
 					{
@@ -41,16 +63,15 @@ namespace HMI.Model.Module.BusinessEntities
 						SetPagRadio(new List<(int, bool)> { });
 						SetPagTlf(new List<(int, bool)> { });
 						SetPagLc(new bool[] { });
+						
+						General.SafeLaunchEvent(RdPageClear, this);
+
 					}
 					//General.SafeLaunchEvent(TftMisionChangedf2, this);
 				}
 			}
 		}
 
-		private List<(int, bool)> _pagrad;
-		private List<(int, bool)> _pagtlf;
-		private bool[] _paglc;
-		private int _NumberOfPagesRad =0;
 		private void SetPagRadio(List<(int, bool)> lista)
 		{
 			_pagrad = lista;
@@ -93,8 +114,7 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			set => _paglc = value;
 		}
-
-        public int NumberOfPagesRad { get => _NumberOfPagesRad; set => _NumberOfPagesRad = value; }
+		public int NumberOfPagesRad { get => _NumberOfPagesRad; set => _NumberOfPagesRad = value; }
 		public int ordenpaginaradio(int numero_pagina_buscada)
 		{
 			int orden_pagina = -1;
@@ -121,11 +141,26 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			return orden_pagina;
 		}
+		public int numero_pagina_mas_alto_rad()
+		{
+			int indice_mas_alto = Pagrad?.Count ?? -1;
+			if (indice_mas_alto > -1)
+				return Pagrad[indice_mas_alto-1].Item1;
+			return indice_mas_alto;
+		}
+		public int numero_pagina_mas_alto_tlf()
+		{
+			int indice_mas_alto = Pagtlf?.Count ?? -1;
+			if (indice_mas_alto > 0)
+				return Pagtlf[indice_mas_alto-1].Item1;
+			return indice_mas_alto;
+		}
 		public int paginaorden(int ordenpagina)
 		{
 			if (ordenpagina>0)
 				return Pagrad[ordenpagina].Item1;
 			return -1;
 		}
+
 	}
 }

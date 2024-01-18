@@ -191,21 +191,38 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.EngineStateChanged, ThreadOption.Publisher)]
         public void OnTftEngineChanged(object sender, EventArgs e)
         {
+            string eventName = string.Empty;
+
             _Logger.Trace("TlfDAView.OnTftEngineChanged");
             _LcSpeakerUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfHeadPhonesUDB.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login;
             _TlfPageFirstBT.Enabled = _StateManager.Tft.Enabled;
             _TlfPageSecondBT.Enabled = _StateManager.Tft.Enabled;
 
-            foreach (HMIButton bt in _TlfButtons)
+            if (sender is HMI.Model.Module.BusinessEntities.Tft)
             {
-                bt.Enabled = TlfDstEnabled(_StateManager.Tlf[bt.Id]);
+                HMI.Model.Module.BusinessEntities.Tft s = (HMI.Model.Module.BusinessEntities.Tft)sender;
+                foreach (HMIButton bt in _TlfButtons)
+                {
+                    bt.Enabled = TlfDstEnabled(_StateManager.Tlf[bt.Id]);
+                }
+                //this._TlfButtonsTLP.Visible = _StateManager.Tft.Login;
+                //foreach (HMIButton bt in _TlfButtons)
+                //{
+                //    if (!_StateManager.Tft.Login)
+                //        bt.Visible = false;
+                //    else if (_StateManager.Tlf[bt.Id].IsConfigurated)
+                //        bt.Visible = true;
+                //}
+                this._TlfButtonsTLP.Visible = _StateManager.Tft.Login;
+                foreach (HMIButton bt in _TlfButtons)
+                {
+                    if (!_StateManager.Tft.Login)
+                        bt.Visible = false;
+                    else if (_StateManager.Tlf[bt.Id].IsConfigurated)
+                         bt.Visible = true;
+                }
             }
-            //borrar prueba para saber cuntos se quedan habilitados en la inicializacion.
-            var enabledElements = _TlfButtons.Where(item => item.Enabled).ToList();
-            HMIButton hmib = _TlfButtons[0];
-            if (hmib.Height < 2)
-                hmib.Height = 20;
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
@@ -632,7 +649,7 @@ namespace HMI.Presentation.Sirtap.Views
                 //por eso se deshabilita su AD cuando se pulsa la tecla prioridad.
             }
 
-            bt.Visible = dst.IsConfigurated && _StateManager.Tft.Mision.Length>0 && _StateManager.Tft.Login;
+            bt.Visible = dst.IsConfigurated && _StateManager.TftMision.Mision.Length>0 && _StateManager.Tft.Login;
         }
 
         private void ResetBtPage(HMIButton bt)
@@ -1248,14 +1265,27 @@ namespace HMI.Presentation.Sirtap.Views
                 _TlfButtonsTLP.BackColor = Color.White;
             }
         }
+        
+        
+        //[EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
 
         private void MostrarModo(object sender)
         {
             ChangeColors();
 
-            OnTlfChanged(sender, new RangeMsg(0, Tlf.NumDestinations));
-            OnTlfChanged(sender, new RangeMsg(0, 6));
+            //OnTlfChanged(sender, new RangeMsg(0, Tlf.NumDestinations));
+            //OnTlfChanged(sender, new RangeMsg(0, 6));
+            if (_StateManager.Tft.Login && _StateManager.TftMision.Mision.Length>0)
+            {
+                _Page = 0;
+                _CmdManager.TlfLoadDaPage(_Page);
+            }
+            else
+            {
+                _Page = 1;
+                _CmdManager.TlfLoadDaPage(_Page);
 
+            }
         }
     }
 }

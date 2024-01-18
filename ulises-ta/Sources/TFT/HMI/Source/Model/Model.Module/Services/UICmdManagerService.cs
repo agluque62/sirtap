@@ -412,12 +412,32 @@ namespace HMI.Model.Module.Services
 				newPage = (newPage + 1) % numPages;
 			}
 		}
+		public void RdVisualizaPageSirtap()
+		{
+			//240117 ver si es necesario
+			if (_StateManager.TftMision.Mision.Length>0)
+            {
+				_EngineCmdManager.SetRdPage(0, 1, _StateManager.Radio.PageSize);
+				_EngineCmdManager.SetRdPage(1, 0, _StateManager.Radio.PageSize);
+			}
+			if (_StateManager.Tft.Login)
+				_EngineCmdManager.SetRdPage(0, 0, _StateManager.Radio.PageSize);
+		}
 		public void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage)
         {
 			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
 			//int newPage = (oldPage + 1) % numPages;
 			// simplemente cargo la pagina indicada
 			_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+			if (oldPage==newPage)
+            {
+				//240117 ver si es necesario
+				if (_StateManager.TftMision.Mision.Length > 0)
+				{
+					_EngineCmdManager.SetRdPage(oldPage, newPage + 1, numPosByPage);
+					_EngineCmdManager.SetRdPage(oldPage + 1, newPage, numPosByPage);
+				}
+			}
 			return;
 			while (newPage != oldPage)
 			{

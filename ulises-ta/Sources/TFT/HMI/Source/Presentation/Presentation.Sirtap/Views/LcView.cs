@@ -211,7 +211,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = LcDstEnabled(dst);
             }
 
-            bt.Visible = dst.IsConfigurated && _StateManager.Tft.Mision.Length > 0 &&_StateManager.Tft.Login;
+            bt.Visible = dst.IsConfigurated && _StateManager.TftMision.Mision.Length > 0 &&_StateManager.Tft.Login;
         }
 
         private void LcButton_MouseDown(object sender, MouseEventArgs e)

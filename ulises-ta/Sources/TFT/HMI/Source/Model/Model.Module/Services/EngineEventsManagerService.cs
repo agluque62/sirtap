@@ -984,7 +984,8 @@ namespace HMI.Model.Module.Services
 			_Logger.Trace("Procesando {0}", EventTopicNames.FuerzoLogout);
 
 			_StateManager.Tft.SetLogin(false);
-
+			
+		
 		}
 		[EventSubscription(EventTopicNames.TftBadLogin, ThreadOption.UserInterface)]
 		public void OnTftBadLogin(object sender, EventArgs msg)
@@ -1001,6 +1002,7 @@ namespace HMI.Model.Module.Services
 			string error = "";
 			// envia trap a historicos
 			_EngineCmdManager.EnviarLoginCorrectoEngine(user, error);
+			
 		}
 	}
 }

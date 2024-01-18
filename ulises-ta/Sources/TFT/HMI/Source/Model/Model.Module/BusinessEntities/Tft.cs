@@ -5,6 +5,7 @@ using Microsoft.Practices.CompositeUI.EventBroker;
 using HMI.Model.Module.Messages;
 using HMI.Model.Module.Constants;
 using Utilities;
+using System.Threading;
 
 namespace HMI.Model.Module.BusinessEntities
 {
@@ -14,7 +15,7 @@ namespace HMI.Model.Module.BusinessEntities
         private bool _Login = false;
         private string _LoginName = "";
         private string _LastLogin = "";
-        private string _Mision = "";
+        
         private bool _ModoNocturno = !(DateTime.Now.Hour >= 6 && DateTime.Now.Hour< 18);
 
         private bool _Briefing = false;
@@ -49,24 +50,26 @@ namespace HMI.Model.Module.BusinessEntities
 
         public void  SetLogin(bool valor)
         {
-            _Login = valor;
+            Login1 = valor;
             General.SafeLaunchEvent(TftLoginChanged, this);
         }
         public bool Login
         {
-            get { return _Login; }
+            get { return Login1; }
             set
             {
-                if (_Login != value)
+                if (Login1 != value)
                 {
-                    _Login = value;
+                    Login1 = value;
+                   
                     General.SafeLaunchEvent(TftLoginChanged, this);
+                    
                 }
             }
         }
         public string LoginName
         {
-            get { return (_Login) ? _LoginName : "" ; }
+            get { return (Login1) ? _LoginName : "" ; }
             set
             {
                 if (_LoginName != value)
@@ -114,7 +117,6 @@ namespace HMI.Model.Module.BusinessEntities
             }
         }
 
-        public string Mision { get => _Mision; set => _Mision = value; }
         public bool ModoNocturno
         {
             get => _ModoNocturno;
@@ -125,5 +127,6 @@ namespace HMI.Model.Module.BusinessEntities
         }
 
         public string LastLogin { get => _LastLogin; set => _LastLogin = value; }
+        public bool Login1 { get => _Login; set => _Login = value; }
     }
 }
