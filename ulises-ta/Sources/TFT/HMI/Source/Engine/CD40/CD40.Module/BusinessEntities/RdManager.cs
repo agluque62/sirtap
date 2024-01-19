@@ -733,8 +733,8 @@ namespace HMI.CD40.Module.BusinessEntities
                             sf.setSelectedFrecuency(link.DefaultFrequency);
 
                             RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
-                            //posInfo.Seguro = new Random().Next(2) == 0;
                             posInfo.Seguro = (contador++ / 2 == 0);
+                            posInfo.Cifrado = (contador++ / 3 == 0);
 
                             /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                             posInfo.KeyAlias = rd.KeyAlias;
@@ -760,7 +760,8 @@ namespace HMI.CD40.Module.BusinessEntities
                         selectable_frequencies sf= new selectable_frequencies();
                         RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
                         posInfo.Seguro= new Random().Next(2) == 0;
-                        posInfo.Seguro = (contador++ / 2)==0;
+                        posInfo.Seguro = (contador++ / 2) == 0;
+                        posInfo.Cifrado = (contador++ / 3) == 0;
 
                         /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                         posInfo.KeyAlias = rd.KeyAlias;

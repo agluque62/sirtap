@@ -42,6 +42,7 @@ namespace HMI.Model.Module.UI
 		private string _NameFrecuency = "";
 		private string _FrecSeleccionada = "";
 		private  bool _seguro;
+		private  bool _cifrado;
 
 		private int _RtxGroup = 0;
 		private Timer _Timer = new Timer();
@@ -178,6 +179,7 @@ namespace HMI.Model.Module.UI
         public List<string> FrecuencaSel { get => _frecuenciasel; }
         public bool Seguro { get => _seguro; 
 			set => _seguro = value; }
+        public bool Cifrado { get => _cifrado; set => _cifrado = value; }
 
         public void SetFrecuenciaSel(List<string>v,string defaultfrecuency="")
 		{
@@ -718,7 +720,7 @@ namespace HMI.Model.Module.UI
 			// 231116 Arriba siempre la frecuencia, abajo el nombre si existe.
             if (Multifrecuencia)
             {
-                textRect.Offset(0, +2);
+                textRect.Offset(0, +4);
 				//BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, _defaultfrecuency, fontToUse, ContentAlignment.TopCenter, ForeColor);
 				BtnRenderer.DrawString(e.Graphics, textRect, _BtnInfo.GetBackColor(st), st, Lit_presentar, fontToUse, ContentAlignment.TopCenter, ForeColor);
             }
@@ -730,11 +732,20 @@ namespace HMI.Model.Module.UI
             }
 			{
 				Rectangle txtRect = ClientRectangle;
-				txtRect.Offset(32, +2);
+				txtRect.Offset(40, -6);
 				if (Seguro)
-					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "seguro", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "Seg", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
 				else
-					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "No seguro", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "---", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+
+			}
+			{
+				Rectangle txtRect = ClientRectangle;
+				txtRect.Offset(40, +6);
+				if (Seguro)
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "Cif", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+				else
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "---", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
 
 			}
 

@@ -248,6 +248,7 @@ namespace HMI.Model.Module.Messages
 		public readonly PttState Ptt;
 		public readonly SquelchState Squelch;
 		private bool _seguro;
+		private bool _cifrado;
 		public readonly RdRxAudioVia AudioVia;
 		public readonly int RtxGroup;
 		public readonly TipoFrecuencia_t TipoFrecuencia;
@@ -258,9 +259,10 @@ namespace HMI.Model.Module.Messages
 		/** 20180321. AGL. ALIAS a mostrar en la tecla... */
 		public string KeyAlias { get; set; }
 		public int Priority { get; set; }
-        public bool Seguro { get => _seguro; set => _seguro = value; }
+		public bool Seguro { get => _seguro; set => _seguro = value; }
+		public bool Cifrado{ get => _cifrado; set => _cifrado = value; }
 
-        public readonly string IdFrecuency;
+		public readonly string IdFrecuency;
 		public readonly string selectable_frequency;
 		//multifrecuencia
 		public selectable_frequencies frecuencia_sel = new selectable_frequencies();

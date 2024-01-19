@@ -84,6 +84,7 @@ namespace HMI.Model.Module.BusinessEntities
 		private PttState _Ptt = PttState.NoPtt;
 		private SquelchState _Squelch = SquelchState.NoSquelch;
 		private bool _Seguro = false;
+		private bool _Cifrado = false;
 		private RdRxAudioVia _AudioVia = RdRxAudioVia.NoAudio;
 		private int _RtxGroup = 0;
 		private int _TempRtxGroup = 0;
@@ -190,6 +191,10 @@ namespace HMI.Model.Module.BusinessEntities
 		public bool Seguro
 		{
 			get { return _Seguro; }
+		}
+		public bool Cifrado
+		{
+			get { return _Cifrado; }
 		}
 
 		public int RtxGroup
