@@ -3721,7 +3721,7 @@ CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 /**
  *	CORESIP_CreateRTPport		Crea un puerto para enviar y recibir RTP
  */
-CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_Error* error)
+CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
@@ -3738,7 +3738,7 @@ CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_por
 			pj_ansi_strcpy(dst, "NULL");
 		}
 
-		PJ_LOG(3, (__FILE__, "CORESIP_CreateRTPport dst_ip %d src_port %d dst_port %d payload_type %d", dst_ip, src_port, dst_port, payload_type));
+		PJ_LOG(3, (__FILE__, "CORESIP_CreateRTPport dst_ip %s src_port %d dst_port %d payload_type %d", dst_ip, src_port, dst_port, payload_type));
 	}
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
@@ -3756,7 +3756,7 @@ CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_por
 		}
 		else
 		{
-			*rtpport_id = (RTPport::CreateRTPport(dst_ip, src_port, dst_port, payload_type) | CORESIP_RTPPORT_ID);
+			*rtpport_id = (RTPport::CreateRTPport(dst_ip, src_port, dst_port, payload_type, action) | CORESIP_RTPPORT_ID);
 		}
 	}
 	catch_all;
@@ -3768,9 +3768,9 @@ CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_por
 }
 
 /**
- *	CORESIP_DestroyRTPport		Destruye un puerto generico de media
+ *	CORESIP_PauseResumeDestroyRTPport		Pausa reanuda y Destruye un puerto RTP
  */
-CORESIP_API int CORESIP_DestroyRTPport(int rtpport_id, CORESIP_Error* error)
+CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_actions action, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
@@ -3791,7 +3791,7 @@ CORESIP_API int CORESIP_DestroyRTPport(int rtpport_id, CORESIP_Error* error)
 		}
 		else
 		{
-			RTPport::DestroyRTPport(rtpport_id & CORESIP_ID_MASK);
+			RTPport::PauseResumeDestroyRTPport(rtpport_id & CORESIP_ID_MASK, action);
 		}
 	}
 	catch_all;

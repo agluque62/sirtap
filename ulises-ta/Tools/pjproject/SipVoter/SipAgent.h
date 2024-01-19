@@ -86,6 +86,10 @@ public:
 	//Direccion llamada
 	static const int INCOM = 0;
 	static const int OUTCOM = 1;
+
+	static char uaIpAdd[32];
+	static char HostId[33];
+	static unsigned int uaPort;
 	
 	static CORESIP_Callbacks Cb;
 	static bool EnableMonitoring;
@@ -253,11 +257,7 @@ private:
 	static int _InChannels[10 * CORESIP_MAX_SOUND_DEVICES];
 	static int _OutChannels[10 * CORESIP_MAX_SOUND_DEVICES];
 	static pjmedia_aud_stream * _SndDev;
-	static pjmedia_port * _ConfMasterPort;
-
-	static char uaIpAdd[32];
-	static char HostId[33];
-	static unsigned int uaPort;
+	static pjmedia_port * _ConfMasterPort;	
 	
 	static pjsua_transport_id SipTransportId;			//Id del SIP transport (direccion IP y puerto del protocolo SIP)
 

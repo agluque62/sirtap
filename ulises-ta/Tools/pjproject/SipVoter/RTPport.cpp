@@ -2,19 +2,38 @@
 #include "Exceptions.h"
 #include "Guard.h"
 #include "RTPport.h"
+#include "SipAgent.h"
 
 RTPport* RTPport::_RTP_Ports[MAX_RTP_PORTS];
 
 RTPport::RTPport()
 {
 	_Pool = NULL;
+	_Port = NULL;
 	_Slot = PJSUA_INVALID_ID;
 	Transport = NULL;
 	Stream = NULL;
 }
 
-int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt payload_type)
+int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt payload_type, CORESIP_actions action)
 {
+	pjmedia_dir dir;
+	switch (action)
+	{
+	case CORESIP_CREATE_ENCODING:
+		dir = PJMEDIA_DIR_ENCODING;
+		break;
+	case CORESIP_CREATE_DECODING:
+		dir = PJMEDIA_DIR_DECODING;
+		break;
+	case CORESIP_CREATE_ENCODING_DECODING:
+		dir = PJMEDIA_DIR_ENCODING_DECODING;
+		break;
+	default:
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init invalid action"));
+		return -1;
+	}
+
 	pj_status_t st = PJ_SUCCESS;
 	if (_Pool != NULL || _Slot != PJSUA_INVALID_ID)
 	{
@@ -29,22 +48,6 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 		return -1;
 	}
 
-	pjmedia_port_info_init(&_Port.info, &(pj_str("RTPP")), PJMEDIA_PORT_SIGNATURE('R', 'T', 'P', 'P'),
-		SAMPLING_RATE, CHANNEL_COUNT, BITS_PER_SAMPLE, SAMPLES_PER_FRAME);
-
-	_Port.port_data.pdata = this;
-	_Port.get_frame = &GetFrame;
-	_Port.put_frame = &PutFrame;
-	_Port.reset = &Reset;
-
-	st = pjsua_conf_add_port(_Pool, &_Port, &_Slot);
-	if (st != PJ_SUCCESS)
-	{
-		_Slot = PJSUA_INVALID_ID;
-		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init _Slot cannot be added to pjsua_conf"));
-		return -1;
-	}	
-
 	pj_sockaddr_in rem_addr;
 	st = pj_sockaddr_in_init(&rem_addr, &pj_str(dst_ip), dst_port);
 	if (st != PJ_SUCCESS)
@@ -58,32 +61,22 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 	/* Reset stream info. */
 	pj_bzero(&info, sizeof(info));
 
-	pjmedia_codec_info codec_info;
 	pj_str_t codec_id;
 	
-	codec_info.type = PJMEDIA_TYPE_AUDIO;
 	if (payload_type == PJMEDIA_RTP_PT_PCMA)
 	{
-		codec_info.pt = PJMEDIA_RTP_PT_PCMA;
-		codec_info.encoding_name = pj_str("PCMA");
 		codec_id = pj_str("PCMA");
 	}
 	else
 	{
-		codec_info.pt = PJMEDIA_RTP_PT_PCMU;
-		codec_info.encoding_name = pj_str("PCMU");
 		codec_id = pj_str("PCMU");
 	}
 	
-	codec_info.clock_rate = SAMPLING_RATE;
-	codec_info.channel_cnt = CHANNEL_COUNT;
-
 	/* Initialize stream info formats */
 	info.type = PJMEDIA_TYPE_AUDIO;
 	info.proto = PJMEDIA_TP_PROTO_RTP_AVP;
-	info.dir = PJMEDIA_DIR_ENCODING_DECODING;
+	info.dir = dir;
 	//pj_memcpy(&info.fmt, &codec_info, sizeof(pjmedia_codec_info));
-	info.tx_pt = codec_info.pt;
 	info.ssrc = pj_rand();
 
 	/* Copy remote address */
@@ -95,6 +88,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 	unsigned int count = 1;
 	st = pjmedia_codec_mgr_find_codecs_by_id(cm, &codec_id, &count, &ci, NULL);
 	if (st != PJ_SUCCESS) {
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init codec id cannot be found"));
 		return -1;
 	}
 
@@ -103,13 +97,15 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 	info.param = PJ_POOL_ALLOC_T(_Pool, struct pjmedia_codec_param);
 	st = pjmedia_codec_mgr_get_default_param(cm, &info.fmt, info.param);
 	if (st != PJ_SUCCESS) {
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init UDP default param cannot be get"));
 		return -1;
 	}
 
 	info.tx_pt = info.fmt.pt;
 
 	/* Create media transport */
-	st = pjmedia_transport_udp_create(pjsua_var.med_endpt, NULL, src_port,	0, &Transport);
+	pj_str_t src_addr = pj_str(SipAgent::uaIpAdd);
+	st = pjmedia_transport_udp_create2(pjsua_var.med_endpt, NULL, &src_addr, src_port,	0, &Transport);
 	if (st != PJ_SUCCESS)
 	{
 		Transport = NULL;
@@ -128,6 +124,21 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 		return -1;
 	}
 
+	st = pjmedia_stream_get_port(Stream, &_Port);
+	if (st != PJ_SUCCESS) {
+		_Port = NULL;
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init UDP stream port cannot be get"));
+		return -1;
+	}
+
+	st = pjsua_conf_add_port(_Pool, _Port, &_Slot);
+	if (st != PJ_SUCCESS)
+	{
+		_Slot = PJSUA_INVALID_ID;
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init _Slot cannot be added to pjsua_conf"));
+		return -1;
+	}
+
 	st = pjmedia_stream_start(Stream);
 	if (st != PJ_SUCCESS) {
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init stream cannot be started"));
@@ -137,8 +148,68 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 	return 0;
 }
 
+int RTPport::Pause(CORESIP_actions action)
+{
+	pjmedia_dir dir;
+	switch (action)
+	{
+	case CORESIP_PAUSE_ENCODING:
+		dir = PJMEDIA_DIR_ENCODING;
+		break;
+	case CORESIP_PAUSE_DECODING:
+		dir = PJMEDIA_DIR_DECODING;
+		break;
+	case CORESIP_PAUSE_ENCODING_DECODING:
+		dir = PJMEDIA_DIR_ENCODING_DECODING;
+		break;
+	default:
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Pause invalid action"));
+		return -1;
+	}
+	pj_status_t st = pjmedia_stream_pause(Stream, dir);
+	if (st != PJ_SUCCESS) {
+		_Port = NULL;
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Pause pjmedia_stream_pause "));
+		return -1;
+	}
+	return 0;
+}
+
+int RTPport::Resume(CORESIP_actions action)
+{
+	pjmedia_dir dir;
+	switch (action)
+	{
+	case CORESIP_RESUME_ENCODING:
+		dir = PJMEDIA_DIR_ENCODING;
+		break;
+	case CORESIP_RESUME_DECODING:
+		dir = PJMEDIA_DIR_DECODING;
+		break;
+	case CORESIP_RESUME_ENCODING_DECODING:
+		dir = PJMEDIA_DIR_ENCODING_DECODING;
+		break;
+	default:
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Resume invalid action"));
+		return -1;
+	}
+	pj_status_t st = pjmedia_stream_resume(Stream, dir);
+	if (st != PJ_SUCCESS) {
+		_Port = NULL;
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::resume pjmedia_stream_pause "));
+		return -1;
+	}
+	return 0;
+}
+
 void RTPport::Dispose()
 {
+	if (_Slot != PJSUA_INVALID_ID)
+	{
+		pjsua_conf_remove_port(_Slot);
+		_Slot = PJSUA_INVALID_ID;
+	}
+
 	if (Stream != NULL)
 	{
 		pjmedia_stream_destroy(Stream);
@@ -150,12 +221,6 @@ void RTPport::Dispose()
 		pjmedia_transport_close(Transport);
 		Transport = NULL;
 	}
-
-	if (_Slot != PJSUA_INVALID_ID)
-	{
-		pjsua_conf_remove_port(_Slot);
-		_Slot = PJSUA_INVALID_ID;
-	}	
 
 	if (_Pool)
 	{
@@ -169,31 +234,10 @@ RTPport::~RTPport(void)
 	Dispose();
 }
 
-pj_status_t RTPport::Reset(pjmedia_port* this_port)
-{
-	return PJ_SUCCESS;
-}
-
-pj_status_t RTPport::GetFrame(pjmedia_port* port, pjmedia_frame* frame)
-{
-	RTPport* rtp_port = reinterpret_cast<RTPport*>(port->port_data.pdata);
-	
-
-	return PJ_SUCCESS;
-}
-
-pj_status_t RTPport::PutFrame(pjmedia_port* port, const pjmedia_frame* frame)
-{
-	RTPport* rtp_port = reinterpret_cast<RTPport*>(port->port_data.pdata);
-
-
-	return PJ_SUCCESS;
-}
-
 
 // -----------   Funciones estaticas ----------------------------------------------
 
-int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload_type)
+int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action)
 {
 	if (dst_ip == NULL)
 	{
@@ -204,6 +248,12 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload
 	if (payload_type != ((int) PJMEDIA_RTP_PT_PCMU) && payload_type != ((int) PJMEDIA_RTP_PT_PCMA))
 	{
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport payload_type must be 0 or 8\n"));
+		return -1;
+	}
+
+	if (action != CORESIP_CREATE_ENCODING && action != CORESIP_CREATE_DECODING && action != CORESIP_CREATE_ENCODING_DECODING)
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport action is not valid\n"));
 		return -1;
 	}
 
@@ -226,22 +276,22 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload
 	_RTP_Ports[port_id] = new RTPport();
 	if (_RTP_Ports[port_id] == NULL)
 	{
-		throw PJLibException(__FILE__, PJ_ENOMEM).Msg("CreateRTPport: No se puede crear RTP Port. No hay suficiente memoria");
+		throw PJLibException(__FILE__, PJ_ENOMEM).Msg("CreateRTPport: No se puede crear RTP Port. new failed");
 		return -1;
 	}
 
-	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, (pjmedia_rtp_pt) payload_type) < 0)
+	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, (pjmedia_rtp_pt) payload_type, action) < 0)
 	{
 		delete _RTP_Ports[port_id];
 		_RTP_Ports[port_id] = NULL;
-		PJ_CHECK_STATUS(PJ_ENOMEM, ("ERROR: CreateRTPport Init failed"));
+		PJ_CHECK_STATUS(PJ_EINVALIDOP, ("ERROR: CreateRTPport Init failed"));
 		return -1;
 	}
 
 	return port_id;
 }
 
-void RTPport::DestroyRTPport(int port_id)
+void RTPport::PauseResumeDestroyRTPport(int port_id, CORESIP_actions action)
 {
 	if (port_id < 0 || port_id >= PJ_ARRAY_SIZE(_RTP_Ports))
 	{
@@ -253,9 +303,43 @@ void RTPport::DestroyRTPport(int port_id)
 		throw PJLibException(__FILE__, PJ_EINVAL).Msg("DestroyRTPport: Id no valido");
 		return;
 	}
+
 	RTPport* rtp_port = _RTP_Ports[port_id];
-	_RTP_Ports[port_id] = NULL;
-	delete rtp_port;
+
+	switch (action)
+	{
+	case CORESIP_PAUSE_ENCODING:
+	case CORESIP_PAUSE_DECODING:
+	case CORESIP_PAUSE_ENCODING_DECODING:
+		if (rtp_port->Pause(action) != 0) 
+			PJ_CHECK_STATUS(PJ_EUNKNOWN, ("ERROR: CORESIP_PauseResumeDestroyRTPport: Pause error"));
+		break;
+	case CORESIP_RESUME_ENCODING:
+	case CORESIP_RESUME_DECODING:
+	case CORESIP_RESUME_ENCODING_DECODING:
+		if (rtp_port->Resume(action) != 0) 
+			PJ_CHECK_STATUS(PJ_EUNKNOWN, ("ERROR: CORESIP_PauseResumeDestroyRTPport: Resume error"));
+		break;
+	case CORESIP_DESTROY:		
+		_RTP_Ports[port_id] = NULL;
+		if (rtp_port != NULL) delete rtp_port;
+		break;
+	default:
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: CORESIP_PauseResumeDestroyRTPport: invalid action"));
+	}
+	
+}
+
+void RTPport::DestroyAllRTPports()
+{
+	for (int i = 0; i < PJ_ARRAY_SIZE(_RTP_Ports); i++)
+	{
+		if (_RTP_Ports[i] != NULL)
+		{
+			delete _RTP_Ports[i];
+			_RTP_Ports[i] = NULL;
+		}
+	}
 }
 
 

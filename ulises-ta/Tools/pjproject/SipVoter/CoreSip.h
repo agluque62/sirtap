@@ -42,6 +42,7 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_RDRX_PORTS				128
 #define CORESIP_MAX_SOUND_RX_PORTS			128
 #define CORESIP_MAX_GENERIC_PORTS			16
+#define CORESIP_MAX_RTP_PORTS				16
 #define CORESIP_MAX_RS_LENGTH				128
 #define CORESIP_MAX_REASON_LENGTH			128
 #define CORESIP_MAX_WG67_SUBSCRIBERS		25
@@ -255,6 +256,21 @@ typedef enum CORESIP_REDIRECT_OP
 	CORESIP_REDIRECT_REJECT,
 	CORESIP_REDIRECT_ACCEPT
 } CORESIP_REDIRECT_OP;
+
+typedef enum CORESIP_actions
+{
+	CORESIP_CREATE_ENCODING,
+	CORESIP_CREATE_DECODING,
+	CORESIP_CREATE_ENCODING_DECODING,
+	CORESIP_PAUSE_ENCODING,
+	CORESIP_PAUSE_DECODING,
+	CORESIP_PAUSE_ENCODING_DECODING,
+	CORESIP_RESUME_ENCODING,
+	CORESIP_RESUME_DECODING,
+	CORESIP_RESUME_ENCODING_DECODING,
+	CORESIP_STOP,
+	CORESIP_DESTROY
+} CORESIP_actions;
 
 typedef struct CORESIP_Error
 {
@@ -1742,15 +1758,16 @@ extern "C" {
 	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
 	@param dst_port. Puerto de destino del flujo RTP.
 	@param payload_type. Valor 0: PCMU, valor 8: PCMA
-	@param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas.
 	*/
-	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_Error* error);
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action, CORESIP_Error* error);
 
 	/*
-	Funcion que destruir un puerto de media para enviar y recibir por RTP
-	@param rtpport_id. Manejador del puerto que se retorna.
+	Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto.
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas
 	*/
-	CORESIP_API int CORESIP_DestroyRTPport(int rtpport_id, CORESIP_Error* error);
+	CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_actions action, CORESIP_Error* error);
 
 
 #ifdef __cplusplus

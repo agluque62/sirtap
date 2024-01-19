@@ -210,7 +210,7 @@ PJ_DEF(pj_status_t) pjmedia_transport_udp_create3(pjmedia_endpt *endpt,
 
     
     /* Sanity check */
-    PJ_ASSERT_RETURN(endpt && port && p_tp, PJ_EINVAL);
+    PJ_ASSERT_RETURN(endpt && /*port &&*/ p_tp, PJ_EINVAL);
 
 
     pj_bzero(&si, sizeof(pjmedia_sock_info));
