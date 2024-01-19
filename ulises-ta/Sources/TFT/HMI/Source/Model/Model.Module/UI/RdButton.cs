@@ -42,7 +42,6 @@ namespace HMI.Model.Module.UI
 		private string _NameFrecuency = "";
 		private string _FrecSeleccionada = "";
 		private  bool _seguro;
-		private  bool _cifrado;
 
 		private int _RtxGroup = 0;
 		private Timer _Timer = new Timer();
@@ -179,7 +178,6 @@ namespace HMI.Model.Module.UI
         public List<string> FrecuencaSel { get => _frecuenciasel; }
         public bool Seguro { get => _seguro; 
 			set => _seguro = value; }
-        public bool Cifrado { get => _cifrado; set => _cifrado = value; }
 
         public void SetFrecuenciaSel(List<string>v,string defaultfrecuency="")
 		{
@@ -736,16 +734,7 @@ namespace HMI.Model.Module.UI
 				if (Seguro)
 					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "Seg", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
 				else
-					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "---", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
-
-			}
-			{
-				Rectangle txtRect = ClientRectangle;
-				txtRect.Offset(40, +6);
-				if (Seguro)
-					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "Cif", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
-				else
-					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "---", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
+					BtnRenderer.DrawString(e.Graphics, txtRect, Color.Transparent, st, "   ", _MediumFontBold, ContentAlignment.TopCenter, Color.Black);
 
 			}
 
