@@ -18,13 +18,13 @@ public:
 	pjsua_conf_port_id _Slot;		//su Slot de la conferencia pjmedia
 
 public:
-	static int CreateRTPport(char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action);
+	static int CreateRTPport(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action);
 	static void PauseResumeDestroyRTPport(int port_id, CORESIP_actions action);
-	static void DestroyAllRTPports();
+	static void DestroyAllRTPports();	
 	
 	RTPport();
 	~RTPport();
-	int Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt payload_type, CORESIP_actions action);
+	int Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action);
 	
 private:
 	

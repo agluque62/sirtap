@@ -1754,13 +1754,14 @@ extern "C" {
 	/*
 	Funcion que Crea un puerto de media para enviar y recibir por RTP
 	@param rtpport_id. Manejador del puerto que se retorna.
-	@param dst_ip. IP de destino del flujo RTP
+	@param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
 	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
 	@param dst_port. Puerto de destino del flujo RTP.
+	@param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
 	@param payload_type. Valor 0: PCMU, valor 8: PCMA
 	@param action. Indica el puerto RTP enconde, decode o las dos cosas.
 	*/
-	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action, CORESIP_Error* error);
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action, CORESIP_Error* error);
 
 	/*
 	Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP

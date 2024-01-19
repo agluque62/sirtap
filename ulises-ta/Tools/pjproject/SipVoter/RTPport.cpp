@@ -15,7 +15,7 @@ RTPport::RTPport()
 	Stream = NULL;
 }
 
-int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt payload_type, CORESIP_actions action)
+int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -111,6 +111,33 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, pjmedia_rtp_pt paylo
 		Transport = NULL;
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init UDP transport cannot be created"));
 		return -1;
+	}
+
+	//Si la ip de destino es muticast entonces se agrega al grupo
+	if (local_multicast_ip != NULL)
+	{
+		pjmedia_transport_info info;
+		st = pjmedia_transport_get_info(Transport, &info);
+		if (st != PJ_SUCCESS)
+		{
+			PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init pjmedia_transport_get_info failed"));
+			return -1;
+		}
+
+		pj_sockaddr_in local_addr, mcastAddr;
+		pj_sockaddr_in_init(&local_addr, &src_addr, (pj_uint16_t)src_port);
+		pj_sockaddr_in_init(&mcastAddr, &pj_str(local_multicast_ip), (pj_uint16_t)src_port);
+
+		struct ip_mreq	mreq;
+		mreq.imr_multiaddr.S_un.S_addr = mcastAddr.sin_addr.s_addr;
+		mreq.imr_interface.S_un.S_addr = local_addr.sin_addr.s_addr;
+
+		st = pj_sock_setsockopt(info.sock_info.rtp_sock, IPPROTO_IP, pj_IP_ADD_MEMBERSHIP(), (void*)&mreq, sizeof(mreq));
+		if (st != PJ_SUCCESS)
+		{
+			PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init pj_sock_setsockopt pj_IP_ADD_MEMBERSHIP failed"));
+			return -1;
+		}
 	}
 
 	/* Now that the stream info is initialized, we can create the
@@ -237,7 +264,7 @@ RTPport::~RTPport(void)
 
 // -----------   Funciones estaticas ----------------------------------------------
 
-int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload_type, CORESIP_actions action)
+int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action)
 {
 	if (dst_ip == NULL)
 	{
@@ -280,7 +307,7 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, int payload
 		return -1;
 	}
 
-	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, (pjmedia_rtp_pt) payload_type, action) < 0)
+	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, local_multicast_ip, (pjmedia_rtp_pt) payload_type, action) < 0)
 	{
 		delete _RTP_Ports[port_id];
 		_RTP_Ports[port_id] = NULL;
@@ -341,5 +368,7 @@ void RTPport::DestroyAllRTPports()
 		}
 	}
 }
+
+
 
 
