@@ -155,7 +155,7 @@ namespace HMI.CD40.Module.BusinessEntities
 			}
 		}
 
-		public bool Available
+        public bool Available
 		{
 			get { return (_Ptt != PttState.Unavailable) && (_Squelch != SquelchState.Unavailable); }
 		}

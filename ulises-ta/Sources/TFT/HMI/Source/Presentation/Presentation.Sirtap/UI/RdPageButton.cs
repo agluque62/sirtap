@@ -142,6 +142,10 @@ namespace HMI.Presentation.Sirtap.UI
         ]
         public int OrderPage
         {
+            get
+            {
+                return int.Parse(_BtnInfo.Text);
+            }
             set
             {
                 if (_Page != value)

@@ -51,7 +51,7 @@ namespace HMI.Presentation.Sirtap.Views
             System.Windows.Forms.Panel _TlfHeadP;
             this._TlfPageConfBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageSecondBT = new HMI.Model.Module.UI.HMIButton();
-            this._TlfPageFirstBT = new HMI.Model.Module.UI.HMIButton();
+            //this._TlfPageFirstBT = new HMI.Model.Module.UI.HMIButton();
             this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._LcSpeakerUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._TlfDaTLP = new System.Windows.Forms.TableLayoutPanel();
@@ -69,7 +69,7 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             _TlfHeadP.Controls.Add(this._TlfPageConfBT);
             _TlfHeadP.Controls.Add(this._TlfPageSecondBT);
-            _TlfHeadP.Controls.Add(this._TlfPageFirstBT);
+            //_TlfHeadP.Controls.Add(this._TlfPageFirstBT);
             _TlfHeadP.Controls.Add(this._TlfHeadPhonesUDB);
             _TlfHeadP.Controls.Add(this._LcSpeakerUDB);
             _TlfHeadP.Location = new System.Drawing.Point(5, 3);
@@ -118,22 +118,22 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // _TlfPageFirstBT
             // 
-            this._TlfPageFirstBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._TlfPageFirstBT.DrawX = false;
-            this._TlfPageFirstBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._TlfPageFirstBT.ImageNormal = global::HMI.Presentation.Sirtap.Properties.Resources.TlfPage;
-            this._TlfPageFirstBT.IsButtonTlf = false;
-            this._TlfPageFirstBT.IsConferencePreprogramada = false;
-            this._TlfPageFirstBT.Location = new System.Drawing.Point(135, -3);
-            this._TlfPageFirstBT.Name = "_TlfPageFirstBT";
-            this._TlfPageFirstBT.Permitted = true;
-            this._TlfPageFirstBT.Size = new System.Drawing.Size(36, 0);
-            this._TlfPageFirstBT.TabIndex = 2;
-            this._TlfPageFirstBT.Text = "2";
-            this._TlfPageFirstBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this._TlfPageFirstBT.Visible = false;
-            this._TlfPageFirstBT.Click += new System.EventHandler(this._TlfPageFirstBT_Click);
+            //this._TlfPageFirstBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            //| System.Windows.Forms.AnchorStyles.Right)));
+            //this._TlfPageFirstBT.DrawX = false;
+            //this._TlfPageFirstBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            //this._TlfPageFirstBT.ImageNormal = global::HMI.Presentation.Sirtap.Properties.Resources.TlfPage;
+            //this._TlfPageFirstBT.IsButtonTlf = false;
+            //this._TlfPageFirstBT.IsConferencePreprogramada = false;
+            //this._TlfPageFirstBT.Location = new System.Drawing.Point(135, -3);
+            //this._TlfPageFirstBT.Name = "_TlfPageFirstBT";
+            //this._TlfPageFirstBT.Permitted = true;
+            //this._TlfPageFirstBT.Size = new System.Drawing.Size(36, 0);
+            //this._TlfPageFirstBT.TabIndex = 2;
+            //this._TlfPageFirstBT.Text = "2";
+            //this._TlfPageFirstBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            //this._TlfPageFirstBT.Visible = false;
+            //this._TlfPageFirstBT.Click += new System.EventHandler(this._TlfPageFirstBT_Click);
             // 
             // _TlfHeadPhonesUDB
             // 
@@ -248,7 +248,7 @@ namespace HMI.Presentation.Sirtap.Views
         }
 
         #endregion
-        private HMI.Model.Module.UI.HMIButton _TlfPageFirstBT;
+        //private HMI.Model.Module.UI.HMIButton _TlfPageFirstBT;
         private HMI.Model.Module.UI.HMIButton _TlfPageSecondBT;
         private HMI.Presentation.Sirtap.UI.UpDownButton _TlfHeadPhonesUDB;
         private HMI.Presentation.Sirtap.UI.UpDownButton _LcSpeakerUDB;

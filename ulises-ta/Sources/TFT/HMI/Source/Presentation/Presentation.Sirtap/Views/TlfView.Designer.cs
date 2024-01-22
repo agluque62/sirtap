@@ -188,7 +188,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfFunctionsWS;
         private Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace _TlfNumbersWS;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        public  System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private UI.TlfPageButton _TlfPageBT;
         private UI.UpDownButton _TlfHeadPhonesUDB;
         private Model.Module.UI.HMIButton hmiButton1;

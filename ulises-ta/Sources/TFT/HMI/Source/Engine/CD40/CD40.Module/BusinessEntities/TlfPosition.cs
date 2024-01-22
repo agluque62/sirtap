@@ -1677,7 +1677,8 @@ public bool ChAllowsForward
                 //lalm 230505
                 if (EsConferencia(inCall.RemoteId) && ConferenciaEnuso(inCall.RemoteId) )
                     return SipAgent.SIP_DECLINE; 
-
+                if (TftMision.Instance.Mision.Length==0)
+                    return SipAgent.SIP_DECLINE;
                 if (_SipCall != null)
 				{
 					if ((call2replace >= 0) && (_SipCall.Id == call2replace))

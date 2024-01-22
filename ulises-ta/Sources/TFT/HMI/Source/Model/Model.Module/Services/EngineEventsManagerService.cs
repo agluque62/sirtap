@@ -576,7 +576,8 @@ namespace HMI.Model.Module.Services
 		{
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChanged, msg);
 
-			_StateManager.TftMision.Mision = msg.State;
+			//_StateManager.TftMision.Mision = msg.State;
+			_StateManager.TftMisionInstance.Mision = msg.State;
 		}
 
 		[EventSubscription(EventTopicNames.TftMisionChangedf2, ThreadOption.UserInterface)]
@@ -584,7 +585,7 @@ namespace HMI.Model.Module.Services
 		{
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChangedf2, msg);
 
-			_StateManager.TftMision.Mision = msg.State.Mision;
+			_StateManager.TftMisionInstance.Mision = msg.State.Mision;
 		}
 
 		[EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
@@ -864,7 +865,7 @@ namespace HMI.Model.Module.Services
                         _EngineCmdManager.ModoSoloAltavoces();
                     if (_StateManager.Radio.DoubleRadioSpeaker)
                         _EngineCmdManager.SetDoubleRadioSpeaker();
-					_EngineCmdManager.SetSesionSirtap(_StateManager.TftMision.Mision);
+					_EngineCmdManager.SetSesionSirtap(_StateManager.TftMisionInstance.Mision);
 				}
 			}
 			else

@@ -166,6 +166,13 @@ namespace HMI.Model.Module.BusinessEntities
 				ChangeRxState(LcRxState.Idle);
 			}
 		}
+		public void ResetNot()
+		{
+			if (_Rx == LcRxState.RxNotif)
+			{
+				ChangeRxState(LcRxState.Idle);
+			}
+		}
 
 		private void ChangeTxState(LcTxState st)
 		{
@@ -427,7 +434,14 @@ namespace HMI.Model.Module.BusinessEntities
 
 			General.SafeLaunchEvent(LcChanged, this, new RangeMsg(id, 1));
 		}
+		public void ResetNot(int id)
+		{
+			Debug.Assert(id < NumDestinations);
 
+			_Dst[id].ResetNot();
+
+			General.SafeLaunchEvent(LcChanged, this, new RangeMsg(id, 1));
+		}
 		private void OnLcStChanged(object sender)
 		{
 			General.SafeLaunchEvent(LcChanged, this, new RangeMsg(((LcDst)sender).Id, 1));

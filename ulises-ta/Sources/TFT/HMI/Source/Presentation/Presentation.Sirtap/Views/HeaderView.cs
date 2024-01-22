@@ -260,7 +260,7 @@ namespace HMI.Presentation.Sirtap.Views
             if (_StateManager.Tft.Login)
             {
 
-                MisionText.Text = _StateManager.TftMision.Mision;
+                MisionText.Text = _StateManager.TftMisionInstance.Mision;
                 _TitleBT.Text = MisionText.Text;
             }
             else

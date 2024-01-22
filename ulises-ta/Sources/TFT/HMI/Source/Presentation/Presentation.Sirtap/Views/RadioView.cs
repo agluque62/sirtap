@@ -532,7 +532,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             _RdPageBT.Page = _StateManager.Radio.Page;
             // 240116 Aqui se cambia el numero de pagina por el orden de pagina en a mision.
-            _RdPageBT.OrderPage = _StateManager.TftMision.ordenpaginaradio(_RdPageBT.Page);
+            _RdPageBT.OrderPage = _StateManager.TftMisionInstance.ordenpaginaradio(_RdPageBT.Page);
             int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
 
             for (int i = 0; i < _NumPositionsByPage; i++)
@@ -1083,7 +1083,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
-            bt.Visible = dst.IsConfigurated&&_StateManager.TftMision.Mision.Length>0;
+            bt.Visible = dst.IsConfigurated&&_StateManager.TftMisionInstance.Mision.Length>0;
         }
 
         private void _RdSpeakerUDB_LevelDown(object sender, EventArgs e)
@@ -1286,12 +1286,12 @@ namespace HMI.Presentation.Sirtap.Views
         {
             int numero_paginas_radiocr = _StateManager.Radio.GetNumberOfPagesRd();// paginas con recursos
             int numero_paginas_radiocsr = _StateManager.Radio.GetNumberMaxOfPagesRd();//paginas con o sin recursos
-            int numero_paginas_radiopm = _StateManager.TftMision.GetNumberOfPagesRd(); //paginas en la mison.
+            int numero_paginas_radiopm = _StateManager.TftMisionInstance.GetNumberOfPagesRd(); //paginas en la mison.
             //int numero_pagina_mas_alto = _StateManager.TftMision.Pagrad[_StateManager.TftMision.Pagrad.Count - 1].Item1;
-            int numero_pagina_mas_alto = _StateManager.TftMision.numero_pagina_mas_alto_rad();
+            int numero_pagina_mas_alto = _StateManager.TftMisionInstance.numero_pagina_mas_alto_rad();
 
             int numero_paginas_radio = numero_pagina_mas_alto;
-            List<(int, bool)> _pagrad = _StateManager.TftMision.Pagrad;
+            List<(int, bool)> _pagrad = _StateManager.TftMisionInstance.Pagrad;
             int? primeraPaginaSuperior = null;
             if (!inferior)
                 primeraPaginaSuperior = _pagrad
@@ -1341,7 +1341,7 @@ namespace HMI.Presentation.Sirtap.Views
             bool up = false;
             TimeSpan tick = new TimeSpan(0, 0, 10);//10 segundos
             //int numero_paginas_radio = _StateManager.Radio.GetNumberOfPagesRd();
-            int numero_paginas_radio = _StateManager.TftMision.GetNumberOfPagesRd();
+            int numero_paginas_radio = _StateManager.TftMisionInstance.GetNumberOfPagesRd();
             bool confirma = global::HMI.Presentation.Sirtap.Properties.Settings.Default.ConfCambioPagRad;
             if (confirma && _StateManager.Radio.GetNumPages() > 1)
             {
@@ -1382,7 +1382,7 @@ namespace HMI.Presentation.Sirtap.Views
         //LALM 210224
         private void _RdPageBT_DownClick_Confirmada(object sender)
         {
-            int numero_paginas_radio = _StateManager.TftMision.GetNumberOfPagesRd();
+            int numero_paginas_radio = _StateManager.TftMisionInstance.GetNumberOfPagesRd();
             
             int actualPage = _RdPageBT.Page;
             int newPage = BuscarPagina(actualPage, true);

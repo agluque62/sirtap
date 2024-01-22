@@ -47,7 +47,7 @@ namespace HMI.Model.Module.Services
 		void TransferClick();
 		void SwitchTlfView(string view);
 		void SwitchRadView(string pantalla,int id, string fr);
-		bool CancelTlfClick(bool test=false);//#2816 LALM 220615
+		bool CancelTlfClick(bool test = false);//#2816 LALM 220615
 		void SpeakerTlfClick();
         void NewDigit(int id, char key);
         void BriefingFunction();

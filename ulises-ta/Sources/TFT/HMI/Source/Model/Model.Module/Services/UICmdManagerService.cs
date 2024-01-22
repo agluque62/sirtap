@@ -114,7 +114,6 @@ namespace HMI.Model.Module.Services
                 }
             }
         }
-
 		public void MessageResponse(NotifMsg msg, NotifMsgResponse response)
 		{
 			_StateManager.HideUIMessage(msg.Id);
@@ -415,13 +414,21 @@ namespace HMI.Model.Module.Services
 		public void RdVisualizaPageSirtap()
 		{
 			//240117 ver si es necesario
-			if (_StateManager.TftMision.Mision.Length>0)
+			int primera_pagina = 0;
+			int sc = 1; 
+			if (_StateManager.TftMisionInstance.Pagrad.Count > 0)
+				primera_pagina = _StateManager.TftMisionInstance.Pagrad[0].Item1;
+			int npr = _StateManager.TftMisionInstance.Pagrad.Count;
+			if (npr> 0)
+				sc = _StateManager.TftMisionInstance.Pagrad[npr-1].Item1;
+	
+			if (_StateManager.TftMisionInstance.Mision.Length>0)
             {
-				_EngineCmdManager.SetRdPage(0, 1, _StateManager.Radio.PageSize);
-				_EngineCmdManager.SetRdPage(1, 0, _StateManager.Radio.PageSize);
+				_EngineCmdManager.SetRdPage(primera_pagina, sc, _StateManager.Radio.PageSize);
+				_EngineCmdManager.SetRdPage(sc, primera_pagina, _StateManager.Radio.PageSize);
 			}
 			if (_StateManager.Tft.Login)
-				_EngineCmdManager.SetRdPage(0, 0, _StateManager.Radio.PageSize);
+				_EngineCmdManager.SetRdPage(primera_pagina, primera_pagina, _StateManager.Radio.PageSize);
 		}
 		public void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage)
         {
@@ -432,26 +439,26 @@ namespace HMI.Model.Module.Services
 			if (oldPage==newPage)
             {
 				//240117 ver si es necesario
-				if (_StateManager.TftMision.Mision.Length > 0)
+				if (_StateManager.TftMisionInstance.Mision.Length > 0)
 				{
 					_EngineCmdManager.SetRdPage(oldPage, newPage + 1, numPosByPage);
 					_EngineCmdManager.SetRdPage(oldPage + 1, newPage, numPosByPage);
 				}
 			}
 			return;
-			while (newPage != oldPage)
-			{
-				for (int i = newPage * numPosByPage, to = Math.Min(Radio.NumDestinations, (newPage + 1) * numPosByPage); i < to; i++)
-				{
-					if (_StateManager.Radio[i].IsConfigurated)
-					{
-						_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
-						return;
-					}
-				}
+			//while (newPage != oldPage)
+			//{
+			//	for (int i = newPage * numPosByPage, to = Math.Min(Radio.NumDestinations, (newPage + 1) * numPosByPage); i < to; i++)
+			//	{
+			//		if (_StateManager.Radio[i].IsConfigurated)
+			//		{
+			//			_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+			//			return;
+			//		}
+			//	}
 
-				newPage = (newPage + 1) % numPages;
-			}
+			//	newPage = (newPage + 1) % numPages;
+			//}
 
 		}
 

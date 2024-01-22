@@ -110,6 +110,7 @@
     </Compile>
     <Compile Include="BusinessEntities\AsioChannels.cs" />
     <Compile Include="BusinessEntities\CBinauralHwManager.cs" />
+    <Compile Include="BusinessEntities\cd40tftmision.cs" />
     <Compile Include="BusinessEntities\CfgManager.cs" />
     <Compile Include="BusinessEntities\TlfConferencePrepro.cs" />
     <Compile Include="BusinessEntities\TlfForward.cs" />

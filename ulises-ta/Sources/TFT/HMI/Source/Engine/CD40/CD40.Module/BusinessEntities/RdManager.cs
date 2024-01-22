@@ -301,6 +301,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 if (_RdPositions[i].Monitoring)
                     _RdPositions[i].SetRx(true);
             }
+            else
 
             //RQF-14
             if (newPage >= 0)
@@ -1588,7 +1589,7 @@ namespace HMI.CD40.Module.BusinessEntities
             int page = _Page;
             var cfg = Top.Cfg;
             var rdPositions = _RdPositions;
-
+            if (page>=0)
             for (int i = page * (int)cfg.NumFrecByPage, to = ((page + 1) * (int)cfg.NumFrecByPage); i < to; i++)
             {
                 var rdPosition = rdPositions[i];
