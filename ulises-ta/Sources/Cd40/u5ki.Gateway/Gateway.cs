@@ -9,18 +9,21 @@ using System.Threading.Tasks;
 using U5ki.Infrastructure;
 using Utilities;
 using ProtoBuf;
+using System.Resources;
 
-namespace u5ki.Gateway
+namespace U5ki.Gateway
 {
     public class Gateway : BaseCode, IService
     {
         public string Name { get; set; }
         public ServiceStatus Status { get; set; }
-        public bool Master { get; set; }
+        public static bool Master { get; set; }
 
         private static Registry GatewayRegistry = null;
-        private Mutex mut;
+        private static Mutex mut;
         private Cd40Cfg Cfg = null;
+
+        private static Dictionary<string, NoED137Resource> Resources = new Dictionary<string, NoED137Resource>();
 
         public Gateway()
         {
@@ -133,13 +136,19 @@ namespace u5ki.Gateway
                 }
                 Master = master;
 
-                if (!Master)
+                if (Master)
                 {
-                    
+                    foreach (NoED137Resource noEd137res in Resources.Values)
+                    {
+                        noEd137res.CreateGRSAccount();
+                    }
                 }
                 else
                 {
-                    
+                    foreach (NoED137Resource noEd137res in Resources.Values)
+                    {
+                        noEd137res.DestroyGRSAccount();
+                    }
                 }
                 mut.ReleaseMutex();
 
@@ -203,7 +212,54 @@ namespace u5ki.Gateway
 
         private void ProcessNewConfig(Cd40Cfg cfg)
         {
+            LogInfo<Gateway>("ProcessNewConfig: Recibida nueva configuracion");
 
+            Dictionary<string, CfgRecursoEnlaceExterno> resourcesFound = new Dictionary<string, CfgRecursoEnlaceExterno>();
+            foreach (ConfiguracionUsuario confuser in cfg.ConfiguracionUsuarios)
+            {
+                foreach (CfgEnlaceExterno enl in confuser.RdLinks)
+                {
+                    foreach (CfgRecursoEnlaceExterno res in enl.ListaRecursos)
+                    {
+                        if (ConfiguracionSistema.IsRadioNOED137(res) && !resourcesFound.ContainsKey(res.IdRecurso))
+                        {
+                            resourcesFound[res.IdRecurso] = res;
+                        }
+                    }
+                }
+            }
+
+            foreach (CfgRecursoEnlaceExterno res in resourcesFound.Values)
+            {
+                if (!Resources.ContainsKey(res.IdRecurso))
+                {
+                    NoED137Resource noEd137res = new NoED137Resource(res);
+                    if (Master) noEd137res.CreateGRSAccount();
+                    Resources[res.IdRecurso] = noEd137res;                    
+                }
+            }
+
+            List<string> idResToRemove = new List<string>();
+            foreach (NoED137Resource noEd137res in Resources.Values)
+            {
+                if (!resourcesFound.ContainsKey(noEd137res.IdRecurso))
+                {
+                    noEd137res.Dispose();
+                    idResToRemove.Add(noEd137res.IdRecurso);                    
+                }
+            }
+            foreach (string idRes in idResToRemove)
+            {                
+                Resources.Remove(idRes);
+            }
+
+            string recursos_no_ed137_resultantes = "";
+            foreach (NoED137Resource noEd137res in Resources.Values)
+            {
+                recursos_no_ed137_resultantes += $"{noEd137res.IdRecurso},";
+            }
+
+            LogInfo<Gateway>($"ProcessNewConfig: Recursos No ED137: {recursos_no_ed137_resultantes}");
         }
 
         private void OnMsgReceived(object sender, SpreadDataMsg msg)
@@ -233,5 +289,37 @@ namespace u5ki.Gateway
 
             mut.ReleaseMutex();
         }
-    }
+
+        public static void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
+        {
+
+        }
+
+        public static void NOED137OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
+        {
+            bool retmut = mut.WaitOne(10000);
+            if (retmut == false) return;
+
+            if (!Master)
+            {
+                mut.ReleaseMutex();
+                return;
+            }
+
+            bool found = false;
+            foreach (string idRes in Resources.Keys)
+            {
+                if (inInfo.SrcId == idRes) 
+                {
+                    Resources[idRes].NOED137OnCallIncoming(call, call2replace, info, inInfo);
+                    found = true;
+                }
+            }
+
+            mut.ReleaseMutex();
+
+            if (!found) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
+        }
+
+    }    
 }

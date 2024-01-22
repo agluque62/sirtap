@@ -26,6 +26,8 @@ using U5ki.Enums;
 using System.Runtime.CompilerServices;
 using U5ki.RdService;
 using Translate;
+using U5ki.Gateway;
+
 
 namespace U5ki.RdService
 {
@@ -2237,11 +2239,14 @@ namespace U5ki.RdService
             SipAgent.KaTimeout -= OnKaTimeout;
             SipAgent.RdInfo -= OnRdInfo;
             SipAgent.CallState -= OnCallState;
+            SipAgent.CallIncoming -= OnCallIncoming;
+            //SipAgent.CallIncoming -= 
             /** 20171130. Para el ping a los TX HF por Options... */
             SipAgent.OptionsReceive -= OnOptionsResponse;
 
             SipAgent.KaTimeout += OnKaTimeout;
             SipAgent.RdInfo += OnRdInfo;
+            SipAgent.CallIncoming += OnCallIncoming;
             SipAgent.CallState += OnCallState;
             /** 20171130. Para el ping a los TX HF por Options... */
             SipAgent.OptionsReceive += OnOptionsResponse;
@@ -2401,6 +2406,20 @@ namespace U5ki.RdService
             }
         }
 
+        private void OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
+        {
+            if (info.Type == CORESIP_CallType.CORESIP_CALL_RD)
+            {
+                _EventQueue.Enqueue(call.ToString() + "_IncommingGRS", delegate ()
+                {
+                    if (_Master)
+                    {
+                        Gateway.Gateway.NOED137OnCallIncoming(call, call2replace, info, inInfo);
+                    }
+                });
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -2409,7 +2428,17 @@ namespace U5ki.RdService
         /// <param name="stateInfo"></param>
         private void OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
-            if ((stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED) ||
+            if (info.Type == CORESIP_CallType.CORESIP_CALL_RD && stateInfo.Role == CORESIP_CallRole.CORESIP_CALL_ROLE_UAS)
+            {
+                _EventQueue.Enqueue(call.ToString() + "_StateGRS", delegate ()
+                {
+                    if (_Master)
+                    {                        
+                        Gateway.Gateway.NOED137OnCallState(call, info, stateInfo);                        
+                    }
+                });
+            }                        
+            else if ((stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED) ||
                 (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED))
             {
                 _EventQueue.Enqueue(call.ToString() + "_State", delegate()

@@ -323,7 +323,7 @@ namespace U5ki.Infrastructure
     public enum CORESIP_CallRole
     {
         CORESIP_CALL_ROLE_UAC,
-        CORESIP_CALL_ROLE_UCS
+        CORESIP_CALL_ROLE_UAS
     }
 
     public enum CORESIP_SDPSendRecvAttrForced
