@@ -1122,7 +1122,7 @@ void SipCall::OnRdInfoChanged(void* stream, void* ext_type_length, pj_uint32_t r
 	/*Para ver si somos una radio. Solo para cuando somos un ETM */
 	AccountUserData* accUserData = NULL;
 	pj_bool_t rdAccount = PJ_FALSE;				//Indica si acc_id es un account tipo radio GRS
-	if (SipAgent::ETM)
+	//if (SipAgent::ETM)
 	{
 		pjsua_call_info callinfo;
 		if (pjsua_call_get_info(pjcall->index, &callinfo) != PJ_SUCCESS)
