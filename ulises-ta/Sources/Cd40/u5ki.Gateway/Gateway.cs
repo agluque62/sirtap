@@ -17,7 +17,7 @@ namespace U5ki.Gateway
     {
         public string Name { get; set; }
         public ServiceStatus Status { get; set; }
-        public static bool Master { get; set; }
+        public bool Master { get; set; }
 
         private static Registry GatewayRegistry = null;
         private static Mutex mut;
@@ -292,7 +292,15 @@ namespace U5ki.Gateway
 
         public static void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
+            bool retmut = mut.WaitOne(10000);
+            if (retmut == false) return;            
 
+            foreach (string idRes in Resources.Keys)
+            {
+                Resources[idRes].NOED137OnCallState(call, info, stateInfo);
+            }
+
+            mut.ReleaseMutex();
         }
 
         public static void NOED137OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
@@ -300,16 +308,10 @@ namespace U5ki.Gateway
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return;
 
-            if (!Master)
-            {
-                mut.ReleaseMutex();
-                return;
-            }
-
             bool found = false;
             foreach (string idRes in Resources.Keys)
             {
-                if (inInfo.SrcId == idRes) 
+                if (inInfo.DstId == idRes) 
                 {
                     Resources[idRes].NOED137OnCallIncoming(call, call2replace, info, inInfo);
                     found = true;
