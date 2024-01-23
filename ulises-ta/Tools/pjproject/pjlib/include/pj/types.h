@@ -546,6 +546,7 @@ enum {
 typedef struct pj_app_callbacks
 {
 	void (*on_stream_rtp)(void * stream, void * frame, void * codec, unsigned seq, pj_uint32_t rtp_ext_info);
+    void (*on_stream_rtp_RTPport)(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info);
 	void (*on_stream_rtp_ext_info_changed)(void * stream, void *ext_type_length, pj_uint32_t rtp_ext_info, const void * p_rtp_ext_info, 
         pj_uint32_t rtp_ext_length, pj_bool_t tx_pttmute_changed, pj_bool_t GRS_force_ptt_mute_in_RTPRx_changed);
 	void (*on_stream_ka_timeout)(void * stream);

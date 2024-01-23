@@ -369,6 +369,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 	pj_app_cbs.on_stream_rtp_ext_info_changed = &SipCall::OnRdInfoChanged;
 	pj_app_cbs.on_stream_ka_timeout = &SipCall::OnKaTimeout;
 	pj_app_cbs.on_create_sdp = &SDPUtils::OnCreateSdp;
+	pj_app_cbs.on_stream_rtp_RTPport = &RTPport::OnRTP_Received;
 	
 #ifdef _ED137_
 	// Heredadas de coresip PlugTest FAA 05/2011

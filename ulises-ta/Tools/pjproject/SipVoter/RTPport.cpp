@@ -6,13 +6,16 @@
 
 RTPport* RTPport::_RTP_Ports[MAX_RTP_PORTS];
 
-RTPport::RTPport()
+RTPport::RTPport(int rtp_port_id)
 {
+	RTPport_id = rtp_port_id;
 	_Pool = NULL;
+	_Lock = NULL;
 	_Port = NULL;
 	_Slot = PJSUA_INVALID_ID;
 	Transport = NULL;
 	Stream = NULL;
+	ReceivingRTP = PJ_FALSE;
 }
 
 int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action)
@@ -45,6 +48,13 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	if (_Pool == NULL)
 	{
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init Not enough memory"));
+		return -1;
+	}
+
+	st = pj_lock_create_recursive_mutex(_Pool, NULL, &_Lock);
+	if (st != PJ_SUCCESS)
+	{
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init _Lock cannot be created"));
 		return -1;
 	}
 
@@ -144,12 +154,14 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	 * stream.
 	 */
 
-	st = pjmedia_stream_create(pjsua_var.med_endpt, _Pool, &info, Transport, NULL, &Stream);
+	st = pjmedia_stream_create(pjsua_var.med_endpt, _Pool, &info, Transport, this, &Stream);
 	if (st != PJ_SUCCESS) {
 		Stream = NULL;
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init stream cannot be created"));
 		return -1;
 	}
+
+	pjmedia_stream_set_is_for_coresip_RTPport(Stream, PJ_TRUE);
 
 	st = pjmedia_stream_get_port(Stream, &_Port);
 	if (st != PJ_SUCCESS) {
@@ -169,6 +181,19 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	st = pjmedia_stream_start(Stream);
 	if (st != PJ_SUCCESS) {
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init stream cannot be started"));
+		return -1;
+	}	
+
+	pj_timer_entry_init(&RTP_Timeout_timer, 0, this, on_RTP_Timeout_timer);
+	pj_time_val	delay;
+	delay.sec = (long)RTP_Timeout_TIME_seg;
+	delay.msec = (long)RTP_Timeout_TIME_ms;
+	RTP_Timeout_timer.id = 1;
+	st = pjsua_schedule_timer(&RTP_Timeout_timer, &delay);
+	if (st != PJ_SUCCESS)
+	{
+		RTP_Timeout_timer.id = 0;
+		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init RTP_Timeout_timer cannot be started"));
 		return -1;
 	}
 
@@ -249,11 +274,67 @@ void RTPport::Dispose()
 		Transport = NULL;
 	}
 
+	if (_Lock)
+	{
+		pj_lock_destroy(_Lock);
+	}
+
 	if (_Pool)
 	{
 		pj_pool_release(_Pool);
 		_Pool = NULL;
 	}
+}
+
+void RTPport::RTP_Received(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info)
+{
+	pj_lock_acquire(_Lock);
+
+	RTP_Timeout_timer.id = 0;
+	pjsua_cancel_timer(&RTP_Timeout_timer);
+
+	if (!ReceivingRTP)
+	{
+		ReceivingRTP = PJ_TRUE;
+		CORESIP_RTPport_info info;
+		info.receiving = PJ_TRUE;
+
+		if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(RTPport_id | CORESIP_RTPPORT_ID, &info);
+	}
+
+	pj_time_val	delay;
+	delay.sec = (long)RTP_Timeout_TIME_seg;
+	delay.msec = (long)RTP_Timeout_TIME_ms;
+	RTP_Timeout_timer.id = 1;
+	pj_status_t st = pjsua_schedule_timer(&RTP_Timeout_timer, &delay);
+	if (st != PJ_SUCCESS)
+	{
+		RTP_Timeout_timer.id = 0;
+	}
+
+	pj_lock_release(_Lock);
+}
+
+void RTPport::on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te)
+{	
+	RTPport* rtpport = (RTPport*)te->user_data;
+	if (rtpport == NULL) return;
+
+	pj_lock_acquire(rtpport->_Lock);
+
+	rtpport->RTP_Timeout_timer.id = 0;
+	pjsua_cancel_timer(&rtpport->RTP_Timeout_timer);
+
+	if (rtpport->ReceivingRTP)
+	{
+		rtpport->ReceivingRTP = PJ_FALSE;
+		CORESIP_RTPport_info info;
+		info.receiving = PJ_FALSE;
+
+		if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(rtpport->RTPport_id | CORESIP_RTPPORT_ID, &info);
+	}	
+
+	pj_lock_release(rtpport->_Lock);
 }
 
 RTPport::~RTPport(void)
@@ -300,7 +381,7 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local
 		return -1;
 	}
 
-	_RTP_Ports[port_id] = new RTPport();
+	_RTP_Ports[port_id] = new RTPport(port_id);
 	if (_RTP_Ports[port_id] == NULL)
 	{
 		throw PJLibException(__FILE__, PJ_ENOMEM).Msg("CreateRTPport: No se puede crear RTP Port. new failed");
@@ -367,6 +448,14 @@ void RTPport::DestroyAllRTPports()
 			_RTP_Ports[i] = NULL;
 		}
 	}
+}
+
+void RTPport::OnRTP_Received(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info)
+{
+	RTPport* rtp_port = (RTPport *) pjmedia_stream_get_user_data((pjmedia_stream*) stream);
+	if (rtp_port == NULL) return;
+
+	rtp_port->RTP_Received(stream, frame, codec, seq, rtp_ext_info);
 }
 
 

@@ -472,6 +472,11 @@ typedef struct CORESIP_RdInfo
 
 } CORESIP_RdInfo;
 
+typedef struct CORESIP_RTPport_info
+{
+	pj_bool_t receiving;				//Indica si se esta recibiendo RTP
+} CORESIP_RTPport_info;
+
 #ifdef _ED137_
 // PlugTest FAA 05/2011
 typedef enum CORESIP_TypeCrdInfo
@@ -726,6 +731,16 @@ typedef struct CORESIP_Callbacks
 	*
 	*/
 	void (*MovedTemporallyCb)(int call, const char *dstUri);
+
+	/**
+	* RTPport_infoCb:
+	* Esta funcion se llama desde un objeto RTP port para informar a la aplicacion sobre eventos
+	* @param	rtpport_id		Identificador del RTPport
+	* @param    info			Estructora de datos que se reporta
+	* @return
+	*
+	*/
+	void (*RTPport_infoCb)(int rtpport_id, CORESIP_RTPport_info* info);
 
 	 
 #ifdef _ED137_

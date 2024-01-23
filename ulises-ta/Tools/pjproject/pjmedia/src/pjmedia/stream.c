@@ -264,6 +264,8 @@ struct pjmedia_stream
 	
 	IMPAIREDATA ImpDat;
 	pj_lock_t* p_latency_lock;
+
+	pj_bool_t is_for_coresip_RTPport;			//Si es true indica que es un stream para un objeto RTPport, no es de una sesion SIP normal.
 };
 
 typedef struct _MYDATA {
@@ -2442,6 +2444,7 @@ static void on_rx_rtp( void *data,
     }
 
 	/* Hemos recibido un paquete v�lido */
+
 	 if (stream->rtp_ext_enabled || rtp_ext_length != 0)
 	 {
 		 stream->rtp_ext_received = PJ_TRUE;
@@ -2704,6 +2707,12 @@ static void on_rx_rtp( void *data,
 			if (stream->rtp_ext_enabled && pj_app_cbs.on_stream_rtp)
 			{
 				 pj_app_cbs.on_stream_rtp(stream, &frames[i], stream->codec, ext_seq, rtp_ext_info_1st);
+			}
+
+			if (stream->is_for_coresip_RTPport && pj_app_cbs.on_stream_rtp_RTPport)
+			{
+				//Llamamos a la callback del RTPport, por si necesita analizar RTP
+				pj_app_cbs.on_stream_rtp_RTPport(stream, &frames[i], stream->codec, ext_seq, rtp_ext_info_1st);
 			}
 		}
     }
@@ -3697,6 +3706,11 @@ PJ_DEF(void) pjmedia_stream_set_ED137version(pjmedia_stream* stream, char ED137v
 PJ_DEF(void) pjmedia_stream_set_SelCalInProgress(pjmedia_stream* stream, pj_bool_t SelCalInProgress)
 {
 	stream->SelCalInProgress = SelCalInProgress;
+}
+
+PJ_DEF(void) pjmedia_stream_set_is_for_coresip_RTPport(pjmedia_stream* stream, pj_bool_t is_for_coresip_RTPport)
+{
+	stream->is_for_coresip_RTPport = is_for_coresip_RTPport;
 }
 
 /*
