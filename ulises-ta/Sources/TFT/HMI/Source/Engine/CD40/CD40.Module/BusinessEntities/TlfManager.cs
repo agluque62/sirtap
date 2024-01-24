@@ -1119,6 +1119,10 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <param name="sender"></param>
 		private void OnConfigChanged(object sender)
 		{
+            if (TftMision.Instance.Mision==null)
+            {
+                //CuelgaPanelTlf();
+            }
 			_ChangingCfg = true;
             TonosPorLlamada = new Dictionary<string, string[]>();
             try

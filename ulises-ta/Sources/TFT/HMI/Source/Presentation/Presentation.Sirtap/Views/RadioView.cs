@@ -530,16 +530,19 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.RdPageChanged, ThreadOption.Publisher)]
         public void OnRdPageChanged(object sender, EventArgs e)
         {
-            _RdPageBT.Page = _StateManager.Radio.Page;
-            // 240116 Aqui se cambia el numero de pagina por el orden de pagina en a mision.
-            _RdPageBT.OrderPage = _StateManager.TftMisionInstance.ordenpaginaradio(_RdPageBT.Page);
-            int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
-
-            for (int i = 0; i < _NumPositionsByPage; i++)
+            if (_StateManager.Radio.Page>=0)
             {
-                RdButton bt = _RdButtons[i];
-                RdDst dst = _StateManager.Radio[i + absPageBegin];
-                Reset(bt, dst);
+                _RdPageBT.Page = _StateManager.Radio.Page;
+                // 240116 Aqui se cambia el numero de pagina por el orden de pagina en a mision.
+                _RdPageBT.OrderPage = _StateManager.TftMisionInstance.ordenpaginaradio(_RdPageBT.Page);
+                int absPageBegin = _RdPageBT.Page * _NumPositionsByPage;
+
+                for (int i = 0; i < _NumPositionsByPage; i++)
+                {
+                    RdButton bt = _RdButtons[i];
+                    RdDst dst = _StateManager.Radio[i + absPageBegin];
+                    Reset(bt, dst);
+                }
             }
         }
 
@@ -1083,7 +1086,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = _StateManager.Tft.Enabled && _StateManager.Engine.Operative && !dst.Unavailable && _StateManager.Tft.Login;
             }
 
-            bt.Visible = dst.IsConfigurated&&_StateManager.TftMisionInstance.Mision.Length>0;
+            bt.Visible = dst.IsConfigurated&&_StateManager.TftMisionInstance.Mision!=null;
         }
 
         private void _RdSpeakerUDB_LevelDown(object sender, EventArgs e)

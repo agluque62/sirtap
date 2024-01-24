@@ -112,6 +112,7 @@
     <Compile Include="BusinessEntities\CBinauralHwManager.cs" />
     <Compile Include="BusinessEntities\cd40tftmision.cs" />
     <Compile Include="BusinessEntities\CfgManager.cs" />
+    <None Include="BusinessEntities\CfgManagerArturo.cs1" />
     <Compile Include="BusinessEntities\TlfConferencePrepro.cs" />
     <Compile Include="BusinessEntities\TlfForward.cs" />
     <Compile Include="BusinessEntities\TlfPickUp.cs" />

@@ -77,6 +77,7 @@ namespace HMI.Model.Module.BusinessEntities
                     _LoginName = value;
                     //General.SafeLaunchEvent(TftGoodLogin, this._LastLogin);
                     General.SafeLaunchEvent(TftGoodLogin, this._LoginName);
+
                 }
             }
         }

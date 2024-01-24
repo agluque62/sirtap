@@ -706,7 +706,7 @@ public bool ChAllowsForward
 			_Literal = cfg.Literal;
 			_Priority = (CORESIP_Priority)cfg.Prioridad;
             //Si cambia el origen, lo reinicio sin colgar porque ya ha cambiado la cuenta.
-            if ((_Cfg != null) && !cfg.OrigenR2.Equals(_Cfg.OrigenR2))
+            if ((_Cfg != null &&  cfg.OrigenR2!=null ) && cfg.OrigenR2.Equals(_Cfg.OrigenR2))
             {
                 //A la espera de un cambio en el SOAP para que venga el OrigenR2 coherente
                 //tengo que colgar porque puede no ser un cambio de OrigenR2 sino de tipo 
@@ -1676,9 +1676,9 @@ public bool ChAllowsForward
                 }
                 //lalm 230505
                 if (EsConferencia(inCall.RemoteId) && ConferenciaEnuso(inCall.RemoteId) )
-                    return SipAgent.SIP_DECLINE; 
-                if (TftMision.Instance.Mision.Length==0)
                     return SipAgent.SIP_DECLINE;
+                if (TftMision.Instance.Mision == null)
+                    ;// return SipAgent.SIP_DECLINE;
                 if (_SipCall != null)
 				{
 					if ((call2replace >= 0) && (_SipCall.Id == call2replace))

@@ -250,7 +250,11 @@ namespace HMI.Presentation.Sirtap.Views
 
                 if (page != _Page)
                 {
-                    _CmdManager.TlfLoadDaPage(page);
+                    if (page >= 0)
+                    {
+                        _CmdManager.TlfLoadDaPage(page);
+                    }
+
                 }
             }
             
@@ -285,7 +289,7 @@ namespace HMI.Presentation.Sirtap.Views
                 Debug.Assert(e.Page < 28 && e.Page>0);
                 if (e.Page==-1)
                 {
-                    int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6 + 1;// Radio.GetNumberOfPagesRd();
+                    int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 5 + 1;// Radio.GetNumberOfPagesRd();
                     _Page = numero_paginas_tlf+1;
 
                 }
@@ -649,7 +653,7 @@ namespace HMI.Presentation.Sirtap.Views
                 //por eso se deshabilita su AD cuando se pulsa la tecla prioridad.
             }
 
-            bt.Visible = dst.IsConfigurated && _StateManager.TftMisionInstance.Mision.Length>0 && _StateManager.Tft.Login;
+            bt.Visible = dst.IsConfigurated && _StateManager.TftMisionInstance.Mision!=null && _StateManager.Tft.Login;
         }
 
         private void ResetBtPage(HMIButton bt)
@@ -918,7 +922,8 @@ namespace HMI.Presentation.Sirtap.Views
 
             try
             {
-                _CmdManager.TlfLoadDaPage(page);
+                if (page>=0)
+                    _CmdManager.TlfLoadDaPage(page);
             }
             catch (Exception ex)
             {
@@ -1204,7 +1209,8 @@ namespace HMI.Presentation.Sirtap.Views
 
             try
             {
-                _CmdManager.TlfLoadDaPage(page);
+                if (page>=0)
+                    _CmdManager.TlfLoadDaPage(page);
             }
             catch (Exception ex)
             {
@@ -1275,7 +1281,7 @@ namespace HMI.Presentation.Sirtap.Views
 
             //OnTlfChanged(sender, new RangeMsg(0, Tlf.NumDestinations));
             //OnTlfChanged(sender, new RangeMsg(0, 6));
-            if (_StateManager.Tft.Login && _StateManager.TftMisionInstance.Mision.Length>0)
+            if (_StateManager.Tft.Login && _StateManager.TftMisionInstance.Mision!=null)
             {
                 _Page = 0;
                 _CmdManager.TlfLoadDaPage(_Page);

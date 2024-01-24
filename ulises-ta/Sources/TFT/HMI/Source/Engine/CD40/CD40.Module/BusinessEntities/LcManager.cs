@@ -59,8 +59,34 @@ namespace HMI.CD40.Module.BusinessEntities
 				_LcPositions[i] = new LcPosition(i);
 				_LcPositions[i].StateChanged += OnLcStateChanged;
 			}
+			
 		}
+		public void ActivarCallBacks(bool activar)
+        {
 
+			if (activar)
+			{
+				//Top.Cfg.ConfigChanged += OnConfigChanged;
+				Top.Sip.LcCallStateChanged += OnCallStateChanged;
+				Top.Sip.IncomingLcCall += OnIncomingCall;
+				Top.Hw.JacksChangedHw += OnJacksChanged;
+				for (int i = 0, to = _LcPositions.Length; i < to; i++)
+				{
+					_LcPositions[i].StateChanged += OnLcStateChanged;
+				}
+			}
+			if (!activar)
+			{
+				//Top.Cfg.ConfigChanged += OnConfigChanged;
+				Top.Sip.LcCallStateChanged -= OnCallStateChanged;
+				Top.Sip.IncomingLcCall -= OnIncomingCall;
+				Top.Hw.JacksChangedHw -= OnJacksChanged;
+				for (int i = 0, to = _LcPositions.Length; i < to; i++)
+				{
+					_LcPositions[i].StateChanged -= OnLcStateChanged;
+				}
+			}
+		}
 		public void Start()
 		{
 		}

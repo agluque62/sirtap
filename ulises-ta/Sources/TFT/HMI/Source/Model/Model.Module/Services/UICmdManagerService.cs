@@ -422,7 +422,7 @@ namespace HMI.Model.Module.Services
 			if (npr> 0)
 				sc = _StateManager.TftMisionInstance.Pagrad[npr-1].Item1;
 	
-			if (_StateManager.TftMisionInstance.Mision.Length>0)
+			if (_StateManager.TftMisionInstance.Mision != null)
             {
 				_EngineCmdManager.SetRdPage(primera_pagina, sc, _StateManager.Radio.PageSize);
 				_EngineCmdManager.SetRdPage(sc, primera_pagina, _StateManager.Radio.PageSize);
@@ -439,7 +439,7 @@ namespace HMI.Model.Module.Services
 			if (oldPage==newPage)
             {
 				//240117 ver si es necesario
-				if (_StateManager.TftMisionInstance.Mision.Length > 0)
+				if (_StateManager.TftMisionInstance.Mision != null)
 				{
 					_EngineCmdManager.SetRdPage(oldPage, newPage + 1, numPosByPage);
 					_EngineCmdManager.SetRdPage(oldPage + 1, newPage, numPosByPage);
@@ -1467,8 +1467,8 @@ namespace HMI.Model.Module.Services
 		/// </summary>
 		public void ShowAdButtons(int page)
 		{
-			
-			TlfLoadDaPage(page);
+			if (page>=0)
+				TlfLoadDaPage(page);
 
 			//_EngineCmdManager.ShowAdButtons();
 		}

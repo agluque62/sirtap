@@ -196,12 +196,12 @@ namespace HMI.CD40.Module.BusinessEntities
             timerfnd.AutoReset = true;
             timerfnd.Start();
 
-            Console.WriteLine("Presiona Enter para detener el proceso.");
-            Console.ReadLine();
+            //Console.WriteLine("Presiona Enter para detener el proceso.");
+            //Console.ReadLine();
 
         }
 
-        static bool dentro_TimerNetworkStatus_Elapsed = false;
+       static bool dentro_TimerNetworkStatus_Elapsed = false;
         void _TimerNetworkStatus_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (dentro_TimerNetworkStatus_Elapsed == true)
@@ -689,7 +689,28 @@ namespace HMI.CD40.Module.BusinessEntities
             _PttBadOpeTimer.Enabled = false;
             BadOperation(true);
          }
+        public void CuelgaPanelRadio()
+        {
+            foreach (CfgEnlaceExterno link in Top.Cfg.RdLinks)
+            {
+                foreach (uint hmiPos in link.ListaPosicionesEnHmi)
+                {
+                    uint pos = hmiPos - 1;
 
+                    //if (pos < (uint)_RdPositions.Length)
+                    if (pos < Radio.NumDestinations)
+                    {
+                        RdPosition rd = _RdPositions[pos];
+                        // Desasigna no desasignables.
+                        if (rd.FrecuenciaNoDesasignable)
+                        {
+                            rd.SetRx(false, true);
+                        }
+                    }
+                }
+            }
+
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -697,7 +718,9 @@ namespace HMI.CD40.Module.BusinessEntities
         int contador=0;
 		private void OnConfigChanged(object sender)
 		{
-			_ChangingCfg = true;
+            CuelgaPanelRadio();
+
+            _ChangingCfg = true;
             try
             {
             _TimerNetworkStatus.Enabled = true;
@@ -1529,6 +1552,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 string snmpOid = Settings.Default.LoginIncorrecto;
                 SetLoginSNMP("");
                 General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+                
             });
         }
         public void SetLoginSNMP(string nombre)
@@ -1544,6 +1568,8 @@ namespace HMI.CD40.Module.BusinessEntities
                 string snmpOid = Settings.Default.LoginCorrecto;
                 SetLoginSNMP(nombre);
                 General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+                
+               
             });
         }
 

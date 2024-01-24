@@ -19,7 +19,7 @@ using static HMI.CD40.Module.BusinessEntities.TopRegistry;
 namespace HMI.CD40.Module.BusinessEntities
 {
 
-	class cd40tftmision
+	public partial class cd40tftmision
 	{
 		public event GenericEventHandler RdPageClear;
 		public event GenericEventHandler<List<int>> TftMisionChangedf2;
@@ -35,7 +35,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		public event GenericEventHandler StChanged;
 		public cd40tftmision()
 		{
-
+			Mision = "MISION 1";
 		}
 		public string Mision
 		{

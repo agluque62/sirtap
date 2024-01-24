@@ -846,7 +846,9 @@ namespace HMI.CD40.Module.Services
                 //        General.SafeLaunchEvent(TlfHeadPhonesLevelEngine, this, new LevelMsg<TlfHeadPhones>(level));
                 //    });
                 //}
+                Top.Cfg.SetUserClave(txtUsuario, txtContrasena, mision.Result);
             });
+            
 
         }
         public void SetTlfSpeakerLevel(int level)
@@ -1757,10 +1759,10 @@ namespace HMI.CD40.Module.Services
             //	});
             //}
 
-
+            //230124 no fuerzo logout
             Top.PublisherThread.Enqueue(EventTopicNames.FuerzoLogout, delegate ()
             {
-                General.SafeLaunchEvent(FuerzoLogout,this);
+                ;// General.SafeLaunchEvent(FuerzoLogout,this);
             });
         }
 
@@ -2799,6 +2801,13 @@ namespace HMI.CD40.Module.Services
             HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
             {
                 Top.Rd.EnviarLoginOk(nombre);
+            });
+        }
+        public void SetUserClave(string nombre, string clave)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SetUserClave", delegate ()
+            {
+                Top.Cfg.SetUserClave(nombre, clave);
             });
         }
         /**
