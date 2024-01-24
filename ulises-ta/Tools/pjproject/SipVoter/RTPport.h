@@ -38,7 +38,7 @@ private:
 	pjmedia_port* _Port;
 	pjmedia_transport* Transport;
 	pjmedia_stream* Stream;
-	pj_bool_t ReceivingRTP;
+	int ReceivingRTP;
 
 	pj_timer_entry RTP_Timeout_timer;		//Timer para el timeout de decisión de que no se recibe RTP.
 

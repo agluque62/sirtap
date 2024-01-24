@@ -15,7 +15,7 @@ RTPport::RTPport(int rtp_port_id)
 	_Slot = PJSUA_INVALID_ID;
 	Transport = NULL;
 	Stream = NULL;
-	ReceivingRTP = PJ_FALSE;
+	ReceivingRTP = -1;
 }
 
 int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action)
@@ -293,9 +293,9 @@ void RTPport::RTP_Received(void* stream, void* frame, void* codec, unsigned seq,
 	RTP_Timeout_timer.id = 0;
 	pjsua_cancel_timer(&RTP_Timeout_timer);
 
-	if (!ReceivingRTP)
+	if (ReceivingRTP != 1)
 	{
-		ReceivingRTP = PJ_TRUE;
+		ReceivingRTP = 1;
 		CORESIP_RTPport_info info;
 		info.receiving = PJ_TRUE;
 
@@ -325,9 +325,9 @@ void RTPport::on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te)
 	rtpport->RTP_Timeout_timer.id = 0;
 	pjsua_cancel_timer(&rtpport->RTP_Timeout_timer);
 
-	if (rtpport->ReceivingRTP)
+	if (rtpport->ReceivingRTP != 0)
 	{
-		rtpport->ReceivingRTP = PJ_FALSE;
+		rtpport->ReceivingRTP = 0;
 		CORESIP_RTPport_info info;
 		info.receiving = PJ_FALSE;
 
