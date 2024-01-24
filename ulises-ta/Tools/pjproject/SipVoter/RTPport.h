@@ -18,14 +18,14 @@ public:
 	pjsua_conf_port_id _Slot;		//su Slot de la conferencia pjmedia
 
 public:
-	static int CreateRTPport(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action);
-	static void PauseResumeDestroyRTPport(int port_id, CORESIP_actions action);
+	static int CreateRTPport(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action);
+	static void PauseResumeDestroyRTPport(int port_id, CORESIP_RTP_port_actions action);
 	static void DestroyAllRTPports();	
 	static void OnRTP_Received(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info);
 	
 	RTPport(int rtp_port_id);
 	~RTPport();
-	int Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action);
+	int Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action);
 	void RTP_Received(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info);		
 	
 private:
@@ -45,8 +45,8 @@ private:
 private:
 
 	void Dispose();
-	int Pause(CORESIP_actions action);
-	int Resume(CORESIP_actions action);
+	int Pause(CORESIP_RTP_port_actions action);
+	int Resume(CORESIP_RTP_port_actions action);
 	static void on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te);
 	
 };

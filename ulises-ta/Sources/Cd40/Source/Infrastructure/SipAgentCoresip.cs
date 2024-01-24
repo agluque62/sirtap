@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using U5ki.Infrastructure;
 
 #if !_AMPER_ULISES_
 namespace Amper.Etm.SipServices.CoreSip;
@@ -233,6 +234,17 @@ namespace U5ki.Infrastructure
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void FinWavCb(int Code);
 
+    /**
+	* RTPport_infoCb:
+	* Esta funcion se llama desde un objeto RTP port para informar a la aplicacion sobre eventos
+	* @param	rtpport_id		Identificador del RTPport
+	* @param    info			Estructora de datos que se reporta
+	* @return
+	*
+	*/
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info);
+
     /// <summary>
     /// 
     /// </summary>
@@ -422,6 +434,21 @@ namespace U5ki.Infrastructure
     {
         CORESIP_REDIRECT_REJECT,
         CORESIP_REDIRECT_ACCEPT
+    }
+
+    public enum CORESIP_RTP_port_actions
+    {
+        CORESIP_CREATE_ENCODING,
+        CORESIP_CREATE_DECODING,
+        CORESIP_CREATE_ENCODING_DECODING,
+        CORESIP_PAUSE_ENCODING,
+        CORESIP_PAUSE_DECODING,
+        CORESIP_PAUSE_ENCODING_DECODING,
+        CORESIP_RESUME_ENCODING,
+        CORESIP_RESUME_DECODING,
+        CORESIP_RESUME_ENCODING_DECODING,
+        CORESIP_STOP,
+        CORESIP_DESTROY
     }
 
     /// <summary>
@@ -667,6 +694,13 @@ namespace U5ki.Infrastructure
         public uint Tsd_ms;                //Tsd en ms calculado del MAM recibido
         public int Ts2_ms;                 //Ts2 en ms calculado del MAM recibido. Un valor negativo indica que no se ha recibido.
     }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public class CORESIP_RTPport_info
+    {
+        public bool receiving;             //Indica si se esta recibiendo RTP por un RTPport
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -762,6 +796,7 @@ namespace U5ki.Infrastructure
         public CfwrOptReceivedCb OnCfwrOptReceived;
         public CfwrOptResponseCb OnCfwrOptResponse;
         public MovedTemporallyCb OnMovedTemporally;
+        public RTPport_infoCb OnRTPport_info;
 
     }
 
@@ -906,6 +941,7 @@ namespace U5ki.Infrastructure
         public const int CORESIP_MAX_RDRX_PORTS = 128;
         public const int CORESIP_MAX_SOUND_RX_PORTS = 128;
         public const int CORESIP_MAX_GENERIC_PORTS = 16;
+        public const int CORESIP_MAX_RTP_PORTS = 16;
         public const int CORESIP_MAX_RS_LENGTH = 128;
         public const int CORESIP_MAX_REASON_LENGTH = 128;
         public const int CORESIP_MAX_WG67_SUBSCRIBERS = 25;
@@ -2063,6 +2099,27 @@ namespace U5ki.Infrastructure
         */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GetJitterStatusGenericPort(int gen_port_id, out uint size, out CORESIP_Error error);
+
+        /*
+	    Funcion que Crea un puerto de media para enviar y recibir por RTP
+	    @param rtpport_id. Manejador del puerto que se retorna.
+	    @param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
+	    @param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
+	    @param dst_port. Puerto de destino del flujo RTP.
+	    @param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
+	    @param payload_type. Valor 0: PCMU, valor 8: PCMA
+	    @param action. Indica el puerto RTP enconde, decode o las dos cosas.
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_CreateRTPport(out int rtpport_id, string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, [In] CORESIP_RTP_port_actions action, out CORESIP_Error error);
+
+        /*
+	    Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP
+	    @param rtpport_id. Manejador del puerto.
+	    @param action. Indica el puerto RTP enconde, decode o las dos cosas
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, [In] CORESIP_RTP_port_actions action, out CORESIP_Error error);
 
         #endregion
 

@@ -3721,7 +3721,7 @@ CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 /**
  *	CORESIP_CreateRTPport		Crea un puerto para enviar y recibir RTP
  */
-CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action, CORESIP_Error* error)
+CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
@@ -3770,7 +3770,7 @@ CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_por
 /**
  *	CORESIP_PauseResumeDestroyRTPport		Pausa reanuda y Destruye un puerto RTP
  */
-CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_actions action, CORESIP_Error* error)
+CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_port_actions action, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 

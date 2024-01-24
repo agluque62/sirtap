@@ -18,7 +18,7 @@ RTPport::RTPport(int rtp_port_id)
 	ReceivingRTP = -1;
 }
 
-int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_actions action)
+int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -200,7 +200,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	return 0;
 }
 
-int RTPport::Pause(CORESIP_actions action)
+int RTPport::Pause(CORESIP_RTP_port_actions action)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -227,7 +227,7 @@ int RTPport::Pause(CORESIP_actions action)
 	return 0;
 }
 
-int RTPport::Resume(CORESIP_actions action)
+int RTPport::Resume(CORESIP_RTP_port_actions action)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -256,6 +256,9 @@ int RTPport::Resume(CORESIP_actions action)
 
 void RTPport::Dispose()
 {
+	RTP_Timeout_timer.id = 0;
+	pjsua_cancel_timer(&RTP_Timeout_timer);
+
 	if (_Slot != PJSUA_INVALID_ID)
 	{
 		pjsua_conf_remove_port(_Slot);
@@ -267,6 +270,9 @@ void RTPport::Dispose()
 		pjmedia_stream_destroy(Stream);
 		Stream = NULL;
 	}
+
+	RTP_Timeout_timer.id = 0;
+	pjsua_cancel_timer(&RTP_Timeout_timer);
 
 	if (Transport != NULL)
 	{
@@ -322,17 +328,24 @@ void RTPport::on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te)
 
 	pj_lock_acquire(rtpport->_Lock);
 
-	rtpport->RTP_Timeout_timer.id = 0;
-	pjsua_cancel_timer(&rtpport->RTP_Timeout_timer);
-
-	if (rtpport->ReceivingRTP != 0)
+	if (rtpport->RTP_Timeout_timer.id != 0)
 	{
-		rtpport->ReceivingRTP = 0;
-		CORESIP_RTPport_info info;
-		info.receiving = PJ_FALSE;
+		rtpport->RTP_Timeout_timer.id = 0;
+		pjsua_cancel_timer(&rtpport->RTP_Timeout_timer);
 
-		if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(rtpport->RTPport_id | CORESIP_RTPPORT_ID, &info);
-	}	
+		if (rtpport->ReceivingRTP != 0)
+		{
+			rtpport->ReceivingRTP = 0;
+			CORESIP_RTPport_info info;
+			info.receiving = PJ_FALSE;
+
+			if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(rtpport->RTPport_id | CORESIP_RTPPORT_ID, &info);
+		}
+	}
+	else
+	{
+		pjsua_cancel_timer(&rtpport->RTP_Timeout_timer);
+	}
 
 	pj_lock_release(rtpport->_Lock);
 }
@@ -345,7 +358,7 @@ RTPport::~RTPport(void)
 
 // -----------   Funciones estaticas ----------------------------------------------
 
-int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_actions action)
+int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action)
 {
 	if (dst_ip == NULL)
 	{
@@ -399,7 +412,7 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local
 	return port_id;
 }
 
-void RTPport::PauseResumeDestroyRTPport(int port_id, CORESIP_actions action)
+void RTPport::PauseResumeDestroyRTPport(int port_id, CORESIP_RTP_port_actions action)
 {
 	if (port_id < 0 || port_id >= PJ_ARRAY_SIZE(_RTP_Ports))
 	{

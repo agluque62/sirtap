@@ -36,11 +36,12 @@ namespace U5ki.Gateway
         {
             Status = ServiceStatus.Running;
             LogInfo<Gateway>("Iniciando Servicio ...");
+            SipAgent.RTPport_info += RTPport_infoCb;
 
             try
             {
                 mut = new Mutex();
-                InitRegistry();
+                InitRegistry();                
             }
             catch (Exception ex)
             {
@@ -53,7 +54,8 @@ namespace U5ki.Gateway
         {
             LogInfo<Gateway>("Finalizando Servicio ...");
             Status = ServiceStatus.Stopped;
-            Thread.Sleep(1000);
+            SipAgent.RTPport_info -= RTPport_infoCb;
+            Thread.Sleep(1000);            
 
             try
             {
@@ -140,14 +142,14 @@ namespace U5ki.Gateway
                 {
                     foreach (NoED137Resource noEd137res in Resources.Values)
                     {
-                        noEd137res.CreateGRSAccount();
+                        noEd137res.Init();
                     }
                 }
                 else
                 {
                     foreach (NoED137Resource noEd137res in Resources.Values)
                     {
-                        noEd137res.DestroyGRSAccount();
+                        noEd137res.Dispose();
                     }
                 }
                 mut.ReleaseMutex();
@@ -212,7 +214,7 @@ namespace U5ki.Gateway
 
         private void ProcessNewConfig(Cd40Cfg cfg)
         {
-            LogInfo<Gateway>("ProcessNewConfig: Recibida nueva configuracion");
+            LogInfo<Gateway>("ProcessNewConfig: Recibida nueva configuracion");            
 
             Dictionary<string, CfgRecursoEnlaceExterno> resourcesFound = new Dictionary<string, CfgRecursoEnlaceExterno>();
             foreach (ConfiguracionUsuario confuser in cfg.ConfiguracionUsuarios)
@@ -231,11 +233,43 @@ namespace U5ki.Gateway
 
             foreach (CfgRecursoEnlaceExterno res in resourcesFound.Values)
             {
-                if (!Resources.ContainsKey(res.IdRecurso))
+                //Buscamos la configuracion del equipo externo y del direccionamiento IP
+                AsignacionRecursosGW equipo_externo = null;
+                foreach (AsignacionRecursosGW asigRecGW in cfg.ConfiguracionGeneral.PlanAsignacionRecursos)
                 {
-                    NoED137Resource noEd137res = new NoED137Resource(res);
-                    if (Master) noEd137res.CreateGRSAccount();
-                    Resources[res.IdRecurso] = noEd137res;                    
+                    if (asigRecGW.IdRecurso == res.IdRecurso)
+                    {
+                        equipo_externo = asigRecGW;
+                        break;
+                    }
+                }
+
+                DireccionamientoIP direccionamientoIP = null;
+                if (equipo_externo != null)
+                {
+                    foreach (DireccionamientoIP dirIP in cfg.ConfiguracionGeneral.PlanDireccionamientoIP)
+                    {
+                        if (dirIP.TipoHost == Tipo_Elemento_HW.TEH_EXTERNO_RADIO && dirIP.IdHost == equipo_externo.IdHost)
+                        {
+                            direccionamientoIP = dirIP;
+                            break;
+                        }
+                    }
+                }
+
+                if (!Resources.ContainsKey(res.IdRecurso))
+                {                  
+                    if (equipo_externo != null && direccionamientoIP != null)
+                    {
+                        NoED137Resource noEd137res = new NoED137Resource();
+                        if (Master) noEd137res.Init(res, equipo_externo, direccionamientoIP);
+                        Resources[res.IdRecurso] = noEd137res;
+                    }
+                }
+                else if (Resources[res.IdRecurso].ConfigurationOfResourceChange(res, equipo_externo, direccionamientoIP))
+                {
+                    Resources[res.IdRecurso].Dispose();
+                    if (Master) Resources[res.IdRecurso].Init(res, equipo_externo, direccionamientoIP);                    
                 }
             }
 
@@ -288,7 +322,7 @@ namespace U5ki.Gateway
             }
 
             mut.ReleaseMutex();
-        }
+        }       
 
         public static void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
@@ -321,6 +355,66 @@ namespace U5ki.Gateway
             mut.ReleaseMutex();
 
             if (!found) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
+        }
+
+        public static bool NOED137OnKaTimeout(int call)
+        {
+            bool found = false;
+            bool retmut = mut.WaitOne(10000);
+            if (retmut == false) return found;
+
+            foreach (string idRes in Resources.Keys)
+            {
+                bool callfound = Resources[idRes].NOED137OnKaTimeout(call);
+                if (callfound)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            mut.ReleaseMutex();
+            return found;
+        }
+
+        public static bool NOED137OnRdInfo(int call, CORESIP_RdInfo info)
+        {
+            bool found = false;
+            bool retmut = mut.WaitOne(10000);
+            if (retmut == false) return found;
+
+            foreach (string idRes in Resources.Keys)
+            {
+                bool callfound = Resources[idRes].NOED137OnRdInfo(call, info);
+                if (callfound)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            mut.ReleaseMutex();
+            return found;
+        }
+
+
+        private void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
+        {
+            LogInfo<Gateway>($"RTPport_infoCb: rtpport_id {rtpport_id} receiving {info.receiving}");
+
+            bool retmut = mut.WaitOne(10000);
+            if (retmut == false) return;
+
+            foreach (string idRes in Resources.Keys)
+            {
+                bool rtpport_id_found = Resources[idRes].RTPport_infoCb(rtpport_id, info);
+                if (rtpport_id_found)
+                {
+                    break;
+                }
+            }
+
+            mut.ReleaseMutex();
         }
 
     }    

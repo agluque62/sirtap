@@ -2304,6 +2304,9 @@ namespace U5ki.RdService
         /// <param name="call"></param>
         private void OnKaTimeout(int call)
         {
+            bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnKaTimeout(call);
+            if (found_in_NOED137_GRS_Gateway) return;            
+
             if (!_Master)
                 return;
 
@@ -2332,6 +2335,12 @@ namespace U5ki.RdService
         /// <param name="info"></param>
         private void OnRdInfo(int call, CORESIP_RdInfo info)
         {
+            if (_Master)
+            {
+                bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnRdInfo(call, info);
+                if (found_in_NOED137_GRS_Gateway) return;
+            }
+
             _EventQueue.Enqueue(call.ToString() + "_RdInfo", delegate()
             {
                 if (_Master)

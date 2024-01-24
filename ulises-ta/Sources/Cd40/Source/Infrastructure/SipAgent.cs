@@ -235,6 +235,14 @@ namespace U5ki.Infrastructure
             add {/*_Cb.*/OnSubPres += value; }
             remove {/*_Cb.*/OnSubPres -= value; }
         }
+
+        public static RTPport_infoCb OnRTPport_info;
+        public static event RTPport_infoCb RTPport_info
+        {
+            add {/*_Cb.*/OnRTPport_info += value; }
+            remove {/*_Cb.*/OnRTPport_info -= value; }
+        }        
+
         /// <summary>
         /// 
         /// </summary>
@@ -2687,6 +2695,12 @@ namespace U5ki.Infrastructure
                     OnSubPres(p1, p2, p3);
             });
             _Cb.OnFinWavCb = null;
+
+            _Cb.OnRTPport_info = new RTPport_infoCb((p1, p2) =>
+            {
+                if (OnRTPport_info != null)
+                    OnRTPport_info(p1, p2);
+            });
         }
 #endregion
 	}
