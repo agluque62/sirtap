@@ -321,6 +321,17 @@ void RTPport::RTP_Received(void* stream, void* frame, void* codec, unsigned seq,
 	pj_lock_release(_Lock);
 }
 
+void RTPport::AskRTPport_info()
+{
+	pj_lock_acquire(_Lock);
+	ReceivingRTP = 0;
+	CORESIP_RTPport_info info;
+	info.receiving = (ReceivingRTP) ? PJ_TRUE : PJ_FALSE;
+
+	if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(RTPport_id | CORESIP_RTPPORT_ID, &info);
+	pj_lock_release(_Lock);
+}
+
 void RTPport::on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te)
 {	
 	RTPport* rtpport = (RTPport*)te->user_data;
@@ -449,6 +460,23 @@ void RTPport::PauseResumeDestroyRTPport(int port_id, CORESIP_RTP_port_actions ac
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: CORESIP_PauseResumeDestroyRTPport: invalid action"));
 	}
 	
+}
+
+void RTPport::AskRTPport_info(int port_id)
+{
+	if (port_id < 0 || port_id >= PJ_ARRAY_SIZE(_RTP_Ports))
+	{
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("AskRTPport_info: Id no valido");
+		return;
+	}
+	if (_RTP_Ports[port_id] == NULL)
+	{
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("AskRTPport_info: Id no valido");
+		return;
+	}
+
+	RTPport* rtp_port = _RTP_Ports[port_id];
+	rtp_port->AskRTPport_info();
 }
 
 void RTPport::DestroyAllRTPports()

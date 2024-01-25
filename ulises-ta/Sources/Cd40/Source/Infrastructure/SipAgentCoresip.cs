@@ -2121,6 +2121,13 @@ namespace U5ki.Infrastructure
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, [In] CORESIP_RTP_port_actions action, out CORESIP_Error error);
 
+        /*
+	    Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
+	    @param rtpport_id. Manejador del puerto.
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_AskRTPport_info(int rtpport_id, out CORESIP_Error error);
+
         #endregion
 
 #if _AMPER_ULISES_

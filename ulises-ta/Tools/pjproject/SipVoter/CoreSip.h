@@ -1785,6 +1785,12 @@ extern "C" {
 	*/
 	CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_port_actions action, CORESIP_Error* error);
 
+	/*
+	Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
+	@param rtpport_id. Manejador del puerto.
+	*/
+	CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error);
+
 
 #ifdef __cplusplus
 }

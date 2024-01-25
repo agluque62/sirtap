@@ -400,8 +400,6 @@ namespace U5ki.Gateway
 
         private void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
-            LogInfo<Gateway>($"RTPport_infoCb: rtpport_id {rtpport_id} receiving {info.receiving}");
-
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return;
 

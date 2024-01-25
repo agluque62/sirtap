@@ -3802,5 +3802,40 @@ CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_po
 	return ret;
 }
 
+/**
+ *	CORESIP_PauseResumeDestroyRTPport		Pausa reanuda y Destruye un puerto RTP
+ */
+CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AskRTPport_info rtpport_id %d", rtpport_id));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_AskRTPport_info: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			RTPport::AskRTPport_info(rtpport_id & CORESIP_ID_MASK);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AskRTPport_info result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
 
 /*@}*/

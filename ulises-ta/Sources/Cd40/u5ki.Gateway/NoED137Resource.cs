@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using U5ki.Infrastructure;
+using static System.Collections.Specialized.BitVector32;
 using static U5ki.Infrastructure.SipAgent;
 
 namespace U5ki.Gateway
@@ -32,7 +33,9 @@ namespace U5ki.Gateway
             public int src_port = 7000;
             public int dst_port = 7002;
             public string local_multicast_ip = "224.200.200.1";
-            public int payload_type = 8;   //PCMA
+            public int payload_type = 8;   //PCMA            
+            public bool transmiting = false;
+            public bool receiving = false;
         }
 
         private CfgRecursoEnlaceExterno CfgResource;
@@ -64,16 +67,7 @@ namespace U5ki.Gateway
         {
             if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
             {
-                if (sirtap_params.rtp_port_id != -1)
-                {
-                    CORESIP_Error err;
-                    if (SipAgent.CORESIP_PauseResumeDestroyRTPport(sirtap_params.rtp_port_id,
-                        CORESIP_RTP_port_actions.CORESIP_DESTROY, out err) != 0)
-                    {
-                        LogError<NoED137Resource>($"Dispose {IdRecurso} Destroying RTP port {sirtap_params.rtp_port_id} {sirtap_params.dst_port}: {err.Info}");                        
-                    }
-                    sirtap_params.rtp_port_id = -1;
-                }
+                Dispose_SIRTAP_Resource();
             }
             if (Connected && CallId != -1) SipAgent.HangupCall(CallId);
             DestroyGRSAccount();
@@ -105,16 +99,7 @@ namespace U5ki.Gateway
             ret = CreateGRSAccount();
             if (ret == 0 && NOED137RadioType == NOED137RadioTypes.SIRTAP)
             {
-                CORESIP_Error err;
-                int coreret = SipAgent.CORESIP_CreateRTPport(out sirtap_params.rtp_port_id, sirtap_params.dst_ip, 
-                    sirtap_params.src_port, sirtap_params.dst_port, sirtap_params.local_multicast_ip,
-                    sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_DECODING, out err);
-                if (coreret != 0)
-                {
-                    LogError<NoED137Resource>($"Init: {IdRecurso} Creating RTP port: {err.Info}");
-                    sirtap_params.rtp_port_id = -1;
-                    ret = -1;
-                }
+                ret = Create_SIRTAP_Resource();
             }
 
             if (ret != 0)
@@ -191,14 +176,30 @@ namespace U5ki.Gateway
         public void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
             if (call != CallId) return;
-            if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED) 
+            if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED)
             {
                 CallId = -1;
                 Connected = false;
+                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                {
+                    SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
+                }
             }
-            else if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED) 
+            else if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED)
             {
                 Connected = true;
+                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                {
+                    LogInfo<NoED137Resource>($"########## TRAZA: CONFIRMED: IdRecurso {IdRecurso} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} Connected {Connected} CallId {CallId}");
+
+                    //Se solicita que al RTPport que invoque a la callback RTPport_infoCb para actualizar el estado
+                    CORESIP_Error err;
+                    int coreret = CORESIP_AskRTPport_info(sirtap_params.rtp_port_id, out err);
+                    if (coreret != 0)
+                    {
+                        LogError<NoED137Resource>($"NOED137OnCallState: {IdRecurso} Error en CORESIP_AskRTPport_info: {err.Info}");
+                    }
+                }
             }
         }
 
@@ -220,50 +221,136 @@ namespace U5ki.Gateway
             if (call != CallId) return found;
             if (Connected && CallId != -1)
             {
-                if (sirtap_params.rtp_port_id != -1)
+                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
                 {
-                    CORESIP_RTP_port_actions action;
-                    if (info.PttType != CORESIP_PttType.CORESIP_PTT_OFF) action = CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING;
-                    else action = CORESIP_RTP_port_actions.CORESIP_CREATE_DECODING;
-                    CORESIP_Error err;
-                    if (SipAgent.CORESIP_PauseResumeDestroyRTPport(sirtap_params.rtp_port_id,
-                        action, out err) != 0)
-                    {
-                        LogError<NoED137Resource>($"NOED137OnRdInfo {IdRecurso} {sirtap_params.rtp_port_id} {sirtap_params.dst_port}: {err.Info}");
-                    }
+                    SIRTAP_NOED137OnRdInfo(info);
                 }
                 found = true;
             }
             return found;
-        }
+        }        
 
         public bool RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
             bool found = false;
-            if (rtpport_id == sirtap_params.rtp_port_id && Connected && CallId != -1)
+            LogInfo<NoED137Resource>($"########## TRAZA: RTPport_infoCb: rcv {info.receiving} IdRecurso {IdRecurso} rtpport_id {rtpport_id} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} Connected {Connected} CallId {CallId}");
+            if (sirtap_params.rtp_port_id != -1 && Connected && CallId != -1)
             {
-                CORESIP_PttInfo pttinfo = new CORESIP_PttInfo();
-
-                pttinfo.PttType = CORESIP_PttType.CORESIP_PTT_OFF;
-                pttinfo.PttMute = (uint)CORESIP_PttMuteType.DESACTIVADO;
-
-                if (info.receiving) pttinfo.Squ = 1;
-                else pttinfo.Squ = 0;
-
-                pttinfo.PttId = 0;
-                pttinfo.RssiQidx = 15;
-
-                CORESIP_Error err;
-
-                if (CORESIP_CallPtt(CallId, pttinfo, out err) != 0)
+                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
                 {
-                    LogError<NoED137Resource>($"RTPport_infoCb: CORESIP_CallPtt {IdRecurso} pttinfo.PttType {pttinfo.PttType} {pttinfo.Squ} : {err.Info}");
+                    SIRTAP_Set_SQUELCH(rtpport_id, info);
                 }
 
                 found = true;
             }
+            
             return found;
         }
 
+        #region SIRTAP_RESOURCE_FUNCTIONS
+
+        int Create_SIRTAP_Resource()
+        {
+            int ret = 0;
+            CORESIP_Error err;
+            int coreret = SipAgent.CORESIP_CreateRTPport(out sirtap_params.rtp_port_id, sirtap_params.dst_ip,
+                sirtap_params.src_port, sirtap_params.dst_port, sirtap_params.local_multicast_ip,
+                sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, out err);
+            if (coreret != 0)
+            {
+                LogError<NoED137Resource>($"Create_SIRTAP_Resource: {IdRecurso} Creating RTP port: {err.Info}");
+                sirtap_params.rtp_port_id = -1;
+                ret = -1;
+            }
+            if (ret == 0)
+            {
+                ret = SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
+            }
+            sirtap_params.transmiting = false;
+            return ret;
+        }
+
+        void Dispose_SIRTAP_Resource()
+        {
+            if (sirtap_params.rtp_port_id != -1)
+            {
+                CORESIP_Error err;
+                if (SipAgent.CORESIP_PauseResumeDestroyRTPport(sirtap_params.rtp_port_id,
+                    CORESIP_RTP_port_actions.CORESIP_DESTROY, out err) != 0)
+                {
+                    LogError<NoED137Resource>($"Dispose_SIRTAP_Resource {IdRecurso} Destroying RTP port {sirtap_params.rtp_port_id} {sirtap_params.dst_port}: {err.Info}");
+                }
+                sirtap_params.rtp_port_id = -1;
+                sirtap_params.transmiting = false;
+                sirtap_params.receiving = false;
+            }
+        }
+
+        private void SIRTAP_NOED137OnRdInfo(CORESIP_RdInfo info)
+        {
+            if (sirtap_params.rtp_port_id != -1)
+            {
+                if (info.PttType != CORESIP_PttType.CORESIP_PTT_OFF)
+                {
+                    if (!sirtap_params.transmiting)
+                    {
+                        sirtap_params.transmiting = true;
+                        SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING);
+                    }
+                }
+                else
+                {
+                    if (sirtap_params.transmiting)
+                    {
+                        sirtap_params.transmiting = false;
+                        SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
+                    }
+                }
+                
+            }
+        }
+
+        private int SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions action)
+        {
+            int ret = 0;
+            if (sirtap_params.rtp_port_id != -1)
+            {
+                CORESIP_Error err;
+                if (SipAgent.CORESIP_PauseResumeDestroyRTPport(sirtap_params.rtp_port_id, action, out err) != 0)
+                {
+                    ret = -1;
+                    LogError<NoED137Resource>($"SIRTAP_PauseResumeDestroyRTPport {IdRecurso} {sirtap_params.rtp_port_id} {action}: {err.Info}");
+                }
+            }
+            else ret = -1;
+            return ret;
+        }
+
+        private void SIRTAP_Set_SQUELCH(int rtpport_id, CORESIP_RTPport_info info)
+        {
+            if (sirtap_params.rtp_port_id == -1 || rtpport_id != sirtap_params.rtp_port_id) return;
+            if (info.receiving == sirtap_params.receiving) return;
+            sirtap_params.receiving = info.receiving;
+
+            CORESIP_PttInfo pttinfo = new CORESIP_PttInfo();
+
+            pttinfo.PttType = CORESIP_PttType.CORESIP_PTT_OFF;
+            pttinfo.PttMute = (uint)CORESIP_PttMuteType.DESACTIVADO;
+
+            if (info.receiving) pttinfo.Squ = 1;
+            else pttinfo.Squ = 0;
+
+            pttinfo.PttId = 0;
+            pttinfo.RssiQidx = 15;
+
+            CORESIP_Error err;
+
+            if (CORESIP_CallPtt(CallId, pttinfo, out err) != 0)
+            {
+                LogError<NoED137Resource>($"RTPport_infoCb: CORESIP_CallPtt {IdRecurso} pttinfo.PttType {pttinfo.PttType} {pttinfo.Squ} : {err.Info}");
+            }
+        }
+
+        #endregion
     }
 }

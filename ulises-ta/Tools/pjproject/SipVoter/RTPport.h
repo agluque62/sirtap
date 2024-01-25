@@ -22,6 +22,7 @@ public:
 	static void PauseResumeDestroyRTPport(int port_id, CORESIP_RTP_port_actions action);
 	static void DestroyAllRTPports();	
 	static void OnRTP_Received(void* stream, void* frame, void* codec, unsigned seq, pj_uint32_t rtp_ext_info);
+	static void AskRTPport_info(int port_id);
 	
 	RTPport(int rtp_port_id);
 	~RTPport();
@@ -48,6 +49,7 @@ private:
 	int Pause(CORESIP_RTP_port_actions action);
 	int Resume(CORESIP_RTP_port_actions action);
 	static void on_RTP_Timeout_timer(pj_timer_heap_t* th, pj_timer_entry* te);
+	void AskRTPport_info();
 	
 };
 
