@@ -18,6 +18,24 @@ using static HMI.CD40.Module.BusinessEntities.TopRegistry;
 
 namespace HMI.CD40.Module.BusinessEntities
 {
+    public static class CfgManagerExtensions
+    {
+        public static uint HmiPosition(this CfgEnlaceInterno link)
+        {
+            if (TftMision.Instance.Mision != null)
+            {
+                if (link.TipoEnlaceInterno == "IA")
+                {
+                    if (link.PosicionHMI > 0)
+                    {
+                            uint newposition = TftMision.Instance.OrdenLC(link.PosicionHMI);
+                            return newposition;
+                    }
+                }
+            }
+            return link.PosicionHMI;
+        }
+    }
     /** SIRTAP */
     interface ISirtapLinkFilter
     {
@@ -43,19 +61,42 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         public Cd40Cfg CurrentCfg { get; set; }
 
-        public bool Itsmine(CfgEnlaceInterno link)
+        public bool ItsmineLC(CfgEnlaceInterno link)
+        {
+            if (CurrentCfg == null || CurrentMision == null)
+                return false;
+            uint posicion = link.PosicionHMI;
+            if (posicion > 0)
+            {
+                if (TftMision.Instance.IsPosLC(posicion - 1))
+                {
+                    //uint orden=(uint)TftMision.Instance.ordenposlc((int)posicion);
+                    //if (orden != posicion)
+                    //    link.PosicionHMI = orden;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool ItsmineTlf(CfgEnlaceInterno link)
         {
             if (CurrentCfg == null || CurrentMision == null)
                 return false;
             uint posicion = link.PosicionHMI;
             uint NumPagEnlacesInt = TftMision.Instance.NumPagEnlacesInt;
-            if (NumPagEnlacesInt>0)
+            if (NumPagEnlacesInt > 0)
             {
                 uint pag = posicion / NumPagEnlacesInt;
                 if (TftMision.Instance.IsPagTlf(pag))
                     return true;
             }
             return false;
+        }
+        public bool Itsmine(CfgEnlaceInterno link)
+        {
+            if (link.TipoEnlaceInterno == "IA")
+                return ItsmineLC(link);
+            return ItsmineTlf(link);
         }
 
         public bool Itsmine(CfgEnlaceExterno link)
@@ -266,8 +307,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		{
 			get { return _HostAddresses; }
 		}
-
-		public IEnumerable<CfgEnlaceInterno> TlfLinks// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
+        public IEnumerable<CfgEnlaceInterno> TlfLinks// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
         {
 			get
 			{
@@ -440,7 +480,7 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             get
             {
-                if (sirtapLinkFilter.CurrentMision != null)
+                if (_UserCfg != null && sirtapLinkFilter.CurrentMision != null)
                 {
                     foreach (CfgEnlaceExterno link in _UserCfg.RdLinks)
                     {

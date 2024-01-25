@@ -7,6 +7,7 @@ using HMI.Model.Module.Properties;
 using Utilities;
 using HMI.Model.Module.Messages;
 using HMI.Model.Module.Services;
+using System.Linq;
 
 namespace HMI.Model.Module.BusinessEntities
 {
@@ -17,8 +18,10 @@ namespace HMI.Model.Module.BusinessEntities
 		private string _Mision = null;
 		private List<(int, bool)> _pagrad;
 		private List<(int, bool)> _pagtlf;
-		private bool[] _paglc;
+		private List<(bool, bool)> _paglc;
+		Dictionary<uint, uint> _newpaglc = new Dictionary<uint, uint>();
 		private int _NumberOfPagesRad = 0;
+		private int _NumberOfPosLc = 0;
 		public static int NumDestinations = Settings.Default.NumRdDestinations;
 		public TftMision hinstance = null;
 		private LcDst[] _Dst = new LcDst[NumDestinations];
@@ -72,8 +75,8 @@ namespace HMI.Model.Module.BusinessEntities
 					{
 						SetPagRadio(new List<(int, bool)> { (0, true), (1, true), (2, true) });
 						//SetPagTlf(new List<(int, bool)> { (0, true), (1, true), (2, true), (3, true), (4, true), (5, true), (6, true) });
-						SetPagTlf(new List<(int, bool)> { });
-						SetPagLc(new bool[] { true, false, true, false, false, false });
+						SetPagTlf(new List<(int, bool)> { (0, true) });
+						SetPagLc(new List<(bool, bool)> { (false, true), (false, true), (true, true), (true, true), (true, true), (true, true) });
 						General.SafeLaunchEvent(RadioChanged, this, new RangeMsg(0, NumDestinations));
 
 						//_StateManager.Radio.ResetAssignatedState();
@@ -83,26 +86,65 @@ namespace HMI.Model.Module.BusinessEntities
 					{
 						SetPagRadio(new List<(int, bool)> { });
 						SetPagTlf(new List<(int, bool)> { (1, false), (3, true), (5, true), (7, true), (9, true) });
-						SetPagLc(new bool[] { true, true, true, false, false, false });
-						//SetPagRadio(new List<(int, bool)> { (2, true), (4, false), (6, true), (8, true) });
-						//SetPagTlf(new List<(int, bool)> { (1, false), (3, true), (5, true), (7, true), (9, true) });
-						//SetPagLc(new bool[] { true, true, true, false, false, false });
+						SetPagLc(new List <(bool,bool)> { (true, true), (true, true), });
 					}
 					else if (_Mision == "MISION 3")
 					{
 						SetPagRadio(new List<(int, bool)> { });
 						SetPagTlf(new List<(int, bool)> { (0, true), (1, true), (2, true), (3, true), (4, true), (5, true), (6, true) });
-						SetPagLc(new bool[] { true, true, true, false, false, false });
-						//SetPagRadio(new List<(int, bool)> { (2, true), (4, false), (6, true), (8, true) });
-						//SetPagTlf(new List<(int, bool)> { (1, false), (3, true), (5, true), (7, true), (9, true) });
-						//SetPagLc(new bool[] { true, true, true, false, false, false });
+						SetPagLc(new List<(bool, bool)> { (true, true),(true, true), (true, true), });
+					}
+					else if (_Mision == "MISION 4")
+					{
+						SetPagRadio(new List<(int, bool)> { (4, true) });
+						SetPagTlf(new List<(int, bool)> { (4, true) });
+						SetPagLc(new List<(bool, bool)> { (true, true), (true, true), (true, true), (true, true), });
+					}
+					else if (_Mision == "MISION 5")
+					{
+						SetPagRadio(new List<(int, bool)> { (4, true) });
+						SetPagTlf(new List<(int, bool)> { (4, true) });
+						SetPagLc(new List<(bool, bool)> { (true, true), (true, true), (true, true), (true, true), (true, true), });
+					}
+					else if (_Mision == "MISION 6")
+					{
+						SetPagRadio(new List<(int, bool)> { (4, true) });
+						SetPagTlf(new List<(int, bool)> { (4, true) });
+						SetPagLc(new List<(bool, bool)> { (true, true), (true, true), (true, true), (true, true), (true, true), (true, true), });
+					}
+					else if (_Mision == "MISION 7")
+					{
+						SetPagRadio(new List<(int, bool)> { (4, true) });
+						SetPagTlf(new List<(int, bool)> { (4, true) });
+						SetPagLc(new List<(bool, bool)> { (false, true), //1
+														  (true, true), //2
+														  (true, true), //3
+														  (true, true), //4
+														  (true, true), //5
+														  (true, true), //6
+							  							  (true, true), //7
+						});
+					}
+					else if (_Mision == "MISION 8")
+                    {
+
+						SetPagRadio(new List<(int, bool)> { });
+						SetPagTlf(new List<(int, bool)> { });
+						SetPagLc(new List<(bool, bool)> { (false, true), //1
+														  (false, true), //2
+														  (false, true), //3
+														  (false, true), //4
+														  (false, true), //5
+														  (false, true), //6
+							  							  (true, true), //7
+						});
 					}
 					else
 					{
-						
+
 						SetPagRadio(new List<(int, bool)> { });
 						SetPagTlf(new List<(int, bool)> { });
-						SetPagLc(new bool[] { });
+						SetPagLc(new List <(bool,bool)> { });
 
 						General.SafeLaunchEvent(RdPageClear, this);
 
@@ -126,9 +168,20 @@ namespace HMI.Model.Module.BusinessEntities
 		{
 			_pagtlf = lista;
 		}
-		private void SetPagLc(bool[] lista)
+		private void SetPagLc(List <(bool,bool)> lista)
 		{
 			_paglc = lista;
+			NumberOfPosLc = lista.Count(i => i.Item1);
+			uint cont = 0;
+			_newpaglc=new Dictionary<uint, uint>();
+			for (int i = 0;i< lista.Count; i++)
+            {
+				if (lista[i].Item1)
+				{
+					_newpaglc.Add((uint)i+1, cont+1);
+					cont++;
+				}
+			}
 		}
 		public List<(int, bool)> Pagrad
 		{
@@ -150,7 +203,7 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			set => _pagtlf = value;
 		}
-		public bool[] PagLc
+		public List<(bool, bool)> PagLC
 		{
 			get
 			{
@@ -179,11 +232,52 @@ namespace HMI.Model.Module.BusinessEntities
 			{
 				if (Pagtlf[i].Item1 == numero_pagina_buscada)
 				{
-					orden_pagina = i; // Sumamos 1 ya que los índices suelen empezar desde 0
+					orden_pagina = i; 
 					break;
 				}
 			}
 			return orden_pagina;
+		}
+		public int NumberOfPosLc { get => _NumberOfPosLc; set => _NumberOfPosLc = value; }
+
+		public uint ordenposlc(int numero_posicion_buscada)
+		{
+			int [] poslc= new int[18];
+			uint orden_pos = 0;
+			if (PagLC?.Count > 6)
+			{
+				for (int i = 0; i < PagLC?.Count; i++)
+				{
+					// si hay mas de 6 elementos reordeno la lista.
+					if (PagLC[i].Item1)
+					{
+						poslc[i]=(int)orden_pos;
+						orden_pos++;
+					}
+					// si hay 6 o menos elementos no reordeno la lista
+					else if (PagLC?.Count <= 6)
+						orden_pos++;
+				}
+			}
+            else
+            {
+				// cargo su posicion natural del 1 al 6
+				for (int i = 0; i < PagLC?.Count; i++)
+				{
+					poslc[i] = (int)orden_pos+1;
+					orden_pos++;
+				}
+
+			}
+			for (uint i = 0; i < poslc.Length; i++)
+			{
+				if (poslc[i] == numero_posicion_buscada)
+				{
+					orden_pos = i; 
+					break;
+				}
+			}
+			return orden_pos;
 		}
 		public int numero_pagina_mas_alto_rad()
 		{
@@ -223,10 +317,25 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			return false;
 		}
+		public bool IsPosLC(uint pos)
+		{
+			for (int i = 0; i < PagLC?.Count; i++)
+			{
+				if (i==pos)
+				if (PagLC[i].Item1)
+					return true;
+			}
+			return false;
+		}
+		public uint OrdenLC(uint pos)
+		{
+			return _newpaglc[pos];
+		}
+
 		public uint NumFrecPagina = 6;
 		public uint NumEnlacesInternosPag = 6;
 		public uint NumPagEnlacesInt = 28;
-		public uint NumPagEnlacesIn1t = 28;
+
 		
 	}
 }

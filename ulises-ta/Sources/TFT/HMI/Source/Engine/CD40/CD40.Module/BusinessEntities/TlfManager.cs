@@ -1163,8 +1163,9 @@ namespace HMI.CD40.Module.BusinessEntities
                 }
                 foreach (CfgEnlaceInterno link in Top.Cfg.MdTlfLinksAjeno)
                 {
-                    int pos = (int)link.PosicionHMI - 1;
-
+                    //int pos = (int)link.PosicionHMI - 1;
+                    int pos = (int)link.HmiPosition() - 1;
+                    
                     if (pos < Tlf.NumDestinations)
                     {
                        if (_TlfPositions.TryGetValue(pos, out tlf) == false)

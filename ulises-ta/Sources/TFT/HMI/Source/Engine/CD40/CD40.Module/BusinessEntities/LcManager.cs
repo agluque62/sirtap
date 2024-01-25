@@ -197,7 +197,8 @@ namespace HMI.CD40.Module.BusinessEntities
 			{
 				try
 				{
-					int pos = (int)link.PosicionHMI - 1;
+					//int pos = (int)link.PosicionHMI - 1;
+					int pos = (int)link.HmiPosition() - 1;
 
 					if (pos < _LcPositions.Length)
 					{
