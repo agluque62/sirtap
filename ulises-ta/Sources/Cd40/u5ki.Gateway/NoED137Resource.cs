@@ -190,8 +190,6 @@ namespace U5ki.Gateway
                 Connected = true;
                 if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
                 {
-                    LogInfo<NoED137Resource>($"########## TRAZA: CONFIRMED: IdRecurso {IdRecurso} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} Connected {Connected} CallId {CallId}");
-
                     //Se solicita que al RTPport que invoque a la callback RTPport_infoCb para actualizar el estado
                     CORESIP_Error err;
                     int coreret = CORESIP_AskRTPport_info(sirtap_params.rtp_port_id, out err);
@@ -233,7 +231,6 @@ namespace U5ki.Gateway
         public bool RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
             bool found = false;
-            LogInfo<NoED137Resource>($"########## TRAZA: RTPport_infoCb: rcv {info.receiving} IdRecurso {IdRecurso} rtpport_id {rtpport_id} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} Connected {Connected} CallId {CallId}");
             if (sirtap_params.rtp_port_id != -1 && Connected && CallId != -1)
             {
                 if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
