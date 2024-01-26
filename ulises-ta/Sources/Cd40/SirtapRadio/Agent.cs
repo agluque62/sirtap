@@ -15,17 +15,33 @@ namespace SirtapRadio
     internal class Agent
     {        
         public static SirtapRadio SirtapRd = new SirtapRadio();
+        private static bool CoresipInitiated = false;
 
         public static int Init()
         {
             int ret = 0;
             SipAgent.CORESIP_Config ua_cfg = new SipAgent.CORESIP_Config();
 
-            ua_cfg.UserAgent = ConfigurationManager.AppSettings["UserAgent"].ToString();
-            ua_cfg.HostId = ConfigurationManager.AppSettings["UserId"].ToString(); 
-            ua_cfg.IpAddress = ConfigurationManager.AppSettings["BindIpAddress"].ToString(); 
-            ua_cfg.Port = uint.Parse(ConfigurationManager.AppSettings["SipPort"].ToString());
-            ua_cfg.DefaultCodec = ConfigurationManager.AppSettings["DefaultCodec"].ToString();
+            string param = "";
+            try
+            {
+                param = "UserAgent";
+                ua_cfg.UserAgent = ConfigurationManager.AppSettings["UserAgent"].ToString();
+                param = "UserId";
+                ua_cfg.HostId = ConfigurationManager.AppSettings["UserId"].ToString();
+                param = "BindIpAddress";
+                ua_cfg.IpAddress = ConfigurationManager.AppSettings["BindIpAddress"].ToString();
+                param = "SipPort";
+                ua_cfg.Port = uint.Parse(ConfigurationManager.AppSettings["SipPort"].ToString());
+                param = "DefaultCodec";
+                ua_cfg.DefaultCodec = ConfigurationManager.AppSettings["DefaultCodec"].ToString();
+            }
+            catch (Exception e) {
+                MessageBox.Show($"CORESIP_Init: Fichero config incorrecto. Parece que falta el parametro {param}. La aplicacion se cerrara", "ERROR",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+
             ua_cfg.DefaultDelayBufPframes = 3;
             ua_cfg.DefaultJBufPframes = 4;
             ua_cfg.SndSamplingRate = 8000;
@@ -58,6 +74,7 @@ namespace SirtapRadio
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ret = -1;
             }
+            if (ret == 0) CoresipInitiated = true;
 
             if (ret == 0 && SipAgent.CORESIP_Start(out err) != 0)
             {
@@ -71,7 +88,8 @@ namespace SirtapRadio
 
         public static void End()
         {
-            SipAgent.CORESIP_End();
+            if (CoresipInitiated) SipAgent.CORESIP_End();
+            CoresipInitiated = false;
         }
 
         static void LogCb(int level, string data, int len)

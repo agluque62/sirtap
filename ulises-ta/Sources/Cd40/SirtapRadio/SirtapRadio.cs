@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static U5ki.Infrastructure.SipAgent;
 using U5ki.Infrastructure;
+using System.Windows.Forms;
 
 namespace SirtapRadio
 {
@@ -20,12 +21,26 @@ namespace SirtapRadio
         private string Local_multicast_ip = "";
         private int Payload_type = PCMA;
         private int Rtp_port_id = -1;
-        private bool SQUELCH_activado = false;
+        public bool SQUELCH_activado = false;
+        public bool Transmitting = false;
+        private int sch_wavplayer = -1;
+        public bool Bucle = false;
+
+        public bool TheSameConfigIsAlreadyInitialized(string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type)
+        {
+            if (Rtp_port_id != -1 && Dst_ip == dst_ip && Src_port == src_port && 
+                Dst_port == dst_port && Local_multicast_ip == local_multicast_ip && Payload_type == payload_type)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public int Init(string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, out string error)
         {
             int ret = 0;
             error = "";
+            Transmitting = false;
 
             if (Rtp_port_id != -1)
             {
@@ -54,6 +69,15 @@ namespace SirtapRadio
                 }
             }
 
+            if (ret == 0)
+            {
+                Dst_ip = dst_ip;
+                Src_port = src_port;
+                Dst_port = dst_port;
+                Local_multicast_ip = local_multicast_ip;
+                Payload_type = payload_type;
+            }
+
             return ret;
         }
 
@@ -61,6 +85,13 @@ namespace SirtapRadio
         {
             int ret = 0;
             error = "";
+
+            if (sch_wavplayer != -1)
+            {
+                CORESIP_Error err;
+                CORESIP_DestroyWavPlayer(sch_wavplayer, out err);
+                sch_wavplayer = -1;
+            }
 
             if (Rtp_port_id != -1)
             {
@@ -76,6 +107,10 @@ namespace SirtapRadio
                     Rtp_port_id = -1;
                 }
             }
+
+            Transmitting = false;
+            Bucle = false;
+            SQUELCH_activado = false;
 
             return ret;
         }
@@ -103,22 +138,68 @@ namespace SirtapRadio
                     int coreret = CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, action, out err);
                     if (coreret != 0)
                     {
-                        error = "Init: CORESIP_PauseResumeDestroyRTPport " + err.Info;
+                        error = "Squelch: CORESIP_PauseResumeDestroyRTPport " + err.Info;
                         ret = -1;
                     }
                     else
                     {
                         SQUELCH_activado = on;
+                        CORESIP_Error error1;
+                        if (sch_wavplayer == -1)
+                        {
+                            coreret = CORESIP_CreateWavPlayer("Hold.wav", 1, out sch_wavplayer, out error1);
+                            if (coreret != 0)
+                            {
+                                MessageBox.Show("Squelch: " + error1.Info);
+                                sch_wavplayer = -1;
+                            }
+                        }
+                            
+                        if (Bucle)
+                        {
+                            coreret = CORESIP_BridgeLink(Rtp_port_id, Rtp_port_id, on ? 0 : 1, out error1);
+                            if (coreret != 0)
+                            {
+                                MessageBox.Show("Squelch cortando audio bucle: " + error1.Info);
+                            }
+                        }
+
+                        if (sch_wavplayer != -1)
+                        {
+                            coreret = CORESIP_BridgeLink(sch_wavplayer, Rtp_port_id, 1, out error1);
+                            if (coreret != 0)
+                            {
+                                MessageBox.Show("Squelch: " + error1.Info);
+                            }
+                        }
                     }
-                }
+                }            
             }
 
             return ret;
         }
 
+        public void SetBucle(bool on)
+        {
+            if (Rtp_port_id != -1)
+            {
+                CORESIP_Error error1;
+                int coreret = CORESIP_BridgeLink(Rtp_port_id, Rtp_port_id, on? 1:0, out error1);
+                if (coreret != 0)
+                {
+                    MessageBox.Show("SetBucle: " +  error1.Info);
+                }
+                else
+                {
+                    Bucle = on;
+                }
+            }
+        }
+
         public void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
             if (rtpport_id != Rtp_port_id) return;
+            Transmitting = info.receiving;
         }
     }
 }
