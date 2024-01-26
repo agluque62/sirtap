@@ -566,7 +566,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		public string GetHostIp(string hostId)
 		{
             return _SystemCfg.GetHostIp(hostId);
-				}
+	    }
 
         public string GetMainUser(string host)
 		{
