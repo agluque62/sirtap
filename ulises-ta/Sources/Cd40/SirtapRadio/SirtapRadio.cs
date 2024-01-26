@@ -130,23 +130,19 @@ namespace SirtapRadio
             {
                 if (ret == 0)
                 {
-                    CORESIP_Error err;
-                    CORESIP_RTP_port_actions action = CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING;
-                    if (on) action = CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING;
-                    else action = CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING;
+                    if (on)
+                    {
+                        CORESIP_Error err;
+                        int coreret = CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING, out err);
+                        if (coreret != 0)
+                        {
+                            error = "Squelch: CORESIP_PauseResumeDestroyRTPport " + err.Info;
+                            ret = -1;
+                        }
 
-                    int coreret = CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, action, out err);
-                    if (coreret != 0)
-                    {
-                        error = "Squelch: CORESIP_PauseResumeDestroyRTPport " + err.Info;
-                        ret = -1;
-                    }
-                    else
-                    {
-                        SQUELCH_activado = on;
-                        CORESIP_Error error1;
                         if (sch_wavplayer == -1)
                         {
+                            CORESIP_Error error1;
                             coreret = CORESIP_CreateWavPlayer("Hold.wav", 1, out sch_wavplayer, out error1);
                             if (coreret != 0)
                             {
@@ -154,22 +150,53 @@ namespace SirtapRadio
                                 sch_wavplayer = -1;
                             }
                         }
-                            
-                        if (Bucle)
+
+                        if (sch_wavplayer != -1)
                         {
-                            coreret = CORESIP_BridgeLink(Rtp_port_id, Rtp_port_id, on ? 0 : 1, out error1);
+                            CORESIP_Error error1;
+                            coreret = CORESIP_BridgeLink(sch_wavplayer, Rtp_port_id, 1, out error1);
                             if (coreret != 0)
                             {
-                                MessageBox.Show("Squelch cortando audio bucle: " + error1.Info);
+                                MessageBox.Show("Squelch: " + error1.Info);
+                            }
+                        }
+
+                        coreret = CORESIP_BridgeLink(Rtp_port_id, Rtp_port_id, 0, out err);
+                        if (coreret != 0)
+                        {
+                            MessageBox.Show("Squelch cortando audio bucle: " + err.Info);
+                        }
+                    }
+                    else
+                    {
+                        if (!Bucle || (Bucle && !Transmitting))
+                        {
+                            CORESIP_Error err;
+                            int coreret = CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING, out err);
+                            if (coreret != 0)
+                            {
+                                error = "Squelch: CORESIP_PauseResumeDestroyRTPport " + err.Info;
+                                ret = -1;
                             }
                         }
 
                         if (sch_wavplayer != -1)
                         {
-                            coreret = CORESIP_BridgeLink(sch_wavplayer, Rtp_port_id, 1, out error1);
+                            CORESIP_Error error1;
+                            int coreret = CORESIP_BridgeLink(sch_wavplayer, Rtp_port_id, 0, out error1);
                             if (coreret != 0)
                             {
                                 MessageBox.Show("Squelch: " + error1.Info);
+                            }
+                        }
+
+                        if (Bucle && Transmitting)
+                        {
+                            CORESIP_Error err;
+                            int coreret = CORESIP_BridgeLink(Rtp_port_id, Rtp_port_id, 1, out err);
+                            if (coreret != 0)
+                            {
+                                MessageBox.Show("Squelch cortando audio bucle: " + err.Info);
                             }
                         }
                     }
@@ -189,9 +216,30 @@ namespace SirtapRadio
                 {
                     MessageBox.Show("SetBucle: " +  error1.Info);
                 }
+                Bucle = on;
+            }
+            if (Bucle)
+            {
+                if (Transmitting)
+                {
+                    CORESIP_Error err;
+                    CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING, out err);
+                }
                 else
                 {
-                    Bucle = on;
+                    if (!SQUELCH_activado)
+                    {
+                        CORESIP_Error err;
+                        CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING, out err);
+                    }
+                }
+            }
+            else
+            {
+                if (!SQUELCH_activado)
+                {
+                    CORESIP_Error err;
+                    CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING, out err);
                 }
             }
         }
@@ -200,6 +248,22 @@ namespace SirtapRadio
         {
             if (rtpport_id != Rtp_port_id) return;
             Transmitting = info.receiving;
+            if (Bucle)
+            {
+                if (info.receiving)
+                {
+                    CORESIP_Error err;
+                    CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING, out err);
+                }
+                else
+                {
+                    if (!SQUELCH_activado)
+                    {
+                        CORESIP_Error err;
+                        CORESIP_PauseResumeDestroyRTPport(Rtp_port_id, CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING, out err);
+                    }
+                }
+            }
         }
     }
 }
