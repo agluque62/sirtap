@@ -454,10 +454,21 @@ namespace HMI.Presentation.Sirtap.Views
             _BuzzerUDB.DrawX = !_StateManager.Buzzer.Enabled;
         }
 
+        [EventSubscription(EventTopicNames.AlarmaStateChanged, ThreadOption.Publisher)]
+        public void OnAlarmaStateChanged(object sender, EventArgs e)
+        {
+            _AltavozAlarmasUDB.DrawX = !_StateManager.AltavozAlarmas.Enabled;
+        }
+
         [EventSubscription(EventTopicNames.BuzzerLevelChanged, ThreadOption.Publisher)]
         public void OnBuzzerLevelChanged(object sender, EventArgs e)
         {
             _BuzzerUDB.Level = _StateManager.Buzzer.Level;
+        }
+        [EventSubscription(EventTopicNames.AlarmaLevelChanged, ThreadOption.Publisher)]
+        public void OnAlarmLevelChanged(object sender, EventArgs e)
+        {
+            _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
         }
 
         [EventSubscription(EventTopicNames.TlfChanged, ThreadOption.Publisher)]
@@ -726,6 +737,52 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 return _CmdManager;
             }
+        }
+
+        private void _AltavozAlarmasUDB_LevelDown(object sender, EventArgs e)
+        {
+            int level = _AltavozAlarmasUDB.Level - 1;
+
+            try
+            {
+                _CmdManager.SetAlarmLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR bajando el nivel de alarma a " + level, ex);
+            }
+
+        }
+
+        private void _AltavozAlarmasUDB_LevelUp(object sender, EventArgs e)
+        {
+            int level = _AltavozAlarmasUDB.Level + 1;
+
+            try
+            {
+                _CmdManager.SetAlarmLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR subiendo el nivel de alarma a " + level, ex);
+            }
+
+        }
+
+        private void _AltavozAlarmasUDB_LongClick(object sender, EventArgs e)
+        {
+            bool enabled = !_StateManager.AltavozAlarmas.Enabled;
+
+            try
+            {
+                _CmdManager.SetAlarmState(enabled);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format("ERROR {0} el altaavoz alarma", enabled ? "habilitando" : "deshabilitando");
+                _Logger.Error(msg, ex);
+            }
+
         }
     }
 }

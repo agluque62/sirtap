@@ -30,13 +30,6 @@ namespace HMI.Presentation.Sirtap.Views
         private void InitializeComponent()
         {
             System.Windows.Forms.TableLayoutPanel _KeypadTLP;
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtUsuario = new System.Windows.Forms.TextBox();
-            this.txtContrasena = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.hmiButtonModo = new HMI.Model.Module.UI.HMIButton();
-            this._ClearBT = new HMI.Model.Module.UI.HMIButton();
             this._LogClv = new HMI.Model.Module.UI.HMIButton();
             this._1BT = new HMI.Model.Module.UI.HMIButton();
             this._2BT = new HMI.Model.Module.UI.HMIButton();
@@ -49,6 +42,13 @@ namespace HMI.Presentation.Sirtap.Views
             this._9BT = new HMI.Model.Module.UI.HMIButton();
             this._0BT = new HMI.Model.Module.UI.HMIButton();
             this._AlmBT = new HMI.Model.Module.UI.HMIButton();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtUsuario = new System.Windows.Forms.TextBox();
+            this.txtContrasena = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this._ClearBT = new HMI.Model.Module.UI.HMIButton();
+            this.hmiButtonModo = new HMI.Model.Module.UI.HMIButton();
             _KeypadTLP = new System.Windows.Forms.TableLayoutPanel();
             _KeypadTLP.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -83,95 +83,6 @@ namespace HMI.Presentation.Sirtap.Views
             _KeypadTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             _KeypadTLP.Size = new System.Drawing.Size(410, 374);
             _KeypadTLP.TabIndex = 11;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(3, 30);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 31);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Clave:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 30);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Usuario:";
-            // 
-            // txtUsuario
-            // 
-            this.txtUsuario.Location = new System.Drawing.Point(65, 3);
-            this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(242, 20);
-            this.txtUsuario.TabIndex = 7;
-            // 
-            // txtContrasena
-            // 
-            this.txtContrasena.Enabled = false;
-            this.txtContrasena.Location = new System.Drawing.Point(65, 33);
-            this.txtContrasena.Name = "txtContrasena";
-            this.txtContrasena.PasswordChar = '*';
-            this.txtContrasena.Size = new System.Drawing.Size(242, 20);
-            this.txtContrasena.TabIndex = 8;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.93865F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80.06135F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 96F));
-            this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this._ClearBT, 2, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(21, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(407, 61);
-            this.tableLayoutPanel1.TabIndex = 12;
-            // 
-            // hmiButtonModo
-            // 
-            this.hmiButtonModo.DrawX = false;
-            this.hmiButtonModo.IsButtonTlf = false;
-            this.hmiButtonModo.IsConferencePreprogramada = false;
-            this.hmiButtonModo.Location = new System.Drawing.Point(21, 456);
-            this.hmiButtonModo.Name = "hmiButtonModo";
-            this.hmiButtonModo.Permitted = true;
-            this.hmiButtonModo.Size = new System.Drawing.Size(407, 57);
-            this.hmiButtonModo.TabIndex = 13;
-            this.hmiButtonModo.Text = "Modo";
-            this.hmiButtonModo.MouseUp += new System.Windows.Forms.MouseEventHandler(this.hmiButtonModo_MouseUp);
-            // 
-            // _ClearBT
-            // 
-            this._ClearBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this._ClearBT.DrawX = false;
-            this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._ClearBT.IsButtonTlf = false;
-            this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(310, 1);
-            this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
-            this._ClearBT.Name = "_ClearBT";
-            this._ClearBT.Permitted = true;
-            this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
-            this._ClearBT.Size = new System.Drawing.Size(94, 57);
-            this._ClearBT.TabIndex = 16;
-            this._ClearBT.Text = "<--";
-            this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
             // 
             // _LogClv
             // 
@@ -353,6 +264,95 @@ namespace HMI.Presentation.Sirtap.Views
             this._AlmBT.TabIndex = 12;
             this._AlmBT.Text = "OK";
             this._AlmBT.Click += new System.EventHandler(this._OK_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(3, 30);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(55, 31);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Clave:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 30);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Usuario:";
+            // 
+            // txtUsuario
+            // 
+            this.txtUsuario.Location = new System.Drawing.Point(64, 3);
+            this.txtUsuario.Name = "txtUsuario";
+            this.txtUsuario.Size = new System.Drawing.Size(242, 20);
+            this.txtUsuario.TabIndex = 7;
+            // 
+            // txtContrasena
+            // 
+            this.txtContrasena.Enabled = false;
+            this.txtContrasena.Location = new System.Drawing.Point(64, 33);
+            this.txtContrasena.Name = "txtContrasena";
+            this.txtContrasena.PasswordChar = '*';
+            this.txtContrasena.Size = new System.Drawing.Size(242, 20);
+            this.txtContrasena.TabIndex = 8;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.93865F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80.06135F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
+            this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this._ClearBT, 2, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(21, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(407, 61);
+            this.tableLayoutPanel1.TabIndex = 12;
+            // 
+            // _ClearBT
+            // 
+            this._ClearBT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._ClearBT.DrawX = false;
+            this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._ClearBT.IsButtonTlf = false;
+            this._ClearBT.IsConferencePreprogramada = false;
+            this._ClearBT.Location = new System.Drawing.Point(309, 1);
+            this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
+            this._ClearBT.Name = "_ClearBT";
+            this._ClearBT.Permitted = true;
+            this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
+            this._ClearBT.Size = new System.Drawing.Size(95, 57);
+            this._ClearBT.TabIndex = 16;
+            this._ClearBT.Text = "<--";
+            this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
+            // 
+            // hmiButtonModo
+            // 
+            this.hmiButtonModo.DrawX = false;
+            this.hmiButtonModo.IsButtonTlf = false;
+            this.hmiButtonModo.IsConferencePreprogramada = false;
+            this.hmiButtonModo.Location = new System.Drawing.Point(21, 456);
+            this.hmiButtonModo.Name = "hmiButtonModo";
+            this.hmiButtonModo.Permitted = true;
+            this.hmiButtonModo.Size = new System.Drawing.Size(407, 57);
+            this.hmiButtonModo.TabIndex = 13;
+            this.hmiButtonModo.Text = "Modo";
+            this.hmiButtonModo.MouseUp += new System.Windows.Forms.MouseEventHandler(this.hmiButtonModo_MouseUp);
             // 
             // loginform
             // 

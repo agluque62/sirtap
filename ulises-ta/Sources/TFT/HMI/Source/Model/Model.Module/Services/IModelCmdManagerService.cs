@@ -15,7 +15,9 @@ namespace HMI.Model.Module.Services
 		void ShowInfo();
 		void SetBrightnessLevel(int level);
 		void SetBuzzerState(bool enabled);
+		void SetAlarmState(bool enabled);
 		void SetBuzzerLevel(int level);
+		void SetAlarmLevel(int level);
 		void RdSetSpeakerLevel(int level);
 		void RdSetHeadPhonesLevel(int level);
         void RdSetHfSpeakerLevel(int level);

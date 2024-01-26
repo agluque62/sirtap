@@ -199,6 +199,10 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _OK_Click(object sender, EventArgs e)
         {
+            if (txtUsuario.Text=="9999")
+            {
+                Application.Exit();
+            }
             _CmdManager.TftSolicitaSesion(txtUsuario.Text, txtContrasena.Text);
             IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
 
@@ -271,7 +275,6 @@ namespace HMI.Presentation.Sirtap.Views
         {
             ChangeColors();
         }
-
 
     }
 }

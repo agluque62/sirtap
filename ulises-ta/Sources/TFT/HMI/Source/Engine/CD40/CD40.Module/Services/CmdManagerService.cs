@@ -75,6 +75,12 @@ namespace HMI.CD40.Module.Services
         [EventPublication(EventTopicNames.BuzzerLevelEngine, PublicationScope.Global)]
         public event EventHandler<LevelMsg<Buzzer>> BuzzerLevelEngine;
 
+        [EventPublication(EventTopicNames.AlarmLevelEngine, PublicationScope.Global)]
+        public event EventHandler<LevelMsg<AltavozAlarmas>> AlarmLevelEngine;
+
+        [EventPublication(EventTopicNames.AlarmStateEngine, PublicationScope.Global)]
+        public event EventHandler<StateMsg<bool>> AlarmStateEngine;
+
         [EventPublication(EventTopicNames.TlfInfoEngine, PublicationScope.Global)]
         public event EventHandler<RangeMsg<TlfInfo>> TlfInfoEngine;
 
@@ -553,6 +559,22 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+        public void SetAlarmState(bool enabled)
+        {
+            Top.WorkingThread.Enqueue("SetAlarmState", delegate ()
+            {
+                // Aqui hya eque enlazar con el dispositivo de audio correspondiente
+                Console.WriteLine("Aqui hay que enlazar con el dispositivo de audio correspondiente");
+                //if (Top.Mixer.SetBuzzerState(enabled))
+                {
+                    Top.PublisherThread.Enqueue(EventTopicNames.AlarmStateEngine, delegate ()
+                    {
+                        General.SafeLaunchEvent(AlarmStateEngine, this, new StateMsg<bool>(enabled));
+                    });
+                }
+            });
+        }
+
         public void SetBuzzerLevel(int level)
         {
             Top.WorkingThread.Enqueue("SetBuzzerLevel", delegate ()
@@ -562,6 +584,22 @@ namespace HMI.CD40.Module.Services
                     Top.PublisherThread.Enqueue(EventTopicNames.BuzzerLevelEngine, delegate ()
                     {
                         General.SafeLaunchEvent(BuzzerLevelEngine, this, new LevelMsg<Buzzer>(level));
+                    });
+                }
+            });
+        }
+
+        public void SetAlarmLevel(int level)
+        {
+            Top.WorkingThread.Enqueue("SetAlarmLevel", delegate ()
+            {
+                // Aqui hya eque enlazar con el dispositivo de audio correspondiente
+                Console.WriteLine("Aqui hay que enlazar con el dispositivo de audio correspondiente");
+                //if (Top.Mixer.SetBuzzerLevel(level))
+                {
+                    Top.PublisherThread.Enqueue(EventTopicNames.AlarmLevelEngine, delegate ()
+                    {
+                        General.SafeLaunchEvent(AlarmLevelEngine, this, new LevelMsg<AltavozAlarmas>(level));
                     });
                 }
             });

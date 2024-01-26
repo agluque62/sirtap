@@ -235,6 +235,13 @@ namespace HMI.Model.Module.Services
 				_EngineCmdManager.SetBuzzerState(enabled);
 			}
 		}
+		public void SetAlarmState(bool enabled)
+		{
+			if (_StateManager.AltavozAlarmas.Enabled != enabled)
+			{
+				_EngineCmdManager.SetAlarmState(enabled);
+			}
+		}
 
 		public void SetBuzzerLevel(int level)
 		{
@@ -245,6 +252,17 @@ namespace HMI.Model.Module.Services
 			else
 			{
 				_EngineCmdManager.SetBuzzerLevel(level);
+			}
+		}
+		public void SetAlarmLevel(int level)
+		{
+			if (!_StateManager.AltavozAlarmas.Enabled)
+			{
+				_EngineCmdManager.SetAlarmState(true);
+			}
+			else
+			{
+				_EngineCmdManager.SetAlarmLevel(level);
 			}
 		}
 

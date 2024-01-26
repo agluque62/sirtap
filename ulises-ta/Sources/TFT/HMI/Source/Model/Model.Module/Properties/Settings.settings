@@ -185,5 +185,11 @@
     <Setting Name="Buzzerdown" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Resources/Buzzerdown.gif</Value>
     </Setting>
+    <Setting Name="AALarmaEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AAlarmaLevel" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

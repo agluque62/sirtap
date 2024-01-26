@@ -228,12 +228,28 @@ namespace HMI.Model.Module.Services
 			_StateManager.Buzzer.Enabled = msg.State;
 		}
 
+		[EventSubscription(EventTopicNames.AlarmStateEngine, ThreadOption.UserInterface)]
+		public void OnAlarmStateEngine(object sender, StateMsg<bool> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.AlarmStateEngine, msg);
+
+			_StateManager.AltavozAlarmas.Enabled = msg.State;
+		}
+
 		[EventSubscription(EventTopicNames.BuzzerLevelEngine, ThreadOption.UserInterface)]
 		public void OnBuzzerLevelEngine(object sender, LevelMsg<Buzzer> msg)
 		{
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.BuzzerLevelEngine, msg);
 
 			_StateManager.Buzzer.Level = msg.Level;
+		}
+
+		[EventSubscription(EventTopicNames.AlarmLevelEngine, ThreadOption.UserInterface)]
+		public void OnAlarmLevelEngine(object sender, LevelMsg<AltavozAlarmas> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.AlarmLevelEngine, msg);
+
+			_StateManager.AltavozAlarmas.Level = msg.Level;
 		}
 
 		[EventSubscription(EventTopicNames.RdInfoEngine, ThreadOption.UserInterface)]
@@ -851,6 +867,7 @@ namespace HMI.Model.Module.Services
 					if (_StateManager.Buzzer.Enabled)
 					{
 						_EngineCmdManager.SetBuzzerLevel(_StateManager.Buzzer.Level);
+						_EngineCmdManager.SetAlarmLevel(_StateManager.AltavozAlarmas.Level);
 					}
 
 					_EngineCmdManager.SetRdHeadPhonesLevel(_StateManager.RdHeadPhones.Level);

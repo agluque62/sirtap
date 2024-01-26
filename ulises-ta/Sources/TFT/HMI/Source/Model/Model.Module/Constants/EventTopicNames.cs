@@ -30,6 +30,8 @@ namespace HMI.Model.Module.Constants
 		public const string BrightnessLevelChanged = "BrightnessLevelChanged";
 		public const string BuzzerLevelChanged = "BuzzerLevelChanged";
 		public const string BuzzerStateChanged = "BuzzerStateChanged";
+		public const string AlarmaLevelChanged = "AlarmaLevelChanged";
+		public const string AlarmaStateChanged = "AlarmaStateChanged";
 		public const string ActiveScvChanged = "ActiveScvChanged";
         public const string ProxyPresent = "ProxyPresent";
         public const string RdHfSpeakerLevelChanged = "RdHfSpeakerLevelChanged";
@@ -121,6 +123,8 @@ namespace HMI.Model.Module.Constants
         public const string SpeakerExtStateEngine = "SpeakerExtStateEngine";
         public const string BuzzerStateEngine = "BuzzerStateEngine";
 		public const string BuzzerLevelEngine = "BuzzerLevelEngine";
+		public const string AlarmStateEngine = "AlarmStateEngine";
+		public const string AlarmLevelEngine = "AlarmLevelEngine";
 		public const string TlfInfoEngine = "TlfInfoEngine";
 		public const string TlfPositionsEngine = "TlfPositionsEngine";
 		public const string TlfPosStateEngine = "TlfPosStateEngine";

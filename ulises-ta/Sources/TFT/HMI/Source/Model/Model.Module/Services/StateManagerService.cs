@@ -28,6 +28,7 @@ namespace HMI.Model.Module.Services
 		private Split _Split;
 		private Brightness _Brightness;
 		private Buzzer _Buzzer;
+		private AltavozAlarmas _AltavozAlarmas;
 		private RdSpeaker _RdSpeaker;
         private HfSpeaker _HfSpeaker;
 		private RdHeadPhones _RdHeadPhones;
@@ -120,14 +121,20 @@ namespace HMI.Model.Module.Services
 			set { _Buzzer = value; }
 		}
 
-        [CreateNew]
-        public RdSpeaker RdSpeaker
-        {
-            get { return _RdSpeaker; }
-            set { _RdSpeaker = value; }
-        }
+		[CreateNew]
+		public RdSpeaker RdSpeaker
+		{
+			get { return _RdSpeaker; }
+			set { _RdSpeaker = value; }
+		}
+		[CreateNew]
+		public AltavozAlarmas AltavozAlarmas
+		{
+			get { return _AltavozAlarmas; }
+			set { _AltavozAlarmas = value; }
+		}
 
-        [CreateNew]
+		[CreateNew]
         public HfSpeaker HfSpeaker
         {
             get { return _HfSpeaker; }

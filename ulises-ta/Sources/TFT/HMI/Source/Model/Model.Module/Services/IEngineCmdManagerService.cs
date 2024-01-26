@@ -13,7 +13,9 @@ namespace HMI.Model.Module.Services
         void BriefingFunction();
 		void SetSplitMode(SplitMode mode);
 		void SetBuzzerState(bool enabled);
+		void SetAlarmState(bool enabled);
 		void SetBuzzerLevel(int level);
+		void SetAlarmLevel(int level);
 		void SetRdHeadPhonesLevel(int level);
         void SetRdHfSpeakerLevel(int level);
         void SetRdSpeakerLevel(int level);
