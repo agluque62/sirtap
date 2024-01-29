@@ -345,6 +345,7 @@ void ConfSubs::conf_on_rx_notify(pjsip_evsub *sub, pjsip_rx_data *rdata, int *p_
 				pj_ansi_snprintf(info.Users[i].State, sizeof(info.Users[i].State) - 1, "%.*s", conf_info.users[i].state.slen, conf_info.users[i].state.ptr);
 			}
 
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "ConfInfoCb %d", conf->_Acc_id | CORESIP_ACC_ID));
 			SipAgent::Cb.ConfInfoCb(conf->_Acc_id | CORESIP_ACC_ID, &info, from_urich, size);
 		}
 	}
@@ -613,6 +614,7 @@ pj_bool_t ConfSubs::SubscriptionRxRequest(pjsip_rx_data* rdata)
 			char from_urich[CORESIP_MAX_URI_LENGTH];
 			int size = pjsip_uri_print(PJSIP_URI_IN_FROMTO_HDR, from->uri, from_urich, CORESIP_MAX_URI_LENGTH - 1);
 			from_urich[size] = '\0';
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "IncomingSubscribeConfCb from %s", from_urich));
 			SipAgent::Cb.IncomingSubscribeConfCb(accid | CORESIP_ACC_ID, (const char*)from_urich, (const int)size);
 		}		
 	}

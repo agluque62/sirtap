@@ -1842,6 +1842,7 @@ int FrecDesp::SetBetterSession(SipCall *p_current_sipcall, pj_bool_t in_window, 
 
 							if (SipAgent::Cb.RdInfoCb)
 							{	
+								if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "RdInfoCb %d", ((pjsua_call*)call)->index | CORESIP_CALL_ID));
 								SipAgent::Cb.RdInfoCb(((pjsua_call*)call)->index | CORESIP_CALL_ID, &info_aux);
 							}
 						}
@@ -1921,6 +1922,7 @@ int FrecDesp::RefressStatus(SipCall *p_current_sipcall)
 
 							if (SipAgent::Cb.RdInfoCb)
 							{			
+								if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "RdInfoCb %d", ((pjsua_call*)call)->index | CORESIP_CALL_ID));
 								SipAgent::Cb.RdInfoCb(((pjsua_call*)call)->index | CORESIP_CALL_ID, &info_aux);
 							}
 						}

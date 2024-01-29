@@ -127,6 +127,17 @@ namespace u5ki.RemoteControlService
                 }
             });
         }
+
+        public GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true)
+        {
+            return GearOperationStatus.None;
+        }
+
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true)
+        {
+            return TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -390,7 +401,6 @@ namespace u5ki.RemoteControlService
         /// <returns></returns>
         private GearOperationStatus SNMPMasterControlConfig(String targetIp, bool isMaster, string sFrecuencia)
         {
-            String logMethod = "MASTER CONTROL CONFIG";
 #if DEBUG
             if (Globals.Test.RemoteControlByPass && !Globals.Test.Gears.GearsReal.Contains(targetIp))
                 return GearOperationStatus.OK;

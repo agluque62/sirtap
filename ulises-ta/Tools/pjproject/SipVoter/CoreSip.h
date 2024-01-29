@@ -12,6 +12,8 @@
 
 #define ETM5
 
+#define TRACE_ALL_CALLS (SipAgent::ETM)
+
 #if defined(_WIN32) && defined(_USRDLL)
 #	ifdef CORESIP_EXPORTS
 #		define CORESIP_API __declspec(dllexport)

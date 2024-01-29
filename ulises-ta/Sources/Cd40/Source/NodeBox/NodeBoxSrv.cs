@@ -239,6 +239,15 @@ namespace U5ki.NodeBox
                         server.ServiceMain();
                     } while (Console.ReadKey().Key != ConsoleKey.Escape);
                 }
+                else if ((args.Length == 1) && (args[0] == "-unittest"))
+                {
+                    bConsole = true;
+
+                    do
+                    {
+                        server.ServiceMain();
+                    } while (Console.ReadKey().Key != ConsoleKey.Escape);
+                }
                 else if (args.Length == 0)
                 {
                     ServiceBase.Run(server);
@@ -519,7 +528,6 @@ namespace U5ki.NodeBox
         /// <summary>
         /// 
         /// </summary>
-        private UdpClient nbxLocalSocket = null;    // new UdpClient();
         static int cuenta = 0;
         /// <summary>
         /// 20170724. Se incluye informacion de todos los servicios y del puerto WEB...

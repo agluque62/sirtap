@@ -339,14 +339,19 @@
                     Enabled="False" Style="z-index: 124; left: 475px; position: absolute; top: 142px"
                     Width="45px" Visible="False" meta:resourcekey="TxtTmSupervisionOptionsResource">130</asp:TextBox>
 
-                <asp:Label ID="LLado" runat="server" Style="left: 333px; position: absolute; top: 12px; z-index: 107;"
-                    Text="Lado" Visible="False" meta:resourcekey="LLadoResource1"></asp:Label>
-                <asp:DropDownList ID="DDLLado" runat="server" Style="left: 333px; position: absolute; top: 32px; z-index: 108;"
+                <asp:Label ID="LLado" runat="server" Style="left: 420px; position: absolute; top: 12px; z-index: 107;"
+                    Text="Lado:" Visible="False" meta:resourcekey="LLadoResource1"></asp:Label>
+                <asp:DropDownList ID="DDLLado" runat="server" Style="left: 420px; position: absolute; top: 32px; z-index: 108;"
                     Visible="False" Width="56px" Enabled="False" class="select"
                     meta:resourcekey="DDLLadoResource1">
                     <asp:ListItem Value="0" meta:resourcekey="ListItemResource15">A</asp:ListItem>
                     <asp:ListItem Value="1" meta:resourcekey="ListItemResource16">B</asp:ListItem>
                 </asp:DropDownList>
+
+				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 300px; position: absolute;
+					  top: 12px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" 
+					meta:resourcekey="LSeguroResource1"/>
 
                 <asp:Label ID="LblModo" runat="server" Text="Modo: "
                     Style="position: absolute; top: 58px; left: 333px;" Visible="False"

@@ -256,6 +256,7 @@ private:
 	pjsip_evsub * _ConfInfoClientEvSub;
 	pjsip_evsub * _ConfInfoSrvEvSub;
 	bool _HangUp;
+	pjsip_inv_state _Last_pjsip_inv_state;
 
 	char LastReason[CORESIP_MAX_REASON_LENGTH + 1];		//Tiene el Reason recibido en el BYE o en el CANCEL
 

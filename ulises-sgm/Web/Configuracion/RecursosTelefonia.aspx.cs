@@ -81,12 +81,9 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                 Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO", false);
                 return;
             }
-
             PermisoSegunPerfil = perfil != "1";
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-            //Version = config.AppSettings.Settings["Version"];
             Ulises5000Configuration.ToolsUlises5000Section ulisesTools = Ulises5000Configuration.ToolsUlises5000Section.Instance;
-
             UlisesToolsVersion = ulisesTools;
         }
 
@@ -95,11 +92,8 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
 
         if (!IsPostBack)
         {
-            IndexListBox1 = -1;
-
-            
+            IndexListBox1 = -1;           
             CheckGrabacionEd137.Visible = false;
-
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
             KeyValueConfigurationElement keyElement = config.AppSettings.Settings["Sistema"];
             Session["IdSistema"] = keyElement.Value;
@@ -110,14 +104,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             IBFuncionalidad.CssClass = "buttonImage";
             IBAsignacion.CssClass = "buttonImage";
 
-            //VMG 12/11/2018
             initDefaultValues();
-
-            /*this.ClientScript.RegisterStartupScript(this.GetType(), 
-                "Nucleo", "alertify.error('Nucleo', 'Record Saved Successfully', "+
-                "function() {"+
-                "});", true);
-            */
             BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
             BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");
 
@@ -127,7 +114,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             CargaDDLTifX();
             CargaDDLTroncal();
             CargaDDLRed();
-            //CargaDDLDestinos();
             CargaDDLEquiposExternos();
             MuestraDatos(DameDatos());
         }
@@ -143,26 +129,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             }
 
             MultiView1.ActiveViewIndex = NumPaginaActiva;
-
-            //if (Request.Form["eliminaelemento"] == "1")//El usuario elige eliminar el elemento 
-            //{
-            //    Request.Form["eliminaelemento"].Replace("1", "0");
-
-            //    EliminarElemento();
-            //    MuestraDatos(DameDatos());
-            //}
-            //if (Request.Form["cancelparam"] == "1")    //El usuario elige no guardar los cambios 
-            //{
-            //    Request.Form["cancelparam"].Replace("1", "0");
-
-            //    CancelarCambios();
-            //}
-            //if (Request.Form["aceptparam"] == "1")     //El usuario elige guardar los cambios
-            //{
-            //    Request.Form["aceptparam"].Replace("1", "0");
-
-            //    GuardarCambios();
-            //}
             if (Request.Form["SoloEliminaDeTFT"] == "1")
             {
                 Request.Form["SoloEliminaDeTFT"].Replace("1", "0");
@@ -301,28 +267,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
 
     }
 
-    //private void CargaDDLDestinos()
-    //{
-    //    try
-    //    {
-    //        ServiciosCD40.DestinosExternos dExterno = new ServiciosCD40.DestinosExternos();
-
-    //        dExterno.IdSistema = (string)Session["IdSistema"];
-    //        // Como existen prefijos repetidos, no se pueden almacenar en DDLDestinos.DataValueField.
-    //        // Los guardamos en la droddownlistbox ddlPrefijos
-    //        ddlPrefijos.DataSource = DDLDestino.DataSource = ServiceServiciosCD40.DataSetSelectSQL(dExterno);
-    //        DDLDestino.DataTextField = "IdDestino";
-    //        ddlPrefijos.DataTextField = "IdPrefijo";
-
-    //        DDLDestino.DataBind();
-    //        ddlPrefijos.DataBind();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        logDebugView.Error("(RecursosDeTelefonia-CargaDDLDestinos): ", ex);
-    //    }
-    //}
-
     private void CargaDDLTroncal()
     {
         try
@@ -435,13 +379,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             {
                 TxtIdRecurso.Text = r.IdRecurso;
                 TxtServidorSIP.Text = r.ServidorSIP;
-                //DListTipo.SelectedValue = r.Tipo.ToString();
-
                 DListInterface.SelectedValue = ((int)(r.Interface)).ToString();
-
-                // Cambiar a primera página sólo si estoy en ventana de Funcionalidad y ahora no soy un recurso de LC
-                //if (MultiView1.ActiveViewIndex == 3 && r.Interface != ServiciosCD40.TipoInterface.TI_LCEN)
-                //RecuperaPaginaGeneral();
 
                 OcultarOpcionesTelefonia();
 
@@ -451,7 +389,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     DDLSupervisionOptions.Visible = true;
                     LBTmSupervisionOptions.Visible = true;
                     TxtTmSupervisionOptions.Visible = true;
-
                     MostrarTTMaxLC();
                 }
 
@@ -463,10 +400,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     TxtTReleaseBL.Visible = true;
                     LBTmLlamadaEntrante.Visible = true;
                     TxtTmLlamadaEntrante.Visible = true;
-                    //LBPeriodoSpvRing.Visible = true;
-                    //TxtPeriodoSpvRing.Visible = true;
-                    //LBFiltroSpvRing.Visible = true;
-                    //TxtFiltroSpvRing.Visible = true;
                 }
                 if (r.Interface == ServiciosCD40.TipoInterface.TI_AB)
                 {
@@ -474,10 +407,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     TxtTmDetFinLlamada.Visible = true;
                     LBTmLlamadaEntrante.Visible = true;
                     TxtTmLlamadaEntrante.Visible = true;
-                    //LBPeriodoSpvRing.Visible = true;
-                    //TxtPeriodoSpvRing.Visible = true;
-                    //LBFiltroSpvRing.Visible = true;
-                    //TxtFiltroSpvRing.Visible = true;
                     LBDeteccionInversionPol.Visible = true;
                     DDLDeteccionInversionPol.Visible = true;
                     LBDeteccionCallerId.Visible = true;
@@ -489,11 +418,8 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                 // Tratamiento del check particular según el tipo de recurso:
                 if (r.Interface == ServiciosCD40.TipoInterface.TI_BL || r.Interface == ServiciosCD40.TipoInterface.TI_EM_PP || r.Interface == ServiciosCD40.TipoInterface.TI_EM_MARC)
                 {
-                    
+        
                     CheckDiffServ.Visible = false;
-                    //CheckDiffServ.Text = "4 Hilos";
-                    //Se lee la cadena del fichero de recursos 
-                    //CheckDiffServ.Text = GetLocalResourceObject("CheckDiffServ_4Hilos").ToString();
                 }
                 else if (r.Interface == ServiciosCD40.TipoInterface.TI_BC)
                 {
@@ -501,9 +427,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     TxtTmLlamadaEntrante.Visible = true;
                     LBDeteccionDtmf.Visible = true;
                     DDLDeteccionDtmf.Visible = true;
-
                     CheckDiffServ.Visible = true;
-                    //CheckDiffServ.Text = "BC - AB PP";
                     CheckDiffServ.Text = (string)GetLocalResourceObject("CheckDiffServ_TIBC").ToString();
                 }
                 else
@@ -519,7 +443,6 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     CargaDatosLineaCaliente(r.IdSistema, r.IdRecurso);
 
                 MuestraSistemaHardware(r.IdTifX != null);
-
 
                 if (r.IdTifX != null)
                 {
@@ -554,6 +477,9 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
 
                 //Se habilitan las pestañas en función del tipo de asignación HW y si el recurso es LCEN
                 EnableTabs(bEquipoExt, r.Interface);
+
+
+                CBSeguro.Checked  = r.Seguro;
             }
             //    }
             //}
@@ -803,14 +729,9 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             recTf = (ServiciosCD40.RecursosLCEN)lista[0];
             TBTamanoPaquete.Text = recTf.TamRTP.ToString();
 
-            //TBGananciaRx.Text = (recTf.GananciaAGCRXdBm.ToString()).Replace('.', ',');
-            //TBGananciaTx.Text = (recTf.GananciaAGCTXdBm.ToString()).Replace('.', ',');
-
             TxtUmbralPTT.Text = recTf.UmbralTonoPTT.ToString();
             TxtUmbralSQ.Text = recTf.UmbralTonoSQ.ToString();
             CheckGrabacionEd137.Checked = false;
-
-            //                    TxtLongRafagas.Text = r.LongRafagas.ToString();
 
             //VMG 20/02/2019
             DDLSupervisionOptions.SelectedValue = recTf.isuperv_options == 0 ? "0" : "1";
@@ -1249,6 +1170,9 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             PresentaParamAGCTx(false);
             PresentaParamAGCRx(false);
         }
+
+        CBSeguro.Enabled = habilita;
+
         /* MVO.20170707: los valores nominales de protocolo y los valores máximos de temporización o supervisión no son modificables
 		TxtT1.Enabled = habilita;
 		TxtT1Max.Enabled = habilita;
@@ -1607,6 +1531,8 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                     return;
                 }
             }
+            // TPD Validación parámetro Seguro SIRTAP.
+            n.Seguro = CBSeguro.Checked;
 
             if (!Modificando) //Recurso nuevo
             {
@@ -2141,7 +2067,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
 
         if (!Modificando && TxtIdRecurso.Enabled && bIdentificadorAsignado(StrSistema, TxtIdRecurso.Text))
         {
-            //MVO: Si se está insertando un recurso radio y existe otro recurso con el mismo identificador en el sistema, se informa al usuario para que indique otro identificador
+            //MVO: Si se está insertando un recurso y existe otro recurso con el mismo identificador en el sistema, se informa al usuario para que indique otro identificador
             cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "ErrorRecurso_Existente"), TxtIdRecurso));
         }
         else if ((HW_TIPO_PASARELA == RBLTipoEquipo.SelectedValue && RecursoAsignado) || (HW_TIPO_EQUIPO_EXTERNO == RBLTipoEquipo.SelectedValue && DListEquipoExternos.SelectedIndex != 0))
@@ -2327,6 +2253,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                 DDLRed.SelectedIndex = 0;
                 break;
             default:
+
                 LTroncal.Visible = false;
                 DDLTroncal.Visible = false;
                 break;
@@ -3409,6 +3336,11 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
         {
             ActivaAGC(true);
         }
+    }
+
+    protected void CBSeguro_OnCheckedChanged (object sender, EventArgs e)
+    {
+
     }
 }
 

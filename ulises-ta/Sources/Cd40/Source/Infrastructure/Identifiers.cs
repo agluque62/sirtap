@@ -9,6 +9,8 @@ namespace U5ki.Infrastructure
     /// </summary>
 	public static class Identifiers
     {
+        public const string SimulSirtapGRS = "SimulSirtapGRS";     
+
         /// <summary>
         /// 
         /// </summary>
@@ -94,9 +96,6 @@ namespace U5ki.Infrastructure
         // Mensajes referentes a las conferencias preprogramadas
         public const short CONFERENCE_STATUS = 520;  //Estado de la conferencia. Se envia mensaje ConferenceStatus de TopMessages.proto
 
-        // Mensajes referentes a SIRTAP
-        public const short SIRTAP_AUD_ALM = 600;     //Alarmas del SIRTAP. Mensaje SirTapAudAlarmMsg
-
         /// <summary>
         /// 
         /// </summary>
@@ -147,13 +146,19 @@ namespace U5ki.Infrastructure
         public const uint FR_GENERIC_ERROR = 506;   //Otros errores
         public const uint FR_TIMEOUT_ERROR = 507;   //No se ha recibido respuesta
 
+        // Mensajes referentes a SIRTAP
+        public const short SIRTAP_AUD_ALM = 600;    //Alarmas del SIRTAP. Mensaje SirTapAudAlarmMsg
+
+        //Mensajes de peticion de telemando
+        public const short TLMDO_ASK = 601;                 //Mensaje de telemando
+        public const short TLMDO_RSP = 602;                 //Mensaje de telemando
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-		public static string TypeId(Type t)
+        public static string TypeId(Type t)
         {
             return t.Namespace + "." + t.Name;
         }

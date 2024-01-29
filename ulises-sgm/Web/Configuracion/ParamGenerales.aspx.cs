@@ -447,8 +447,8 @@ public partial class ParamGenerales : PageBaseCD40.PageCD40	// System.Web.UI.Pag
         const uint MaxKeepAliveMultiplier = 50;
         const uint MinKeepAliveMultiplier = 2;
         //Validación datos info NumDestinosInternosPag
-        const uint MaxNumDestinosInternosPag = 24;
-        const uint MinNumDestinosInternosPag = 8;
+        const uint MaxNumDestinosInternosPag = 5;
+        const uint MinNumDestinosInternosPag = 5;
         //Validación datos info NumFrecPagina
         const uint MaxNumFrecPagina = 20;
         const uint MinNumFrecPagina = 4;
@@ -459,14 +459,14 @@ public partial class ParamGenerales : PageBaseCD40.PageCD40	// System.Web.UI.Pag
         const uint MaxNumLlamadasEntrantesIda = 4;
         const uint MinNumLlamadasEntrantesIda = 1;
         //Validación datos info NumPagDestinosInt
-        const uint MaxNumPagDestinosInt = 9;
+        const uint MaxNumPagDestinosInt = 28;
         const uint MinNumPagDestinosInt = 3;
         //Validación datos info NumPagFrec
-        const uint MaxNumPagFrec = 9;
+        const uint MaxNumPagFrec = 28;
         const uint MinNumPagFrec = 1;
         //Validación datos info NumEnlacesAI
-        const uint MaxNumEnlacesAI = 18;
-        const uint MinNumEnlacesAI = 9;
+        const uint MaxNumEnlacesAI = 6;
+        const uint MinNumEnlacesAI = 6;
         bool bvacio = false;
 
         try

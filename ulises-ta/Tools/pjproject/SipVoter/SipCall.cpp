@@ -278,6 +278,7 @@ SipCall::SipCall(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outI
 	_IdDestino[0] = '\0';
 	CallFlags_prev_reinvite = 0;
 	remote_grs_supports_ED137C_Selcal = PJ_FALSE;
+	_Last_pjsip_inv_state = PJSIP_INV_STATE_NULL;
 
 	valid_sess = PJ_FALSE;
 	_Id = PJSUA_INVALID_ID;
@@ -653,6 +654,7 @@ SipCall::SipCall(pjsua_call_id call_id, const CORESIP_CallInfo * info)
 	GRS_Td1 = 0;
 	Callflag_previous_reinvite = 0;
 	remote_grs_supports_ED137C_Selcal = PJ_FALSE;
+	_Last_pjsip_inv_state = PJSIP_INV_STATE_NULL;
 
 	_R2SKeepAlivePeriod = 200;
 	_R2SKeepAliveMultiplier = 10;
@@ -2028,6 +2030,8 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 	SipCall * call = (SipCall*)pjsua_call_get_user_data(call_id);
 	if (!call) return;
 
+	call->_Last_pjsip_inv_state = callInfo.state;
+
 	if (call->_Info.Type != CORESIP_CALL_IA)
 	{
 		//Los eventos de dialogo de llamada del tipo IA no se envian
@@ -2094,6 +2098,7 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 			stateInfo.radReinvite_accepted = 0;			
 			stateInfo.radRreinviteCallFlags = call->_Info.CallFlags;
 			stateInfo.remote_grs_supports_ED137C_Selcal = call->remote_grs_supports_ED137C_Selcal;
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CallStateCb %d", call_id | CORESIP_CALL_ID));
 			SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &call->_Info, &stateInfo);				
 
 			if (call->assigned_pttid != 0)
@@ -2492,6 +2497,7 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 	stateInfo.radRreinviteCallFlags = call->_Info.CallFlags;
 	stateInfo.remote_grs_supports_ED137C_Selcal = call->remote_grs_supports_ED137C_Selcal;
 
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CallStateCb %d", call_id | CORESIP_CALL_ID));
 	SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &call->_Info, &stateInfo);
 
 	if (SipAgent::UseDefaultSoundDevices != 0 && SipAgent::DefaultSndDeviceID >= 0)
@@ -2659,6 +2665,7 @@ pjsip_redirect_op SipCall::On_call_redirected(pjsua_call_id call_id, const pjsip
 			if (len > 0)
 			{
 				buf[len] = '\0';
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "MovedTemporallyCb"));
 				SipAgent::Cb.MovedTemporallyCb(call_id | CORESIP_CALL_ID, buf);
 				//calll = call_id;
 				return PJSIP_REDIRECT_PENDING;		//En este caso dejamos que el usuario ejecuta la redireccion con la funcion #pjsua_call_process_redirect
@@ -3400,6 +3407,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
 		int call2replace = replace_call_id != PJSUA_INVALID_ID ? replace_call_id | CORESIP_CALL_ID : PJSUA_INVALID_ID;
 
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CallIncomingCb %d", call_id | CORESIP_CALL_ID));
 		SipAgent::Cb.CallIncomingCb(call_id | CORESIP_CALL_ID, call2replace, &info, &inInfo);
 	}
 	else
@@ -3589,6 +3597,7 @@ void SipCall::OnMediaStateChanged(pjsua_call_id call_id, int *returned_code)
 				stateInfo.radRreinviteCallFlags = sipcall->_Info.CallFlags;
 				stateInfo.remote_grs_supports_ED137C_Selcal = sipcall->remote_grs_supports_ED137C_Selcal;
 
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CallStateCb %d", call_id | CORESIP_CALL_ID));
 				SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &sipcall->_Info, &stateInfo);
 
 				if (callInfo.remote_focus && !sipcall->_ConfInfoClientEvSub)
@@ -3948,6 +3957,7 @@ void SipCall::OnReinviteReceived(pjsua_call_id call_id, const pjsip_event* e, pj
 						stateInfo.radRreinviteCallFlags = sipcall->_Info.CallFlags;
 						stateInfo.remote_grs_supports_ED137C_Selcal = sipcall->remote_grs_supports_ED137C_Selcal;
 
+						if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CallStateCb %d", call_id | CORESIP_CALL_ID));
 						SipAgent::Cb.CallStateCb(call_id | CORESIP_CALL_ID, &sipcall->_Info, &stateInfo);
 					}
 				}
@@ -4058,6 +4068,7 @@ void SipCall::OnTransferRequest(pjsua_call_id call_id,
 			return;
 		}
 
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "TransferRequestCb %d", call_id | CORESIP_CALL_ID));
 		SipAgent::Cb.TransferRequestCb(call_id | CORESIP_CALL_ID, &old_call->_Info, &transferInfo);
 	}
 	else
@@ -4074,6 +4085,7 @@ void SipCall::OnTransferStatusChanged(pjsua_call_id based_call_id, int st_code, 
 {
 	if (SipAgent::Cb.TransferStatusCb)
 	{
+		if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "TransferStatusCb %d", based_call_id | CORESIP_CALL_ID));
 		SipAgent::Cb.TransferStatusCb(based_call_id | CORESIP_CALL_ID, st_code);
 	}
 }
@@ -4299,6 +4311,7 @@ void SipCall::OnTsxStateChanged(pjsua_call_id call_id, pjsip_transaction *tsx, p
 			int code = e->body.tsx_state.src.rdata->msg_info.msg->line.status.code;
 			if (code != PJSIP_SC_ACCEPTED)
 			{
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "TransferStatusCb %d", call_id | CORESIP_CALL_ID));
 				SipAgent::Cb.TransferStatusCb(call_id | CORESIP_CALL_ID, code);
 			}
 		}
@@ -4362,6 +4375,7 @@ if (call && dlg->local.contact->focus)
 		st = pjsua_call_get_info(call_id, &info);
 		if (st == PJ_SUCCESS && SipAgent::Cb.IncomingSubscribeConfCb)
 		{
+			if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "IncomingSubscribeConfCb call id %d", call_id | CORESIP_CALL_ID));
 			SipAgent::Cb.IncomingSubscribeConfCb(call_id | CORESIP_CALL_ID, (const char*)info.remote_info.ptr, (const int)info.remote_info.slen);
 		}
 	}
@@ -4577,6 +4591,7 @@ void SipCall::OnConfInfoClientRxNotify(pjsip_evsub *sub, pjsip_rx_data *rdata, i
 
 			if (call)
 			{
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "ConfInfoCb %d", call->_Id | CORESIP_CALL_ID));
 				SipAgent::Cb.ConfInfoCb(call->_Id | CORESIP_CALL_ID, &info, from_urich, size);
 			}
 			else
@@ -5033,6 +5048,7 @@ pj_bool_t SipCall::ProcessReceivedGenericInfo(pjsua_call_id call_id, pjsip_trans
 
 			if (SipAgent::Cb.InfoReceivedCb)
 			{
+				if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "InfoReceivedCb call id %d", call_id | CORESIP_CALL_ID));
 				SipAgent::Cb.InfoReceivedCb(call_id | CORESIP_CALL_ID, (const char*)(rdata->msg_info.msg->body->data), rdata->msg_info.msg->body->len);
 			}
 			processed = PJ_TRUE;
