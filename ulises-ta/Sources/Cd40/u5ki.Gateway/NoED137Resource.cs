@@ -293,6 +293,16 @@ namespace U5ki.Gateway
                     {
                         sirtap_params.transmiting = true;
                         SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_RESUME_ENCODING);
+
+                        //Se conecta el audio de la llamada con el rtp port
+                        if (CallId != -1)
+                        {
+                            CORESIP_Error err;
+                            if (CORESIP_BridgeLink(CallId, sirtap_params.rtp_port_id, 1, out err) != 0)
+                            {
+                                LogError<NoED137Resource>($"SIRTAP_NOED137OnRdInfo: CORESIP_BridgeLink {IdRecurso} CallId {CallId} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} : {err.Info}");
+                            }
+                        }
                     }
                 }
                 else
@@ -301,6 +311,16 @@ namespace U5ki.Gateway
                     {
                         sirtap_params.transmiting = false;
                         SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
+
+                        //Se conecta el audio de la llamada con el rtp port
+                        if (CallId != -1)
+                        {
+                            CORESIP_Error err;
+                            if (CORESIP_BridgeLink(CallId, sirtap_params.rtp_port_id, 0, out err) != 0)
+                            {
+                                LogError<NoED137Resource>($"SIRTAP_NOED137OnRdInfo: CORESIP_BridgeLink {IdRecurso} CallId {CallId} sirtap_params.rtp_port_id {sirtap_params.rtp_port_id} : {err.Info}");
+                            }
+                        }
                     }
                 }
                 
@@ -342,6 +362,13 @@ namespace U5ki.Gateway
 
             CORESIP_Error err;
 
+            //Se conecta o desconecta el audio del rtp port con la llamada
+            if (CORESIP_BridgeLink(sirtap_params.rtp_port_id, CallId, (int) pttinfo.Squ, out err) != 0)
+            {
+                LogError<NoED137Resource>($"RTPport_infoCb: CORESIP_BridgeLink {IdRecurso} pttinfo.PttType {pttinfo.PttType} {pttinfo.Squ} : {err.Info}");
+            }
+
+            //Se envia el estado del Squelch en la llamada
             if (CORESIP_CallPtt(CallId, pttinfo, out err) != 0)
             {
                 LogError<NoED137Resource>($"RTPport_infoCb: CORESIP_CallPtt {IdRecurso} pttinfo.PttType {pttinfo.PttType} {pttinfo.Squ} : {err.Info}");

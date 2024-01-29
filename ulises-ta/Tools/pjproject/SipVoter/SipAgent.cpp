@@ -3129,18 +3129,18 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 
 	case CORESIP_GENPORT_ID:
 		PJ_LOG(5, (__FILE__, "######### GRABACION BridgeLink dstType CORESIP_GENPORT_ID "));
-		if (src >= CORESIP_MAX_GENERIC_PORTS) error_src = PJ_TRUE;
-		else if (GenericPort::_Generic_Ports[src] == NULL) error_src = PJ_TRUE;
-		else if (!IsSlotValid(GenericPort::_Generic_Ports[src]->_DownStreamSlot)) error_src = PJ_TRUE;
-		else conf_dst = GenericPort::_Generic_Ports[src]->_DownStreamSlot;
+		if (dst >= CORESIP_MAX_GENERIC_PORTS) error_dst = PJ_TRUE;
+		else if (GenericPort::_Generic_Ports[dst] == NULL) error_dst = PJ_TRUE;
+		else if (!IsSlotValid(GenericPort::_Generic_Ports[dst]->_DownStreamSlot)) error_dst = PJ_TRUE;
+		else conf_dst = GenericPort::_Generic_Ports[dst]->_DownStreamSlot;
 		break;
 
 	case CORESIP_RTPPORT_ID:
 		PJ_LOG(5, (__FILE__, "######### GRABACION BridgeLink dstType CORESIP_RTPPORT_ID "));
-		if (src >= RTPport::MAX_RTP_PORTS) error_src = PJ_TRUE;
-		else if (RTPport::_RTP_Ports[src] == NULL) error_src = PJ_TRUE;
-		else if (!IsSlotValid(RTPport::_RTP_Ports[src]->_Slot)) error_src = PJ_TRUE;
-		else conf_dst = RTPport::_RTP_Ports[src]->_Slot;
+		if (dst >= RTPport::MAX_RTP_PORTS) error_dst = PJ_TRUE;
+		else if (RTPport::_RTP_Ports[dst] == NULL) error_dst = PJ_TRUE;
+		else if (!IsSlotValid(RTPport::_RTP_Ports[dst]->_Slot)) error_dst = PJ_TRUE;
+		else conf_dst = RTPport::_RTP_Ports[dst]->_Slot;
 		break;
 
 	default:
