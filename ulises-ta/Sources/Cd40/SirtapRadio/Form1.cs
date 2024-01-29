@@ -52,6 +52,17 @@ namespace SirtapRadio
                 Application.Exit();
             }
 
+            try
+            {
+                string IpAddress = ConfigurationManager.AppSettings["BindIpAddress"].ToString();
+                label_hostip.Text = IpAddress;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show($"CORESIP_Init: Fichero config incorrecto. Parece que falta el parametro BindIpAddress", "ERROR",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);                
+            }
+
             button_ConfigSet_Click(sender, e);
             generictimer.Start();
         }
@@ -136,6 +147,11 @@ namespace SirtapRadio
                 return;
             }
 
+            label_Status.Text = "STOPPED";
+            label_Transmitting.Text = "STOPPED";
+            button_SCH.Text = "SCH ON";
+            button_bucle.Text = "BUCLE ON";
+
             Agent.SirtapRd.Dispose();
             if (Agent.SirtapRd.Init(textBox_dstIP.Text, src_port, dst_port, textBox_RcvMcastIP.Text, payload) == 0)
                 label_Status.Text = "RUNNING";            
@@ -173,7 +189,6 @@ namespace SirtapRadio
             }
             else
             {
-                string error = "";
                 if (Agent.SirtapRd.Squelch(true) == 0)
                 {
                     button_SCH.Text = "SCH OFF";
@@ -186,6 +201,11 @@ namespace SirtapRadio
             Agent.SirtapRd.SetBucle(!Agent.SirtapRd.Bucle);
             if (Agent.SirtapRd.Bucle) button_bucle.Text = "BUCLE OFF";
             else button_bucle.Text = "BUCLE ON";
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

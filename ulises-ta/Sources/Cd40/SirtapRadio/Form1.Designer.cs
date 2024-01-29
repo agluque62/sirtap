@@ -40,34 +40,36 @@
             this.comboBox_PaylType = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button_ConfigSet = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
             this.label_Status = new System.Windows.Forms.Label();
+            this.button_ConfigSet = new System.Windows.Forms.Button();
             this.label_Transmitting = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.generictimer = new System.Windows.Forms.Timer(this.components);
-            this.label7 = new System.Windows.Forms.Label();
             this.button_SCH = new System.Windows.Forms.Button();
             this.button_bucle = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label_hostip = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox_dstIP
             // 
-            this.textBox_dstIP.Location = new System.Drawing.Point(147, 27);
+            this.textBox_dstIP.Location = new System.Drawing.Point(158, 98);
             this.textBox_dstIP.Name = "textBox_dstIP";
             this.textBox_dstIP.Size = new System.Drawing.Size(221, 26);
-            this.textBox_dstIP.TabIndex = 0;
+            this.textBox_dstIP.TabIndex = 2;
             // 
             // textBox_SrcPort
             // 
-            this.textBox_SrcPort.Location = new System.Drawing.Point(147, 91);
+            this.textBox_SrcPort.Location = new System.Drawing.Point(158, 130);
             this.textBox_SrcPort.Name = "textBox_SrcPort";
             this.textBox_SrcPort.Size = new System.Drawing.Size(221, 26);
             this.textBox_SrcPort.TabIndex = 3;
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(8, 27);
+            this.label1.Location = new System.Drawing.Point(11, 98);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(133, 23);
             this.label1.TabIndex = 10;
@@ -76,15 +78,16 @@
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(8, 91);
+            this.label2.Location = new System.Drawing.Point(11, 130);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(133, 23);
             this.label2.TabIndex = 13;
             this.label2.Text = "Source port  ";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(8, 123);
+            this.label3.Location = new System.Drawing.Point(11, 161);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(133, 27);
             this.label3.TabIndex = 14;
@@ -92,26 +95,26 @@
             // 
             // textBox_DstPort
             // 
-            this.textBox_DstPort.Location = new System.Drawing.Point(147, 123);
+            this.textBox_DstPort.Location = new System.Drawing.Point(158, 161);
             this.textBox_DstPort.Name = "textBox_DstPort";
             this.textBox_DstPort.Size = new System.Drawing.Size(221, 26);
             this.textBox_DstPort.TabIndex = 4;
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(8, 59);
+            this.label4.Location = new System.Drawing.Point(11, 65);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(133, 27);
+            this.label4.Size = new System.Drawing.Size(141, 27);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Rcv. multicast IP  ";
+            this.label4.Text = "Local multicast Gr";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // textBox_RcvMcastIP
             // 
-            this.textBox_RcvMcastIP.Location = new System.Drawing.Point(147, 59);
+            this.textBox_RcvMcastIP.Location = new System.Drawing.Point(158, 66);
             this.textBox_RcvMcastIP.Name = "textBox_RcvMcastIP";
             this.textBox_RcvMcastIP.Size = new System.Drawing.Size(221, 26);
-            this.textBox_RcvMcastIP.TabIndex = 2;
+            this.textBox_RcvMcastIP.TabIndex = 1;
             // 
             // comboBox_PaylType
             // 
@@ -119,7 +122,7 @@
             this.comboBox_PaylType.Items.AddRange(new object[] {
             "PCMA",
             "PCMU"});
-            this.comboBox_PaylType.Location = new System.Drawing.Point(147, 155);
+            this.comboBox_PaylType.Location = new System.Drawing.Point(158, 193);
             this.comboBox_PaylType.Name = "comboBox_PaylType";
             this.comboBox_PaylType.Size = new System.Drawing.Size(221, 28);
             this.comboBox_PaylType.TabIndex = 5;
@@ -127,7 +130,7 @@
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(8, 155);
+            this.label5.Location = new System.Drawing.Point(11, 194);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(133, 27);
             this.label5.TabIndex = 15;
@@ -135,6 +138,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label_hostip);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label_Status);
             this.groupBox1.Controls.Add(this.button_ConfigSet);
@@ -151,10 +156,29 @@
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(579, 202);
+            this.groupBox1.Size = new System.Drawing.Size(579, 228);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "CONFIGURATION";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(420, 97);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(107, 20);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Simul. Status:";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
+            // 
+            // label_Status
+            // 
+            this.label_Status.AutoSize = true;
+            this.label_Status.Location = new System.Drawing.Point(420, 130);
+            this.label_Status.Name = "label_Status";
+            this.label_Status.Size = new System.Drawing.Size(84, 20);
+            this.label_Status.TabIndex = 16;
+            this.label_Status.Text = "STOPPED";
             // 
             // button_ConfigSet
             // 
@@ -166,22 +190,13 @@
             this.button_ConfigSet.UseVisualStyleBackColor = true;
             this.button_ConfigSet.Click += new System.EventHandler(this.button_ConfigSet_Click);
             // 
-            // label_Status
-            // 
-            this.label_Status.AutoSize = true;
-            this.label_Status.Location = new System.Drawing.Point(420, 130);
-            this.label_Status.Name = "label_Status";
-            this.label_Status.Size = new System.Drawing.Size(84, 20);
-            this.label_Status.TabIndex = 16;
-            this.label_Status.Text = "STOPPED";
-            // 
             // label_Transmitting
             // 
             this.label_Transmitting.AutoSize = true;
             this.label_Transmitting.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Transmitting.Location = new System.Drawing.Point(143, 230);
+            this.label_Transmitting.Location = new System.Drawing.Point(143, 256);
             this.label_Transmitting.Name = "label_Transmitting";
-            this.label_Transmitting.Size = new System.Drawing.Size(137, 30);
+            this.label_Transmitting.Size = new System.Drawing.Size(91, 20);
             this.label_Transmitting.TabIndex = 11;
             this.label_Transmitting.Text = "STOPPED";
             this.label_Transmitting.Click += new System.EventHandler(this.label_Transmitting_Click);
@@ -189,7 +204,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 230);
+            this.label6.Location = new System.Drawing.Point(12, 256);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(125, 20);
             this.label6.TabIndex = 12;
@@ -200,19 +215,9 @@
             this.generictimer.Interval = 50;
             this.generictimer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(420, 97);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(161, 30);
-            this.label7.TabIndex = 17;
-            this.label7.Text = "Simul. Status:";
-            this.label7.Click += new System.EventHandler(this.label7_Click);
-            // 
             // button_SCH
             // 
-            this.button_SCH.Location = new System.Drawing.Point(16, 263);
+            this.button_SCH.Location = new System.Drawing.Point(16, 308);
             this.button_SCH.Name = "button_SCH";
             this.button_SCH.Size = new System.Drawing.Size(140, 58);
             this.button_SCH.TabIndex = 13;
@@ -222,7 +227,7 @@
             // 
             // button_bucle
             // 
-            this.button_bucle.Location = new System.Drawing.Point(199, 263);
+            this.button_bucle.Location = new System.Drawing.Point(198, 308);
             this.button_bucle.Name = "button_bucle";
             this.button_bucle.Size = new System.Drawing.Size(131, 58);
             this.button_bucle.TabIndex = 14;
@@ -230,11 +235,29 @@
             this.button_bucle.UseVisualStyleBackColor = true;
             this.button_bucle.Click += new System.EventHandler(this.button_bucle_Click);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(11, 27);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(99, 30);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Local IP";
+            // 
+            // label_hostip
+            // 
+            this.label_hostip.AutoSize = true;
+            this.label_hostip.Location = new System.Drawing.Point(154, 27);
+            this.label_hostip.Name = "label_hostip";
+            this.label_hostip.Size = new System.Drawing.Size(57, 20);
+            this.label_hostip.TabIndex = 19;
+            this.label_hostip.Text = "0.0.0.0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(611, 340);
+            this.ClientSize = new System.Drawing.Size(694, 404);
             this.Controls.Add(this.button_bucle);
             this.Controls.Add(this.button_SCH);
             this.Controls.Add(this.label6);
@@ -272,6 +295,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button_SCH;
         private System.Windows.Forms.Button button_bucle;
+        private System.Windows.Forms.Label label_hostip;
+        private System.Windows.Forms.Label label8;
     }
 }
 

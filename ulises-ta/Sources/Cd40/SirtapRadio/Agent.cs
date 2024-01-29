@@ -37,7 +37,7 @@ namespace SirtapRadio
                 param = "DefaultCodec";
                 ua_cfg.DefaultCodec = ConfigurationManager.AppSettings["DefaultCodec"].ToString();
             }
-            catch (Exception e) {
+            catch (Exception) {
                 MessageBox.Show($"CORESIP_Init: Fichero config incorrecto. Parece que falta el parametro {param}. La aplicacion se cerrara", "ERROR",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -1;
@@ -128,7 +128,7 @@ namespace SirtapRadio
                     System.IO.File.Move(_Path0, _Path1);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Handle
             }
@@ -143,7 +143,7 @@ namespace SirtapRadio
                 w.Write("\t");
                 w.WriteLine(" {0}", msg);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Handle
             }
