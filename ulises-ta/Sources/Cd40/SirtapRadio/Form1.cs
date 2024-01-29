@@ -77,7 +77,6 @@ namespace SirtapRadio
 
         private void button_ConfigSet_Click(object sender, EventArgs e)
         {
-            label_Status.Text = "RUNNING";
             IPAddress ipaddress;
             if (!System.Net.IPAddress.TryParse(textBox_dstIP.Text, out ipaddress))
             {
@@ -137,22 +136,9 @@ namespace SirtapRadio
                 return;
             }
 
-            string error;
-            int ret = Agent.SirtapRd.Dispose(out error);
-            if (ret != 0)
-            {
-                MessageBox.Show("Configuring: Previous config cannot be disposed");
-                return;
-            }
-
-            ret = Agent.SirtapRd.Init(textBox_dstIP.Text, src_port, dst_port, textBox_RcvMcastIP.Text, payload, out error);
-            if (ret != 0)
-            {
-                MessageBox.Show("Configuring: Radio cannot be initialized");
-                return;
-            }
-
-            label_Status.Text = "RUNNING";
+            Agent.SirtapRd.Dispose();
+            if (Agent.SirtapRd.Init(textBox_dstIP.Text, src_port, dst_port, textBox_RcvMcastIP.Text, payload) == 0)
+                label_Status.Text = "RUNNING";            
         }
 
         private void label_Transmitting_Click(object sender, EventArgs e)
@@ -176,7 +162,7 @@ namespace SirtapRadio
             if (Agent.SirtapRd.SQUELCH_activado)
             {
                 string error = "";
-                if (Agent.SirtapRd.Squelch(false, out error) != 0)
+                if (Agent.SirtapRd.Squelch(false) != 0)
                 {
                     MessageBox.Show(error);
                 }
@@ -188,11 +174,7 @@ namespace SirtapRadio
             else
             {
                 string error = "";
-                if (Agent.SirtapRd.Squelch(true, out error) != 0)
-                {
-                    MessageBox.Show(error);
-                }
-                else
+                if (Agent.SirtapRd.Squelch(true) == 0)
                 {
                     button_SCH.Text = "SCH OFF";
                 }

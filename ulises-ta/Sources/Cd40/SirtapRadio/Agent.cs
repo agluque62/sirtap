@@ -16,6 +16,7 @@ namespace SirtapRadio
     {        
         public static SirtapRadio SirtapRd = new SirtapRadio();
         private static bool CoresipInitiated = false;
+        private static CORESIP_Callbacks CoresipCallbacks = new CORESIP_Callbacks();
 
         public static int Init()
         {
@@ -58,9 +59,7 @@ namespace SirtapRadio
             ua_cfg.RecordingEd137 = 0;
             ua_cfg.max_calls = 8;
             ua_cfg.Radio_UA = 0;
-            ua_cfg.UseDefaultSoundDevices = 0;
-
-            CORESIP_Callbacks CoresipCallbacks = new CORESIP_Callbacks();
+            ua_cfg.UseDefaultSoundDevices = 0;            
 
             CoresipCallbacks.OnLog = LogCb;
             CoresipCallbacks.OnRTPport_info = RTPport_infoCb;
