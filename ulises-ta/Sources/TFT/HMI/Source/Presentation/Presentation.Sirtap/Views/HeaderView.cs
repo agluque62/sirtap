@@ -66,6 +66,11 @@ namespace HMI.Presentation.Sirtap.Views
             get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
 
+        private bool _AAlarmaEnabled
+        {
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
+        }
+
         private string _Info // Miguel
         {
             get { return Resources.INF; }
@@ -206,6 +211,8 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 _BuzzerUDB.Level = _StateManager.Buzzer.Level;
                 _BuzzerUDB.Enabled = _BuzzerEnabled;
+                _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
+                _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
             }
             else
             {
@@ -216,6 +223,8 @@ namespace HMI.Presentation.Sirtap.Views
                 // this._BuzzerUDB.UpImage = CambiarTamanoImagen(_StateManager.Title.Buzzermas, new System.Drawing.Size(_StateManager.Title.WidthJaks, _StateManager.Title.HeightLogo));
                 _BuzzerUDB.Level = _StateManager.Buzzer.Level;
                 _BuzzerUDB.Enabled = _BuzzerEnabled;
+                _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
+                _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
                 _BuzzerUDB.setColor(VisualStyle.cccmnProgressBar);
             }
 
@@ -251,6 +260,7 @@ namespace HMI.Presentation.Sirtap.Views
             _InfoBT.Enabled = _InfoEnabled;
             _BrightnessUDB.Visible = _BrightnessEnabled;
             _BuzzerUDB.Enabled = _BuzzerEnabled;
+            _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
             _TitleBT.DrawX = !_StateManager.Engine.Operative;
             if (sender.GetType() == typeof(Engine))
             {

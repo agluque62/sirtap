@@ -28,7 +28,7 @@ namespace HMI.Model.Module.BusinessEntities
 				{
 					_Level = value;
 
-					Settings.Default.BuzzerLevel = value;
+					Settings.Default.AAlarmaLevel = value;
 					Settings.Default.Save();
 
 					General.SafeLaunchEvent(AlarmaLevelChanged, this);
@@ -45,8 +45,8 @@ namespace HMI.Model.Module.BusinessEntities
 				{
 					_Enabled = value;
 
-					//Settings.Default.BuzzerEnabled = value;
-					//Settings.Default.Save();
+					Settings.Default.AALarmaEnabled= value;
+					Settings.Default.Save();
 
 					General.SafeLaunchEvent(AlarmaStateChanged, this);
 				}

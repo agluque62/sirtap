@@ -867,7 +867,6 @@ namespace HMI.Model.Module.Services
 					if (_StateManager.Buzzer.Enabled)
 					{
 						_EngineCmdManager.SetBuzzerLevel(_StateManager.Buzzer.Level);
-						_EngineCmdManager.SetAlarmLevel(_StateManager.AltavozAlarmas.Level);
 					}
 
 					_EngineCmdManager.SetRdHeadPhonesLevel(_StateManager.RdHeadPhones.Level);
@@ -883,6 +882,11 @@ namespace HMI.Model.Module.Services
                     if (_StateManager.Radio.DoubleRadioSpeaker)
                         _EngineCmdManager.SetDoubleRadioSpeaker();
 					_EngineCmdManager.SetSesionSirtap(_StateManager.TftMisionInstance.Mision);
+					_EngineCmdManager.SetAlarmState(_StateManager.AltavozAlarmas.Enabled);
+					if (_StateManager.AltavozAlarmas.Enabled)
+					{
+						_EngineCmdManager.SetAlarmLevel(_StateManager.AltavozAlarmas.Level);
+					}
 				}
 			}
 			else
