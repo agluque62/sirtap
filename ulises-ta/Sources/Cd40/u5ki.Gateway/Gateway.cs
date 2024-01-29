@@ -17,6 +17,7 @@ namespace U5ki.Gateway
     {
         public string Name { get; set; }
         public ServiceStatus Status { get; set; }
+        private static ServiceStatus privStatus { get; set; }
         public bool Master { get; set; }
 
         private static Registry GatewayRegistry = null;
@@ -29,6 +30,7 @@ namespace U5ki.Gateway
         {
             Name = "Gateway";
             Status = ServiceStatus.Stopped;
+            privStatus = ServiceStatus.Stopped;
             Master = false;
         }
 
@@ -41,7 +43,8 @@ namespace U5ki.Gateway
             try
             {
                 mut = new Mutex();
-                InitRegistry();                
+                InitRegistry();
+                privStatus = ServiceStatus.Running;
             }
             catch (Exception ex)
             {
@@ -53,6 +56,7 @@ namespace U5ki.Gateway
         public void Stop()
         {
             LogInfo<Gateway>("Finalizando Servicio ...");
+            privStatus = ServiceStatus.Stopped;
             Status = ServiceStatus.Stopped;
             SipAgent.RTPport_info -= RTPport_infoCb;
             Thread.Sleep(1000);            
@@ -326,6 +330,8 @@ namespace U5ki.Gateway
 
         public static void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
+            if (privStatus != ServiceStatus.Running) return;
+
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return;            
 
@@ -339,6 +345,8 @@ namespace U5ki.Gateway
 
         public static void NOED137OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
         {
+            if (privStatus != ServiceStatus.Running) return;
+
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return;
 
@@ -359,6 +367,8 @@ namespace U5ki.Gateway
 
         public static bool NOED137OnKaTimeout(int call)
         {
+            if (privStatus != ServiceStatus.Running) return false;
+
             bool found = false;
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return found;
@@ -379,6 +389,8 @@ namespace U5ki.Gateway
 
         public static bool NOED137OnRdInfo(int call, CORESIP_RdInfo info)
         {
+            if (privStatus != ServiceStatus.Running) return false;
+
             bool found = false;
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return found;
@@ -400,6 +412,8 @@ namespace U5ki.Gateway
 
         private void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
+            if (privStatus != ServiceStatus.Running) return;
+
             bool retmut = mut.WaitOne(10000);
             if (retmut == false) return;
 
