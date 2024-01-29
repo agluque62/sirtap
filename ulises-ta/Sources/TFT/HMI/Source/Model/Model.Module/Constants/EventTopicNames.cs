@@ -30,6 +30,8 @@ namespace HMI.Model.Module.Constants
 		public const string BrightnessLevelChanged = "BrightnessLevelChanged";
 		public const string BuzzerLevelChanged = "BuzzerLevelChanged";
 		public const string BuzzerStateChanged = "BuzzerStateChanged";
+		public const string AlarmaLevelChanged = "AlarmaLevelChanged";
+		public const string AlarmaStateChanged = "AlarmaStateChanged";
 		public const string ActiveScvChanged = "ActiveScvChanged";
         public const string ProxyPresent = "ProxyPresent";
         public const string RdHfSpeakerLevelChanged = "RdHfSpeakerLevelChanged";
@@ -39,6 +41,7 @@ namespace HMI.Model.Module.Constants
 		public const string RtxChanged = "RtxChanged";
 		public const string RadioChanged = "RadioChanged";
 		public const string RdPageChanged = "RdPageChanged";
+		public const string RdPageClear = "RdPageClear";
 		public const string LcChanged = "LcChanged";
 		public const string TlfChanged = "TlfChanged";
 		public const string LcSpeakerLevelChanged = "LcSpeakerLevelChanged";
@@ -76,6 +79,8 @@ namespace HMI.Model.Module.Constants
 		public const string TempReplayChanged = "TempReplayChanged";
 		public const string CouplingInProgressError = "CouplingInProgressError";
 		public const string MessageLogin= "MessageLogin";
+		public const string TftMisionChanged = "TftMisionChanged";
+		public const string TftMisionChangedf2 = "TftMisionChangedf2";
 		#endregion
 
 		#region Presentation Events
@@ -118,6 +123,8 @@ namespace HMI.Model.Module.Constants
         public const string SpeakerExtStateEngine = "SpeakerExtStateEngine";
         public const string BuzzerStateEngine = "BuzzerStateEngine";
 		public const string BuzzerLevelEngine = "BuzzerLevelEngine";
+		public const string AlarmStateEngine = "AlarmStateEngine";
+		public const string AlarmLevelEngine = "AlarmLevelEngine";
 		public const string TlfInfoEngine = "TlfInfoEngine";
 		public const string TlfPositionsEngine = "TlfPositionsEngine";
 		public const string TlfPosStateEngine = "TlfPosStateEngine";
@@ -191,6 +198,7 @@ namespace HMI.Model.Module.Constants
 		//230228
 		//public const string RdListaFrecuencias = "RdListaFrecuencias";
 		public const string FuerzoLogout = "FuerzoLogout";
+		public const string TftMisionSetEngine = "TftMisionSetEngine";
 #endregion
-    }
+	}
 }

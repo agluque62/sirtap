@@ -75,6 +75,12 @@ namespace HMI.CD40.Module.Services
         [EventPublication(EventTopicNames.BuzzerLevelEngine, PublicationScope.Global)]
         public event EventHandler<LevelMsg<Buzzer>> BuzzerLevelEngine;
 
+        [EventPublication(EventTopicNames.AlarmLevelEngine, PublicationScope.Global)]
+        public event EventHandler<LevelMsg<AltavozAlarmas>> AlarmLevelEngine;
+
+        [EventPublication(EventTopicNames.AlarmStateEngine, PublicationScope.Global)]
+        public event EventHandler<StateMsg<bool>> AlarmStateEngine;
+
         [EventPublication(EventTopicNames.TlfInfoEngine, PublicationScope.Global)]
         public event EventHandler<RangeMsg<TlfInfo>> TlfInfoEngine;
 
@@ -239,6 +245,12 @@ namespace HMI.CD40.Module.Services
 
         [EventPublication(EventTopicNames.FuerzoLogout, PublicationScope.Global)]
         public event EventHandler FuerzoLogout;
+
+        [EventPublication(EventTopicNames.TftMisionChanged, PublicationScope.Global)]
+        public event EventHandler<StateMsg<string>> TftMisionChanged;
+
+        [EventPublication(EventTopicNames.TftMisionChangedf2, PublicationScope.Global)]
+        public event EventHandler<StateMsg<TftMision>> TftMisionChangedf2;
 
         #endregion
 
@@ -547,6 +559,22 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+        public void SetAlarmState(bool enabled)
+        {
+            Top.WorkingThread.Enqueue("SetAlarmState", delegate ()
+            {
+                // Aqui hya eque enlazar con el dispositivo de audio correspondiente
+                Console.WriteLine("Aqui hay que enlazar con el dispositivo de audio correspondiente");
+                //if (Top.Mixer.SetBuzzerState(enabled))
+                {
+                    Top.PublisherThread.Enqueue(EventTopicNames.AlarmStateEngine, delegate ()
+                    {
+                        General.SafeLaunchEvent(AlarmStateEngine, this, new StateMsg<bool>(enabled));
+                    });
+                }
+            });
+        }
+
         public void SetBuzzerLevel(int level)
         {
             Top.WorkingThread.Enqueue("SetBuzzerLevel", delegate ()
@@ -556,6 +584,22 @@ namespace HMI.CD40.Module.Services
                     Top.PublisherThread.Enqueue(EventTopicNames.BuzzerLevelEngine, delegate ()
                     {
                         General.SafeLaunchEvent(BuzzerLevelEngine, this, new LevelMsg<Buzzer>(level));
+                    });
+                }
+            });
+        }
+
+        public void SetAlarmLevel(int level)
+        {
+            Top.WorkingThread.Enqueue("SetAlarmLevel", delegate ()
+            {
+                // Aqui hya eque enlazar con el dispositivo de audio correspondiente
+                Console.WriteLine("Aqui hay que enlazar con el dispositivo de audio correspondiente");
+                //if (Top.Mixer.SetBuzzerLevel(level))
+                {
+                    Top.PublisherThread.Enqueue(EventTopicNames.AlarmLevelEngine, delegate ()
+                    {
+                        General.SafeLaunchEvent(AlarmLevelEngine, this, new LevelMsg<AltavozAlarmas>(level));
                     });
                 }
             });
@@ -811,6 +855,40 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+        public void SetSesionSirtap(string sesion)
+        {
+            //Top.WorkingThread.Enqueue("SetTlfHeadPhonesLevel", delegate ()
+            //{
+            //    if (Top.Mixer.SetTlfHeadPhonesLevel(level))
+            //    {
+            //        Top.PublisherThread.Enqueue(EventTopicNames.TlfHeadPhonesLevelEngine, delegate ()
+            //        {
+            //            General.SafeLaunchEvent(TlfHeadPhonesLevelEngine, this, new LevelMsg<TlfHeadPhones>(level));
+            //        });
+            //    }
+            //});
+        }
+        public void SolicitaLoginPassword(string txtUsuario, string txtContrasena)
+        {
+            Top.WorkingThread.Enqueue("SolicitaLoginPassword", delegate ()
+            {
+                IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
+                //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
+                var mision = ValidadorCredenciales.Login(txtUsuario, txtContrasena);
+                SetSesionSirtap(mision.Result);
+                General.SafeLaunchEvent(TftMisionChanged ,this, new StateMsg<string> (mision.Result));
+                //if (Top.Mixer.SetTlfHeadPhonesLevel(level))
+                //{
+                //    Top.PublisherThread.Enqueue(EventTopicNames.TlfHeadPhonesLevelEngine, delegate ()
+                //    {
+                //        General.SafeLaunchEvent(TlfHeadPhonesLevelEngine, this, new LevelMsg<TlfHeadPhones>(level));
+                //    });
+                //}
+                Top.Cfg.SetUserClave(txtUsuario, txtContrasena, mision.Result);
+            });
+            
+
+        }
         public void SetTlfSpeakerLevel(int level)
         {
             Top.WorkingThread.Enqueue("SetTlfSpeakerLevel", delegate ()
@@ -1719,10 +1797,10 @@ namespace HMI.CD40.Module.Services
             //	});
             //}
 
-
+            //230124 no fuerzo logout
             Top.PublisherThread.Enqueue(EventTopicNames.FuerzoLogout, delegate ()
             {
-                General.SafeLaunchEvent(FuerzoLogout,this);
+                ;// General.SafeLaunchEvent(FuerzoLogout,this);
             });
         }
 
@@ -2745,7 +2823,7 @@ namespace HMI.CD40.Module.Services
         }
 
 
-
+        // Envia trap a historicos
         public void GenerarHistoricoLoginIncorrectoEngine(string nombre, string error)
         {
             HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
@@ -2754,13 +2832,20 @@ namespace HMI.CD40.Module.Services
             });
         }
 
+
+        // Envia trap a historicos
         public void EnviarLoginCorrectoEngine(string nombre, string error)
         {
             HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SendLoginTrap", delegate ()
             {
-                //SnmpStringObject a=new snmpobject();
-                //a.Loginuser = nombre;
                 Top.Rd.EnviarLoginOk(nombre);
+            });
+        }
+        public void SetUserClave(string nombre, string clave)
+        {
+            HMI.CD40.Module.BusinessEntities.Top.WorkingThread.Enqueue("SetUserClave", delegate ()
+            {
+                Top.Cfg.SetUserClave(nombre, clave);
             });
         }
         /**

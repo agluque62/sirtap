@@ -37,7 +37,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Interop;
 using Utilities;
-
+using System.Linq;
 
 
 namespace HMI.Presentation.Sirtap.Views
@@ -86,35 +86,88 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _TlfTLP_Paint(object sender, PaintEventArgs e)
         {
-            if ((_StateManager.Tft.Login == false) || (_StateManager.Tft.Mision == ""))
+            if ((_StateManager.Tft.Login == false) || (_StateManager.TftMisionInstance.Mision== ""))
                 _StateManager.Tft.SetLogin(false);
 
         }
 
-        private void _TlfPageBT_DownClick(object sender)
-        {
-            bool up = false;
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
-            int actualPage = _TlfPageBT.Page;
-            if (actualPage < numero_paginas_tlf-2)
-                _TlfPageBT.Page = actualPage + 1;
-            else
-                _TlfPageBT.Page = 0;
-            actualPage = _TlfPageBT.Page;
-            _CmdManager.TlfLoadDaPage(actualPage);
-        }
-
         private void _TlfPageBT_UpClick(object sender)
         {
-            bool up = true;
-            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 6+1;// Radio.GetNumberOfPagesRd();
+            bool up = false;
+            //int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 5+1;// Radio.GetNumberOfPagesRd();
+            int n = _StateManager.TftMisionInstance.Pagtlf.Count;
+            int numero_pagina_mas_alto = _StateManager.TftMisionInstance.numero_pagina_mas_alto_tlf();
+
+            int numero_paginas_tlf = numero_pagina_mas_alto;
             int actualPage = _TlfPageBT.Page;
-            if (actualPage == 0)
-                _TlfPageBT.Page = numero_paginas_tlf - 2;
-            else
-                _TlfPageBT.Page = actualPage - 1;
+            //if (actualPage < numero_paginas_tlf-2)
+            //    _TlfPageBT.Page = actualPage + 1;
+            //else
+            //    _TlfPageBT.Page = 0;
             actualPage = _TlfPageBT.Page;
-            _CmdManager.TlfLoadDaPage(actualPage);
+            actualPage = BuscarPagina(actualPage);
+            if (actualPage==-1)
+                actualPage = BuscarPagina(-1);
+            if (actualPage == -1)
+                ;//no presentar nada.
+            _TlfPageBT.Page = actualPage;//control.
+            _TlfPageBT.OrderPage = _StateManager.TftMisionInstance.ordenpaginatlf(_TlfPageBT.Page);
+            if (actualPage >= 0)
+            {
+                _CmdManager.TlfLoadDaPage(actualPage);
+            }
+        }
+
+
+        private int BuscarPagina(int actualPage,bool inferior=false)
+        {
+            //int numero_pagina_mas_alto = _StateManager.TftMisionInstance.Pagtlf[_StateManager.TftMision.Pagtlf.Count - 1].Item1;
+            int numero_pagina_mas_alto = _StateManager.TftMisionInstance.numero_pagina_mas_alto_tlf();
+
+            int numero_paginas_tlf = numero_pagina_mas_alto;
+            List< (int, bool)> _pagtlf = _StateManager.TftMisionInstance.Pagtlf;
+            int? primeraPaginaSuperior;
+            if (!inferior)
+                primeraPaginaSuperior= _pagtlf
+                .Where(p => p.Item1 > actualPage)
+                .Select(p => (int?)p.Item1)
+                .FirstOrDefault();
+            else
+                primeraPaginaSuperior = _pagtlf
+                .Where(p => p.Item1 < actualPage)
+                .Select(p => (int?)p.Item1)
+                .LastOrDefault();
+
+            if (!primeraPaginaSuperior.HasValue)
+            {
+                if (!inferior)
+                    primeraPaginaSuperior = -1;
+                else
+                    primeraPaginaSuperior = numero_paginas_tlf;
+            }
+            return (int)primeraPaginaSuperior;
+        }
+        private void _TlfPageBT_DownClick(object sender)
+        {
+            bool up = true;
+            int numero_paginas_tlf = _StateManager.Tlf.GetNumDestinations() / 5+1;// Radio.GetNumberOfPagesRd();
+            int actualPage = _TlfPageBT.Page;
+            //if (actualPage == 0)
+            //    _TlfPageBT.Page = numero_paginas_tlf - 2;
+            //else
+            //    _TlfPageBT.Page = actualPage - 1;
+            //actualPage = _TlfPageBT.Page;
+            //actualPage = BuscarPagina(actualPage);
+            actualPage = BuscarPagina(actualPage,true);
+            _TlfPageBT.Page = actualPage;
+            _TlfPageBT.OrderPage = _StateManager.TftMisionInstance.ordenpaginatlf(_TlfPageBT.Page);
+            if (actualPage == numero_paginas_tlf)
+                actualPage = BuscarPagina(numero_paginas_tlf,true);
+            if (actualPage == -1)
+                ;//no presentar nada.
+
+            if (actualPage >= 0)
+                _CmdManager.TlfLoadDaPage(actualPage);
 
         }
 
@@ -156,9 +209,16 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void hmiButtonlogin_Click(object sender, EventArgs e)
         {
+            _CmdManager.CancelTlfClick();//Cuelga telefonia
+            _CmdManager.CancelTlfClick();//Quita memorizadas.
+            _CmdManager.RdSwitchRxState(2, true);
+            
             if (_StateManager.Tft.Login)
             {
+                _StateManager.TftMisionInstance.Mision =null;// adelanto esto.
+
                 _StateManager.Tft.Login = false;
+                //_CmdManager.TlfLoadDaPage(-1);
             }
             else
             {
@@ -168,12 +228,17 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 hmiButtonLogin.Text = "LOGOUT";
                 hmiButtonLogin.Update();
+
             }
             else
             {
                 MostrarDialogoLogin();
-                MostrarModo();
+                MostrarModo(sender);
             }
+            // De mometo para refrescar la pagina
+            // paso a la siguiente.
+            //_TlfPageBT_UpClick(sender);
+            //_CmdManager.RdLoadPageSirtap(0, 0, 6);
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
@@ -181,10 +246,20 @@ namespace HMI.Presentation.Sirtap.Views
         public void OnMessageLogin(object sender, EventArgs e)
         {
             if (_StateManager.Tft.Login)
+            {
                 hmiButtonLogin.Text = "LOGOUT";
+            }
         }
         public void MostrarDialogoLogin()
         {
+            this.tableLayoutPanel1.Visible = _StateManager.Tft.Login;
+            _CmdManager.CancelTlfClick();//Cuelga telefonia
+            // quitar actividad en linea caliente.
+            foreach (LcDst dst in _StateManager.Lc.Destinations)
+                dst.ResetNot();
+
+            _CmdManager.TftSolicitaSesion("", "");
+
             if (dlg==null) 
                 dlg = new loginform();
             if (dlg.Visible)
@@ -192,15 +267,25 @@ namespace HMI.Presentation.Sirtap.Views
             dlg.setuploginform(_CmdManager, _StateManager);
             DialogResult result = dlg.ShowDialog();
             //dlg.Show();
+            this.tableLayoutPanel1.Visible = _StateManager.Tft.Login;
 
         }
 
         [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         public void OnLoginChanged(object sender, EventArgs e)
         {
-            MostrarModo();
-            if ((_StateManager.Tft.Login==false) || (_StateManager.Tft.Mision == ""))
+            if (sender is HMI.Model.Module.BusinessEntities.Tft)
+            {
+                HMI.Model.Module.BusinessEntities.Tft tftObject = (HMI.Model.Module.BusinessEntities.Tft)sender;
+
+
+                MostrarModo(sender, tftObject.Login);
+            }
+            if ((_StateManager.Tft.Login==false) || (_StateManager.TftMisionInstance.Mision == ""))
+            {
+                _StateManager.TftMisionInstance.Mision = null;
                 MostrarDialogoLogin();
+            }
         }
         private void ChangeColors()
         {
@@ -209,12 +294,40 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+
+        private void tlfloadpagsirtap()
+        {
+            int primera_pagina = 0;
+            int sc = 1;
+            if (_StateManager.TftMisionInstance.Pagtlf.Count > 0)
+                primera_pagina = _StateManager.TftMisionInstance.Pagtlf[0].Item1;
+            int npr = _StateManager.TftMisionInstance.Pagtlf.Count;
+            if (npr > 0)
+                sc = _StateManager.TftMisionInstance.Pagtlf[npr - 1].Item1;
+
+            if (_StateManager.TftMisionInstance.Mision != null)
+            {
+                if (sc>=0)
+                    _CmdManager.TlfLoadDaPage(sc);
+                if (primera_pagina>=0)
+                    _CmdManager.TlfLoadDaPage(primera_pagina);
+            }
+            if (_StateManager.Tft.Login)
+            {
+                if (primera_pagina >= 0)
+                {
+                    _CmdManager.TlfLoadDaPage(primera_pagina);
+                }
+            }
+        }
+        private void MostrarModo(object sender,bool login=false)
         {
             ChangeColors();
+            if (login)
+            {
+                tlfloadpagsirtap();
+            }
         }
-
-
     }
 }
 

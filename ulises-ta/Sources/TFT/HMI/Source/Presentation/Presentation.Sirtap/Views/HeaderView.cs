@@ -66,6 +66,11 @@ namespace HMI.Presentation.Sirtap.Views
             get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
         }
 
+        private bool _AAlarmaEnabled
+        {
+            get { return _StateManager.Tft.Enabled && _StateManager.Engine.Operative && _StateManager.Tft.Login; }
+        }
+
         private string _Info // Miguel
         {
             get { return Resources.INF; }
@@ -114,9 +119,9 @@ namespace HMI.Presentation.Sirtap.Views
 
             //_TitleBT.BackgroundImage = _StateManager.Title.Logo;
             if (!VisualStyle.ModoNocturno)
-                _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.Logo, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightJacks));
+                ;// _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.Logo, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightJacks));
             else
-                _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.LogoMn, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightLogo));
+                ;// _TitleBT.ImageNormal = CambiarTamanoImagen(_StateManager.Title.LogoMn, new System.Drawing.Size(_StateManager.Title.WidthLogo, _StateManager.Title.HeightLogo));
             _TitleBT.Text = _StateManager.Title.Id;
             _TitleBT.DrawX = !_StateManager.Engine.Operative;
             //LALM 210212 Cambio colores del bitmap de AENA.
@@ -206,6 +211,8 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 _BuzzerUDB.Level = _StateManager.Buzzer.Level;
                 _BuzzerUDB.Enabled = _BuzzerEnabled;
+                _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
+                _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
             }
             else
             {
@@ -216,6 +223,8 @@ namespace HMI.Presentation.Sirtap.Views
                 // this._BuzzerUDB.UpImage = CambiarTamanoImagen(_StateManager.Title.Buzzermas, new System.Drawing.Size(_StateManager.Title.WidthJaks, _StateManager.Title.HeightLogo));
                 _BuzzerUDB.Level = _StateManager.Buzzer.Level;
                 _BuzzerUDB.Enabled = _BuzzerEnabled;
+                _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
+                _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
                 _BuzzerUDB.setColor(VisualStyle.cccmnProgressBar);
             }
 
@@ -251,6 +260,7 @@ namespace HMI.Presentation.Sirtap.Views
             _InfoBT.Enabled = _InfoEnabled;
             _BrightnessUDB.Visible = _BrightnessEnabled;
             _BuzzerUDB.Enabled = _BuzzerEnabled;
+            _AltavozAlarmasUDB.Enabled = _AAlarmaEnabled;
             _TitleBT.DrawX = !_StateManager.Engine.Operative;
             if (sender.GetType() == typeof(Engine))
             {
@@ -260,7 +270,7 @@ namespace HMI.Presentation.Sirtap.Views
             if (_StateManager.Tft.Login)
             {
 
-                MisionText.Text = _StateManager.Tft.Mision;
+                MisionText.Text = _StateManager.TftMisionInstance.Mision;
                 _TitleBT.Text = MisionText.Text;
             }
             else
@@ -454,10 +464,21 @@ namespace HMI.Presentation.Sirtap.Views
             _BuzzerUDB.DrawX = !_StateManager.Buzzer.Enabled;
         }
 
+        [EventSubscription(EventTopicNames.AlarmaStateChanged, ThreadOption.Publisher)]
+        public void OnAlarmaStateChanged(object sender, EventArgs e)
+        {
+            _AltavozAlarmasUDB.DrawX = !_StateManager.AltavozAlarmas.Enabled;
+        }
+
         [EventSubscription(EventTopicNames.BuzzerLevelChanged, ThreadOption.Publisher)]
         public void OnBuzzerLevelChanged(object sender, EventArgs e)
         {
             _BuzzerUDB.Level = _StateManager.Buzzer.Level;
+        }
+        [EventSubscription(EventTopicNames.AlarmaLevelChanged, ThreadOption.Publisher)]
+        public void OnAlarmLevelChanged(object sender, EventArgs e)
+        {
+            _AltavozAlarmasUDB.Level = _StateManager.AltavozAlarmas.Level;
         }
 
         [EventSubscription(EventTopicNames.TlfChanged, ThreadOption.Publisher)]
@@ -726,6 +747,52 @@ namespace HMI.Presentation.Sirtap.Views
             {
                 return _CmdManager;
             }
+        }
+
+        private void _AltavozAlarmasUDB_LevelDown(object sender, EventArgs e)
+        {
+            int level = _AltavozAlarmasUDB.Level - 1;
+
+            try
+            {
+                _CmdManager.SetAlarmLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR bajando el nivel de alarma a " + level, ex);
+            }
+
+        }
+
+        private void _AltavozAlarmasUDB_LevelUp(object sender, EventArgs e)
+        {
+            int level = _AltavozAlarmasUDB.Level + 1;
+
+            try
+            {
+                _CmdManager.SetAlarmLevel(level);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error("ERROR subiendo el nivel de alarma a " + level, ex);
+            }
+
+        }
+
+        private void _AltavozAlarmasUDB_LongClick(object sender, EventArgs e)
+        {
+            bool enabled = !_StateManager.AltavozAlarmas.Enabled;
+
+            try
+            {
+                _CmdManager.SetAlarmState(enabled);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format("ERROR {0} el altaavoz alarma", enabled ? "habilitando" : "deshabilitando");
+                _Logger.Error(msg, ex);
+            }
+
         }
     }
 }

@@ -132,6 +132,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._RdPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._RdPageBT.Location = new System.Drawing.Point(17, 3);
             this._RdPageBT.Name = "_RdPageBT";
+            this._RdPageBT.Page = 0;
             this._RdPageBT.Size = new System.Drawing.Size(98, 96);
             this._RdPageBT.TabIndex = 6;
             this._RdPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;

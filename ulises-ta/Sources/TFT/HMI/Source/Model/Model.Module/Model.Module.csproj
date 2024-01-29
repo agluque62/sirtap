@@ -99,6 +99,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="BusinessEntities\Agenda.cs" />
+    <Compile Include="BusinessEntities\AltavozAlarmas.cs" />
     <Compile Include="BusinessEntities\Brightness.cs" />
     <Compile Include="BusinessEntities\Buzzer.cs" />
     <Compile Include="BusinessEntities\ControlBrillo.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="BusinessEntities\Scv.cs" />
     <Compile Include="BusinessEntities\Split.cs" />
     <Compile Include="BusinessEntities\Tft.cs" />
+    <Compile Include="BusinessEntities\TftMision.cs" />
     <Compile Include="BusinessEntities\Title.cs" />
     <Compile Include="BusinessEntities\Tlf.cs" />
     <Compile Include="BusinessEntities\RdSpeaker.cs" />

@@ -48,6 +48,7 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<RangeMsg<LlamadaHistorica>> HistoricalOfLocalCallsEngine;
         public event GenericEventHandler<PositionIdMsg> RedirectedCall;
         public event GenericEventHandler<Dictionary<string, string[]>> TlfRingChanged;//230629
+       
         //230516
         public event GenericEventHandler<RangeMsg<TlfInfo>> ConferenciaPreprogramada;
         //lalm 211007
@@ -1118,6 +1119,10 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <param name="sender"></param>
 		private void OnConfigChanged(object sender)
 		{
+            if (TftMision.Instance.Mision==null)
+            {
+                //CuelgaPanelTlf();
+            }
 			_ChangingCfg = true;
             TonosPorLlamada = new Dictionary<string, string[]>();
             try
@@ -1158,8 +1163,9 @@ namespace HMI.CD40.Module.BusinessEntities
                 }
                 foreach (CfgEnlaceInterno link in Top.Cfg.MdTlfLinksAjeno)
                 {
-                    int pos = (int)link.PosicionHMI - 1;
-
+                    //int pos = (int)link.PosicionHMI - 1;
+                    int pos = (int)link.HmiPosition() - 1;
+                    
                     if (pos < Tlf.NumDestinations)
                     {
                        if (_TlfPositions.TryGetValue(pos, out tlf) == false)

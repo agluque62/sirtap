@@ -114,7 +114,6 @@ namespace HMI.Model.Module.Services
                 }
             }
         }
-
 		public void MessageResponse(NotifMsg msg, NotifMsgResponse response)
 		{
 			_StateManager.HideUIMessage(msg.Id);
@@ -236,6 +235,13 @@ namespace HMI.Model.Module.Services
 				_EngineCmdManager.SetBuzzerState(enabled);
 			}
 		}
+		public void SetAlarmState(bool enabled)
+		{
+			if (_StateManager.AltavozAlarmas.Enabled != enabled)
+			{
+				_EngineCmdManager.SetAlarmState(enabled);
+			}
+		}
 
 		public void SetBuzzerLevel(int level)
 		{
@@ -246,6 +252,17 @@ namespace HMI.Model.Module.Services
 			else
 			{
 				_EngineCmdManager.SetBuzzerLevel(level);
+			}
+		}
+		public void SetAlarmLevel(int level)
+		{
+			if (!_StateManager.AltavozAlarmas.Enabled)
+			{
+				_EngineCmdManager.SetAlarmState(true);
+			}
+			else
+			{
+				_EngineCmdManager.SetAlarmLevel(level);
 			}
 		}
 
@@ -390,6 +407,9 @@ namespace HMI.Model.Module.Services
 			}
 		}
 
+
+		// Esta funcion carga el numero de pagina en funcion del numero de pagina secuencial que se le da.
+		// no puede ser llamado por sirtap.
 		public void RdLoadNextPage(int oldPage, int numPosByPage)
 		{
 			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
@@ -408,6 +428,56 @@ namespace HMI.Model.Module.Services
 
 				newPage = (newPage + 1) % numPages;
 			}
+		}
+		public void RdVisualizaPageSirtap()
+		{
+			//240117 ver si es necesario
+			int primera_pagina = 0;
+			int sc = 1; 
+			if (_StateManager.TftMisionInstance.Pagrad.Count > 0)
+				primera_pagina = _StateManager.TftMisionInstance.Pagrad[0].Item1;
+			int npr = _StateManager.TftMisionInstance.Pagrad.Count;
+			if (npr> 0)
+				sc = _StateManager.TftMisionInstance.Pagrad[npr-1].Item1;
+	
+			if (_StateManager.TftMisionInstance.Mision != null)
+            {
+				_EngineCmdManager.SetRdPage(primera_pagina, sc, _StateManager.Radio.PageSize);
+				_EngineCmdManager.SetRdPage(sc, primera_pagina, _StateManager.Radio.PageSize);
+			}
+			if (_StateManager.Tft.Login)
+				_EngineCmdManager.SetRdPage(primera_pagina, primera_pagina, _StateManager.Radio.PageSize);
+		}
+		public void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage)
+        {
+			int numPages = (Radio.NumDestinations + numPosByPage - 1) / numPosByPage;
+			//int newPage = (oldPage + 1) % numPages;
+			// simplemente cargo la pagina indicada
+			_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+			if (oldPage==newPage)
+            {
+				//240117 ver si es necesario
+				if (_StateManager.TftMisionInstance.Mision != null)
+				{
+					_EngineCmdManager.SetRdPage(oldPage, newPage + 1, numPosByPage);
+					_EngineCmdManager.SetRdPage(oldPage + 1, newPage, numPosByPage);
+				}
+			}
+			return;
+			//while (newPage != oldPage)
+			//{
+			//	for (int i = newPage * numPosByPage, to = Math.Min(Radio.NumDestinations, (newPage + 1) * numPosByPage); i < to; i++)
+			//	{
+			//		if (_StateManager.Radio[i].IsConfigurated)
+			//		{
+			//			_EngineCmdManager.SetRdPage(oldPage, newPage, numPosByPage);
+			//			return;
+			//		}
+			//	}
+
+			//	newPage = (newPage + 1) % numPages;
+			//}
+
 		}
 
 		public void RdLoadPrevPage(int oldPage, int numPosByPage)
@@ -563,8 +633,14 @@ namespace HMI.Model.Module.Services
 		{
 			_EngineCmdManager.SetTlfHeadPhonesLevel(level);
 		}
+		public void TftSolicitaSesion(string user, string clave)
+		{
+			//quitar esto y poner lo correspondiente
+			//_EngineCmdManager.SetTlfHeadPhonesLevel(0);
+			_EngineCmdManager.SolicitaLoginPassword(user, clave);
+		}
 
-        public void TlfSetSpeakerLevel(int level)
+		public void TlfSetSpeakerLevel(int level)
         {
             _EngineCmdManager.SetTlfSpeakerLevel(level);
         }
@@ -1409,8 +1485,8 @@ namespace HMI.Model.Module.Services
 		/// </summary>
 		public void ShowAdButtons(int page)
 		{
-			
-			TlfLoadDaPage(page);
+			if (page>=0)
+				TlfLoadDaPage(page);
 
 			//_EngineCmdManager.ShowAdButtons();
 		}

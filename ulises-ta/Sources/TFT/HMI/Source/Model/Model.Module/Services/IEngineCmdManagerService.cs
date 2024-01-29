@@ -13,7 +13,9 @@ namespace HMI.Model.Module.Services
         void BriefingFunction();
 		void SetSplitMode(SplitMode mode);
 		void SetBuzzerState(bool enabled);
+		void SetAlarmState(bool enabled);
 		void SetBuzzerLevel(int level);
+		void SetAlarmLevel(int level);
 		void SetRdHeadPhonesLevel(int level);
         void SetRdHfSpeakerLevel(int level);
         void SetRdSpeakerLevel(int level);
@@ -41,7 +43,9 @@ namespace HMI.Model.Module.Services
 		void EndTlfConf();
         void EndTlfAll();
 		void SetTlfHeadPhonesLevel(int level);
-        void SetTlfSpeakerLevel(int level);
+		void SetSesionSirtap(string sesion);
+		void SolicitaLoginPassword(string user, string clave);
+		void SetTlfSpeakerLevel(int level);
         void SetLcSpeakerLevel(int level);
 		void ListenTo(int id);
 		void ListenTo(string number);
@@ -99,5 +103,6 @@ namespace HMI.Model.Module.Services
 		void SetToneporllamadaEngine(string llamada, string tono, string tonoprio);
 		void GenerarHistoricoLoginIncorrectoEngine(string user, string error);
 		void EnviarLoginCorrectoEngine(string user, string error);
-    }
+		void SetUserClave(string usuario, string clave);
+	}
 }

@@ -12,7 +12,7 @@ namespace HMI.Model.Module.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -390,7 +390,7 @@ namespace HMI.Model.Module.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int RdStatusRetriveEnableAndStoreDelay {
             get {
                 return ((int)(this["RdStatusRetriveEnableAndStoreDelay"]));
@@ -619,6 +619,30 @@ namespace HMI.Model.Module.Properties {
         public string Buzzerdown {
             get {
                 return ((string)(this["Buzzerdown"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AALarmaEnabled {
+            get {
+                return ((bool)(this["AALarmaEnabled"]));
+            }
+            set {
+                this["AALarmaEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int AAlarmaLevel {
+            get {
+                return ((int)(this["AAlarmaLevel"]));
+            }
+            set {
+                this["AAlarmaLevel"] = value;
             }
         }
     }

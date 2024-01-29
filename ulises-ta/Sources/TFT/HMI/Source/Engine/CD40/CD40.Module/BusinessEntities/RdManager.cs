@@ -196,12 +196,12 @@ namespace HMI.CD40.Module.BusinessEntities
             timerfnd.AutoReset = true;
             timerfnd.Start();
 
-            Console.WriteLine("Presiona Enter para detener el proceso.");
-            Console.ReadLine();
+            //Console.WriteLine("Presiona Enter para detener el proceso.");
+            //Console.ReadLine();
 
         }
 
-        static bool dentro_TimerNetworkStatus_Elapsed = false;
+       static bool dentro_TimerNetworkStatus_Elapsed = false;
         void _TimerNetworkStatus_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (dentro_TimerNetworkStatus_Elapsed == true)
@@ -289,20 +289,22 @@ namespace HMI.CD40.Module.BusinessEntities
 		public void SetRdPage(int oldPage, int newPage, int numPosByPage)
         {
             _Page = newPage;
-
+            if (oldPage>=0)
             for (int i = oldPage * numPosByPage, to = Math.Min(_RdPositions.Length, (oldPage + 1) * numPosByPage); i < to; i++)
             {
                 _RdPositions[i].SetRx(false);
                 _RdPositions[i].SetTx(false, false);
             }
-
+            if (newPage>=0)
             for (int i = newPage * numPosByPage, to = Math.Min(_RdPositions.Length, (newPage + 1) * numPosByPage); i < to; i++)
             {
                 if (_RdPositions[i].Monitoring)
                     _RdPositions[i].SetRx(true);
             }
+            else
 
             //RQF-14
+            if (newPage >= 0)
             for (int i = newPage * numPosByPage, to = Math.Min(_RdPositions.Length, (newPage + 1) * numPosByPage); i < to; i++)
             {
                 if (_RdPositions[i].FrecuenciaNoDesasignable)
@@ -687,14 +689,38 @@ namespace HMI.CD40.Module.BusinessEntities
             _PttBadOpeTimer.Enabled = false;
             BadOperation(true);
          }
+        public void CuelgaPanelRadio()
+        {
+            foreach (CfgEnlaceExterno link in Top.Cfg.RdLinks)
+            {
+                foreach (uint hmiPos in link.ListaPosicionesEnHmi)
+                {
+                    uint pos = hmiPos - 1;
 
+                    //if (pos < (uint)_RdPositions.Length)
+                    if (pos < Radio.NumDestinations)
+                    {
+                        RdPosition rd = _RdPositions[pos];
+                        // Desasigna no desasignables.
+                        if (rd.FrecuenciaNoDesasignable)
+                        {
+                            rd.SetRx(false, true);
+                        }
+                    }
+                }
+            }
+
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
+        int contador=0;
 		private void OnConfigChanged(object sender)
 		{
-			_ChangingCfg = true;
+            CuelgaPanelRadio();
+
+            _ChangingCfg = true;
             try
             {
             _TimerNetworkStatus.Enabled = true;
@@ -731,7 +757,8 @@ namespace HMI.CD40.Module.BusinessEntities
                             sf.setSelectedFrecuency(link.DefaultFrequency);
 
                             RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
-                            
+                            posInfo.Seguro = (contador++ % 2==0);
+
                             /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                             posInfo.KeyAlias = rd.KeyAlias;
                             //LALM 220329 introduzco DescDestino.
@@ -755,6 +782,9 @@ namespace HMI.CD40.Module.BusinessEntities
                         //List <string> listpossiblefrec = new List<string>();
                         selectable_frequencies sf= new selectable_frequencies();
                         RdInfo posInfo = new RdInfo(rd.Literal, rd.Alias, rd.Tx, rd.Rx, rd.Ptt, rd.Squelch, rd.AudioVia, rd.RtxGroup, rd.TipoFrecuencia, rd.Monitoring, rd.FrecuenciaNoDesasignable, (FrequencyState)rd.Estado, rd.RxOnly, sf);
+                        posInfo.Seguro= new Random().Next(2) == 0;
+                        posInfo.Seguro = (contador++ % 2 == 0);
+
                         /** 20180321. AGL. ALIAS a mostrar en la tecla... */
                         posInfo.KeyAlias = rd.KeyAlias;
                         //LALM 210223 Errores #4756 prioridad
@@ -1522,6 +1552,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 string snmpOid = Settings.Default.LoginIncorrecto;
                 SetLoginSNMP("");
                 General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+                
             });
         }
         public void SetLoginSNMP(string nombre)
@@ -1537,6 +1568,8 @@ namespace HMI.CD40.Module.BusinessEntities
                 string snmpOid = Settings.Default.LoginCorrecto;
                 SetLoginSNMP(nombre);
                 General.SafeLaunchEvent(SendSnmpTrapString, this, new SnmpStringMsg<string, string>(snmpOid, snmpString));
+                
+               
             });
         }
 
@@ -1578,11 +1611,11 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <param name="e"></param>
         private void SupervisorFrecuenciaNoDesasignable(object sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("SupervisorFrecuenciaNoDesasignable se ejecutó. Hora: " + DateTime.Now);
+            //Console.WriteLine("SupervisorFrecuenciaNoDesasignable se ejecutó. Hora: " + DateTime.Now);
             int page = _Page;
             var cfg = Top.Cfg;
             var rdPositions = _RdPositions;
-
+            if (page>=0)
             for (int i = page * (int)cfg.NumFrecByPage, to = ((page + 1) * (int)cfg.NumFrecByPage); i < to; i++)
             {
                 var rdPosition = rdPositions[i];
