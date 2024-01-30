@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SnmpAgent;
 
 namespace SirtapRadio
 {
@@ -64,11 +65,37 @@ namespace SirtapRadio
             }
 
             button_ConfigSet_Click(sender, e);
+
+            try
+            {
+                SnmpAgent.SnmpAgent.Init(label_hostip.Text, null, 161, 262);
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapGetChannels());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetChannel());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetpowerLevelCh1());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetpowerLevelCh2());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetfrequencyCh1());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetfrequencyCh2());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetTxInhibit());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetWFCh1());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetWFCh2());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtaperaseKeys());
+                SnmpAgent.SnmpAgent.Store.Add(new SirtaploadKeys());
+
+                SnmpAgent.SnmpAgent.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"SnmpAgent.Init: ERROR: {ex.Message}. La aplicacion se cerrara");
+                Application.Exit();
+            }
+
+
             generictimer.Start();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            SnmpAgent.SnmpAgent.Close();
             Agent.End();
         }
 

@@ -33,6 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -57,6 +65,19 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SirtapRadio.cs" />
+    <Compile Include="SnmpAgent\SirtaperaseKeys.cs" />
+    <Compile Include="SnmpAgent\SirtapGetChannels.cs" />
+    <Compile Include="SnmpAgent\SirtaploadKeys.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetChannel.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetfrequencyCh1.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetfrequencyCh2.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetpowerLevelCh1.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetpowerLevelCh2.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetTxInhibit.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetWFCh1.cs" />
+    <Compile Include="SnmpAgent\SirtapSetGetWFCh2.cs" />
+    <Compile Include="SnmpAgent\SnmpAgent.cs" />
+    <Compile Include="SnmpAgent\SnmpLogger.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -85,9 +106,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TFT\SharpSnmpLib\sharpsnmplib\SharpSnmpLib\SharpSnmpLib.csproj">
+      <Project>{286de6db-8f95-4bd4-86a2-86488d2e0ee1}</Project>
+      <Name>SharpSnmpLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Source\Infrastructure\u5ki.Infrastructure.csproj">
       <Project>{bbae4626-c51c-4946-acd1-832e92d73d8b}</Project>
       <Name>u5ki.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\RemoteControlService\u5ki.RemoteControlService.csproj">
+      <Project>{fa844426-a8e2-4bd0-a48d-7d129c2d5cfb}</Project>
+      <Name>u5ki.RemoteControlService</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
