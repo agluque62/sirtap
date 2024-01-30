@@ -12,7 +12,7 @@ using Utilities;
 
 namespace HMI.Presentation.Sirtap.UI
 {
-    public class RdPageButton : Control
+    public class TlfPageButton : Control
     {
         private int _Page = 0;
 
@@ -142,10 +142,6 @@ namespace HMI.Presentation.Sirtap.UI
         ]
         public int OrderPage
         {
-            get
-            {
-                return int.Parse(_BtnInfo.Text);
-            }
             set
             {
                 if (_Page != value)
@@ -166,13 +162,12 @@ namespace HMI.Presentation.Sirtap.UI
 
                     _Page = value;
                     _BtnInfo.Text = (_Page + 1).ToString();
-
                     Invalidate();
                 }
             }
         }
 
-        public RdPageButton()
+        public TlfPageButton()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.DoubleBuffer, true);

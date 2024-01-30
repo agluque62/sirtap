@@ -34,7 +34,7 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 this.hmiButtonModo.Text = "Modo Nocturno";
             txtContrasena.Text = "";
-            MostrarModo();
+            MostrarModo(null);
 
         }
         public loginform()
@@ -199,13 +199,18 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void _OK_Click(object sender, EventArgs e)
         {
-
+            if (txtUsuario.Text=="9999")
+            {
+                Application.Exit();
+            }
+            _CmdManager.TftSolicitaSesion(txtUsuario.Text, txtContrasena.Text);
             IValidadorCredenciales ValidadorCredenciales = new Utilities.ValidadorCredenciales();
 
 
             //var mision = ValidadorCredenciales.SimuladorValidarCredenciales(txtUsuario.Text, txtContrasena.Text);
             var mision = ValidadorCredenciales.Login(txtUsuario.Text, txtContrasena.Text);
-            _StateManager.Tft.Mision = mision.Result;
+            //_StateManager.TftMision.Mision = mision.Result; // quitar si no se usa
+            _StateManager.TftMisionInstance.Mision = mision.Result;
             if (mision.Result.Length>0)
             {
                 //_StateManager.Tft.Enabled = true;
@@ -266,11 +271,10 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+        private void MostrarModo(object sender)
         {
             ChangeColors();
         }
-
 
     }
 }

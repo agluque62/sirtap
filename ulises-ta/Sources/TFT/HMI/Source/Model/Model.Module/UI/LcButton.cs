@@ -17,6 +17,7 @@ namespace HMI.Model.Module.UI
 		private Color _TxBackColor = VisualStyle.ButtonColor;
 		private Color _RxBackColor = VisualStyle.ButtonColor;
 		private bool _DrawX = false;
+		private bool _Oculta = false;
 
 		[Browsable(false),
 		DefaultValue(false)

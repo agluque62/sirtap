@@ -501,6 +501,14 @@ namespace Utilities
 			{
 				return Task.FromResult("MISION 3");
 			}
+			if (clave == "2") return Task.FromResult("MISION 2");
+			if (clave == "4") return Task.FromResult("MISION 4");
+			if (clave == "5") return Task.FromResult("MISION 5");
+			if (clave == "6") return Task.FromResult("MISION 6");
+			if (clave == "7") return Task.FromResult("MISION 7");
+			if (clave == "8") return Task.FromResult("MISION 8");
+			if (clave == "9") return Task.FromResult("MISION 9");
+			if (clave == "0") return Task.FromResult("MISION 0");
 			else
 				return Task.FromResult("");
 			//throw new NotImplementedException();

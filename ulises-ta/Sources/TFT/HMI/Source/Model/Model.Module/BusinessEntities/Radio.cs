@@ -83,6 +83,7 @@ namespace HMI.Model.Module.BusinessEntities
 		private bool _Rx = false;
 		private PttState _Ptt = PttState.NoPtt;
 		private SquelchState _Squelch = SquelchState.NoSquelch;
+		private bool _Seguro = false;
 		private RdRxAudioVia _AudioVia = RdRxAudioVia.NoAudio;
 		private int _RtxGroup = 0;
 		private int _TempRtxGroup = 0;
@@ -185,6 +186,10 @@ namespace HMI.Model.Module.BusinessEntities
 		public SquelchState Squelch
 		{
 			get { return _Squelch; }
+		}
+		public bool Seguro
+		{
+			get { return _Seguro; }
 		}
 
 		public int RtxGroup
@@ -556,6 +561,9 @@ namespace HMI.Model.Module.BusinessEntities
 
 		[EventPublication(EventTopicNames.RdPageChanged, PublicationScope.Global)]
 		public event EventHandler RdPageChanged;
+
+		[EventPublication(EventTopicNames.RdPageClear, PublicationScope.Global)]
+		public event EventHandler RdPageClear;
 
 		[EventPublication(EventTopicNames.PttOnChanged, PublicationScope.Global)]
 		public event EventHandler PttOnChanged;
@@ -1136,6 +1144,12 @@ namespace HMI.Model.Module.BusinessEntities
 			}
 			return -1;
 		}
+		public int GetNumberMaxOfPagesRd()
+		{
+			int numpag = NumDestinations / PageSize;
+			return numpag;
+		}
+
 		public int GetNumberOfPagesRd()
 		{
 			int numpag = NumDestinations / PageSize;

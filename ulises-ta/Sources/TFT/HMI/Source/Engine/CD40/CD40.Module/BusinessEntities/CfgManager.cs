@@ -18,6 +18,118 @@ using static HMI.CD40.Module.BusinessEntities.TopRegistry;
 
 namespace HMI.CD40.Module.BusinessEntities
 {
+    public static class CfgManagerExtensions
+    {
+        public static uint HmiPosition(this CfgEnlaceInterno link)
+        {
+            if (TftMision.Instance.Mision != null)
+            {
+                if (link.TipoEnlaceInterno == "IA")
+                {
+                    if (link.PosicionHMI > 0)
+                    {
+                            uint newposition = TftMision.Instance.OrdenLC(link.PosicionHMI);
+                            return newposition;
+                    }
+                }
+            }
+            return link.PosicionHMI;
+        }
+    }
+    /** SIRTAP */
+    interface ISirtapLinkFilter
+    {
+        string CurrentMision { get; set; }
+        Cd40Cfg CurrentCfg { get; set; }
+        bool Itsmine(CfgEnlaceInterno link);
+        bool Itsmine(CfgEnlaceExterno link);
+        void QuitarEstadoAsignacion(CfgEnlaceExterno link);
+    }
+    class SirtapCfgFilter : ISirtapLinkFilter
+    {
+        
+        public string CurrentMision
+        {
+            get
+            {
+                return TftMision.Instance.Mision;
+            }
+            set
+            {
+                ;
+            }
+        }
+        public Cd40Cfg CurrentCfg { get; set; }
+
+        public bool ItsmineLC(CfgEnlaceInterno link)
+        {
+            if (CurrentCfg == null || CurrentMision == null)
+                return false;
+            uint posicion = link.PosicionHMI;
+            if (posicion > 0)
+            {
+                if (TftMision.Instance.IsPosLC(posicion - 1))
+                {
+                    //uint orden=(uint)TftMision.Instance.ordenposlc((int)posicion);
+                    //if (orden != posicion)
+                    //    link.PosicionHMI = orden;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool ItsmineTlf(CfgEnlaceInterno link)
+        {
+            if (CurrentCfg == null || CurrentMision == null)
+                return false;
+            uint posicion = link.PosicionHMI;
+            uint NumPagEnlacesInt = TftMision.Instance.NumPagEnlacesInt;
+            if (NumPagEnlacesInt > 0)
+            {
+                uint pag = posicion / NumPagEnlacesInt;
+                if (TftMision.Instance.IsPagTlf(pag))
+                    return true;
+            }
+            return false;
+        }
+        public bool Itsmine(CfgEnlaceInterno link)
+        {
+            if (link.TipoEnlaceInterno == "IA")
+                return ItsmineLC(link);
+            return ItsmineTlf(link);
+        }
+
+        public bool Itsmine(CfgEnlaceExterno link)
+        {
+            if (CurrentCfg == null || CurrentMision == null)
+                return false;
+            // TODO
+            var posiciones = link.ListaPosicionesEnHmi;
+            foreach (uint posicion in posiciones)
+            {
+                int NumberOfPagesRad= TftMision.Instance.NumberOfPagesRad;
+                if (NumberOfPagesRad>0)
+                {
+                    long pag = posicion / NumberOfPagesRad;
+
+                    if (TftMision.Instance.IsPagRad((uint)pag))
+                        return true;
+                }
+            }
+            return false;
+        }
+        public void QuitarEstadoAsignacion(CfgEnlaceExterno link)
+        {
+            if (link.EstadoAsignacion != "")
+                link.EstadoAsignacion = "";
+        }
+        public SirtapCfgFilter()
+        {
+            CurrentMision = TftMision.Instance.Mision;
+            CurrentCfg = null;
+        }
+    }
+
 #if DEBUG
     public class RsIdxType
 #else
@@ -87,39 +199,54 @@ namespace HMI.CD40.Module.BusinessEntities
         public event GenericEventHandler<List <Conferencia>> ConferenciaGChanged;
         public event GenericEventHandler<bool> ProxyStateChangeCfg;
         public event GenericEventHandler<ConferenceStatus> CambioConferenciaPreprogramada;//230516
-        public string MainId
-		{
-			get 
+        public event GenericEventHandler<string, string> UsuarioClaveChanged;
+        public void SetUserClave(string nombre, string clave, string mision="")
+        {
+            TftMision.Instance.SetUserClave(nombre, clave);
+            General.SafeLaunchEvent(ConfigChanged, this);
+        }
+        public string MainId // SIRTAP. Poner USUARIO/MISION si está logueado o nada si no lo está....
+        {
+            
+            get 
             {
                 if (_UserCfg != null && _UserCfg.User.IdIdentificador == STR_SECTOR_FS)
                     return STR_PUESTO_FS;
-                    
-                return _UserCfg != null ? _UserCfg.User.IdIdentificador : Top.HostId; 
+                return sirtapLinkFilter.CurrentMision==null ? sirtapLinkFilter.CurrentMision : "";
+                // return _UserCfg != null ? _UserCfg.User.IdIdentificador : Top.HostId; 
             }
 		}
 
-		public string PositionId
-		{
-			get { return _UserCfg != null ? _UserCfg.User.Nombre : Top.HostId; }
+		public string PositionId// SIRTAP. Poner USUARIO/MISION si está logueado o nada si no lo está....
+        {
+
+			get {
+                return TftMision.Instance.Mision != null ? TftMision.Instance.Mision: 
+                    _UserCfg != null ? 
+                       _UserCfg.User.Nombre : Top.HostId;
+            }
 		}
 
-		public uint NumFrecByPage
-		{
-			get { return _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumFrecPagina : 0; }
+		public uint NumFrecByPage // SIRTAP ???
+        {
+			get { return  TftMision.Instance.Mision != null ? TftMision.Instance.NumFrecPagina : 
+                    _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumFrecPagina : 0; }
 		}
 
-        public uint NumEnlacesInternosPag
+        public uint NumEnlacesInternosPag // SIRTAP 0 si logout, Filtrado si login.
         {
-            get { return _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumEnlacesInternosPag : 0; }
+            get { return  TftMision.Instance.Mision != null ? TftMision.Instance.NumEnlacesInternosPag : 
+                    _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumEnlacesInternosPag : 0; }
         }
 
-        public uint NumPagEnlacesInt
+        public uint NumPagEnlacesInt // SIRTAP. Idem...
         {
-            get { return _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumPagEnlacesInt : 0; }
+            get { return TftMision.Instance.Mision != null ? TftMision.Instance.NumPagEnlacesInt : 
+                    _UserCfg != null ? _UserCfg.User.ParametrosDelSector.NumPagEnlacesInt : 0; }
         }
 
-        public Permissions Permissions
-		{
+        public Permissions Permissions// SIRTAP. Adaptar....
+        {
 			get
 			{
 				Permissions p = Permissions.None;
@@ -170,28 +297,32 @@ namespace HMI.CD40.Module.BusinessEntities
 			}
 		}
 
-		public uint Priority
-		{
-			get { return _UserCfg != null ? _UserCfg.User.Sector.PrioridadR2 : (uint)CORESIP_Priority.CORESIP_PR_NONURGENT; }
+		public uint Priority// SIRTAP, adaptar
+        {
+			get { return  TftMision.Instance.Mision != null ? (uint)CORESIP_Priority.CORESIP_PR_NONURGENT : 
+                    _UserCfg != null ? _UserCfg.User.Sector.PrioridadR2 : (uint)CORESIP_Priority.CORESIP_PR_NONURGENT; }
 		}
 
 		public IEnumerable<StrNumeroAbonado> HostAddresses
 		{
 			get { return _HostAddresses; }
 		}
-
-		public IEnumerable<CfgEnlaceInterno> TlfLinks
-		{
+        public IEnumerable<CfgEnlaceInterno> TlfLinks// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
+        {
 			get
 			{
 				if (_UserCfg != null)
 				{
 					foreach (CfgEnlaceInterno link in _UserCfg.TlfLinks)
 					{
-						if (link.TipoEnlaceInterno == "DA")
-						{
-							yield return link;
-						}
+                        if (link.TipoEnlaceInterno == "DA")
+                        {
+                            // SIRTAP
+                            if (sirtapLinkFilter.Itsmine(link))
+                            {
+                                yield return link;
+                            }
+                        }
 					}
 				}
 			}
@@ -216,7 +347,8 @@ namespace HMI.CD40.Module.BusinessEntities
         public Conferencias conf = null;
         public List<Conferencia> confcfg;// cambiada por conf.
         public List<ConferenceStatus> confstatus = null;
-  
+        // SIRTAP
+        ISirtapLinkFilter sirtapLinkFilter = new SirtapCfgFilter();
         public IEnumerable<CfgEnlaceInterno> TlfLinksConf1(List<Conferencia>p1)
         {
             confcfg = p1;
@@ -264,34 +396,40 @@ namespace HMI.CD40.Module.BusinessEntities
             return lei;
         }
 
-        public IEnumerable<CfgEnlaceInterno> MdTlfLinksPropios
+        public IEnumerable<CfgEnlaceInterno> MdTlfLinksPropios // SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
         {
             get
             {
-                if (_UserCfg != null)
+                if (_UserCfg != null && sirtapLinkFilter.CurrentMision!=null)
                 {
                     foreach (CfgEnlaceInterno link in _UserCfg.TlfLinks)
                     {
-                        if (link.TipoEnlaceInterno == "MD" && link.Dominio == "PROPIO")
-                        {
-                            yield return link;
-                        }
+                        // SIRTAP
+                        if (sirtapLinkFilter.Itsmine(link))
+                            if (link.TipoEnlaceInterno == "MD" && link.Dominio == "PROPIO")
+                            {
+                                yield return link;
+                            }
                     }
                 }
             }
         }
-        public IEnumerable<CfgEnlaceInterno> MdTlfLinksAjeno
+        public IEnumerable<CfgEnlaceInterno> MdTlfLinksAjeno// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
         {
             get
             {
-                if (_UserCfg != null)
+                if (_UserCfg != null && sirtapLinkFilter.CurrentMision != null)
                 {
                     foreach (CfgEnlaceInterno link in _UserCfg.TlfLinks)
                     {
-                        if (link.TipoEnlaceInterno == "MD" && link.Dominio == "AJENO")
+                        // SIRTAP
+                        if (sirtapLinkFilter.Itsmine(link))
                         {
-                            yield return link;
-                        }
+                            if (link.TipoEnlaceInterno == "MD" && link.Dominio == "AJENO")
+                            {
+                                yield return link;
+                            }
+                        }   
                     }
                 }
             }
@@ -300,54 +438,70 @@ namespace HMI.CD40.Module.BusinessEntities
 		{
 			get
 			{
-				if (_UserCfg != null)
+				if (_UserCfg != null && sirtapLinkFilter.CurrentMision != null)
 				{
 					foreach (CfgEnlaceInterno link in _UserCfg.TlfLinks)
 					{
-						if (link.TipoEnlaceInterno == "AG")
-						{
-							yield return link;
+                        // SIRTAP
+                        if (sirtapLinkFilter.Itsmine(link))
+                        {
+                            if (link.TipoEnlaceInterno == "AG")// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
+                            {
+                                yield return link;
+                            }
 						}
 					}
 				}
 			}
 		}
 
-		public IEnumerable<CfgEnlaceInterno> LcLinks
-		{
+		public IEnumerable<CfgEnlaceInterno> LcLinks // SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
+        {
 			get
 			{
-				if (_UserCfg != null)
+				if (_UserCfg != null && sirtapLinkFilter.CurrentMision != null)
 				{
 					foreach (CfgEnlaceInterno link in _UserCfg.TlfLinks)
 					{
-						if (link.TipoEnlaceInterno == "IA")
-						{
-							yield return link;
+                        // SIRTAP
+                        if (sirtapLinkFilter.Itsmine(link))
+                        {
+                            if (link.TipoEnlaceInterno == "IA")
+                            {
+                                yield return link;
+                            }
 						}
 					}
 				}
 			}
 		}
 
-		public IEnumerable<CfgEnlaceExterno> RdLinks
-		{
+		public IEnumerable<CfgEnlaceExterno> RdLinks// SIRTAP. Vacio si LOGOUT, Filtrado por MISION si LOGIN
+        {
+            get
+            {
+                if (_UserCfg != null && sirtapLinkFilter.CurrentMision != null)
+                {
+                    foreach (CfgEnlaceExterno link in _UserCfg.RdLinks)
+                    {
+                        // SIRTAP
+                        if (sirtapLinkFilter.Itsmine(link))
+                        {
+                            //sirtapLinkFilter.QuitarEstadoAsignacion(link);
+                            yield return link;
+                        }
+                    }
+                    //				return _UserCfg.RdLinks;
+                }
+            }
+            //			return new List<CfgEnlaceExterno>();
+        }
+
+        public IEnumerable<PermisosRedesSCV> PermisosRedes// SIRTAP. Adaptar...
+        {
 			get
 			{
-				if (_UserCfg != null)
-				{
-					return _UserCfg.RdLinks;
-				}
-
-				return new List<CfgEnlaceExterno>();
-			}
-		}
-
-		public IEnumerable<PermisosRedesSCV> PermisosRedes
-		{
-			get
-			{
-				if (_UserCfg != null)
+				if (TftMision.Instance.Mision != null && _UserCfg != null)
 				{
 					return _UserCfg.User.PermisosRedDelSector;
 				}
@@ -360,7 +514,7 @@ namespace HMI.CD40.Module.BusinessEntities
 		{
 			get
 			{
-				if (_SystemCfg != null)
+				if (TftMision.Instance.Mision != null && _SystemCfg != null)
 				{
 					return _SystemCfg.PlanRedes;
 				}
@@ -379,11 +533,14 @@ namespace HMI.CD40.Module.BusinessEntities
             get
             {
                 ulong result;
-                foreach (StrNumeroAbonado host in _HostAddresses)
+                if (TftMision.Instance.Mision != null)
                 {
-                    if (ulong.TryParse(host.NumeroAbonado, out result))
-                      if (_MiScv.IsPrivilegiado(result))
-                        return true;
+                    foreach (StrNumeroAbonado host in _HostAddresses)
+                    {
+                        if (ulong.TryParse(host.NumeroAbonado, out result))
+                            if (_MiScv.IsPrivilegiado(result))
+                                return true;
+                    }
                 }
                 return false;
             }
@@ -409,12 +566,12 @@ namespace HMI.CD40.Module.BusinessEntities
 		public string GetHostIp(string hostId)
 		{
             return _SystemCfg.GetHostIp(hostId);
-				}
+	    }
 
         public string GetMainUser(string host)
 		{
             return _SystemCfg.GetMainUser(host);
-				}
+		}
 
         public string GetGwRsIp(string resourceId, out string gw)
 		{
@@ -563,14 +720,16 @@ namespace HMI.CD40.Module.BusinessEntities
 
         public AsignacionUsuariosTV GetHostTv(string IdHost)
         {
-            foreach (AsignacionUsuariosTV tv in _SystemCfg.PlanAsignacionUsuarios)
+            if (_SystemCfg!=null)
             {
-                if (string.Compare(tv.IdHost, IdHost, true) == 0)
+                foreach (AsignacionUsuariosTV tv in _SystemCfg.PlanAsignacionUsuarios)
                 {
-                    return tv;
+                    if (string.Compare(tv.IdHost, IdHost, true) == 0)
+                    {
+                        return tv;
+                    }
                 }
             }
-
             return null;
         }
 
@@ -973,7 +1132,7 @@ namespace HMI.CD40.Module.BusinessEntities
 			return false;
 		}
 
-        public bool SitesConfiguration()
+        public bool SitesConfiguration() // SIRTAP. Chequear para que sirve y adaptar.
         {
             /** 20180315. AGL. Cuando desaparecia el PICT de la config, _UserCfg es null, 
              en estas circustancias esta funcion daba una excepcion y no progresaba el limpiado
@@ -995,13 +1154,13 @@ namespace HMI.CD40.Module.BusinessEntities
         }
 
         // RQF36 Permisos RTX
-        public bool PermisoRTXSQ()
+        public bool PermisoRTXSQ()// SIRTAP. Chequear para que sirve y adaptar
         {
             // Esperando a que se defina.
             return _UserCfg == null ? false : _UserCfg.User.TeclasDelSector.PermisoRTXSQ;
         }
 
-        public bool PermisoRTXSect()
+        public bool PermisoRTXSect()// SIRTAP. Chequear para que sirve y adaptar
         {
             // Esperando a que se defina.
             return _UserCfg == null ? false : _UserCfg.User.TeclasDelSector.PermisoRTXSect;
@@ -1030,6 +1189,10 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             General.SafeLaunchEvent(ProxyStateChangeCfg, this, state);
         }
+        private void OnCheckLoginPassword(string usuario,string clave)
+        {
+
+        }
 
 #if DEBUG
     public void OnNewConfig(object sender, Cd40Cfg cfg)
@@ -1038,16 +1201,15 @@ namespace HMI.CD40.Module.BusinessEntities
 #endif
 		{
 			string _idIdenticador = MainId;
-
-			if (_UserCfg != null)
+            
+            if (_UserCfg != null)
 			{
 				_SystemCfg = cfg.ConfiguracionGeneral;
 				_UserCfg = GetUserCfg(cfg);
                 _PoolHf = cfg.PoolHf;
-
-				_ResetUsuario = MainId != _idIdenticador;
-			}
-			else
+                _ResetUsuario = MainId != _idIdenticador;
+            }
+            else
 			{
 				_SystemCfg = cfg.ConfiguracionGeneral;
 				_UserCfg = GetUserCfg(cfg);
@@ -1070,8 +1232,11 @@ namespace HMI.CD40.Module.BusinessEntities
             //RQF-22
             CheckCfgAnalogica();
             //RQF35
-            
-            General.SafeLaunchEvent(ConfigChanged, this);
+
+            // SIRTAP.
+            sirtapLinkFilter.CurrentCfg = cfg;
+            General.SafeLaunchEvent(ConfigChanged, this); // SIRTAP. Este evento hay que mandarlo tambien LOGIN/LOGOUT.
+
         }
         /// <summary>
         /// Fills _Operators struct with  config received
@@ -1595,6 +1760,6 @@ namespace HMI.CD40.Module.BusinessEntities
             }
         }
 
-       #endregion
+        #endregion
     }
 }

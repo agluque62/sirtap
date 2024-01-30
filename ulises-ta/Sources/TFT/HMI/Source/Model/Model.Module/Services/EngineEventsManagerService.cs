@@ -228,12 +228,28 @@ namespace HMI.Model.Module.Services
 			_StateManager.Buzzer.Enabled = msg.State;
 		}
 
+		[EventSubscription(EventTopicNames.AlarmStateEngine, ThreadOption.UserInterface)]
+		public void OnAlarmStateEngine(object sender, StateMsg<bool> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.AlarmStateEngine, msg);
+
+			_StateManager.AltavozAlarmas.Enabled = msg.State;
+		}
+
 		[EventSubscription(EventTopicNames.BuzzerLevelEngine, ThreadOption.UserInterface)]
 		public void OnBuzzerLevelEngine(object sender, LevelMsg<Buzzer> msg)
 		{
 			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.BuzzerLevelEngine, msg);
 
 			_StateManager.Buzzer.Level = msg.Level;
+		}
+
+		[EventSubscription(EventTopicNames.AlarmLevelEngine, ThreadOption.UserInterface)]
+		public void OnAlarmLevelEngine(object sender, LevelMsg<AltavozAlarmas> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.AlarmLevelEngine, msg);
+
+			_StateManager.AltavozAlarmas.Level = msg.Level;
 		}
 
 		[EventSubscription(EventTopicNames.RdInfoEngine, ThreadOption.UserInterface)]
@@ -571,7 +587,24 @@ namespace HMI.Model.Module.Services
 			_StateManager.TlfHeadPhones.Level = msg.Level;
 		}
 
-        [EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
+		[EventSubscription(EventTopicNames.TftMisionChanged, ThreadOption.UserInterface)]
+		public void OnTftMisionChanged(object sender, StateMsg<string> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChanged, msg);
+
+			//_StateManager.TftMision.Mision = msg.State;
+			_StateManager.TftMisionInstance.Mision = msg.State;
+		}
+
+		[EventSubscription(EventTopicNames.TftMisionChangedf2, ThreadOption.UserInterface)]
+		public void OnTftMisionChangedf2(object sender, StateMsg<TftMision> msg)
+		{
+			_Logger.Trace("Procesando {0}: {1}", EventTopicNames.TftMisionChangedf2, msg);
+
+			_StateManager.TftMisionInstance.Mision = msg.State.Mision;
+		}
+
+		[EventSubscription(EventTopicNames.TlfSpeakerLevelEngine, ThreadOption.UserInterface)]
         public void OnTlfSpeakerLevelEngine(object sender, LevelMsg<LcSpeaker> msg)
         {
             _Logger.Trace("Procesando {0}: {1}", EventTopicNames.TlfSpeakerLevelEngine, msg);
@@ -848,6 +881,12 @@ namespace HMI.Model.Module.Services
                         _EngineCmdManager.ModoSoloAltavoces();
                     if (_StateManager.Radio.DoubleRadioSpeaker)
                         _EngineCmdManager.SetDoubleRadioSpeaker();
+					_EngineCmdManager.SetSesionSirtap(_StateManager.TftMisionInstance.Mision);
+					_EngineCmdManager.SetAlarmState(_StateManager.AltavozAlarmas.Enabled);
+					if (_StateManager.AltavozAlarmas.Enabled)
+					{
+						_EngineCmdManager.SetAlarmLevel(_StateManager.AltavozAlarmas.Level);
+					}
 				}
 			}
 			else
@@ -967,7 +1006,8 @@ namespace HMI.Model.Module.Services
 			_Logger.Trace("Procesando {0}", EventTopicNames.FuerzoLogout);
 
 			_StateManager.Tft.SetLogin(false);
-
+			
+		
 		}
 		[EventSubscription(EventTopicNames.TftBadLogin, ThreadOption.UserInterface)]
 		public void OnTftBadLogin(object sender, EventArgs msg)
@@ -982,7 +1022,9 @@ namespace HMI.Model.Module.Services
 		{
 			string user = (string)sender;
 			string error = "";
+			// envia trap a historicos
 			_EngineCmdManager.EnviarLoginCorrectoEngine(user, error);
+			
 		}
 	}
 }

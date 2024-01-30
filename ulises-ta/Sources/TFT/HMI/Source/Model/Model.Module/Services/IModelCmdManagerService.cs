@@ -15,7 +15,9 @@ namespace HMI.Model.Module.Services
 		void ShowInfo();
 		void SetBrightnessLevel(int level);
 		void SetBuzzerState(bool enabled);
+		void SetAlarmState(bool enabled);
 		void SetBuzzerLevel(int level);
+		void SetAlarmLevel(int level);
 		void RdSetSpeakerLevel(int level);
 		void RdSetHeadPhonesLevel(int level);
         void RdSetHfSpeakerLevel(int level);
@@ -23,6 +25,8 @@ namespace HMI.Model.Module.Services
         void RdRtxClick(int numPositionsByPage);
 		void RdSetPtt(bool on);
 		void RdLoadNextPage(int oldPage, int numPosByPage);
+		void RdLoadPageSirtap(int oldPage, int newPage, int numPosByPage);
+		void RdVisualizaPageSirtap();
 		void RdLoadPrevPage(int oldPage, int numPosByPage);
 		void RdSwitchRtxState(int id);
         void RdSwitchTxState(int id);
@@ -34,6 +38,7 @@ namespace HMI.Model.Module.Services
 		void LcSet(int id, bool on);
 		void LcSetSpeakerLevel(int level);
 		void TlfSetHeadPhonesLevel(int level);
+		void TftSolicitaSesion(string usuario, string clave);
         void TlfSetSpeakerLevel(int level);
         void TlfLoadDaPage(int page);
 		void TlfClick(int id);
@@ -44,7 +49,7 @@ namespace HMI.Model.Module.Services
 		void TransferClick();
 		void SwitchTlfView(string view);
 		void SwitchRadView(string pantalla,int id, string fr);
-		bool CancelTlfClick(bool test=false);//#2816 LALM 220615
+		bool CancelTlfClick(bool test = false);//#2816 LALM 220615
 		void SpeakerTlfClick();
         void NewDigit(int id, char key);
         void BriefingFunction();

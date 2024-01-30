@@ -155,7 +155,7 @@ namespace HMI.CD40.Module.BusinessEntities
 			}
 		}
 
-		public bool Available
+        public bool Available
 		{
 			get { return (_Ptt != PttState.Unavailable) && (_Squelch != SquelchState.Unavailable); }
 		}
@@ -999,7 +999,6 @@ namespace HMI.CD40.Module.BusinessEntities
                 case Identifiers.FR_RXTX_CHANGE_RESPONSE_MSG://LALM 220228
                     {
                         // lalm 230303 uno de los dos se quitará
-                        // prueba...
                         //General.SafeLaunchEvent(SiteChangedResult, this,(ChangeSiteRsp) msg);
                         General.SafeLaunchEvent(FrecChangedResponse, this, (FrChangeRsp)msg);
                     }

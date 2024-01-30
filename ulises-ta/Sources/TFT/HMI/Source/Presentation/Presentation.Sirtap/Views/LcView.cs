@@ -121,12 +121,10 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = LcDstEnabled(_StateManager.Lc[bt.Id]);
             }
         }
-
         [EventSubscription(EventTopicNames.LcChanged, ThreadOption.Publisher)]
         public void OnLcChanged(object sender, RangeMsg e)
         {
             Debug.Assert(e.Count > 0);
-
             for (int i = e.From, to = e.From + e.Count; i < to; i++)
             {
                 LcDst dst = _StateManager.Lc[i];
@@ -213,7 +211,7 @@ namespace HMI.Presentation.Sirtap.Views
                 bt.Enabled = LcDstEnabled(dst);
             }
 
-            bt.Visible = dst.IsConfigurated;
+            bt.Visible = dst.IsConfigurated && _StateManager.TftMisionInstance?.Mision !=null &&_StateManager.Tft.Login;
         }
 
         private void LcButton_MouseDown(object sender, MouseEventArgs e)
@@ -291,7 +289,7 @@ namespace HMI.Presentation.Sirtap.Views
         [EventSubscription(EventTopicNames.TftLoginChanged, ThreadOption.Publisher)]
         public void OnLoginChanged(object sender, EventArgs e)
         {
-            MostrarModo();
+            MostrarModo( sender);
         }
         private void ChangeColors()
         {
@@ -300,11 +298,12 @@ namespace HMI.Presentation.Sirtap.Views
             else
                 BackColor = Color.White;
         }
-        private void MostrarModo()
+        private void MostrarModo(object sender)
         {
             ChangeColors();
+            int NumDestinations = 6;
+            OnLcChanged(sender, new RangeMsg(0, NumDestinations));
         }
-
     }
 }
 

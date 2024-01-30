@@ -28,6 +28,7 @@ namespace HMI.Model.Module.Services
 		private Split _Split;
 		private Brightness _Brightness;
 		private Buzzer _Buzzer;
+		private AltavozAlarmas _AltavozAlarmas;
 		private RdSpeaker _RdSpeaker;
         private HfSpeaker _HfSpeaker;
 		private RdHeadPhones _RdHeadPhones;
@@ -43,8 +44,9 @@ namespace HMI.Model.Module.Services
         private bool _ManagingSite;
 		private PlayState _PlayBt;
 		private Dictionary<string, string[]> _tonosPorLlamada = new Dictionary<string, string[]>();
-        
-        [EventPublication(EventTopicNames.ShowNotifMsgUI, PublicationScope.Global)]
+		//public TftMision TftMision = new TftMision();
+		public TftMision TftMisionInstance= TftMision.Instance;
+		[EventPublication(EventTopicNames.ShowNotifMsgUI, PublicationScope.Global)]
 		public event EventHandler<NotifMsg> ShowNotifMsgUI;
 
 		[EventPublication(EventTopicNames.HideNotifMsgUI, PublicationScope.Global)]
@@ -119,14 +121,20 @@ namespace HMI.Model.Module.Services
 			set { _Buzzer = value; }
 		}
 
-        [CreateNew]
-        public RdSpeaker RdSpeaker
-        {
-            get { return _RdSpeaker; }
-            set { _RdSpeaker = value; }
-        }
+		[CreateNew]
+		public RdSpeaker RdSpeaker
+		{
+			get { return _RdSpeaker; }
+			set { _RdSpeaker = value; }
+		}
+		[CreateNew]
+		public AltavozAlarmas AltavozAlarmas
+		{
+			get { return _AltavozAlarmas; }
+			set { _AltavozAlarmas = value; }
+		}
 
-        [CreateNew]
+		[CreateNew]
         public HfSpeaker HfSpeaker
         {
             get { return _HfSpeaker; }
