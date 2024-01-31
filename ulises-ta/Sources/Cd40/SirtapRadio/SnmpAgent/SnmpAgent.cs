@@ -34,13 +34,7 @@ namespace SnmpAgent
 
         public static string User { get => _user; set => _user = value; }
 
-        public static void Init(string ip)
-        {
-            // Cambiar al puerto estándar SNMP 161
-            Init(ip, null, 161, 262);
-        }
-
-        public static void Init(string ip, string trapMcastIp, int port, int trap)
+        public static void Init(string ip, string trapMcastIp, int port, int trap, string userName, string privKey, string authKey)
         {
             SnmpLogger logger = new SnmpLogger();
             ObjectStore objectStore = new ObjectStore();
@@ -80,7 +74,7 @@ namespace SnmpAgent
                 /*new User(new OctetString("neither"), DefaultPrivacyProvider.DefaultPair),
                 new User(new OctetString("authen"), new DefaultPrivacyProvider(new MD5AuthenticationProvider(new OctetString("authentication")))),
                 new User(new OctetString("privacy"), new DESPrivacyProvider(new OctetString("privacyphrase"), new MD5AuthenticationProvider(new OctetString("authentication")))),*/
-                new User(new OctetString("usr-sha-aes"), new AESPrivacyProvider(new OctetString("privkey1"), new SHA1AuthenticationProvider(new OctetString("authkey1"))))
+                new User(new OctetString(userName), new AESPrivacyProvider(new OctetString(privKey), new SHA1AuthenticationProvider(new OctetString(authKey))))
             };
             UserRegistry userRegistry = new UserRegistry(users);
 

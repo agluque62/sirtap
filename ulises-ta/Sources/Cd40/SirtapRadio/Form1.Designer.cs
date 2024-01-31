@@ -40,11 +40,11 @@
             this.comboBox_PaylType = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label_hostip = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label_Status = new System.Windows.Forms.Label();
             this.button_ConfigSet = new System.Windows.Forms.Button();
+            this.label_hostip = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.label_Transmitting = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.generictimer = new System.Windows.Forms.Timer(this.components);
@@ -180,24 +180,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "CONFIGURATION";
             // 
-            // label_hostip
-            // 
-            this.label_hostip.AutoSize = true;
-            this.label_hostip.Location = new System.Drawing.Point(95, 9);
-            this.label_hostip.Name = "label_hostip";
-            this.label_hostip.Size = new System.Drawing.Size(57, 20);
-            this.label_hostip.TabIndex = 19;
-            this.label_hostip.Text = "0.0.0.0";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 9);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(66, 20);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "Local IP";
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -226,6 +208,24 @@
             this.button_ConfigSet.Text = "SET";
             this.button_ConfigSet.UseVisualStyleBackColor = true;
             this.button_ConfigSet.Click += new System.EventHandler(this.button_ConfigSet_Click);
+            // 
+            // label_hostip
+            // 
+            this.label_hostip.AutoSize = true;
+            this.label_hostip.Location = new System.Drawing.Point(95, 9);
+            this.label_hostip.Name = "label_hostip";
+            this.label_hostip.Size = new System.Drawing.Size(57, 20);
+            this.label_hostip.TabIndex = 19;
+            this.label_hostip.Text = "0.0.0.0";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(19, 9);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(66, 20);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Local IP";
             // 
             // label_Transmitting
             // 
@@ -466,7 +466,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1215, 444);
+            this.ClientSize = new System.Drawing.Size(1221, 469);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.button_bucle2);
             this.Controls.Add(this.button_SCH2);

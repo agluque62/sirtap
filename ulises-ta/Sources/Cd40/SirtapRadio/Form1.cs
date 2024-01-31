@@ -96,7 +96,55 @@ namespace SirtapRadio
 
             try
             {
-                SnmpAgent.SnmpAgent.Init(label_hostip.Text, null, 161, 262);
+                string userName;
+                string privKey;
+                string authKey;
+
+                try
+                {
+                    userName = ConfigurationManager.AppSettings["userName"].ToString();
+                }
+                catch {
+                    userName = "usr-sha-aes";
+                }
+                try
+                {
+                    privKey = ConfigurationManager.AppSettings["privKey"].ToString();
+                }
+                catch
+                {
+                    privKey = "privkey1";
+                }
+                try
+                {
+                    authKey = ConfigurationManager.AppSettings["authKey"].ToString();
+                }
+                catch
+                {
+                    authKey = "authkey1";
+                }
+
+                int SnmpPort = 161;
+                try
+                {
+                    SnmpPort = int.Parse(ConfigurationManager.AppSettings["SnmpPort"].ToString());
+                }
+                catch
+                {
+                    SnmpPort = 161;
+                }
+
+                int TrapPort = 262;
+                try
+                {
+                    TrapPort = int.Parse(ConfigurationManager.AppSettings["TrapPort"].ToString());
+                }
+                catch
+                {
+                    TrapPort = 262;
+                }
+
+                SnmpAgent.SnmpAgent.Init(label_hostip.Text, null, SnmpPort, TrapPort, userName, privKey, authKey);
                 SnmpAgent.SnmpAgent.Store.Add(new SirtapGetChannels());
                 SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetChannel());
                 SnmpAgent.SnmpAgent.Store.Add(new SirtapSetGetpowerLevelCh1());
