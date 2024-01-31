@@ -83,7 +83,7 @@ namespace U5ki.Gateway
             NOED137RadioType = NOED137RadioTypes.SIRTAP;            
 
             //HASTA QUE SE RESUELVA LA CONFIGURACION, DE MOMENTO TOMAMOS ASI LOS DATOS
-            sirtap_params.dst_ip = DireccionamientoIP.IpRed1;
+            sirtap_params.dst_ip = DireccionamientoIP.IpRed2;
             sirtap_params.src_port = (int)EquipoExterno.SipPort;
             sirtap_params.dst_port = sirtap_params.src_port + 2;
             sirtap_params.local_multicast_ip = DireccionamientoIP.IpRed2;
