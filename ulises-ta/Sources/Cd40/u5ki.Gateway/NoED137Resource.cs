@@ -231,7 +231,7 @@ namespace U5ki.Gateway
         public bool RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
             bool found = false;
-            if (sirtap_params.rtp_port_id != -1 && Connected && CallId != -1)
+            if (sirtap_params.rtp_port_id == rtpport_id && sirtap_params.rtp_port_id != -1 && Connected && CallId != -1)
             {
                 if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
                 {
