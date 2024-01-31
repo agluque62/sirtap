@@ -15,6 +15,7 @@ namespace SirtapRadio
     internal class Agent
     {        
         public static SirtapRadio SirtapRd = new SirtapRadio();
+        public static SirtapRadio SirtapRd2 = new SirtapRadio();
         private static bool CoresipInitiated = false;
         private static CORESIP_Callbacks CoresipCallbacks = new CORESIP_Callbacks();
 
@@ -99,6 +100,7 @@ namespace SirtapRadio
         static void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
             SirtapRd.RTPport_infoCb(rtpport_id, info);
+            SirtapRd2.RTPport_infoCb(rtpport_id, info);
         }
 
         private static string _Path;

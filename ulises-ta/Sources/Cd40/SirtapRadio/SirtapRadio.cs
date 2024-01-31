@@ -17,8 +17,8 @@ namespace SirtapRadio
         private const int PCMA = 8;
 
         private string Dst_ip = "";
-        private int Src_port = 0;
-        private int Dst_port = 0;
+        public int Src_port = 0;
+        public int Dst_port = 0;
         private string Local_multicast_ip = "";
         private int Payload_type = PCMA;
         private int Rtp_port_id = -1;
@@ -26,6 +26,7 @@ namespace SirtapRadio
         public bool Transmitting = false;
         private int sch_wavplayer = -1;
         public bool Bucle = false;
+        private string Sch_file = "HOLD.wav";
 
         private Mutex mut = new Mutex();
 
@@ -42,7 +43,7 @@ namespace SirtapRadio
             return ret;
         }
 
-        public int Init(string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type)
+        public int Init(string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, string sch_file)
         {
             int ret = 0;
             string messagebox_text = "";
@@ -88,6 +89,7 @@ namespace SirtapRadio
                 Dst_port = dst_port;
                 Local_multicast_ip = local_multicast_ip;
                 Payload_type = payload_type;
+                Sch_file = sch_file;
             }
 
             mut.ReleaseMutex();
@@ -173,7 +175,7 @@ namespace SirtapRadio
                         if (sch_wavplayer == -1)
                         {
                             CORESIP_Error error1;
-                            coreret = CORESIP_CreateWavPlayer("Hold.wav", 1, out sch_wavplayer, out error1);
+                            coreret = CORESIP_CreateWavPlayer(Sch_file, 1, out sch_wavplayer, out error1);
                             if (coreret != 0)
                             {
                                 messagebox_text += " Squelch: " + error1.Info;

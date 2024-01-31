@@ -48,6 +48,33 @@ namespace SirtapRadio
             }
             catch { }
 
+            try
+            {
+                textBox_dstIP2.Text = ConfigurationManager.AppSettings["DstIP2"].ToString();
+            }
+            catch { }
+            try
+            {
+                textBox_RcvMcastIP2.Text = ConfigurationManager.AppSettings["RcvMcastIP2"].ToString();
+            }
+            catch { }
+            try
+            {
+                textBox_SrcPort2.Text = ConfigurationManager.AppSettings["SrcPort2"].ToString();
+            }
+            catch { }
+            try
+            {
+                textBox_DstPort2.Text = ConfigurationManager.AppSettings["DstPort2"].ToString();
+            }
+            catch { }
+            try
+            {
+                comboBox_PaylType2.Text = ConfigurationManager.AppSettings["PayloadType2"].ToString();
+            }
+            catch { }
+
+
             if (Agent.Init() != 0)
             {
                 Application.Exit();
@@ -65,6 +92,7 @@ namespace SirtapRadio
             }
 
             button_ConfigSet_Click(sender, e);
+            button_ConfigSet2_Click(sender, e);
 
             try
             {
@@ -118,12 +146,12 @@ namespace SirtapRadio
             IPAddress ipaddress;
             if (!System.Net.IPAddress.TryParse(textBox_dstIP.Text, out ipaddress))
             {
-                MessageBox.Show("Configuring: Destination IP not valid");
+                MessageBox.Show("Configuring: Destination IP CH1 not valid");
                 return;
             }
             if (!System.Net.IPAddress.TryParse(textBox_RcvMcastIP.Text, out ipaddress))
             {
-                MessageBox.Show("Configuring: Multicast IP not valid");
+                MessageBox.Show("Configuring: Multicast IP CH1 not valid");
                 return;
             }
             int src_port;
@@ -133,9 +161,16 @@ namespace SirtapRadio
             }
             catch
             {
-                MessageBox.Show("Configuring: Src port not valid");
+                MessageBox.Show("Configuring: Src port CH1 not valid");
                 return;
             }
+
+            if (src_port == Agent.SirtapRd2.Src_port)
+            {
+                MessageBox.Show("Configuring: Src port CH1 cannot be equal that CH2");
+                return;
+            }
+
             int dst_port;
             try
             {
@@ -143,7 +178,7 @@ namespace SirtapRadio
             }
             catch
             {
-                MessageBox.Show("Configuring: Dst port not valid");
+                MessageBox.Show("Configuring: Dst port CH1 not valid");
                 return;
             }
 
@@ -157,7 +192,7 @@ namespace SirtapRadio
                     payload = 0;
                     break;
                 default:
-                    MessageBox.Show("Configuring: Payload Type not valid");
+                    MessageBox.Show("Configuring: Payload Type CH1 not valid");
                     return;
             }
 
@@ -179,8 +214,17 @@ namespace SirtapRadio
             button_SCH.Text = "SCH ON";
             button_bucle.Text = "BUCLE ON";
 
+            string sch_file = "Hold.wav";
+            try
+            {
+                sch_file = ConfigurationManager.AppSettings["SchFile1"].ToString();
+            }
+            catch {
+                sch_file = "Hold.wav";
+            }
+
             Agent.SirtapRd.Dispose();
-            if (Agent.SirtapRd.Init(textBox_dstIP.Text, src_port, dst_port, textBox_RcvMcastIP.Text, payload) == 0)
+            if (Agent.SirtapRd.Init(textBox_dstIP.Text, src_port, dst_port, textBox_RcvMcastIP.Text, payload, sch_file) == 0)
                 label_Status.Text = "RUNNING";            
         }
 
@@ -193,6 +237,8 @@ namespace SirtapRadio
         {
             if (Agent.SirtapRd.Transmitting) label_Transmitting.Text = "TRANSMITTING";
             else label_Transmitting.Text = "STOPPED";
+            if (Agent.SirtapRd2.Transmitting) label_Transmitting2.Text = "TRANSMITTING";
+            else label_Transmitting2.Text = "STOPPED";
         }
 
         private void label7_Click(object sender, EventArgs e)
@@ -207,7 +253,7 @@ namespace SirtapRadio
                 string error = "";
                 if (Agent.SirtapRd.Squelch(false) != 0)
                 {
-                    MessageBox.Show(error);
+                    MessageBox.Show("ERROR: SQUELCH CH1: " + error);
                 }
                 else
                 {
@@ -233,6 +279,124 @@ namespace SirtapRadio
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button_ConfigSet2_Click(object sender, EventArgs e)
+        {
+            IPAddress ipaddress;
+            if (!System.Net.IPAddress.TryParse(textBox_dstIP2.Text, out ipaddress))
+            {
+                MessageBox.Show("Configuring: Destination IP CH2 not valid");
+                return;
+            }
+            if (!System.Net.IPAddress.TryParse(textBox_RcvMcastIP2.Text, out ipaddress))
+            {
+                MessageBox.Show("Configuring: Multicast IP CH2 not valid");
+                return;
+            }
+            int src_port;
+            try
+            {
+                src_port = int.Parse(textBox_SrcPort2.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Configuring: Src port CH2 not valid");
+                return;
+            }
+
+            if (src_port == Agent.SirtapRd.Src_port)
+            {
+                MessageBox.Show("Configuring: Src port CH2 cannot be equal that CH1");
+                return;
+            }
+
+            int dst_port;
+            try
+            {
+                dst_port = int.Parse(textBox_DstPort2.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Configuring: Dst port CH2 not valid");
+                return;
+            }
+
+            int payload;
+            switch (comboBox_PaylType2.Text)
+            {
+                case "PCMA":
+                    payload = 8;
+                    break;
+                case "PCMU":
+                    payload = 0;
+                    break;
+                default:
+                    MessageBox.Show("Configuring: Payload Type CH2 not valid");
+                    return;
+            }
+
+            Program.SetParamValueAppConfiguration("DstIP2", textBox_dstIP2.Text);
+            Program.SetParamValueAppConfiguration("RcvMcastIP2", textBox_RcvMcastIP2.Text);
+            Program.SetParamValueAppConfiguration("SrcPort2", textBox_SrcPort2.Text);
+            Program.SetParamValueAppConfiguration("DstPort2", textBox_DstPort2.Text);
+            Program.SetParamValueAppConfiguration("PayloadType2", comboBox_PaylType2.Text);
+
+            if (Agent.SirtapRd2.TheSameConfigIsAlreadyInitialized(textBox_dstIP2.Text, src_port,
+                dst_port, textBox_RcvMcastIP2.Text, payload))
+            {
+                label_Status2.Text = "RUNNING";
+                return;
+            }
+
+            label_Status2.Text = "STOPPED";
+            label_Transmitting2.Text = "STOPPED";
+            button_SCH2.Text = "SCH ON";
+            button_bucle2.Text = "BUCLE ON";
+
+            string sch_file = "Hold.wav";
+            try
+            {
+                sch_file = ConfigurationManager.AppSettings["SchFile2"].ToString();
+            }
+            catch
+            {
+                sch_file = "Hold.wav";
+            }
+
+            Agent.SirtapRd2.Dispose();
+            if (Agent.SirtapRd2.Init(textBox_dstIP2.Text, src_port, dst_port, textBox_RcvMcastIP2.Text, payload, sch_file) == 0)
+                label_Status2.Text = "RUNNING";
+        }
+
+        private void button_SCH2_Click(object sender, EventArgs e)
+        {
+            if (Agent.SirtapRd2.SQUELCH_activado)
+            {
+                string error = "";
+                if (Agent.SirtapRd2.Squelch(false) != 0)
+                {
+                    MessageBox.Show("ERROR: SQUELCH CH2: " + error);
+                }
+                else
+                {
+                    button_SCH2.Text = "SCH ON";
+                }
+            }
+            else
+            {
+                if (Agent.SirtapRd2.Squelch(true) == 0)
+                {
+                    button_SCH2.Text = "SCH OFF";
+                }
+            }
+        }
+
+        private void button_bucle2_Click(object sender, EventArgs e)
+        {
+            Agent.SirtapRd2.SetBucle(!Agent.SirtapRd2.Bucle);
+            if (Agent.SirtapRd2.Bucle) button_bucle2.Text = "BUCLE OFF";
+            else button_bucle2.Text = "BUCLE ON";
         }
     }
 }
