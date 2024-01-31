@@ -70,6 +70,7 @@
             this.label18 = new System.Windows.Forms.Label();
             this.textBox_DstPort2 = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.buttonSnmp = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -462,11 +463,22 @@
             this.label19.TabIndex = 14;
             this.label19.Text = "Rem. port  ";
             // 
+            // buttonSnmp
+            // 
+            this.buttonSnmp.Location = new System.Drawing.Point(502, 12);
+            this.buttonSnmp.Name = "buttonSnmp";
+            this.buttonSnmp.Size = new System.Drawing.Size(215, 29);
+            this.buttonSnmp.TabIndex = 27;
+            this.buttonSnmp.Text = "SNMP PARAMETERS";
+            this.buttonSnmp.UseVisualStyleBackColor = true;
+            this.buttonSnmp.Click += new System.EventHandler(this.buttonSnmp_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1221, 469);
+            this.ClientSize = new System.Drawing.Size(1220, 448);
+            this.Controls.Add(this.buttonSnmp);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.button_bucle2);
             this.Controls.Add(this.button_SCH2);
@@ -537,6 +549,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox_DstPort2;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button buttonSnmp;
     }
 }
 

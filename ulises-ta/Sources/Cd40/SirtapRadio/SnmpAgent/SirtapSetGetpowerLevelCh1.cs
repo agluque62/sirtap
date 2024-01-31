@@ -42,7 +42,7 @@ namespace SnmpAgent
                 }
                 catch (Exception)
                 {
-                    PowerLevelCh1 = 30000;
+                    PowerLevelCh1 = 25;
                     SirtapRadio.Program.SetParamValueAppConfiguration("PowerLevelCh1", PowerLevelCh1.ToString());
                 }
 

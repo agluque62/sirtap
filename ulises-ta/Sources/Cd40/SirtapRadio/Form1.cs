@@ -446,5 +446,11 @@ namespace SirtapRadio
             if (Agent.SirtapRd2.Bucle) button_bucle2.Text = "BUCLE OFF";
             else button_bucle2.Text = "BUCLE ON";
         }
+
+        private void buttonSnmp_Click(object sender, EventArgs e)
+        {
+            FormSnmpData formSnmpData = new FormSnmpData();
+            formSnmpData.ShowDialog();
+        }
     }
 }
