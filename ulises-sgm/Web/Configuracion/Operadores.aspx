@@ -45,13 +45,14 @@ CodeFileBaseClass="PageBaseCD40.PageCD40" Title="Gestión de operadores" EnableEv
 		<asp:Label style="Z-INDEX: 102; LEFT: 12px; POSITION: absolute; TOP: 60px" 
 			id="Label3" runat="server" Text="Perfil" meta:resourcekey="Label3Resource1"></asp:Label>
 		<asp:DropDownList style="Z-INDEX: 105; LEFT: 12px; POSITION: absolute; TOP: 80px" 
-			id="DDLPerfil" runat="server"  AutoPostBack="True" OnSelectedIndexChanged="DDLPerfil_SelectedIndexChanged"  Width="107px"  class="select"
+			id="DDLPerfil" runat="server"  AutoPostBack="True" OnSelectedIndexChanged="DDLPerfil_SelectedIndexChanged"  Width="140"  class="select"
 			meta:resourcekey="DDLPerfilResource1">
 			<asp:ListItem Value="0" meta:resourcekey="ListItemResource1">Operador</asp:ListItem>
 			<asp:ListItem Value="1" meta:resourcekey="ListItemResource2">T&#233;cnico 1</asp:ListItem>
 			<asp:ListItem Value="2" meta:resourcekey="ListItemResource3">T&#233;cnico 2</asp:ListItem>
 			<asp:ListItem Value="3" meta:resourcekey="ListItemResource4">T&#233;cnico 3</asp:ListItem>
             <asp:ListItem Value="4" meta:resourcekey="ListItemResource5">Supervisor</asp:ListItem>
+            <asp:ListItem Value="5" meta:resourcekey="ListItemResource6">Operador de Misión</asp:ListItem>
 			</asp:DropDownList>
 
 		<asp:Label style="Z-INDEX: 108; LEFT: 12px; POSITION: absolute; TOP: 106px" 

@@ -107,16 +107,18 @@ namespace CD40.BD.Entidades
             get { return _IdDestinoLCEN; }
             set { _IdDestinoLCEN = value; }
         }
-
+        // Recurso Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
-
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public DestinosExternosSector()
         {
 			IdPrefijo = uint.MaxValue;
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -192,6 +194,8 @@ namespace CD40.BD.Entidades
                         r.TipoAcceso = (string)dr["TipoAcceso"];
                     if (dr["Literal"] != System.DBNull.Value)
                         r.Literal = (string)dr["Literal"];
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = (bool)(dr["Seguro"]);
 
                     //Se recupera el prefijo y el Identificador del Destino LCEN asociado al destino externo
                     //Esta situación sólo se puede dar si el destino es ATS (Prefijo == 3)y se encuentra definido dentro del panel de LC (TipoAcceso='IA')
@@ -216,25 +220,8 @@ namespace CD40.BD.Entidades
             string[] consulta = new string[2];
             
             Consulta.Clear();
-
-            /*
-            Consulta.Append("INSERT INTO DestinosExternosSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,IdPrefijo,PosHMI,Prioridad,OrigenR2,PrioridadSIP,TipoAcceso,Literal)" +
-                            " VALUES ('" + IdSistema + "','" +
-                                         IdDestino + "'," +
-                                         TipoDestino + ",'" +
-                                         IdNucleo + "','" +
-                                         IdSector + "'," +
-                                         IdPrefijo + "," +
-                                         PosHMI + "," +
-                                         Prioridad + ",'" +
-                                         OrigenR2 + "'," +
-                                         PrioridadSIP + ",'" +
-                                         TipoAcceso + "','" +
-                                         Literal + "')");
-            */
-
-            Consulta.Append("INSERT INTO DestinosExternosSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,IdPrefijo,PosHMI,Prioridad,OrigenR2,PrioridadSIP,TipoAcceso,Literal,IdPrefijoDestinoLCEN,IdDestinoLCEN)");
-            Consulta.AppendFormat(" VALUES ('{0}','{1}',{2},'{3}','{4}',{5},{6},{7},'{8}',{9},'{10}','{11}'", IdSistema, IdDestino, TipoDestino, IdNucleo, IdSector, IdPrefijo, PosHMI, Prioridad, OrigenR2, PrioridadSIP,TipoAcceso, Literal);
+            Consulta.Append("INSERT INTO DestinosExternosSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,IdPrefijo,PosHMI,Prioridad,OrigenR2,PrioridadSIP,TipoAcceso,Literal,Seguro,IdPrefijoDestinoLCEN,IdDestinoLCEN)");
+            Consulta.AppendFormat(" VALUES ('{0}','{1}',{2},'{3}','{4}',{5},{6},{7},'{8}',{9},'{10}','{11}',{12}", IdSistema, IdDestino, TipoDestino, IdNucleo, IdSector, IdPrefijo, PosHMI, Prioridad, OrigenR2, PrioridadSIP,TipoAcceso, Literal, Seguro);
 
             if (string.Compare(TipoAcceso, "IA") == 0)
             {
@@ -268,24 +255,8 @@ namespace CD40.BD.Entidades
             string[] consulta = new string[2];
 
             Consulta.Clear();
-            /*
-            Consulta.Append("UPDATE DestinosExternosSector SET IdSistema='" + IdSistema + "'," +
-                                            "IdDestino='" + IdDestino + "'," +
-                                            "TipoDestino=" + TipoDestino + "," +
-                                            "IdNucleo='" + IdNucleo + "'," +
-                                            "IdSector='" + IdSector + "'," +
-                                            "IdPrefijo=" + IdPrefijo + "," +
-                                            "PosHMI=" + PosHMI + "," +
-                                            "Prioridad=" + Prioridad + "," +
-                                            "OrigenR2='" + OrigenR2 + "'," +
-                                            "PrioridadSIP=" + PrioridadSIP + "," +
-                                            "TipoAcceso='" + TipoAcceso + "'," +
-                                            "Literal='" + Literal + "' " +
-                                            "WHERE IdDestino='" + IdDestino + "' AND IdSector='" + IdSector + "' AND IdSistema='" + IdSistema + "' AND PosHMI=" + PosHMI + " AND IdPrefijo=" + IdPrefijo
-                                            );
-            */
             Consulta.AppendFormat("UPDATE DestinosExternosSector SET IdSistema='{0}',IdDestino='{1}',TipoDestino={2},IdNucleo='{3}',IdSector='{4}',IdPrefijo={5},", IdSistema, IdDestino, TipoDestino, IdNucleo, IdSector, IdPrefijo);
-            Consulta.AppendFormat("PosHMI={0},Prioridad={1},OrigenR2='{2}',PrioridadSIP={3},TipoAcceso='{4}',Literal='{5}',", PosHMI, Prioridad, OrigenR2, PrioridadSIP, TipoAcceso, Literal);
+            Consulta.AppendFormat("PosHMI={0},Prioridad={1},OrigenR2='{2}',PrioridadSIP={3},TipoAcceso='{4}',Literal='{5}',Seguro={6}", PosHMI, Prioridad, OrigenR2, PrioridadSIP, TipoAcceso, Literal, Seguro);
 
             //Los campos IdPrefijoDestinoLCEN y IdDestinoLCEN sólo tienen sentido para los destinos configurados desde el panel de Línea Caliente (tipoAcceso='IA')
             if (string.Compare(TipoAcceso, "IA") == 0 && null != IdPrefijoDestinoLCEN)
@@ -313,7 +284,6 @@ namespace CD40.BD.Entidades
 			Consulta.Remove(0, Consulta.Length);
             if (IdSistema != null && IdSector != null && IdNucleo != null && PosHMI != 0 && IdPrefijo != uint.MaxValue)
             {
-                //Consulta.Append("DELETE FROM DestinosExternosSector WHERE IdSistema='" + IdSistema + "' AND IdSector='" + IdSector + "' AND IdNucleo='" + IdNucleo + "' AND PosHMI=" + PosHMI + " AND IdPrefijo=" + IdPrefijo);
                 Consulta.AppendFormat("DELETE FROM DestinosExternosSector WHERE IdSistema='{0}' AND IdNucleo='{1}' AND IdSector='{2}' AND PosHMI={3} AND IdPrefijo={4}", IdSistema, IdNucleo, IdSector, PosHMI, IdPrefijo);
             }
             else if (IdSistema != null && IdSector != null && IdNucleo != null && PosHMI != 0)
@@ -344,12 +314,5 @@ namespace CD40.BD.Entidades
 			return consulta;
 		}
 
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM DestinosExternosSector WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

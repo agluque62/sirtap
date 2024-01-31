@@ -17,8 +17,8 @@
     <asp:Label ID="Label1" runat="server" Style="z-index: 102; left: 265px; position: absolute;
         top: 278px" Text="Destinos disponibles" meta:resourcekey="Label1Resource1"></asp:Label>    
  
-   <asp:Table ID="TEnlacesLC" runat="server" Height="80px" Style="left: 41px;
-        position: absolute; top: 74px; z-index: 99;" BackColor="Transparent" BorderStyle="Solid" BorderColor="#eeb44f">
+   <asp:Table ID="TEnlacesLC" runat="server" Height="80px" Style="left: 100px;
+        position: absolute; top: 122px; z-index: 99;" BackColor="Transparent" BorderStyle="Solid" BorderColor="#eeb44f">
        <asp:TableRow ID="TableRow1" runat="server" BackColor="Transparent">
            <asp:TableCell ID="TableCell10" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                <asp:Button ID="Button10" runat="server"
@@ -56,25 +56,26 @@
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell16" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button16" runat="server"
+           <asp:TableCell ID="TableCell16" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button16" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell17" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button17" runat="server"
+           <asp:TableCell ID="TableCell17" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button17" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell18" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button18" runat="server"
+           <asp:TableCell ID="TableCell18" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button18" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
        </asp:TableRow>
+
        <asp:TableRow ID="TableRow2" runat="server" BackColor="Transparent" Visible="true">
            <asp:TableCell ID="TableCell1" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                <asp:Button ID="Button1" runat="server"
@@ -112,26 +113,52 @@
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell7" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button7" runat="server"
+           <asp:TableCell ID="TableCell7" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button7" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell8" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button8" runat="server"
+           <asp:TableCell ID="TableCell8" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button8" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
-           <asp:TableCell ID="TableCell9" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-               <asp:Button ID="Button9" runat="server"
+           <asp:TableCell ID="TableCell9" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
+               <asp:Button ID="Button9" runat="server" Visible="false" Enabled="false"
                    SkinId="BotonPanelLc"
                    OnClick="CeldaEnlaceLineaCaliente_OnClick" />
 
            </asp:TableCell>
        </asp:TableRow>
    </asp:Table> 
+
+        <asp:CheckBox ID="CBSeguro1" runat="server" Style="z-index: 105; left: 107px; position: absolute;
+    top: 102px" Text="Seg.: " TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+        <asp:CheckBox ID="CBSeguro2" runat="server" Style="z-index: 105; left: 191px; position: absolute;
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+        <asp:CheckBox ID="CBSeguro3" runat="server" Style="z-index: 105; left: 269px; position: absolute;
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+        <asp:CheckBox ID="CBSeguro4" runat="server" Style="z-index: 105; left: 351px; position: absolute;
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+        <asp:CheckBox ID="CBSeguro5" runat="server" Style="z-index: 105; left: 431px; position: absolute;
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+        <asp:CheckBox ID="CBSeguro6" runat="server" Style="z-index: 105; left: 512px; position: absolute;
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
+    meta:resourcekey="LSeguroResource1"/>
+
 
    <asp:Panel ID="PanelNoPermissions" runat="server" ForeColor="#00C000" 
 		 Style="z-index: -1; left: 100px; position: absolute; top: 60px; height: 60px; width: 797px;" 

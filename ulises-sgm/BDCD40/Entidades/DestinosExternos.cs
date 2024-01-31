@@ -99,7 +99,7 @@ namespace CD40.BD.Entidades
              *                         habría que añadir el grupo a la tabla....
              */
             // string[] consulta = new string[2];
-            string[] consulta = (IdGrupo == null) ? new string[2] : new string[3];
+            string[] consulta = (IdGrupo == null) ? new string[3] : new string[4];
             /**/
 
             Consulta.Remove(0, Consulta.Length);
@@ -113,6 +113,12 @@ namespace CD40.BD.Entidades
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosExternos");
 
+            // Actualización Modo Seguro.
+            Consulta.Remove(0, Consulta.Length);
+            Consulta.Append(String.Format("UPDATE DestinosTelefonia SET Seguro= {1} WHERE idDestino='{0}'", IdDestino, Seguro));
+            consulta[2] = Consulta.ToString();
+            /**/
+
             /**
              * AGL 2012.06.15. ID.125. "No se anade el grupo a la tabla de Destinos de Telefonía"
              *                         habría que añadir el grupo a la tabla....
@@ -122,10 +128,8 @@ namespace CD40.BD.Entidades
             {
                 Consulta.Remove(0, Consulta.Length);
                 Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo='{0}' WHERE idDestino='{1}'",IdGrupo==null ? "null" : IdGrupo, IdDestino));
-                consulta[2] = Consulta.ToString();
+                consulta[3] = Consulta.ToString();
             }
-            /**/
-
             return consulta;
 		}
 
@@ -140,7 +144,7 @@ namespace CD40.BD.Entidades
              *                         habría que añadir el grupo a la tabla....
              */
             // string[] consulta = new string[2];
-            string[] consulta = new string[3];
+            string[] consulta = new string[4];
             /**/
 			
             Consulta.Remove(0, Consulta.Length);
@@ -154,6 +158,11 @@ namespace CD40.BD.Entidades
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosExternos");
 
+            // Actualización Modo Seguro.
+            Consulta.Remove(0, Consulta.Length);
+            Consulta.Append(String.Format("UPDATE DestinosTelefonia SET Seguro= {1} WHERE idDestino='{0}'", IdDestino, Seguro));
+            consulta[2] = Consulta.ToString();
+
             /**
              * AGL 2012.06.15. ID.125. "No se anade el grupo a la tabla de Destinos de Telefonía"
              *                         habría que añadir el grupo a la tabla....
@@ -162,10 +171,14 @@ namespace CD40.BD.Entidades
             Consulta.Remove(0, Consulta.Length);
             
             if (IdGrupo==null)
-                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo=null, Seguro = {1} WHERE idDestino='{0}'", IdDestino, Seguro));
+                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo=null WHERE idDestino='{0}'", IdDestino));
             else
-                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo='{0}', Seguro = {2} WHERE idDestino='{1}'", IdGrupo, IdDestino, Seguro));
-            consulta[2] = Consulta.ToString();
+                Consulta.Append(String.Format("UPDATE DestinosTelefonia SET idGrupo='{0}' WHERE idDestino='{1}'", IdGrupo, IdDestino));
+            consulta[3] = Consulta.ToString();
+
+
+            /**/
+
             return consulta;
 		}
 
@@ -188,12 +201,5 @@ namespace CD40.BD.Entidades
 			return consulta;
 		}
 
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM DestinosExternos WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

@@ -95,8 +95,8 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
             //20210317 #4749
             // RQF-4 solo nucleos y se relacionan
-            ControlDependenciasATS = true; // SistemaConDependenciasATS();
-            
+            ControlDependenciasATS = false; // SIRTAP
+            //OcultaInformacionUsuario(); //SIRTAP
            
             if (!ControlDependenciasATS)
             {
@@ -166,29 +166,9 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
 		if (Servicio.DeleteSQL(op) > 0)
 		{
-            GestionaOperadoresOffline();
             EliminaAsignacionDependenciasATS();
 			cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
-
 			TerminaActualizacion();
-
-			Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-			KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-			if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-			{
-				SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-				switch (sincro.BajaOperador(op.IdOperador))
-				{
-					case 137:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod137"), op.IdOperador));
-						break;
-					case 138:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod138"), op.IdOperador));
-						break;
-					default:
-						break;
-				}
-			}
 		}
 	}
 
@@ -206,12 +186,8 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
         op.FechaUltimoAcceso = DateTime.Today;
         op.SesionActiva = 0;
         op.SesionEstado = 0;
-
-        if (!Regex.IsMatch(TBUsuario.Text, @"^[a-zA-Z0-9_@#.-\u00f1\u00d1\u00E0\u00FC-]+$"))
-        {
-            cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ErrorIdentificadorNoValido"));
+        if (!EsValidoUsuarioClave())
             return;
-        }      
         // RQF-28
         int timeoutvalido = 0;
         if (!TimeoutSesionValido(out timeoutvalido))
@@ -226,28 +202,9 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		{
             InsertaAsignacionDependenciasATS();
 			cMsg.alert((string)GetGlobalResourceObject("Espaniol", "OperadorDadoDeAlta"));
-            GestionaOperadoresOffline();
 			TerminaActualizacion();
 
 			ActualizaWebPadre(true);
-
-			Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-            KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-            if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-            {
-                SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                switch (sincro.AltaOperador(op.IdOperador,(int)op.NivelAcceso,op.Clave,op.Nombre,op.Apellidos,op.Telefono))
-                {
-                    case 135:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod135"), op.IdOperador));
-                        break;
-                    case 136:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod136"), op.IdOperador));
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 	}
 
@@ -277,31 +234,10 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
 		if (Servicio.UpdateSQL(op) > 0)
 		{
-
             InsertaAsignacionDependenciasATS();
-            GestionaOperadoresOffline();
 			cMsg.alert((string)GetGlobalResourceObject("Espaniol", "OperadorModificado"));
 
 			TerminaActualizacion();
-
-
-			Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-			KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-			if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-			{
-				SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-				switch (sincro.ModificaOperador(op.IdOperador, (int)op.NivelAcceso, op.Clave, op.Nombre, op.Apellidos, op.Telefono))
-				{
-					case 139:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod139"), op.IdOperador));
-						break;
-					case 140:
-						cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod140"), op.IdOperador));
-						break;
-					default:
-						break;
-				}
-			}
 		}
 	}
 
@@ -483,7 +419,6 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		TBTelefono.Text = string.Empty;
         TBTimeoutSesion.Text = string.Empty;
 		DDLPerfil.SelectedIndex = 0;
-		TBUsuario.Text = string.Empty;
 	}
 
 	protected void BtnNuevo_Click(object sender, EventArgs e)
@@ -509,6 +444,8 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
                 MostrarDependenciasAST(accion.alta);
             }
         }
+        TBUsuario.Text = string.Empty;
+        HFClave.Value = string.Empty;
 	}
 
 	protected void BtnCancelar_Click(object sender, EventArgs e)
@@ -558,13 +495,15 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
         }
 		else
 		{
-			if (!Modificando || TBClave.Visible) 
-				HFClave.Value = TBClave.Text;
-
-            if (Modificando)
-                ModificarOperador();
-            else
-                AnadirOperador();
+            if (!Modificando || TBClave.Visible)
+                HFClave.Value = TBClave.Text;
+            if (EsValidoUsuarioClave())
+            {
+                if (Modificando)
+                    ModificarOperador();
+                else
+                    AnadirOperador();
+            }
 		}
 	}
 
@@ -574,6 +513,37 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		Label2.Visible = TBClave.Visible = true;
 		Label9.Visible = TBClaveAntigua.Visible = true;
 	}
+
+    protected bool EsValidoUsuarioClave()
+    {
+        bool valido = true;
+        if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5) // Perfil operador de misión
+        {
+            if (!Regex.IsMatch(TBUsuario.Text, @"^[0-9_@#]+$"))
+            {
+                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ErrorIdentificadorNoValido"));
+                valido = false;
+            }
+
+            if (!Regex.IsMatch(HFClave.Value, @"^[0-9_@#]+$"))
+            {
+                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ErrorIdentificadorNoValido"));
+                valido = false;
+            }
+        }
+        else
+        {
+            if (!Regex.IsMatch(TBUsuario.Text, @"^[a-zA-Z0-9_@#.-\u00f1\u00d1\u00E0\u00FC-]+$"))
+            {
+                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ErrorIdentificadorNoValido"));
+                valido = false;
+            }
+        }
+
+        return valido;
+    }
+
+
 
 	protected void LBOperadores_SelectedIndexChanged(object sender, EventArgs e)
 	{
@@ -713,14 +683,10 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
             }
         }
     }
-    private void GestionaOperadoresOffline()
+
+    private void OcultaInformacionUsuario()
     {
-        if (bConfiguracionOffline == false) // Se actualiza desde la aplicación ON_LINE
-        {
-            if (Servicio.ActualizaOperadoresOffline() == false)
-            {
-                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ErrorOperadorOffline"));
-            }
-        }
+        Label4.Visible = Label5.Visible = Label7.Visible = LBLTBTimeoutSesion.Visible = false;
+        TBNombre.Visible = TBApellidos.Visible = TBTelefono.Visible = TBTimeoutSesion.Visible = false;
     }
 }

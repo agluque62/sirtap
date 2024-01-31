@@ -99,14 +99,18 @@ namespace CD40.BD.Entidades
             get { return _DescDestino; }
             set { _DescDestino = value; }
         }
+        // Recurso Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
 
-        //static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public DestinosRadioSector()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -164,6 +168,8 @@ namespace CD40.BD.Entidades
                         r.SupervisionPortadora = (bool)dr["SupervisionPortadora"];  //Incompatibilidad MySql Server 5.6.11 y 5.0  != 0;
                     if (dr["DescDestino"] != System.DBNull.Value)
                         r.DescDestino = (string)dr["DescDestino"];
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = (bool)(dr["Seguro"]);
 
 					ListaResultado.Add(r);
 				}
@@ -176,7 +182,7 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO DestinosRadioSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,PosHMI,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora, DescDestino)" +
+            Consulta.Append("INSERT INTO DestinosRadioSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,PosHMI,Prioridad,PrioridadSIP,ModoOperacion,Cascos,Literal,SupervisionPortadora, DescDestino, Seguro)" +
                             " VALUES ('" + IdSistema + "','" +
                                          IdDestino + "'," +
                                          TipoDestino + ",'" +
@@ -189,7 +195,8 @@ namespace CD40.BD.Entidades
                                          Cascos + "','" +
                                          Literal + "'," + 
                                          SupervisionPortadora + ",'"+
-                                         DescDestino + "' )");
+                                         DescDestino + "'," +
+                                         Seguro + ")" );
 
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosRadioSector");
@@ -214,7 +221,8 @@ namespace CD40.BD.Entidades
                                             "Cascos='" + Cascos + "'," +
                                             "Literal='" + Literal + "'," +
                                             "SupervisionPortadora=" + SupervisionPortadora + "," +
-                                             "DescDestino ='" + DescDestino + "'" +
+                                             "DescDestino='" + DescDestino + "'" +
+                                             "Seguro=" + Seguro +
                                             " WHERE IdDestino='" + IdDestino + "' AND " + "IdSector='" + IdSector + "' AND " + "IdSistema='" + IdSistema + "' AND" +
                                                     " PosHMI=" + PosHMI + " AND IdNucleo='" + IdNucleo + "' AND TipoDestino=" + TipoDestino
                                             );
@@ -261,14 +269,6 @@ namespace CD40.BD.Entidades
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosRadioSector");
 			return consulta;
 		}
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM DestinosRadioSector WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
 
         public string SelectCountDistinctDestinoSQL()
         {

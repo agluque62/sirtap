@@ -92,17 +92,19 @@ namespace CD40.BD.Entidades
             get { return _Literal; }
             set { _Literal = value; }
         }
-
+        // Recurso Seguro
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
-
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public DestinosInternosSector()
         {
 			IdPrefijo = uint.MaxValue;
 
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -159,7 +161,8 @@ namespace CD40.BD.Entidades
                         r.TipoAcceso = (string)dr["TipoAcceso"];
                     if (dr["Literal"] != System.DBNull.Value)
                         r.Literal = (string)dr["Literal"];
-
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        r.Seguro = (bool)(dr["Seguro"]);
                     ListaResultado.Add(r);
                 }
             }
@@ -171,7 +174,7 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO DestinosInternosSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,IdPrefijo,PosHMI,Prioridad,OrigenR2,PrioridadSIP,TipoAcceso,Literal)" +
+            Consulta.Append("INSERT INTO DestinosInternosSector (IdSistema,IdDestino,TipoDestino,IdNucleo,IdSector,IdPrefijo,PosHMI,Prioridad,OrigenR2,PrioridadSIP,TipoAcceso,Literal,Seguro)" +
                             " VALUES ('" + IdSistema + "','" +
                                          IdDestino + "'," +
                                          TipoDestino + ",'" +
@@ -183,7 +186,8 @@ namespace CD40.BD.Entidades
                                          OrigenR2 + "'," +
                                          PrioridadSIP + ",'" +
                                          TipoAcceso + "','" +
-                                         Literal + "')");
+                                         Literal + "'," +
+                                         Seguro + ")");
 
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosInternosSector");
@@ -206,8 +210,9 @@ namespace CD40.BD.Entidades
                                             "OrigenR2='" + OrigenR2 + "'," +
                                             "PrioridadSIP=" + PrioridadSIP + "," +
                                             "TipoAcceso='" + TipoAcceso + "'," +
-                                            "Literal='" + Literal + "' " +
-                                            "WHERE IdDestino='" + IdDestino + "' AND IdSector='" + IdSector + "' AND IdSistema='" + IdSistema + "' AND PosHMI=" + PosHMI + " AND IdPrefijo=" + IdPrefijo
+                                            "Literal='" + Literal + "'," +
+                                            "Seguro="+ Seguro +
+                                            " WHERE IdDestino='" + IdDestino + "' AND IdSector='" + IdSector + "' AND IdSistema='" + IdSistema + "' AND PosHMI=" + PosHMI + " AND IdPrefijo=" + IdPrefijo
                                             );
 
 			consulta[0] = Consulta.ToString();
@@ -237,13 +242,5 @@ namespace CD40.BD.Entidades
 			consulta[1] = ReplaceSQL(IdSistema, "DestinosInternosSector");
 			return consulta;
 		}
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM DestinosInternosSector WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }
