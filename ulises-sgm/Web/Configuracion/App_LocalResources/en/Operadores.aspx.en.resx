@@ -357,4 +357,10 @@
   <data name="ListItemResource5.Value" xml:space="preserve">
     <value>4</value>
   </data>
+  <data name="ListItemResource6.Text" xml:space="preserve">
+    <value>Mission Operator</value>
+  </data>
+  <data name="ListItemResource6.Value" xml:space="preserve">
+    <value>5</value>
+  </data>
 </root>

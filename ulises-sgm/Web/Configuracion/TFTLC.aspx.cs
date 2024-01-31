@@ -177,6 +177,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
         try
         {
             LimpiarPanel();
+            LimpiaChecksSeguro();
             if (datosLCint != null)
             {
                 for (int i = 0; i < datosLCint.Length; i++)
@@ -197,6 +198,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                         ibut.CssClass = "BtnPanelTfAsignado";
                         ibut.Text = ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).Literal;
                         prefijosPosiciones[pos] = ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).IdPrefijo;
+                        MuestraCheckSeguro(pos, true, ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).Seguro);
                     }
                 }
             }
@@ -236,6 +238,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                             else
                                 ibut.ToolTip = string.Empty;
                         }
+                        MuestraCheckSeguro(pos, true, ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).Seguro);
                     }
                 }
             }
@@ -244,6 +247,53 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
         {
             logDebugView.Error("(TFTLC-MostrarLC): ", ex);
         }
+    }
+
+    private void MuestraCheckSeguro(uint posicion, bool muestra, bool seguro)
+    {
+        switch (posicion)
+        {
+            case 1:
+                CBSeguro1.Visible = muestra;
+                CBSeguro1.Checked = seguro;
+            break;
+            case 2:
+                CBSeguro2.Visible = muestra;
+                CBSeguro2.Checked = seguro;
+            break;
+            case 3:
+                CBSeguro3.Visible = muestra;
+                CBSeguro3.Checked = seguro;
+            break;
+            case 4:
+                CBSeguro4.Visible = muestra;
+                CBSeguro4.Checked = seguro;
+            break;
+            case 5:
+                CBSeguro5.Visible = muestra;
+                CBSeguro5.Checked = seguro;
+            break;
+            case 6:
+                CBSeguro6.Visible = muestra;
+                CBSeguro6.Checked = seguro;
+            break;
+        }
+    }
+
+    private bool EsDestinoTelefoniaSeguro(string destino, uint tipo, uint prefijo)
+    {
+        bool seguro = false;
+        ServiciosCD40.DestinosTelefonia destTelf = new ServiciosCD40.DestinosTelefonia();
+        destTelf.IdSistema = (string)Session["idsistema"];
+        destTelf.IdDestino = destino;
+        destTelf.TipoDestino = tipo;
+        destTelf.IdPrefijo = prefijo;
+        ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(destTelf);
+        if (null != d && d.Length > 0)
+        {
+            seguro = (bool)((ServiciosCD40.DestinosTelefonia)d[0]).Seguro;
+        }
+        return seguro;
     }
 
     private void LimpiarPanel()
@@ -265,6 +315,17 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                 ibut.Text = "";
             }
         }
+
+    }
+
+    private void LimpiaChecksSeguro()
+    {
+        CBSeguro1.Checked = false;  CBSeguro1.Visible = false;
+        CBSeguro2.Checked = false;  CBSeguro2.Visible = false;
+        CBSeguro3.Checked = false;  CBSeguro3.Visible = false;
+        CBSeguro4.Checked = false;  CBSeguro4.Visible = false;
+        CBSeguro5.Checked = false;  CBSeguro5.Visible = false;
+        CBSeguro6.Checked = false;  CBSeguro6.Visible = false;
     }
 
     private void AsignarDestino(string id)
@@ -321,30 +382,6 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
 							s = (ServiciosCD40.DestinosInternosSector)datosLCint[i];
 
 							ServicioCD40.EliminaColateralEnUsuarioReciproco(ref s);
-							
-							#region Sincronizar CD30
-							Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-							KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-							if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-							{
-								SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-								switch (sincro.BajaColateralTelefonia(((ServiciosCD40.DestinosInternosSector)datosLCint[i]).IdNucleo,
-																((ServiciosCD40.DestinosInternosSector)datosLCint[i]).IdSector,
-																((ServiciosCD40.DestinosInternosSector)datosLCint[i]).PosHMI + 56))
-								{
-									case 127:
-										sincro.BajaColateralTelefonia(s.IdNucleo, s.IdSector, s.PosHMI + 56);
-										cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-										break;
-									case 128:
-										cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-										break;
-									default:
-										break;
-								}
-							}
-							#endregion
 							break;
                         }
                     }
@@ -358,28 +395,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                                 ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).PosHMI == Int16.Parse(id.Replace("Button", "")))
                             {
 								ServicioCD40.DeleteSQL(datosLCext[i]);
-								#region Sincronizar CD30
-								Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-								KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-								if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-								{
-									SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
 
-									switch (sincro.BajaColateralTelefonia(((ServiciosCD40.DestinosExternosSector)datosLCext[i]).IdNucleo,
-																	((ServiciosCD40.DestinosExternosSector)datosLCext[i]).IdSector,
-																	((ServiciosCD40.DestinosExternosSector)datosLCext[i]).PosHMI + 56))
-									{
-										case 127:
-											cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-											break;
-										case 128:
-											cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-											break;
-										default:
-											break;
-									}
-								}
-								#endregion
 								break;
                             }
                         }
@@ -413,7 +429,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                     t.Prioridad = prioridad;
                     t.PrioridadSIP = prioSip;
                     t.TipoAcceso = "IA";
-
+                    t.Seguro = EsDestinoTelefoniaSeguro(idDest, t.TipoDestino, t.IdPrefijo);
                     if (!string.IsNullOrEmpty(idDestinoLCEN))
                     {
                         //Se ha asignado un recurso LCEN al Destino ATS
@@ -426,54 +442,10 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                         t.IdDestinoLCEN = null;
                     }
 
-                    if (!Modificando && ServicioCD40.InsertSQL(t) < 0) logDebugView.Warn("(TFTLC-GuardarNuevaPosicionEnBD): No se ha guardado la posicion de telefonia externa");
-                    else if (!Modificando)
-                    {
-                        #region Sincronizar CD30
-                        Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                        KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                        if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                        {
-                            SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                            switch (sincro.AltaColateralTelefonia(t.IdNucleo, t.IdSector, t.PosHMI + 56, t.Literal, t.IdDestino, 2, t.OrigenR2, t.Prioridad))
-                            {
-                                case 127:
-                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                    break;
-                                case 128:
-                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        #endregion
-                    }
-                    if (Modificando && ServicioCD40.UpdateSQL(t) < 0) logDebugView.Warn("(TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en update de telefonia externa");
-                    else if (Modificando)
-                    {
-                        #region Sincronizar CD30
-                        Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                        KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                        if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                        {
-                            SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                            switch (sincro.ModificaColateralTelefonia(t.IdNucleo, t.IdSector, t.PosHMI + 56, t.Literal, t.Prioridad))
-                            {
-                                case 127:
-                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                    break;
-                                case 128:
-                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        #endregion
-                    }
+                    if (!Modificando && ServicioCD40.InsertSQL(t) < 0) 
+                        logDebugView.Warn("(TFTLC-GuardarNuevaPosicionEnBD): No se ha guardado la posicion de telefonia externa");
+                    if (Modificando && ServicioCD40.UpdateSQL(t) < 0) 
+                        logDebugView.Warn("(TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en update de telefonia externa");
                 }
                 else
                     if (idPref == PREFIJO_DESTINO_LCI)//telefonia interna
@@ -491,8 +463,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                         t.Prioridad = prioridad;
                         t.PrioridadSIP = prioSip;
                         t.TipoAcceso = "IA";
-
-
+                        t.Seguro = EsDestinoTelefoniaSeguro(idDest, t.TipoDestino, t.IdPrefijo);
                         if (!Modificando)
                         {
                             ServiciosCD40.DestinosInternosSector d = t;
@@ -505,38 +476,6 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
                                     return;
                                 }
-
-                                #region Sincronizar CD30
-                                Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                                KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                                if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                                {
-                                    SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                                    sincro.AltaColateralTelefonia(d.IdNucleo, d.IdSector, d.PosHMI + 56, d.Literal, d.IdDestino, 7, d.OrigenR2, d.Prioridad);
-                                }
-                                #endregion
-
-                                #region Sincronizar CD30
-                                //Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                                //KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                                if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                                {
-                                    SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                                    switch (sincro.AltaColateralTelefonia(t.IdNucleo, t.IdSector, t.PosHMI + 56, t.Literal, t.IdDestino, 7, t.OrigenR2, t.Prioridad))
-                                    {
-                                        case 127:
-                                            cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                            break;
-                                        case 128:
-                                            cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                                #endregion
                             }
                             else
                             {
@@ -555,38 +494,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                                 if (ServicioCD40.EliminaColateralEnUsuarioReciproco(ref d))
                                 {
                                     d = t;
-                                    if (ServicioCD40.InsertaColateralEnUsuarioReciproco(ref d, (int)NumPosicionesPag))
-                                    {
-                                        #region Sincronizar CD30
-                                        Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                                        KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                                        if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                                        {
-                                            SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                                            sincro.AltaColateralTelefonia(d.IdNucleo, d.IdSector, d.PosHMI + 56, d.Literal, d.IdDestino, 7, d.OrigenR2, d.Prioridad);
-                                        }
-                                        #endregion
-
-                                        #region Sincronizar CD30
-                                        if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                                        {
-                                            SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-
-                                            switch (sincro.ModificaColateralTelefonia(t.IdNucleo, t.IdSector, t.PosHMI + 56, t.Literal, t.Prioridad))
-                                            {
-                                                case 127:
-                                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                                    break;
-                                                case 128:
-                                                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                        #endregion
-                                    }
+                                    ServicioCD40.InsertaColateralEnUsuarioReciproco(ref d, (int)NumPosicionesPag);
                                 }
                             }
                         }
@@ -626,8 +534,6 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
             BtAsignar.Enabled = false;
 		}
 
-
-//        if (BtAsignar.Enabled || BtLiberar.Enabled)
         if (ibut.Text != "" || PermisoSegunPerfil)
         {
             ViewState["IdBoton"] = ((Button)sender).ID;
@@ -764,16 +670,8 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
 	protected void BtModificar_Click(object sender, EventArgs e)
 	{
-		//EsconderPanelOpciones();
-
 		Modificando = true;
-
-		//string id = (string)ViewState["IdBoton"];
-		//Button ibut = (Button)TEnlacesInternos.FindControl(id);
-		//TextBox tbox = (TextBox)TEnlacesInternos.FindControl("TextBox" + id.Replace("Button", ""));
-
 		MuestraParametrosPosicion();
-
 		Panel2.Visible = true;
 	}
 
@@ -807,7 +705,6 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
 				{
 					DataRow dExterno = ds.Tables[0].Rows[0];
 					TBoxLiteral.Text = (string)dExterno["Literal"];
-					// DListPrioridadSIP.SelectedIndex = (int)((uint)dExterno["PrioridadSIP"] - 1);
 					DListPrioridadSIP.SelectedValue = Convert.ToString(((uint)dExterno["PrioridadSIP"]));
 					DListPrioridadTecla.SelectedIndex = (int)((uint)dExterno["Prioridad"] - 1);
                     PrioridadTecla = (int)((uint)dExterno["Prioridad"]);

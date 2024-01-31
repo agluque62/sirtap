@@ -79,12 +79,8 @@ namespace CD40.BD.Entidades
         }
         #endregion
 
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
-
         public EstadosRecursos()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -106,7 +102,6 @@ namespace CD40.BD.Entidades
         {
             ListaResultado.Clear();
 
-            //DataSetResultado = this.DataSetSelectSQL();
             if (ds != null && ds.Tables.Count > 0)
             {
                 foreach (System.Data.DataRow dr in ds.Tables[0].Rows)
@@ -211,13 +206,5 @@ namespace CD40.BD.Entidades
 			consulta[1] = ReplaceSQL(IdSistema, "EstadosRecursos");
 			return consulta;
 		}
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM EstadosRecursos WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

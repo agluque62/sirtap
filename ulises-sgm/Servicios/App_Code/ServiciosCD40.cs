@@ -733,7 +733,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <returns></returns>
     [WebMethod(Description = "Pasándole el identificador del sistema, el identificador del sector y la página del enlace a configurar, retorna una lista de destinos radio" +
                             " sin asignar a ningún enlace del sector y página.")]
-    public List<string> DestinosRadioSinAsignarALaPaginaDelSector(string idSistema, string idSector, uint pagina)
+    public List<string> DestinosRadioSinAsignarALaPaginaDelSector(string idSistema, string idSector, uint pagina, bool seguro)
     {
         uint numFrecPorPagina = 0;
         ParametrosSector s = new ParametrosSector();
@@ -760,7 +760,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <returns></returns>
     [WebMethod(Description = "Pasándole el identificador del sistema, el identificador del sector y la página del enlace a configurar, retorna los datos de destinos radio" +
                             " sin asignar a ningún enlace del sector y página.")]
-    public Tablas[] DestinosRadioSinAsignarALaPaginaDelSectorDC(string idSistema, string idSector, uint pagina)
+    public Tablas[] DestinosRadioSinAsignarALaPaginaDelSectorDC(string idSistema, string idSector, uint pagina, bool seguro)
     {
         uint numFrecPorPagina = 0;
         ParametrosSector s = new ParametrosSector();
@@ -774,7 +774,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         if (numFrecPorPagina > 0)
         {
             int i = 0;
-            DataSet dsResultado = Procedimientos.DestinosRadioSinAsignarALaPaginaDelSectorDC(GestorBDCD40.ConexionMySql, idSistema, idSector, pagina - 1, numFrecPorPagina);
+            DataSet dsResultado = Procedimientos.DestinosRadioSinAsignarALaPaginaDelSectorDC(GestorBDCD40.ConexionMySql, idSistema, idSector, pagina - 1, numFrecPorPagina, seguro);
 
             Tablas[] listaDestinos = new Tablas[dsResultado.Tables[0].Rows.Count];
             foreach (DataRow dr in dsResultado.Tables[0].Rows)
@@ -927,6 +927,8 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
                     r.SupervisionPortadora = (bool)dr["SupervisionPortadora"];
                 if (dr["DescDestino"] != System.DBNull.Value)
                     r.DescDestino = (string)dr["DescDestino"]; //RQF-34
+                if (dr["Seguro"] != System.DBNull.Value)
+                    r.Seguro = (bool)(dr["Seguro"]);
                 listaDestinos[i++] = (Tablas)r;
             }
             return listaDestinos;
@@ -969,10 +971,10 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
     /// <returns></returns>
     [WebMethod(Description = "Pasándole el identificador del sistema y el identificador del sector, retorna una lista de destinos de telefonía" +
                         " sin asignar a ningún enlace del sector.")]
-    public List<Tablas> DestinosTelefoniaSinAsignarAlSector(string idSistema, string idSector, string idNucleo)
+    public List<Tablas> DestinosTelefoniaSinAsignarAlSector(string idSistema, string idSector, string idNucleo, bool seguro)
     {
         //Procedimientos p = new Procedimientos();
-        return Procedimientos.DestinosTelefoniaSinAsignarAlSector(GestorBDCD40.ConexionMySql, idSistema, idSector, idNucleo);
+        return Procedimientos.DestinosTelefoniaSinAsignarAlSector(GestorBDCD40.ConexionMySql, idSistema, idSector, idNucleo, seguro);
     }
     /*
     [WebMethod(Description = "Pasándole el identificador del sistema y el identificador del sector, retorna una lista de destinos de telefonía" +
@@ -1031,6 +1033,8 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
                     r.TipoAcceso = (string)dr["TipoAcceso"];
                 if (dr["Literal"] != System.DBNull.Value)
                     r.Literal = (string)dr["Literal"];
+                if (dr["Seguro"] != System.DBNull.Value)
+                    r.Seguro = (bool)(dr["Seguro"]);
 
                 listaDestinos[i++] = (Tablas)r;
             }
@@ -1065,6 +1069,8 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
                     r.TipoAcceso = (string)dr["TipoAcceso"];
                 if (dr["Literal"] != System.DBNull.Value)
                     r.Literal = (string)dr["Literal"];
+                if (dr["Seguro"] != System.DBNull.Value)
+                    r.Seguro = (bool)(dr["Seguro"]);
                 if (dr["IdPrefijoDestinoLCEN"] != System.DBNull.Value)
                     r.IdPrefijoDestinoLCEN = (uint)dr["IdPrefijoDestinoLCEN"];
                 if (dr["IdDestinoLCEN"] != System.DBNull.Value)

@@ -618,6 +618,7 @@ public partial class Configuracion_EquiposExternos : PageBaseCD40.PageCD40	// Sy
                 bNumGrabadoresExcedido = false;
         }
 
+
         // Cambiar SIP por RTSP o vicecersa según el tipo de equipo
         ChangeLblPort(((DropDownList)sender).SelectedValue);
 

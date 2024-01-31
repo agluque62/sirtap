@@ -945,7 +945,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
                     }
                     else
                     {
-                        CheckFrecNoDesasignable.Visible = true;
+                        // No se presenta no desasignable SIRTAP
+                        CheckFrecNoDesasignable.Visible = false;
                         InicializaDatosMultifrecuencia();
                     }
                     PresentaCalculoDeRetardo();
@@ -3120,7 +3121,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         }
         else
         {
-            CheckFrecNoDesasignable.Visible = true;          
+            // No se presenta no desasignable SIRTAP
+            CheckFrecNoDesasignable.Visible = false;          
         }
         VisualizaCamposMultifrecuencia(CheckMultiFrecuencia.Checked);
         CargarRecursosSinAsignar();
@@ -3223,7 +3225,8 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         }
         else
         {
-            CheckFrecNoDesasignable.Visible = true;
+            // No se presenta no desasignable SIRTAP
+            CheckFrecNoDesasignable.Visible = false;
         }
     }
     private void VisualizaCamposMultifrecuencia(bool bVisualiza)

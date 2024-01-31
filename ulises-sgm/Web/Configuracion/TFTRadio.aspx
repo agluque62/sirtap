@@ -11,6 +11,12 @@
 --%>   
 	<asp:Label ID="Label6" runat="server" Text="RADIO" CssClass="labelPagina" 
 		meta:resourcekey="Label6Resource1"/>
+
+        <asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 516px; position: absolute;
+            top: 76px" Text="Seguro: " TextAlign="Left" Enabled="True" 
+            AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial"
+            meta:resourcekey="LSeguroResource1"/>
+
 	<asp:ImageButton ID="IButPagAbajo" runat="server"  Style="z-index: 100; -webkit-transform: rotate(90deg); -moz-transform: rotate(90deg); -o-transform: rotate(90deg); transform: rotate(90deg);
     left: 165px; position: absolute; top: 73px" CausesValidation="False" 
 		ImageUrl="~/Configuracion/Images/arrow.png" OnClick="IButPagAbajo_Click" 
@@ -24,7 +30,7 @@
     position: absolute; top: 79px" Text="PAGINA " 
 		meta:resourcekey="LabelPagResource1"></asp:Label>
 
-    <asp:Table ID="TEnlacesRadio" runat="server" Style="left: 43px; position: absolute; top: 127px; z-index: 104;"
+    <asp:Table ID="TEnlacesRadio" runat="server" Style="left: 99px; position: absolute; top: 127px; z-index: 104;"
         BackColor="Transparent" BorderStyle="Solid" BorderColor="#eeb44f"
         meta:resourcekey="TEnlacesRadioResource1">
         <asp:TableRow ID="TableRow1" runat="server" BackColor="Transparent">
@@ -274,22 +280,22 @@
             </asp:TableCell>
         </asp:TableRow>
     </asp:Table>
-    <asp:ListBox ID="LBoxDestinos" runat="server" Height="335px" Style="z-index: 105; left: 620px;
-        position: absolute; top: 128px" Width="195px" Rows="100" AutoPostBack="True"  OnSelectedIndexChanged="LBoxDestinos_SelectedIndexChanged"
+    <asp:ListBox ID="LBoxDestinos" runat="server" Height="335px" Style="z-index: 105; left: 516px;
+        position: absolute; top: 129px" Width="195px" Rows="100" AutoPostBack="True"  OnSelectedIndexChanged="LBoxDestinos_SelectedIndexChanged"
 		meta:resourcekey="LBoxDestinosResource1"></asp:ListBox>
-   <asp:Label ID="Label1" runat="server" Style="z-index: 106; left: 620px; position: absolute;
-        top: 100px" Text="Destinos disponibles" 
+   <asp:Label ID="Label1" runat="server" Style="z-index: 106; left: 516px; position: absolute;
+        top: 102px" Text="Destinos disponibles:" 
 		meta:resourcekey="Label1Resource1"></asp:Label>
 
-    <asp:Label ID="LblRecAsignados" runat="server" Style="z-index: 110; left: 620px; position: absolute; top: 485px;height: 17px;"
+    <asp:Label ID="LblRecAsignados" runat="server" Style="z-index: 110; left: 516px; position: absolute; top: 486px;height: 17px;"
         Text="Recursos Asignados:"
         meta:resourcekey="LblRecAsignadosResource1"></asp:Label>
-    <asp:TextBox ID="TxtDescDestino" runat="server" Style="z-index: 117; left: 770px; position: absolute; top: 482px"
+    <asp:TextBox ID="TxtDescDestino" runat="server" Style="z-index: 117; left: 666px; position: absolute; top: 486px"
         Visible="True" MaxLength="32" Enabled="False"
         meta:resourcekey="TxtDescDestinoResource1"></asp:TextBox>
 
     <asp:ListBox ID="ListRecursos" runat="server"
-        meta:resourcekey="ListRecursosResource1"  Style="overflow-x:auto; z-index: 120; left: 620px; position: absolute; top: 505px; width: 400px; height: 195px;font-family: Courier New;font-size:13px;" Visible="true" SelectionMode="Multiple"></asp:ListBox>
+        meta:resourcekey="ListRecursosResource1"  Style="overflow-x:auto; z-index: 120; left: 516px; position: absolute; top: 510px; width: 400px; height: 195px;font-family: Courier New;font-size:13px;" Visible="true" SelectionMode="Multiple"></asp:ListBox>
 
    <asp:LinkButton ID="BtLC" runat="server" Style="z-index: 108; left: 317px; position: absolute;
         top: 485px; height: 19px; width: auto;" Text="Panel Linea Caliente" SkinId="LinkButtonCabecera"
