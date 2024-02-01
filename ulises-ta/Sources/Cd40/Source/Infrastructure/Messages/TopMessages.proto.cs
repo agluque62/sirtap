@@ -590,20 +590,23 @@ namespace U5ki.Infrastructure
       [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_FREQUENCY", Value=3)]
       TLMDO_SET_FREQUENCY = 3,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXPWR", Value=4)]
-      TLMDO_SET_TXPWR = 4,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_GET_FREQUENCY", Value=4)]
+      TLMDO_GET_FREQUENCY = 4,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXINHIBIT", Value=5)]
-      TLMDO_SET_TXINHIBIT = 5,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXPWR", Value=5)]
+      TLMDO_SET_TXPWR = 5,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_WFALLOC", Value=6)]
-      TLMDO_SET_WFALLOC = 6,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_TXINHIBIT", Value=6)]
+      TLMDO_SET_TXINHIBIT = 6,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_ERASE_CRYPT_KEYS", Value=7)]
-      TLMDO_ERASE_CRYPT_KEYS = 7,
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_SET_WFALLOC", Value=7)]
+      TLMDO_SET_WFALLOC = 7,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_LOAD_CRYPT_KEYS", Value=8)]
-      TLMDO_LOAD_CRYPT_KEYS = 8
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_ERASE_CRYPT_KEYS", Value=8)]
+      TLMDO_ERASE_CRYPT_KEYS = 8,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"TLMDO_LOAD_CRYPT_KEYS", Value=9)]
+      TLMDO_LOAD_CRYPT_KEYS = 9
     }
   
     private global::ProtoBuf.IExtension extensionObject;
@@ -654,8 +657,17 @@ namespace U5ki.Infrastructure
       set { _NumChannels = value; }
     }
 
+    private int _Frequecy = default(int);
+    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Frequecy", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int Frequecy
+    {
+      get { return _Frequecy; }
+      set { _Frequecy = value; }
+    }
+
     private U5ki.Infrastructure.TlmdoRsp.CodeTypes _Code = U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
-    [global::ProtoBuf.ProtoMember(6, IsRequired = false, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::ProtoBuf.ProtoMember(7, IsRequired = false, Name=@"Code", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
     [global::System.ComponentModel.DefaultValue(U5ki.Infrastructure.TlmdoRsp.CodeTypes.TLMDO_CODE_OK)]
     public U5ki.Infrastructure.TlmdoRsp.CodeTypes Code
     {

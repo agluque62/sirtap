@@ -140,7 +140,7 @@ namespace u5ki.RemoteControlService
             
         }
 
-        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true)
+        public TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true, bool historic_report = true)
         {
             TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_INVALID_OP;
             switch (msg.msgType)
@@ -153,6 +153,9 @@ namespace u5ki.RemoteControlService
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_FREQUENCY:
                     ret = SNMP_TLMDO_SET_FREQUENCY(msg, targetIp);
+                    break;
+                case TlmdoAsk.MsgType.TLMDO_GET_FREQUENCY:
+                    ret = SNMP_TLMDO_GET_FREQUENCY(msg, targetIp, ref response, historic_report);
                     break;
                 case TlmdoAsk.MsgType.TLMDO_SET_TXPWR:
                     if (isEmitter) ret = SNMP_TLMDO_SET_TXPWR(msg, targetIp);
@@ -317,6 +320,63 @@ namespace u5ki.RemoteControlService
                     }
                 }
             }
+
+            return ret;
+        }
+
+        private TlmdoRsp.CodeTypes SNMP_TLMDO_GET_FREQUENCY(TlmdoAsk msg, String targetIp, ref TlmdoRsp response, bool historic_report = true)
+        {
+            int i_rtimeout = 0;
+            TlmdoRsp.CodeTypes ret = TlmdoRsp.CodeTypes.TLMDO_CODE_OK;
+            string log = "[SNMP][" + "TLMDO_GET_FREQUENCY" + "] [" + targetIp + "][" + msg.Channel + "]";
+            int freq = 0;
+            while (i_rtimeout <= NUMMAXTimeout)
+            {
+                try
+                {
+                    string oid = (msg.Channel == 0) ? u5ki.RemoteControlService.OIDs.Sirtap.frequencyCh1 : 
+                        u5ki.RemoteControlService.OIDs.Sirtap.frequencyCh2;
+                    freq = SnmpClient.GetInt(targetIp, Community, oid,
+                        SNMPCallTimeout, Port, SNMPVersion, Username, Priv);
+                    if (historic_report)
+                    {
+                        LogInfo<Sirtap>(log + " [FREQUENCY " + freq + "] SUCCESS ",
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO,
+                            Id, CTranslate.translateResource(log));
+                    }
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (ex is Lextm.SharpSnmpLib.Messaging.TimeoutException)
+                    {
+                        if (i_rtimeout >= NUMMAXTimeout)
+                        {
+                            if (historic_report)
+                            {
+                                LogError<Sirtap>(log + " TIMEOUT ",
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                Id, CTranslate.translateResource(log));
+                            }
+                            ret = TlmdoRsp.CodeTypes.TLMDO_CODE_NO_RESP;
+                        }
+                        i_rtimeout++;
+                    }
+                    else
+                    {
+                        if (historic_report)
+                        {
+                            LogError<Sirtap>(log + " " + ex.Message,
+                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                            Id, CTranslate.translateResource(log));
+                        }
+                        ret = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
+                        break;
+                    }
+                }
+            }
+
+            response.Frequecy = freq;
 
             return ret;
         }

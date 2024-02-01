@@ -2304,28 +2304,29 @@ namespace U5ki.RdService
         /// <param name="call"></param>
         private void OnKaTimeout(int call)
         {
-            bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnKaTimeout(call);
-            if (found_in_NOED137_GRS_Gateway) return;            
-
             if (!_Master)
                 return;
 
             _EventQueue.Enqueue(call.ToString() + "_KaTimeout", delegate()
             {
-                foreach (RdFrecuency rdFr in Frecuencies.Values)
+                bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnKaTimeout(call);
+                if (!found_in_NOED137_GRS_Gateway)
                 {
-                    /** 20170126. AGL. Identifico el Recurso para poder generar el Historico. */
-                    RdResource rdRes;
-                    if (rdFr.HandleKaTimeout(call, out rdRes))
+                    foreach (RdFrecuency rdFr in Frecuencies.Values)
                     {
-                        /** 20170126. AGL. Generar Historico KEEP-ALIVE TIMEOUT */
-                        LogInfo<RdService>(String.Format("KeepAlive Timeout. IdDestino {0} Frecuencia {1}, Equipo {2}", rdFr.IdDestino, rdFr.Frecuency, rdRes.ID),
-                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
-                            rdFr.Frecuency,
-                            "Recurso: " + rdRes.ID + " KeepAlive Timeout.");
-                        break;
+                        /** 20170126. AGL. Identifico el Recurso para poder generar el Historico. */
+                        RdResource rdRes;
+                        if (rdFr.HandleKaTimeout(call, out rdRes))
+                        {
+                            /** 20170126. AGL. Generar Historico KEEP-ALIVE TIMEOUT */
+                            LogInfo<RdService>(String.Format("KeepAlive Timeout. IdDestino {0} Frecuencia {1}, Equipo {2}", rdFr.IdDestino, rdFr.Frecuency, rdRes.ID),
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                rdFr.Frecuency,
+                                "Recurso: " + rdRes.ID + " KeepAlive Timeout.");
+                            break;
+                        }
                     }
-                }               
+                }
             });
         }
         /// <summary>
@@ -2335,22 +2336,20 @@ namespace U5ki.RdService
         /// <param name="info"></param>
         private void OnRdInfo(int call, CORESIP_RdInfo info)
         {
-            if (_Master)
-            {
-                bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnRdInfo(call, info);
-                if (found_in_NOED137_GRS_Gateway) return;
-            }
-
             _EventQueue.Enqueue(call.ToString() + "_RdInfo", delegate()
             {
                 if (_Master)
                 {
-                    foreach (RdFrecuency rdFr in Frecuencies.Values)
+                    bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnRdInfo(call, info);
+                    if (!found_in_NOED137_GRS_Gateway)
                     {
-                        rdFr.SupervisionPortadora = ConfirmaSupervisionPortadora(rdFr.PttSrc, rdFr.Frecuency);
-                        if (rdFr.HandleRdInfo(call, info))
+                        foreach (RdFrecuency rdFr in Frecuencies.Values)
                         {
-                            break;
+                            rdFr.SupervisionPortadora = ConfirmaSupervisionPortadora(rdFr.PttSrc, rdFr.Frecuency);
+                            if (rdFr.HandleRdInfo(call, info))
+                            {
+                                break;
+                            }
                         }
                     }
                 }

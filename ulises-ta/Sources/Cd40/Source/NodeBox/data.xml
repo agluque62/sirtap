@@ -421,11 +421,19 @@
     <French>Télécommande. Exécuté avec erreur sur certaines radios.</French>
   </log>
   <log id="Telemando ejecutado con exito. cmd:{0} val:{1}">
-    <English>"Telecontrol executed successfully. cmd:{0} val:{1}"</English>
+    <English>Telecontrol executed successfully. cmd:{0} val:{1}</English>
     <French>Télécommande exécutée avec succès. cmd:{0} val:{1}</French>
   </log>
   <log id="Telemando ejecutado con error. cmd:{0} val:{1}">
-    <English>"Telecontrol executed with error. cmd:{0} val:{1}"</English>
+    <English>Telecontrol executed with error. cmd:{0} val:{1}</English>
     <French>Télécommande exécutée avec erreur. cmd:{0} val:{1}</French>
+  </log>
+  <log id="Equipo no presente">
+    <English>Not present</English>
+    <French>Absente</French>
+  </log>
+  <log id="Equipo presente">
+    <English>The device is present</English>
+    <French>L'appareil est présent</French>
   </log>
 </AppData>

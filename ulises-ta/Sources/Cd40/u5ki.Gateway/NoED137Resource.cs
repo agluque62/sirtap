@@ -6,9 +6,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using U5ki.Infrastructure;
 using static System.Collections.Specialized.BitVector32;
+using static System.Net.Mime.MediaTypeNames;
 using static U5ki.Infrastructure.SipAgent;
+using Translate;
 
 namespace U5ki.Gateway
 {
@@ -36,6 +39,15 @@ namespace U5ki.Gateway
             public int payload_type = 8;   //PCMA            
             public bool transmiting = false;
             public bool receiving = false;
+            public int channel = 1;            
+
+            public u5ki.RemoteControlService.SNMPV3_priv_types priv_type = u5ki.RemoteControlService.SNMPV3_priv_types.AES;
+            public u5ki.RemoteControlService.SNMPV3_auth_types auth_type = u5ki.RemoteControlService.SNMPV3_auth_types.SHA1;
+            public string username = "usr-sha-aes";
+            public string authpass = "authkey1";
+            public string privpass = "privkey1";
+
+            public u5ki.RemoteControlService.Sirtap RC = null;            
         }
 
         private CfgRecursoEnlaceExterno CfgResource;
@@ -48,6 +60,9 @@ namespace U5ki.Gateway
         private RdRsType rdType = RdRsType.RxTx;
         private NOED137RadioTypes NOED137RadioType = NOED137RadioTypes.SIRTAP;
         private SIRTAP_Params sirtap_params;
+        public System.Timers.Timer PollingPresenceTimer;
+
+        public bool Presence = true;
 
         public NoED137Resource()
         {
@@ -65,6 +80,13 @@ namespace U5ki.Gateway
 
         public void Dispose()
         {
+            if (PollingPresenceTimer != null)
+            {
+                PollingPresenceTimer.Stop();
+                PollingPresenceTimer.Dispose();
+                PollingPresenceTimer = null;
+            }
+
             if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
             {
                 Dispose_SIRTAP_Resource();
@@ -88,6 +110,17 @@ namespace U5ki.Gateway
             sirtap_params.dst_port = sirtap_params.src_port + 2;
             sirtap_params.local_multicast_ip = DireccionamientoIP.IpRed2;
             sirtap_params.payload_type = 8;
+            //Si el identificador del recurso termina en 2, entonces consideramos que es el canal 2 de la radios SIRTAP
+            //Si es cualquier otro caracter, entonces es el canal 1
+            if (IdRecurso.ElementAt(IdRecurso.Length - 1) == 2) sirtap_params.channel = 2;
+            else sirtap_params.channel = 1;
+
+            PollingPresenceTimer = null;
+
+            PollingPresenceTimer = new System.Timers.Timer(1000);
+            PollingPresenceTimer.Elapsed += (sender, args) => PollingOnTimedEvent(sender, args, this);
+            PollingPresenceTimer.AutoReset = true;
+            PollingPresenceTimer.Enabled = true;            
 
             return Init();
         }
@@ -163,73 +196,96 @@ namespace U5ki.Gateway
 
         public void NOED137OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
         {
+            PollingPresenceTimer.Enabled = false;
+
             if (inInfo.DstId != IdRecurso) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
             else if (!accountCreated) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
             else if (Connected) SipAgent.AnswerCall(call, SipAgent.SIP_DECLINE, 2008, null, false);
+            else if (!Presence) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
             else
             {
                 CallId = call;                
                 SipAgent.AnswerCall(call, SipAgent.SIP_OK);
             }
+
+            PollingPresenceTimer.Enabled = true;
         }
 
         public void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
-            if (call != CallId) return;
-            if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED)
+            PollingPresenceTimer.Enabled = false; 
+
+            if (call == CallId)
             {
-                CallId = -1;
-                Connected = false;
-                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED)
                 {
-                    SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
-                }
-            }
-            else if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED)
-            {
-                Connected = true;
-                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
-                {
-                    //Se solicita que al RTPport que invoque a la callback RTPport_infoCb para actualizar el estado
-                    CORESIP_Error err;
-                    int coreret = CORESIP_AskRTPport_info(sirtap_params.rtp_port_id, out err);
-                    if (coreret != 0)
+                    CallId = -1;
+                    Connected = false;
+                    if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
                     {
-                        LogError<NoED137Resource>($"NOED137OnCallState: {IdRecurso} Error en CORESIP_AskRTPport_info: {err.Info}");
+                        SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
+                    }
+                }
+                else if (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED)
+                {
+                    Connected = true;
+                    if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                    {
+                        //Se solicita que al RTPport que invoque a la callback RTPport_infoCb para actualizar el estado
+                        CORESIP_Error err;
+                        int coreret = CORESIP_AskRTPport_info(sirtap_params.rtp_port_id, out err);
+                        if (coreret != 0)
+                        {
+                            LogError<NoED137Resource>($"NOED137OnCallState: {IdRecurso} Error en CORESIP_AskRTPport_info: {err.Info}");
+                        }
                     }
                 }
             }
+
+            PollingPresenceTimer.Enabled = true;
         }
 
         public bool NOED137OnKaTimeout(int call)
         {
+            PollingPresenceTimer.Enabled = false;
+
             bool found = false;
-            if (call != CallId) return found;
-            if (Connected && CallId != -1)
+            if (call == CallId)
             {
-                SipAgent.HangupCall(CallId, 2001);
-                found = true;
+                if (Connected && CallId != -1)
+                {
+                    SipAgent.HangupCall(CallId, 2001);
+                    found = true;
+                }
             }
+
+            PollingPresenceTimer.Enabled = true;
             return found;
         }
 
         public bool NOED137OnRdInfo(int call, CORESIP_RdInfo info)
         {
+            PollingPresenceTimer.Enabled = false;
             bool found = false;
-            if (call != CallId) return found;
-            if (Connected && CallId != -1)
+            if (call == CallId)
             {
-                if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                if (Connected && CallId != -1)
                 {
-                    SIRTAP_NOED137OnRdInfo(info);
+                    if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+                    {
+                        SIRTAP_NOED137OnRdInfo(info);
+                    }
+                    found = true;
                 }
-                found = true;
             }
+            PollingPresenceTimer.Enabled = true;
             return found;
         }        
 
         public bool RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
+            PollingPresenceTimer.Enabled = false;
+
             bool found = false;
             if (sirtap_params.rtp_port_id == rtpport_id && sirtap_params.rtp_port_id != -1 && Connected && CallId != -1)
             {
@@ -238,10 +294,45 @@ namespace U5ki.Gateway
                     SIRTAP_Set_SQUELCH(rtpport_id, info);
                 }
 
-                found = true;
+                found = true;            
             }
-            
+            PollingPresenceTimer.Enabled = true;
+
             return found;
+        }
+
+        private static void PollingOnTimedEvent(Object source, ElapsedEventArgs e, NoED137Resource noED137Res)
+        {
+            bool presence = true;
+            if (noED137Res.NOED137RadioType == NOED137RadioTypes.SIRTAP)
+            {
+                presence = noED137Res.SIRTAP_Get_Presence();
+            }
+
+            if (!presence)
+            {
+                if (noED137Res.Presence)
+                {
+                    noED137Res.Presence = false;
+
+                    noED137Res.LogError<NoED137Resource>("Equipo no presente",
+                                   U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR, noED137Res.IdRecurso,
+                                   CTranslate.translateResource("Equipo no presente"));
+
+                    if (noED137Res.CallId != -1) SipAgent.HangupCall(noED137Res.CallId);
+                }
+            }
+            else
+            {
+                if (!noED137Res.Presence)
+                {
+                    noED137Res.LogInfo<NoED137Resource>("Equipo presente",
+                                   U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_INFO, noED137Res.IdRecurso,
+                                   CTranslate.translateResource("Equipo presente"));
+
+                    noED137Res.Presence = true;
+                }
+            }
         }
 
         #region SIRTAP_RESOURCE_FUNCTIONS
@@ -264,6 +355,23 @@ namespace U5ki.Gateway
                 ret = SIRTAP_PauseResumeDestroyRTPport(CORESIP_RTP_port_actions.CORESIP_PAUSE_ENCODING);
             }
             sirtap_params.transmiting = false;
+
+            if (ret == 0)
+            {
+                try
+                {
+                    sirtap_params.RC = new u5ki.RemoteControlService.Sirtap(161, Lextm.SharpSnmpLib.VersionCode.V3,
+                        sirtap_params.auth_type, sirtap_params.priv_type,
+                        sirtap_params.username, sirtap_params.authpass, sirtap_params.privpass)
+                    { Id = IdRecurso };
+                }
+                catch (Exception ex)
+                {
+                    LogError<NoED137Resource>("Create_SIRTAP_Resource: " + ex.Message);
+                    ret = -1;
+                }
+            }
+
             return ret;
         }
 
@@ -280,6 +388,7 @@ namespace U5ki.Gateway
                 sirtap_params.rtp_port_id = -1;
                 sirtap_params.transmiting = false;
                 sirtap_params.receiving = false;
+                sirtap_params.RC = null;
             }
         }
 
@@ -375,6 +484,28 @@ namespace U5ki.Gateway
             }
         }
 
+        private bool SIRTAP_Get_Presence()
+        {
+            if (sirtap_params.RC == null) return false;
+
+            bool presence = true;
+            TlmdoAsk msg = new TlmdoAsk();
+            msg.msgType = TlmdoAsk.MsgType.TLMDO_GET_FREQUENCY;
+            msg.HostId = "SirtapGateway";
+            msg.IdFrecuency = "0";
+            msg.IdRecurso = IdRecurso;
+            msg.Channel = sirtap_params.channel;
+
+            string tlmdoIP = DireccionamientoIP.IpRed1;  //De momento es la primera ip del equipo externo
+            TlmdoRsp response = new TlmdoRsp();
+
+            TlmdoRsp.CodeTypes output = sirtap_params.RC.Tlmdo(msg, tlmdoIP, true, ref response, historic_report: false);
+            if (output != TlmdoRsp.CodeTypes.TLMDO_CODE_OK && output != TlmdoRsp.CodeTypes.TLMDO_CODE_OTHER_IN_PROGRESS)
+            {
+                presence = false;                
+            }
+            return presence;
+        }
         #endregion
     }
 }

@@ -49,6 +49,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TFT\SharpSnmpLib\sharpsnmplib\SharpSnmpLib\SharpSnmpLib.csproj">
+      <Project>{286de6db-8f95-4bd4-86a2-86488d2e0ee1}</Project>
+      <Name>SharpSnmpLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{822f500d-adb8-4bb1-8a1c-e9feaff369b0}</Project>
       <Name>Utilities</Name>
@@ -56,6 +60,14 @@
     <ProjectReference Include="..\Source\Infrastructure\u5ki.Infrastructure.csproj">
       <Project>{bbae4626-c51c-4946-acd1-832e92d73d8b}</Project>
       <Name>u5ki.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\RemoteControlService\u5ki.RemoteControlService.csproj">
+      <Project>{fa844426-a8e2-4bd0-a48d-7d129c2d5cfb}</Project>
+      <Name>u5ki.RemoteControlService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\Translate\Translate.csproj">
+      <Project>{eaab8d4e-306e-417f-892f-13ad6642b883}</Project>
+      <Name>Translate</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
