@@ -20,7 +20,7 @@ namespace SirtapRadio
             InitializeComponent();            
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void loadConfig()
         {
             try
             {
@@ -73,8 +73,12 @@ namespace SirtapRadio
                 comboBox_PaylType2.Text = ConfigurationManager.AppSettings["PayloadType2"].ToString();
             }
             catch { }
+        }
 
-
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            loadConfig();
+            
             if (Agent.Init() != 0)
             {
                 Application.Exit();
@@ -195,11 +199,13 @@ namespace SirtapRadio
             if (!System.Net.IPAddress.TryParse(textBox_dstIP.Text, out ipaddress))
             {
                 MessageBox.Show("Configuring: Destination IP CH1 not valid");
+                loadConfig();
                 return;
             }
             if (!System.Net.IPAddress.TryParse(textBox_RcvMcastIP.Text, out ipaddress))
             {
                 MessageBox.Show("Configuring: Multicast IP CH1 not valid");
+                loadConfig();
                 return;
             }
             int src_port;
@@ -210,12 +216,14 @@ namespace SirtapRadio
             catch
             {
                 MessageBox.Show("Configuring: Src port CH1 not valid");
+                loadConfig();
                 return;
             }
 
             if (src_port == Agent.SirtapRd2.Src_port)
             {
                 MessageBox.Show("Configuring: Src port CH1 cannot be equal that CH2");
+                loadConfig();
                 return;
             }
 
@@ -227,6 +235,7 @@ namespace SirtapRadio
             catch
             {
                 MessageBox.Show("Configuring: Dst port CH1 not valid");
+                loadConfig();
                 return;
             }
 
@@ -335,11 +344,13 @@ namespace SirtapRadio
             if (!System.Net.IPAddress.TryParse(textBox_dstIP2.Text, out ipaddress))
             {
                 MessageBox.Show("Configuring: Destination IP CH2 not valid");
+                loadConfig();
                 return;
             }
             if (!System.Net.IPAddress.TryParse(textBox_RcvMcastIP2.Text, out ipaddress))
             {
                 MessageBox.Show("Configuring: Multicast IP CH2 not valid");
+                loadConfig();
                 return;
             }
             int src_port;
@@ -350,12 +361,14 @@ namespace SirtapRadio
             catch
             {
                 MessageBox.Show("Configuring: Src port CH2 not valid");
+                loadConfig();
                 return;
             }
 
             if (src_port == Agent.SirtapRd.Src_port)
             {
                 MessageBox.Show("Configuring: Src port CH2 cannot be equal that CH1");
+                loadConfig();
                 return;
             }
 
@@ -367,6 +380,7 @@ namespace SirtapRadio
             catch
             {
                 MessageBox.Show("Configuring: Dst port CH2 not valid");
+                loadConfig();
                 return;
             }
 
