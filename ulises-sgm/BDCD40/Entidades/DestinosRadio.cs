@@ -349,7 +349,7 @@ namespace CD40.BD.Entidades
                         r.MultiFrecuencia = (bool)dr["MultiFrecuencia"];
 
                     if (dr["Seguro"] != System.DBNull.Value)
-                        r.Seguro = Convert.ToBoolean(dr["Seguro"]);
+                        r.Seguro = (bool)(dr["Seguro"]);
                     ListaResultado.Add(r);
                 }
             }

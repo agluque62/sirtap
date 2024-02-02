@@ -8,7 +8,7 @@
 		}
 	</script>
 
-    <asp:Label ID="Label15" runat="server" Text="GESTIÓN DE SECTORES" 
+    <asp:Label ID="Label15" runat="server" Text="CONFIGURACIÓN DE SERVICIOS" 
 		  CssClass="labelPagina" meta:resourcekey="Label15Resource1"></asp:Label>
 
     <asp:ListBox ID="ListBox1" runat="server" OnSelectedIndexChanged="ListBox1_SelectedIndexChanged" 

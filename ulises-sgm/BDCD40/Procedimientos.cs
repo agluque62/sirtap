@@ -965,10 +965,12 @@ namespace CD40.BD
                 MySqlCommand myCommand = new MySqlCommand("RecursosTFSinAsignarAEnlaces", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_Sistema", MySqlDbType.Text);
+                MySqlParameter p2 = new MySqlParameter("Seguro", MySqlDbType.Int16);
                 p1.Direction = System.Data.ParameterDirection.Input;
                 p1.Value = id_sistema;
+                p2.Value = seguro;
                 myCommand.Parameters.Add(p1);
-
+                myCommand.Parameters.Add(p2);
                 try
                 {
                     if (myCommand.Connection.State != ConnectionState.Open)
@@ -1008,9 +1010,12 @@ namespace CD40.BD
                 MySqlCommand myCommand = new MySqlCommand("RecursosLCENSinAsignarAEnlaces", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_Sistema", MySqlDbType.Text);
+                MySqlParameter p2 = new MySqlParameter("Seguro", MySqlDbType.Int16);
                 p1.Direction = System.Data.ParameterDirection.Input;
                 p1.Value = id_sistema;
+                p2.Value = seguro;
                 myCommand.Parameters.Add(p1);
+                myCommand.Parameters.Add(p2);
 
                 try
                 {
@@ -1107,7 +1112,8 @@ namespace CD40.BD
 
         //(Description = "Pasándole el identificador del sistema, el identificador del sector y la página del enlace a configurar, retorna una lista de destinos radio"
         //               " sin asignar a ningún enlace del sector y página.")
-        public static DataSet DestinosRadioSinAsignarALaPaginaDelSectorDC(MySqlConnection mySqlConnectionToCd40, string id_sistema, string id_usuario, uint pagina, uint num_frec_pag)
+        public static DataSet DestinosRadioSinAsignarALaPaginaDelSectorDC(MySqlConnection mySqlConnectionToCd40, 
+                                    string id_sistema, string id_usuario, uint pagina, uint num_frec_pag, bool seguro)
         {
             if (mySqlConnectionToCd40 != null)
             {
@@ -1119,18 +1125,23 @@ namespace CD40.BD
                 MySqlParameter p2 = new MySqlParameter("id_usuario", MySqlDbType.Text);
                 MySqlParameter p3 = new MySqlParameter("pagina", MySqlDbType.Int32);
                 MySqlParameter p4 = new MySqlParameter("frecPorPagina", MySqlDbType.Int32);
+                MySqlParameter p5 = new MySqlParameter("seguro", MySqlDbType.Int16);
                 p1.Direction = System.Data.ParameterDirection.Input;
                 p2.Direction = System.Data.ParameterDirection.Input;
                 p3.Direction = System.Data.ParameterDirection.Input;
                 p4.Direction = System.Data.ParameterDirection.Input;
+                p5.Direction = System.Data.ParameterDirection.Input;
                 p1.Value = id_sistema;
                 p2.Value = id_usuario;
                 p3.Value = pagina;
                 p4.Value = num_frec_pag;
+                p5.Value = seguro;
                 myCommand.Parameters.Add(p1);
                 myCommand.Parameters.Add(p2);
                 myCommand.Parameters.Add(p3);
                 myCommand.Parameters.Add(p4);
+                myCommand.Parameters.Add(p5);
+
 
                 try
                 {
@@ -1224,7 +1235,6 @@ namespace CD40.BD
         {
             if (mySqlConnectionToCd40 != null)
             {
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 DataSet dataResultado = new DataSet();
 
                 MySqlCommand myCommand = new MySqlCommand("DestinosLineaCalienteSinAsignarAlSector", mySqlConnectionToCd40);
@@ -1397,27 +1407,29 @@ namespace CD40.BD
 
         //(Description = "Pasándole el identificador del sistema y el identificador del sector, retorna una lista de destinos de telefonía" 
         //               " sin asignar a ningún enlace del sector.")
-        public static List<Tablas> DestinosTelefoniaSinAsignarAlSector(MySqlConnection mySqlConnectionToCd40, string id_sistema, string id_usuario, string id_nucleo)
+        public static List<Tablas> DestinosTelefoniaSinAsignarAlSector(MySqlConnection mySqlConnectionToCd40, string id_sistema, string id_usuario, string id_nucleo, bool seguro)
         {
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand = new MySqlCommand("DestinosTelefoniaSinAsignarAlSector", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_sistema", MySqlDbType.Text);
                 MySqlParameter p2 = new MySqlParameter("id_usuario", MySqlDbType.Text);
                 MySqlParameter p3 = new MySqlParameter("id_nucleo", MySqlDbType.Text);
+                MySqlParameter p4 = new MySqlParameter("seguro", MySqlDbType.Int16);
                 p1.Direction = System.Data.ParameterDirection.Input;
                 p2.Direction = System.Data.ParameterDirection.Input;
                 p3.Direction = System.Data.ParameterDirection.Input;
+                p4.Direction = System.Data.ParameterDirection.Input;
                 p1.Value = id_sistema;
                 p2.Value = id_usuario;
                 p3.Value = id_nucleo;
+                p4.Value = seguro;
                 myCommand.Parameters.Add(p1);
                 myCommand.Parameters.Add(p2);
                 myCommand.Parameters.Add(p3);
-
+                myCommand.Parameters.Add(p4);
                 try
                 {
                     if (myCommand.Connection.State != ConnectionState.Open)
@@ -1494,7 +1506,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand;
                 if (internos)
                     myCommand = new MySqlCommand("DestinosInternosAsignadosASector", mySqlConnectionToCd40);
@@ -1663,7 +1674,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand = new MySqlCommand("SlotsLibresEnTifX", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_Sistema", MySqlDbType.Text);
@@ -1717,7 +1727,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand;
                 myCommand = new MySqlCommand("SectoresSinAsignarASectorizacion", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
@@ -1836,8 +1845,6 @@ namespace CD40.BD
             {
                 DataSet dataResultado = new DataSet();
                 StringBuilder listaSectores = new StringBuilder();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
-
                 MySqlCommand myCommand = new MySqlCommand("SectoresManttoEnActiva", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_sistema", MySqlDbType.Text);
@@ -2006,7 +2013,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand;
                 myCommand = new MySqlCommand("GetEventosRadio", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
@@ -2108,7 +2114,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand;
                 myCommand = new MySqlCommand("GetHistoricos", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
@@ -2176,7 +2181,6 @@ namespace CD40.BD
             if (mySqlConnectionToCd40 != null)
             {
                 DataSet dataResultado = new DataSet();
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 MySqlCommand myCommand;
                 myCommand = new MySqlCommand("GetUnHistorico", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
@@ -2240,9 +2244,6 @@ namespace CD40.BD
         {
             if (null != mySqlConnectionToCd40)
             {
-                //System.Data.IDataParameter[] parametros;
-
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 DataSet dataResultado = new DataSet();
 
                 MySqlCommand myCommand = new MySqlCommand("SectoresFueraDeAgrupacion", mySqlConnectionToCd40);
@@ -2290,9 +2291,6 @@ namespace CD40.BD
         {
             if (null != mySqlConnectionToCd40)
             {
-                //System.Data.IDataParameter[] parametros;
-
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 DataSet dataResultado = new DataSet();
 
                 MySqlCommand myCommand = new MySqlCommand("RedesUsuariosAbonados", mySqlConnectionToCd40);
@@ -2351,9 +2349,6 @@ namespace CD40.BD
         {
             if (null != mySqlConnectionToCd40)
             {
-                //System.Data.IDataParameter[] parametros;
-
-                //MySqlConnection mySqlConnectionToCd40 = AccesoABaseDeDatos.ConexionMySql != null ? AccesoABaseDeDatos.ConexionMySql : new MySqlConnection(CadenaConexion);
                 DataSet dataResultado = new DataSet();
 
                 MySqlCommand myCommand = new MySqlCommand("RangosConIdRed", mySqlConnectionToCd40);
@@ -2395,8 +2390,6 @@ namespace CD40.BD
         {
             if (null != mySqlConnectionToCd40)
             {
-                //MySqlConnection mySqlConnectionToCd40 = new MySqlConnection(CadenaConexion.ToString());
-
                 MySqlCommand myCommand = new MySqlCommand("EliminaActiva", mySqlConnectionToCd40);
                 myCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 MySqlParameter p1 = new MySqlParameter("id_Sistema", MySqlDbType.Text);

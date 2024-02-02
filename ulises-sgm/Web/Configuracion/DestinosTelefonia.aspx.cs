@@ -73,8 +73,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
 
 		if (!IsPostBack)
         {
-            //logDebugView.Debug("Entrando en DestinosTelefonia....");
-
+            Session.Add("Prefijo", 0);
             IndexListBox1 = -1;
 
             BAnadir_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
@@ -204,12 +203,13 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
         if (habilita)
         {
             LBDestinos.Enabled = false;
-            CBSeguro.Enabled = true;
+
             //Si se está dando de alta un nuevo destino
             if (!Modificando)
             {
                 TBDestino.Text = "";
                 TBDestino.ReadOnly = false;
+                CBSeguro.Enabled = true;
                 CBSeguro.Checked = false;
                 DDLPrefijo.SelectedValue = "-1";
                 TBGrupo.Text = "";
@@ -230,6 +230,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             }
             else
             {
+                CBSeguro.Enabled = !DestinoDeTelefoniaAsignado();
 				RequiredFieldValidator3.Visible = TBRecurso.Visible = LblRecursosLibres.Visible = 
 				LblRecurso.Visible = DDLRecursos.Visible = DDLPrefijo.SelectedValue == "32" || DDLPrefijo.SelectedValue == "1";
 
@@ -353,7 +354,6 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     {
         try
         {
-
             ServiciosCD40.DestinosExternos dExterno = new ServiciosCD40.DestinosExternos();
             dExterno.IdSistema = (string)Session["idsistema"];
             dExterno.IdDestino = TBDestino.Text;
@@ -409,13 +409,39 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     {
         if (LBDestinos.SelectedValue != "")
         {
-            //string texto = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarDestino"), LBDestinos.SelectedValue);
             IndexListBox1 = LBDestinos.SelectedIndex;
             Session["elemento"] = LBDestinos.SelectedValue;
             EliminarElemento(false);
-            //cMsg.confirm(texto, "eliminaelemento");
         }
     }
+
+    private bool DestinoDeTelefoniaAsignado()
+    {
+        bool asignado = false;
+        if (LBDestinos.SelectedIndex >= 0 && Session["idsistema"] != null)
+        {
+            ServiciosCD40.Destinos d = new ServiciosCD40.Destinos();
+
+            uint iPrefijo = Convert.ToUInt32(DDLPrefijo.SelectedValue);
+            string strSistema = string.Empty;
+            System.Text.StringBuilder strMsg = new System.Text.StringBuilder();
+
+            strSistema = (string)Session["idsistema"];
+
+            d.IdSistema = strSistema;
+            d.IdDestino = TBDestino.Text;
+            d.TipoDestino = 1;
+
+            if ((iPrefijo == 1 && DestinoLCENAsignadoPanelLC(strSistema, TBDestino.Text, iPrefijo, ref strMsg)) || 
+                (DestinoAsignadoATft(strSistema, TBDestino.Text)))
+            {
+                asignado = true;
+            }
+        }
+        return asignado;
+    }
+
+
 
     /// <summary>
     /// 
@@ -545,7 +571,9 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
 	{
 		try
 		{
+            
             uint iIdPrefijo=0;
+            Session["Prefijo"] = 0;
             // 2021111 #3945
             LBSector.Visible = false;
             LBATS.Visible = false;
@@ -557,6 +585,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
 			Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
 			KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
 			Session["idsistema"] = s.Value;
+
 			System.Data.DataRow dr = ServiceServiciosCD40.DestinosDeTelefoniaEnElSistema(s.Value).Tables[0].Rows[LBDestinos.SelectedIndex];
 
             BEliminar_ConfirmButtonExtender.ConfirmText = String.Format((string)GetGlobalResourceObject("Espaniol", "EliminarDestino"), LBDestinos.SelectedValue);
@@ -609,7 +638,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
 				TBRecurso.Visible = true;
 				TBAbonado.Visible = false;
 				Label5.Visible = false;
-
+                Session["Prefijo"] = 32;
 				CompletaDDLRecursos(32);
 
 				ServiciosCD40.RecursosTF rt = new ServiciosCD40.RecursosTF();
@@ -632,20 +661,20 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 if (iIdPrefijo == 1) // LCEN
 				{
                     // 2021111 #3945
-                    LBSector.Visible = true;
-                    LBATS.Visible = true;
-                    LBNumero.Visible = true;
-                    TBSector.Visible = true;
-                    TBATS.Visible = true;
-                    TBNumero.Visible = true;
-
+                    LBSector.Visible = false;
+                    LBATS.Visible = false;
+                    LBNumero.Visible = false;
+                    TBSector.Visible = false;
+                    TBATS.Visible = false;
+                    TBNumero.Visible = false;
+                    //
 					DDLRecursos.Visible = true;
 					LblRecurso.Visible = true;
 					LblRecursosLibres.Visible = true;
 					TBRecurso.Visible = true;
 					TBAbonado.Visible = false;
 					Label5.Visible = false;
-
+                    Session["Prefijo"] = 1;
 					CompletaDDLRecursos(1);
 
 					ServiciosCD40.RecursosLCEN rt = new ServiciosCD40.RecursosLCEN();
@@ -739,7 +768,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 TBRecurso.Text = "";
                 TBAbonado.Visible = false;
                 Label5.Visible = false;
-
+                Session["Prefijo"] = 32;
                 CompletaDDLRecursos(32);
                 break;
 
@@ -752,7 +781,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 TBRecurso.Text = "";
                 TBAbonado.Visible = false;
                 Label5.Visible = false;
-
+                Session["Prefijo"] = 1;
                 CompletaDDLRecursos(1);
                 break;
 
@@ -765,6 +794,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 RequiredFieldValidator3.Enabled = false;
                 TBAbonado.Visible = true;
                 Label5.Visible = true;
+                Session["Prefijo"] = 0;
                 break;
         }
 
@@ -802,7 +832,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
                 DDLRecursos.Items.RemoveAt(1);
             }
             //DDLRecursos.Items.Add(new ListItem((string)GetLocalResourceObject("ListItemResource5"),"-1"));
-			DDLRecursos.DataSource = ServiceServiciosCD40.RecursosSinAsignarAEnlaces((string)Session["idsistema"], (prefijo == 32) ? 1 : 2,false); // TF o LCEN // 20240110 SIRTAP
+			DDLRecursos.DataSource = ServiceServiciosCD40.RecursosSinAsignarAEnlaces((string)Session["idsistema"], (prefijo == 32) ? 1 : 2, CBSeguro.Checked); // TF o LCEN // 20240110 SIRTAP
             DDLRecursos.DataTextField = "IDRecurso";
             DDLRecursos.DataBind();
         }
@@ -981,7 +1011,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
     private bool bDestinoLCENASector(string id_DestinoLCEN)
     {
         bool basociado = false;
-       /* try
+      /*  try
         {
 
             string id_Sistema = string.Empty;
@@ -1010,13 +1040,19 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             string s2 = error.Code.Name;
            string s3 = error.Actor;
            string s4 = error.Message;
-        }*/
+        }
+       */
         return basociado;
     }
 
     protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
     {
-
+        int prefijo = (int)Session["Prefijo"];
+        if (prefijo == 1 || prefijo == 32)
+        {
+            TBRecurso.Text = "";
+            CompletaDDLRecursos(prefijo);
+        }
     }
 
 }

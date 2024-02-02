@@ -76,7 +76,7 @@ namespace CD40.BD.Entidades
                     if (dr["IdGrupo"] != System.DBNull.Value)
                         r.IdGrupo = (string)dr["IdGrupo"];
                     if (dr["Seguro"] != System.DBNull.Value)
-                        r.Seguro = Convert.ToBoolean(dr["Seguro"]);
+                        r.Seguro = (bool)(dr["Seguro"]);
 
                     ListaResultado.Add(r);
                 }

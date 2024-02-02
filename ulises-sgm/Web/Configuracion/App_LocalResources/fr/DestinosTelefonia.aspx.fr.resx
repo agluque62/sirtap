@@ -303,4 +303,7 @@
   <data name="RegularExpressionValidator1Resource1.Text" xml:space="preserve">
     <value>*</value>
   </data>
+  <data name="RecursoVacio.Text" xml:space="preserve">
+    <value>Attribuer une ressource valide</value>
+  </data>
 </root>

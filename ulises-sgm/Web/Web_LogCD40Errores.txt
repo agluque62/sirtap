@@ -16,303 +16,112 @@ System.Net.WebException: No es posible conectar con el servidor remoto ---> Syst
 System.Net.WebException: No es posible conectar con el servidor remoto ---> System.Net.Sockets.SocketException: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión 127.0.0.1:50468
    en System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
    en System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
-   --- Fin del seguimiento de la pila de la excepción interna ---
-   en System.Net.HttpWebRequest.GetRequestStream(TransportContext& context)
-   en System.Net.HttpWebRequest.GetRequestStream()
+
+2024-01-21 20:03:46,844 [5] INFO  CLUSTER     
+2024-01-21 20:03:46,851 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-21 20:03:46,881 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-21 20:05:10,304 [12] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-21 20:05:24,284 [12] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-21 20:08:54,332 [16] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-21 20:09:03,459 [16] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-21 20:09:54,972 [20] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-21 20:16:25,374 [17] ERROR CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): 
+System.Net.WebException: The operation has timed out
+   en System.Web.Services.Protocols.WebClientProtocol.GetWebResponse(WebRequest request)
+   en System.Web.Services.Protocols.HttpWebClientProtocol.GetWebResponse(WebRequest request)
    en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Users\javier.orden\AppData\Local\Temp\Temporary ASP.NET Files\vs\f839f9ca\9bbd069b\App_WebReferences.w0rg940u.0.cs:línea 3190
-   en Operadores.DameDatosDependenciasATSNucleo() en c:\Proyectos\SIRTAP\sirtap\ulises-sgm\Web\Configuracion\Operadores.aspx.cs:línea 388
-2024-01-04 09:40:50,139 [19] ERROR CONFIGURACION (Operadores-DameDatos):
-System.Net.WebException: No es posible conectar con el servidor remoto ---> System.Net.Sockets.SocketException: No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión 127.0.0.1:50468
-   en System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   en System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
-   --- Fin del seguimiento de la pila de la excepción interna ---
-   en System.Net.HttpWebRequest.GetRequestStream(TransportContext& context)
-   en System.Net.HttpWebRequest.GetRequestStream()
+   en ServiciosCD40.ServiciosCD40.InsertSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.lgstcral.0.cs:línea 3231
+   en TFTTelefonia.GuardarNuevaPosicionEnBD(String idDest, String literal, UInt32 idPref, UInt32 prioridad, UInt32 prioSip, Boolean seguro) en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\TFTTelefonia.aspx.cs:línea 399
+2024-01-21 20:55:42,309 [32] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-22 08:40:37,950 [5] INFO  CLUSTER     
+2024-01-22 08:40:37,960 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-22 08:40:38,035 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-22 10:23:14,630 [31] INFO  CLUSTER     
+2024-01-22 10:23:14,635 [31] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-22 10:23:14,644 [31] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-22 11:10:33,228 [19] ERROR CONFIGURACION (TFTLC-GuardarNuevaPosicionEnBD): 
+System.Net.WebException: Anulada la solicitud: Se excedió el tiempo de espera de la operación.
+   en System.Web.Services.Protocols.WebClientProtocol.GetWebResponse(WebRequest request)
+   en System.Web.Services.Protocols.HttpWebClientProtocol.GetWebResponse(WebRequest request)
    en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Users\javier.orden\AppData\Local\Temp\Temporary ASP.NET Files\vs\f839f9ca\9bbd069b\App_WebReferences.w0rg940u.0.cs:línea 3190
-   en Operadores.DameDatos() en c:\Proyectos\SIRTAP\sirtap\ulises-sgm\Web\Configuracion\Operadores.aspx.cs:línea 344
-2024-01-04 09:48:21,522 [1] INFO  CLUSTER     
-2024-01-04 09:48:21,539 [1] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 09:48:21,543 [1] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 14:11:21,176 [5] INFO  CLUSTER     
-2024-01-04 14:11:21,181 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 14:11:21,226 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 14:12:17,113 [13] ERROR CONFIGURACION (Sector-MuestraNucleos): 
-System.Net.WebException: No es posible conectar con el servidor remoto ---> System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:50468
-   en System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   en System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
-   --- Fin del seguimiento de la pila de la excepción interna ---
-   en System.Net.HttpWebRequest.GetRequestStream(TransportContext& context)
-   en System.Net.HttpWebRequest.GetRequestStream()
-   en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.8z33zqsx.0.cs:línea 3190
-   en Sector.MuestraNucleos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Sector.aspx.cs:línea 1352
-2024-01-04 14:20:30,673 [5] INFO  CLUSTER     
-2024-01-04 14:20:30,679 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 14:20:30,712 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 14:22:58,517 [12] ERROR CONFIGURACION (Operadores-DameDatosDependenciasATS):
-System.Net.WebException: No es posible conectar con el servidor remoto ---> System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:50468
-   en System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   en System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
-   --- Fin del seguimiento de la pila de la excepción interna ---
-   en System.Net.HttpWebRequest.GetRequestStream(TransportContext& context)
-   en System.Net.HttpWebRequest.GetRequestStream()
-   en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.spb8jt-r.0.cs:línea 3190
-   en Operadores.DameDatosDependenciasATSNucleo() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Operadores.aspx.cs:línea 388
-2024-01-04 14:23:00,612 [12] ERROR CONFIGURACION (Operadores-DameDatos):
-System.Net.WebException: No es posible conectar con el servidor remoto ---> System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:50468
-   en System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   en System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
-   --- Fin del seguimiento de la pila de la excepción interna ---
-   en System.Net.HttpWebRequest.GetRequestStream(TransportContext& context)
-   en System.Net.HttpWebRequest.GetRequestStream()
-   en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.spb8jt-r.0.cs:línea 3190
-   en Operadores.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Operadores.aspx.cs:línea 344
-2024-01-04 14:27:14,251 [20] INFO  CLUSTER     
-2024-01-04 14:27:14,258 [20] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 14:27:14,274 [20] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 14:47:43,785 [6] INFO  CLUSTER     
-2024-01-04 14:47:43,792 [6] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 14:47:43,806 [6] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 15:11:01,415 [5] INFO  CLUSTER     
-2024-01-04 15:11:01,420 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 15:11:01,449 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 18:32:01,318 [19] INFO  CLUSTER     
-2024-01-04 18:32:01,318 [19] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 18:32:01,333 [19] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 18:33:07,537 [44] INFO  CLUSTER     
-2024-01-04 18:33:07,544 [44] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 18:33:07,558 [44] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 18:33:28,774 [44] INFO  CLUSTER     
-2024-01-04 18:33:28,798 [44] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 18:33:28,805 [44] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-04 18:53:01,336 [5] INFO  CLUSTER     
-2024-01-04 18:53:01,341 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-04 18:53:01,375 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-05 08:42:20,451 [5] INFO  CLUSTER     
-2024-01-05 08:42:20,462 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-05 08:42:20,513 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-05 09:53:39,033 [29] INFO  CLUSTER     
-2024-01-05 09:53:39,039 [29] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-05 09:53:39,047 [29] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-05 14:26:22,563 [5] INFO  CLUSTER     
-2024-01-05 14:26:22,567 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-05 14:26:22,753 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-05 15:00:21,477 [5] WARN  CONFIGURACION (RecursosDeTelefonia-GuardarCambios): No se ha podido actualizar el elemento.
-2024-01-05 15:33:49,503 [14] WARN  CONFIGURACION (RecursosDeTelefonia-GuardarCambios): No se ha podido actualizar el elemento.
-2024-01-08 07:47:44,523 [5] INFO  CLUSTER     
-2024-01-08 07:47:44,534 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 07:47:44,621 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 11:20:49,907 [22] INFO  CLUSTER     
-2024-01-08 11:20:49,922 [22] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 11:20:49,938 [22] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 16:08:33,822 [10] INFO  CLUSTER     
-2024-01-08 16:08:33,828 [10] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 16:08:33,834 [10] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 16:13:33,028 [5] INFO  CLUSTER     
-2024-01-08 16:13:33,038 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 16:13:33,104 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 16:22:27,358 [5] INFO  CLUSTER     
-2024-01-08 16:22:27,364 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 16:22:27,384 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 16:57:31,447 [5] INFO  CLUSTER     
-2024-01-08 16:57:31,455 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 16:57:31,473 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 17:31:52,142 [23] INFO  CLUSTER     
-2024-01-08 17:31:52,142 [23] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 17:31:52,157 [23] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-08 17:37:28,378 [24] INFO  CLUSTER     
-2024-01-08 17:37:28,383 [24] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-08 17:37:28,398 [24] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-09 08:01:11,223 [5] INFO  CLUSTER     
-2024-01-09 08:01:11,228 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-09 08:01:11,287 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-09 12:44:33,328 [30] INFO  CLUSTER     
-2024-01-09 12:44:33,335 [30] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-09 12:44:33,428 [30] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-09 12:55:09,891 [10] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:03,798 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:07,757 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:18,006 [26] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:22,026 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:24,855 [15] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:26,303 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:28,042 [15] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:28,753 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:42,384 [15] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:43,635 [25] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:56:46,783 [25] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:57:01,189 [15] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:57:03,388 [25] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:57:04,699 [15] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:57:05,270 [20] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:57:05,790 [10] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 12:58:03,024 [18] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 13:00:22,914 [16] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 13:03:53,810 [16] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-09 13:08:57,563 [32] ERROR CONFIGURACION (DestinosTelefonia-LBDestinos_IndexChanged):
-System.FormatException: No se puede reconocer la cadena como un tipo booleano válido.
-   en System.Boolean.Parse(String value)
-   en System.String.System.IConvertible.ToBoolean(IFormatProvider provider)
-   en System.Convert.ToBoolean(Object value)
-   en DestinosTelefonia.MuestraElemento() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\DestinosTelefonia.aspx.cs:línea 570
-2024-01-10 10:51:08,481 [5] INFO  CLUSTER     
-2024-01-10 10:51:08,487 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-10 10:51:08,551 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-10 13:36:53,516 [5] INFO  CLUSTER     
-2024-01-10 13:36:53,522 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-10 13:36:53,574 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-10 17:33:35,163 [5] INFO  CLUSTER     
-2024-01-10 17:33:35,170 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-10 17:33:35,187 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-10 17:49:08,229 [11] INFO  CLUSTER     
-2024-01-10 17:49:08,234 [11] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-10 17:49:08,241 [11] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-10 18:08:31,514 [5] INFO  CLUSTER     
-2024-01-10 18:08:31,518 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-10 18:08:31,539 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-11 08:15:56,396 [5] INFO  CLUSTER     
-2024-01-11 08:15:56,401 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-11 08:15:56,507 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-11 12:12:21,538 [20] ERROR CONFIGURACION (Sector-GuardarCambios): 
-System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidOperationException: Connection must be valid and open to commit transaction
-   at MySql.Data.MySqlClient.MySqlTransaction.Commit()
-   at CD40.BD.GestorBaseDatos.Commit(MySqlTransaction t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 371
-   at ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 2802
+   en ServiciosCD40.ServiciosCD40.InsertSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3231
+   en TFTLC.GuardarNuevaPosicionEnBD(String idDest, String literal, UInt32 idPref, UInt32 prioridad, UInt32 prioSip, String idDestinoLCEN) en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\TFTLC.aspx.cs:línea 431
+2024-01-22 12:56:46,182 [5] INFO  CLUSTER     
+2024-01-22 12:56:46,192 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-22 12:56:46,251 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-22 13:02:27,417 [24] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en update de telefonia externa
+2024-01-22 13:06:31,785 [27] WARN  CONFIGURACION (TFTTelefonia-GuardarNuevaPosicionEnBD): fallo en insert de telefonia externa
+2024-01-22 16:10:00,033 [5] INFO  CLUSTER     
+2024-01-22 16:10:00,043 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-22 16:10:00,147 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-22 16:36:34,195 [5] ERROR CONFIGURACION (RecursosDeTelefonia-DameDatos): 
+System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidCastException: Specified cast is not valid.
+   at CD40.BD.Entidades.Recursos.ListSelectSQL(DataSet ds) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Entidades\Recursos.cs:line 170
+   at CD40.BD.GestorBaseDatos.ListSelectSQL(Tablas t, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 449
+   at ServiciosCD40.ListSelectSQL(Tablas t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 355
    --- End of inner exception stack trace ---
    en System.Web.Services.Protocols.SoapHttpClientProtocol.ReadResponse(SoapClientMessage message, WebResponse response, Stream responseStream, Boolean asyncCall)
    en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.it6yyvky.0.cs:línea 1122
-   en Sector.GuardarCambios() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Sector.aspx.cs:línea 1032
-2024-01-11 12:13:39,164 [21] ERROR CONFIGURACION (Sector-GuardarCambios): 
-System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidOperationException: Connection must be valid and open to commit transaction
-   at MySql.Data.MySqlClient.MySqlTransaction.Commit()
-   at CD40.BD.GestorBaseDatos.Commit(MySqlTransaction t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 371
-   at ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 2802
+   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3190
+   en RecursosDeTelefonia.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\RecursosTelefonia.aspx.cs:línea 1342
+2024-01-22 16:37:28,132 [19] ERROR CONFIGURACION (RecursosDeTelefonia-DameDatos): 
+System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidCastException: Specified cast is not valid.
+   at CD40.BD.Entidades.Recursos.ListSelectSQL(DataSet ds) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Entidades\Recursos.cs:line 170
+   at CD40.BD.GestorBaseDatos.ListSelectSQL(Tablas t, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 449
+   at ServiciosCD40.ListSelectSQL(Tablas t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 355
    --- End of inner exception stack trace ---
    en System.Web.Services.Protocols.SoapHttpClientProtocol.ReadResponse(SoapClientMessage message, WebResponse response, Stream responseStream, Boolean asyncCall)
    en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.it6yyvky.0.cs:línea 1122
-   en Sector.GuardarCambios() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Sector.aspx.cs:línea 1032
-2024-01-11 12:15:56,137 [5] INFO  CLUSTER     
-2024-01-11 12:15:56,137 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-11 12:15:56,153 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-11 12:16:41,277 [5] ERROR CONFIGURACION (Sector-GuardarCambios): 
-System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidOperationException: Connection must be valid and open to commit transaction
-   at MySql.Data.MySqlClient.MySqlTransaction.Commit()
-   at CD40.BD.GestorBaseDatos.Commit(MySqlTransaction t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 371
-   at ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 2802
+   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3190
+   en RecursosDeTelefonia.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\RecursosTelefonia.aspx.cs:línea 1342
+2024-01-22 18:39:36,758 [20] ERROR CONFIGURACION (RecursosDeRadio-DameDatos): 
+System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidCastException: Specified cast is not valid.
+   at CD40.BD.Entidades.Recursos.ListSelectSQL(DataSet ds) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Entidades\Recursos.cs:line 170
+   at CD40.BD.GestorBaseDatos.ListSelectSQL(Tablas t, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 449
+   at ServiciosCD40.ListSelectSQL(Tablas t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 355
    --- End of inner exception stack trace ---
    en System.Web.Services.Protocols.SoapHttpClientProtocol.ReadResponse(SoapClientMessage message, WebResponse response, Stream responseStream, Boolean asyncCall)
    en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
-   en ServiciosCD40.ServiciosCD40.ActualizaSector(Boolean modificando, Sectores n, Niveles niv, TeclasSector tec, ParametrosSector parsec, DataSet dsNumerosAbonado, DataSet dsAgenda, Boolean SeleccionadoFS) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.it6yyvky.0.cs:línea 1122
-   en Sector.GuardarCambios() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\Sector.aspx.cs:línea 1032
-2024-01-12 08:01:24,425 [5] INFO  CLUSTER     
-2024-01-12 08:01:24,431 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-12 08:01:24,480 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
-2024-01-12 12:04:17,109 [5] INFO  CLUSTER     
-2024-01-12 12:04:17,122 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
-2024-01-12 12:04:17,173 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3190
+   en RecursosDeRadio.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\RecursosRadio.aspx.cs:línea 1319
+2024-01-22 18:41:44,631 [41] ERROR CONFIGURACION (RecursosDeRadio-DameDatos): 
+System.Web.Services.Protocols.SoapException: System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> System.InvalidCastException: Specified cast is not valid.
+   at CD40.BD.Entidades.Recursos.ListSelectSQL(DataSet ds) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Entidades\Recursos.cs:line 170
+   at CD40.BD.GestorBaseDatos.ListSelectSQL(Tablas t, MySqlTransaction tran) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\GestorBaseDatos.cs:line 449
+   at ServiciosCD40.ListSelectSQL(Tablas t) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Servicios\App_Code\ServiciosCD40.cs:line 355
+   --- End of inner exception stack trace ---
+   en System.Web.Services.Protocols.SoapHttpClientProtocol.ReadResponse(SoapClientMessage message, WebResponse response, Stream responseStream, Boolean asyncCall)
+   en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
+   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3190
+   en RecursosDeRadio.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\RecursosRadio.aspx.cs:línea 1319
+2024-01-22 18:54:36,775 [19] ERROR CONFIGURACION (RecursosDeRadio-DameDatos): 
+System.Net.WebException: The operation has timed out
+   en System.Web.Services.Protocols.WebClientProtocol.GetWebResponse(WebRequest request)
+   en System.Web.Services.Protocols.HttpWebClientProtocol.GetWebResponse(WebRequest request)
+   en System.Web.Services.Protocols.SoapHttpClientProtocol.Invoke(String methodName, Object[] parameters)
+   en ServiciosCD40.ServiciosCD40.ListSelectSQL(Tablas t) en c:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\web\2cc94346\766f5504\App_WebReferences.fwwegtd2.0.cs:línea 3190
+   en RecursosDeRadio.DameDatos() en c:\Proyectos\Ulises Sirtap\ulises-sgm\Web\Configuracion\RecursosRadio.aspx.cs:línea 1319
+2024-01-22 19:27:02,715 [14] INFO  CLUSTER     
+2024-01-22 19:27:02,721 [14] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-22 19:27:02,734 [14] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-23 07:56:46,528 [5] INFO  CLUSTER     
+2024-01-23 07:56:46,532 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-23 07:56:46,577 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-30 08:57:25,055 [5] INFO  CLUSTER     
+2024-01-30 08:57:25,060 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-30 08:57:25,115 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-31 08:56:22,553 [5] INFO  CLUSTER     
+2024-01-31 08:56:22,558 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-31 08:56:22,607 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-01-31 09:27:41,378 [15] INFO  CLUSTER     
+2024-01-31 09:27:41,382 [15] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-01-31 09:27:41,421 [15] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-02-01 12:19:24,219 [5] INFO  CLUSTER     
+2024-02-01 12:19:24,225 [5] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-02-01 12:19:24,266 [5] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-02-01 19:10:51,267 [26] INFO  CLUSTER     
+2024-02-01 19:10:51,272 [26] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-02-01 19:10:51,282 [26] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor
+2024-02-01 19:12:11,792 [11] INFO  CLUSTER     
+2024-02-01 19:12:11,797 [11] INFO  CLUSTER (Global.asax-Application_Start): INICIO DE LA APLICACION ...
+2024-02-01 19:12:11,804 [11] INFO  CLUSTER (Global.asax-Application_Start): Aplicacion configurada en modo Servidor

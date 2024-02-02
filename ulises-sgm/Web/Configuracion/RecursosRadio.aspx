@@ -130,10 +130,10 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
 
                    
 
-                      <asp:Label ID="Label42" runat="server" Style="z-index: 106; left: 20px; position: absolute; top: 163px"
+                      <asp:Label ID="Label42" runat="server" Enabled="False" Visible ="False" Style="z-index: 106; left: 20px; position: absolute; top: 163px"
                         Text="Offset de Frecuencias:" meta:resourcekey="Label8Resource1"></asp:Label>
 
-                     <asp:DropDownList ID="DDLOffsetGeneral" runat="server" Enabled="False" Style="z-index: 107; left: 20px; position: absolute; top: 179px"
+                     <asp:DropDownList ID="DDLOffsetGeneral" runat="server" Enabled="False" Visible ="False" Style="z-index: 107; left: 20px; position: absolute; top: 179px"
                         Width="155px"  class="select">
                         <asp:ListItem Value="0">Off</asp:ListItem>
                         <asp:ListItem Value="1">KHz 7 5</asp:ListItem>
@@ -170,11 +170,22 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                         <asp:ListItem Value="0" meta:resourcekey="ListItemResource34">&lt;Selecciona zona&gt;</asp:ListItem>
                     </asp:DropDownList>
 
-  				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 20px; position: absolute;
-					  top: 324px" Text="Seguro: " TextAlign="Left" Enabled="False" 
-					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial" 
+  				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 209px; position: absolute; width: 100px;
+					  top: 13px" Text="Seguro: " TextAlign="Left" Enabled="False"
+					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px"  Font-Names="Arial" 
 					meta:resourcekey="LSeguroResource1"/>
                    
+        <asp:Label ID="LblModoRadioEntrenamiento" runat="server" Style="z-index: 119; left: 209px; position: absolute; top: 63px; width:auto"
+            Text="Modo:" Visible="True" meta:resourcekey="LblModoRadioEntrenamientoResource1"></asp:Label>
+        <asp:DropDownList ID="DDLModoRadioEntrenamiento" runat="server" Enabled="False" Style="z-index: 117; left: 209px; position: absolute; top: 83px" AutoPostBack="false"
+            Visible="True" Width="118px" Height="22px" meta:resourcekey="DDLModoRadioEntrenamientoResource1" class="select" >
+            <asp:ListItem Value="0" meta:resourcekey="ListRealResource1">Real</asp:ListItem>
+            <asp:ListItem Value="1" meta:resourcekey="ListEntrenamientoResource1">Entrenamiento</asp:ListItem>
+        </asp:DropDownList>
+
+
+
+
 
 <%--                    <asp:Label ID="Label44" runat="server" Text="Tiempo CLD (seg):" Style="left:20px; top:313px; position:absolute; width:auto"
                         ForeColor="Black" meta:resourcekey="Label44Resource1"></asp:Label>

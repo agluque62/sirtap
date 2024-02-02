@@ -603,6 +603,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="SupervisionPortadora" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -623,6 +624,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="PrioridadSIP" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="TipoAcceso" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -665,6 +667,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="IdPrefijoDestinoLCEN" nillable="true" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="IdDestinoLCEN" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -2585,6 +2588,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="idSistema" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="idSector" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="pagina" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="seguro" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -2601,6 +2605,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="idSistema" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="idSector" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="pagina" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="seguro" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -2678,6 +2683,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="idSistema" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="idSector" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="idNucleo" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="seguro" type="s:boolean" />
           </s:sequence>
         </s:complexType>
       </s:element>

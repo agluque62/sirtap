@@ -90,7 +90,10 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
     const string TIPO_REC_EQUIPO_EXT = "7";
     const string TIPO_REC_RXTX_SIRTAP = "10";
     static int[] Tabla_idbss = new int[16];
-    
+
+    const string MODO_REAL = "0";
+    const string MODO_ENTRENAMIENTO = "1";
+
     protected new void Page_Load(object sender, EventArgs e)
     {
 		base.Page_Load(sender, e);
@@ -131,6 +134,11 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
             if (UlisesToolsVersion.Tools["RadioHF"] == null)
                 DListTipo.Items.RemoveAt(3);    // HF
 
+
+            LblModoRadioEntrenamiento.Visible = true;
+            DDLModoRadioEntrenamiento.SelectedValue = MODO_REAL;
+            DDLModoRadioEntrenamiento.Enabled = true;
+            DDLModoRadioEntrenamiento.Visible = true;
 
             //MVO.20170711: Se ocultan las pestañas Gestor y OID del Accordion2 que se utiliza para la configuración de recursos de tipo M+N             
             AccordionPane2.Visible = false;
@@ -328,6 +336,14 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         //Se inicializa a sin destino asociado. La cadena se lee del fichero de recursos
         TBDestino.Text = GetLocalResourceObject("TBDestinoResource1.Text").ToString();
         TBDescDestino.Text = GetLocalResourceObject("TBDestinoResource1.Text").ToString();  // RQF-34
+        if (DListTipo.SelectedValue == TIPO_REC_RXTX_SIRTAP)
+        {
+            LblModoRadioEntrenamiento.Visible = DDLModoRadioEntrenamiento.Enabled = DDLModoRadioEntrenamiento.Visible = true;
+        }
+        else
+        {
+            LblModoRadioEntrenamiento.Visible = DDLModoRadioEntrenamiento.Enabled = DDLModoRadioEntrenamiento.Visible = false;
+        }
 
 
         if (DLTifx.Items.Count > 0)
@@ -1816,7 +1832,9 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                     hFParam.TipoModo = 1;
                     hFParam.PrioridadEquipo = 101;
                 }
-                
+ 
+               
+
                 //MVO. Si en los decimales se introducen espacios en blanco, se sustituye por 000
                 if (string.IsNullOrWhiteSpace(TBTunedDecimals.Text))
                     TBTunedDecimals.Text="000";
