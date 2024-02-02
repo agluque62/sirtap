@@ -50,6 +50,7 @@ namespace U5ki.Gateway
             public u5ki.RemoteControlService.Sirtap RC = null;            
         }
 
+        private bool Initialized = false;
         private CfgRecursoEnlaceExterno CfgResource;
         private AsignacionRecursosGW EquipoExterno;
         private DireccionamientoIP DireccionamientoIP;
@@ -80,6 +81,7 @@ namespace U5ki.Gateway
 
         public void Dispose()
         {
+            Initialized = false;
             if (PollingPresenceTimer != null)
             {
                 PollingPresenceTimer.Stop();
@@ -122,7 +124,9 @@ namespace U5ki.Gateway
             PollingPresenceTimer.AutoReset = true;
             PollingPresenceTimer.Enabled = true;            
 
-            return Init();
+            int ret = Init();
+            if (ret == 0) Initialized = true;
+            return ret;
         }
 
         public int Init()
@@ -196,6 +200,8 @@ namespace U5ki.Gateway
 
         public void NOED137OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
         {
+            if (!Initialized) return;
+
             PollingPresenceTimer.Enabled = false;
 
             if (inInfo.DstId != IdRecurso) SipAgent.AnswerCall(call, SipAgent.SIP_NOT_FOUND);
@@ -213,6 +219,8 @@ namespace U5ki.Gateway
 
         public void NOED137OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
+            if (!Initialized) return;
+
             PollingPresenceTimer.Enabled = false; 
 
             if (call == CallId)
@@ -247,6 +255,8 @@ namespace U5ki.Gateway
 
         public bool NOED137OnKaTimeout(int call)
         {
+            if (!Initialized) return false;
+
             PollingPresenceTimer.Enabled = false;
 
             bool found = false;
@@ -265,6 +275,8 @@ namespace U5ki.Gateway
 
         public bool NOED137OnRdInfo(int call, CORESIP_RdInfo info)
         {
+            if (!Initialized) return false;
+
             PollingPresenceTimer.Enabled = false;
             bool found = false;
             if (call == CallId)
@@ -284,6 +296,8 @@ namespace U5ki.Gateway
 
         public bool RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info)
         {
+            if (!Initialized) return false;
+
             PollingPresenceTimer.Enabled = false;
 
             bool found = false;
@@ -294,7 +308,7 @@ namespace U5ki.Gateway
                     SIRTAP_Set_SQUELCH(rtpport_id, info);
                 }
 
-                found = true;            
+                found = true;
             }
             PollingPresenceTimer.Enabled = true;
 
@@ -303,6 +317,8 @@ namespace U5ki.Gateway
 
         private static void PollingOnTimedEvent(Object source, ElapsedEventArgs e, NoED137Resource noED137Res)
         {
+            if (!noED137Res.Initialized) return;
+
             bool presence = true;
             if (noED137Res.NOED137RadioType == NOED137RadioTypes.SIRTAP)
             {
