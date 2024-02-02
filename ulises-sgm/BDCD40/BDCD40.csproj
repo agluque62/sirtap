@@ -73,6 +73,7 @@
     <Compile Include="Entidades\agenda.cs" />
     <Compile Include="Entidades\Agrupaciones.cs" />
     <Compile Include="Entidades\Alarmas.cs" />
+    <Compile Include="Entidades\Alarmas_Acusticas.cs" />
     <Compile Include="Entidades\Altavoces.cs" />
     <Compile Include="Entidades\Conferencias.cs" />
     <Compile Include="Entidades\ConferenciasParticipantes.cs" />
@@ -101,6 +102,11 @@
     <Compile Include="Entidades\Internos.cs" />
     <Compile Include="Entidades\MetodosBss.cs" />
     <Compile Include="Entidades\MetodosbssDestinosradio.cs" />
+    <Compile Include="Entidades\Misiones.cs" />
+    <Compile Include="Entidades\Misiones_Alarmas_Acusticas.cs" />
+    <Compile Include="Entidades\Misiones_LCEN.cs" />
+    <Compile Include="Entidades\Misiones_Operadores.cs" />
+    <Compile Include="Entidades\Misiones_Paginas.cs" />
     <Compile Include="Entidades\Niveles.cs" />
     <Compile Include="Entidades\NivelesSCV.cs" />
     <Compile Include="Entidades\Nucleos.cs" />
