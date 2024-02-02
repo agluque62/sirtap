@@ -32,12 +32,9 @@ namespace CD40.BD.Entidades
 
         #endregion
 
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public Alarmas()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -57,7 +54,7 @@ namespace CD40.BD.Entidades
         {
             ListaResultado.Clear();
 
-            //DataSetResultado = this.DataSetSelectSQL();
+
             if (ds != null)
             {
                 foreach (System.Data.DataRow dr in ds.Tables[0].Rows)
@@ -66,7 +63,7 @@ namespace CD40.BD.Entidades
 
                     r.IdIncidencia = (uint)dr["IdIncidencia"];
                     r.IdSistema = (string)dr["IdSistema"];
-                    r.Alarma = (bool)dr["Alarma"];  //Incompatibilidad MySql Server 5.6.11 y 5.0  != 0;
+                    r.Alarma = (bool)dr["Alarma"];
 
                     ListaResultado.Add(r);
                 }
@@ -122,12 +119,5 @@ namespace CD40.BD.Entidades
 			return consulta;
 		}
 
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM Alarmas WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
 	}
 }
