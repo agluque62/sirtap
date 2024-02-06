@@ -42,6 +42,7 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_RDRX_PORTS				128
 #define CORESIP_MAX_SOUND_RX_PORTS			128
 #define CORESIP_MAX_GENERIC_PORTS			16
+#define CORESIP_MAX_RTP_PORTS				16
 #define CORESIP_MAX_RS_LENGTH				128
 #define CORESIP_MAX_REASON_LENGTH			128
 #define CORESIP_MAX_WG67_SUBSCRIBERS		25
@@ -256,6 +257,21 @@ typedef enum CORESIP_REDIRECT_OP
 	CORESIP_REDIRECT_ACCEPT
 } CORESIP_REDIRECT_OP;
 
+typedef enum CORESIP_RTP_port_actions
+{
+	CORESIP_CREATE_ENCODING,
+	CORESIP_CREATE_DECODING,
+	CORESIP_CREATE_ENCODING_DECODING,
+	CORESIP_PAUSE_ENCODING,
+	CORESIP_PAUSE_DECODING,
+	CORESIP_PAUSE_ENCODING_DECODING,
+	CORESIP_RESUME_ENCODING,
+	CORESIP_RESUME_DECODING,
+	CORESIP_RESUME_ENCODING_DECODING,
+	CORESIP_STOP,
+	CORESIP_DESTROY
+} CORESIP_RTP_port_actions;
+
 typedef struct CORESIP_Error
 {
 	int Code;
@@ -455,6 +471,11 @@ typedef struct CORESIP_RdInfo
 	int Ts2_ms;							//Ts2 en ms calculado del MAM recibido. Un valor negativo indica que no se ha recibido.
 
 } CORESIP_RdInfo;
+
+typedef struct CORESIP_RTPport_info
+{
+	pj_bool_t receiving;				//Indica si se esta recibiendo RTP
+} CORESIP_RTPport_info;
 
 #ifdef _ED137_
 // PlugTest FAA 05/2011
@@ -710,6 +731,16 @@ typedef struct CORESIP_Callbacks
 	*
 	*/
 	void (*MovedTemporallyCb)(int call, const char *dstUri);
+
+	/**
+	* RTPport_infoCb:
+	* Esta funcion se llama desde un objeto RTP port para informar a la aplicacion sobre eventos
+	* @param	rtpport_id		Identificador del RTPport
+	* @param    info			Estructora de datos que se reporta
+	* @return
+	*
+	*/
+	void (*RTPport_infoCb)(int rtpport_id, CORESIP_RTPport_info* info);
 
 	 
 #ifdef _ED137_
@@ -1734,6 +1765,31 @@ extern "C" {
 	@param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
 	*/
 	CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned int *volume, CORESIP_Error* error);
+
+	/*
+	Funcion que Crea un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto que se retorna.
+	@param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
+	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
+	@param dst_port. Puerto de destino del flujo RTP.
+	@param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
+	@param payload_type. Valor 0: PCMU, valor 8: PCMA
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas.
+	*/
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action, CORESIP_Error* error);
+
+	/*
+	Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto.
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas
+	*/
+	CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_port_actions action, CORESIP_Error* error);
+
+	/*
+	Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
+	@param rtpport_id. Manejador del puerto.
+	*/
+	CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error);
 
 
 #ifdef __cplusplus

@@ -88,35 +88,6 @@ namespace U5ki.NodeBox.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>HistBaseOid</string>\r\n  <string>HistCommunity</string>\r\n  <string>IdSistem" +
-            "a</string>\r\n  <string>DefaultCodec</string>\r\n  <string>DefaultDelayBufPframes</s" +
-            "tring>\r\n  <string>DefaultJBufPframes</string>\r\n  <string>InvProceedingDiaTout</s" +
-            "tring>\r\n  <string>InvProceedingIaTout</string>\r\n  <string>InvProceedingMonitorin" +
-            "gTout</string>\r\n  <string>InvProceedingRdTout</string>\r\n  <string>KAMultiplier</" +
-            "string>\r\n  <string>KAPeriod</string>\r\n  <string>RxLevel</string>\r\n  <string>SndS" +
-            "amplingRate</string>\r\n  <string>FiltroSettings</string>\r\n  <string>TsxTout</stri" +
-            "ng>\r\n  <string>TxLevel</string>\r\n  <string>ConectionRetryTimer</string>\r\n  <stri" +
-            "ng>HFBalanceoAsignacion</string>\r\n  <string>HFMonitorTimer</string>\r\n  <string>H" +
-            "FSnmpReadCommunity</string>\r\n  <string>HFSnmpSimula</string>\r\n  <string>HFSnmpWr" +
-            "iteCommunity</string>\r\n  <string>ListenIp</string>\r\n  <string>ListenPort</string" +
-            ">\r\n  <string>McastIp</string>\r\n  <string>McastPortBegin</string>\r\n  <string>Moni" +
-            "torCarrierTimeOut</string>\r\n  <string>SipPort</string>\r\n  <string>SipUser</strin" +
-            "g>\r\n  <string>tifxMcastIp</string>\r\n  <string>tifxMcastPort</string>\r\n  <string>" +
-            "tifxPresenceTout</string>\r\n  <string>PabxSimulada</string>\r\n  <string>TifxMcastI" +
-            "p</string>\r\n  <string>TifxMcastPort</string>\r\n  <string>PabxPollTime</string>\r\n " +
-            " <string>PabxSaPwd</string>\r\n  <string>PabxWsPort</string>\r\n  <string>ConfigByte" +
-            "</string>\r\n  <string>Cd40_CfgService_SoapCfg_InterfazSOAPConfiguracion</string>\r" +
-            "\n</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection FiltroSettings {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["FiltroSettings"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int NetworkOnDelay {
             get {
@@ -211,6 +182,35 @@ namespace U5ki.NodeBox.Properties {
         public string ListenIp {
             get {
                 return ((string)(this["ListenIp"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsd=\"http://www.w3." +
+            "org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n  <s" +
+            "tring>HistBaseOid</string>\r\n  <string>HistCommunity</string>\r\n  <string>IdSistem" +
+            "a</string>\r\n  <string>DefaultCodec</string>\r\n  <string>DefaultDelayBufPframes</s" +
+            "tring>\r\n  <string>DefaultJBufPframes</string>\r\n  <string>InvProceedingDiaTout</s" +
+            "tring>\r\n  <string>InvProceedingIaTout</string>\r\n  <string>InvProceedingMonitorin" +
+            "gTout</string>\r\n  <string>InvProceedingRdTout</string>\r\n  <string>KAMultiplier</" +
+            "string>\r\n  <string>KAPeriod</string>\r\n  <string>RxLevel</string>\r\n  <string>SndS" +
+            "amplingRate</string>\r\n  <string>FiltroSettings</string>\r\n  <string>TsxTout</stri" +
+            "ng>\r\n  <string>TxLevel</string>\r\n  <string>ConectionRetryTimer</string>\r\n  <stri" +
+            "ng>HFBalanceoAsignacion</string>\r\n  <string>HFMonitorTimer</string>\r\n  <string>H" +
+            "FSnmpReadCommunity</string>\r\n  <string>HFSnmpSimula</string>\r\n  <string>HFSnmpWr" +
+            "iteCommunity</string>\r\n  <string>ListenIp</string>\r\n  <string>ListenPort</string" +
+            ">\r\n  <string>McastIp</string>\r\n  <string>McastPortBegin</string>\r\n  <string>Moni" +
+            "torCarrierTimeOut</string>\r\n  <string>SipPort</string>\r\n  <string>SipUser</strin" +
+            "g>\r\n  <string>tifxMcastIp</string>\r\n  <string>tifxMcastPort</string>\r\n  <string>" +
+            "tifxPresenceTout</string>\r\n  <string>PabxSimulada</string>\r\n  <string>TifxMcastI" +
+            "p</string>\r\n  <string>TifxMcastPort</string>\r\n  <string>PabxPollTime</string>\r\n " +
+            " <string>PabxSaPwd</string>\r\n  <string>PabxWsPort</string>\r\n  <string>ConfigByte" +
+            "</string>\r\n  <string>Cd40_CfgService_SoapCfg_InterfazSOAPConfiguracion</string>\r" +
+            "\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection FiltroSettings {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["FiltroSettings"]));
             }
         }
     }

@@ -235,26 +235,12 @@ float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transm
  */
 void SipAgent::Init(const CORESIP_Config * cfg)
 {
-	pjsua_config uaCfg;
 
-	uaCfg.user_agent.slen = 0;
-	if (strlen(cfg->UserAgent) == 0)
-	{
-		uaCfg.user_agent = pj_str("U5K-UA/1.0.0");
-	}
-	else
-	{
-		if (strlen(cfg->UserAgent) < sizeof(cfg->UserAgent))
-		{
-			uaCfg.user_agent = pj_str((char*)cfg->UserAgent);
-		}
-		else
-		{
-			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
-		}
-	}
+	if (strlen(cfg->UserAgent) >= sizeof(cfg->UserAgent)) 
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
 
-	if (uaCfg.user_agent.slen >= 3 && pj_strnicmp2(&uaCfg.user_agent, "ETM", 3) == 0)
+	//if (uaCfg.user_agent.slen >= 3 && pj_strnicmp2(&uaCfg.user_agent, "ETM", 3) == 0)
+	if (pj_ansi_strlen(cfg->UserAgent) >= 3 && pj_ansi_strnicmp(cfg->UserAgent, "ETM", 3) == 0)
 	{
 		//Si el User Agent comienza por "ETM"
 		SipAgent::ETM = PJ_TRUE;
@@ -383,6 +369,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 	pj_app_cbs.on_stream_rtp_ext_info_changed = &SipCall::OnRdInfoChanged;
 	pj_app_cbs.on_stream_ka_timeout = &SipCall::OnKaTimeout;
 	pj_app_cbs.on_create_sdp = &SDPUtils::OnCreateSdp;
+	pj_app_cbs.on_stream_rtp_RTPport = &RTPport::OnRTP_Received;
 	
 #ifdef _ED137_
 	// Heredadas de coresip PlugTest FAA 05/2011
@@ -405,6 +392,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 * - Declaracion e
 		 * - Inicializacion con los valores por defecto
 		 */		
+		pjsua_config uaCfg;
 		pjsua_logging_config logCfg;
 		pjsua_media_config mediaCfg;
 		pjsua_transport_config transportCfg;
@@ -431,7 +419,17 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		 * http://www.pjsip.org/docs/latest-1/pjsip/docs/html/structpjsua__config.htm
 		 */		
 		if (cfg->max_calls > PJSUA_MAX_CALLS) uaCfg.max_calls = 30;		
-		else uaCfg.max_calls = cfg->max_calls;
+		else uaCfg.max_calls = cfg->max_calls;		
+
+		uaCfg.user_agent.slen = 0;
+		if (strlen(cfg->UserAgent) == 0)
+		{
+			uaCfg.user_agent = pj_str("U5K-UA/1.0.0");
+		}
+		else
+		{
+			uaCfg.user_agent = pj_str((char*)cfg->UserAgent);
+		}
 
 		pjsip_endpt_Set_ETM(pjsua_var.endpt, SipAgent::ETM);
 
@@ -1062,7 +1060,9 @@ void SipAgent::Stop()
 			}
 		}	
 
-		Guard lock(_Lock);	
+		Guard lock(_Lock);
+
+		RTPport::DestroyAllRTPports();
 
 		if (_PresenceManager) 
 		{
@@ -2953,6 +2953,13 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		else if (!IsSlotValid(GenericPort::_Generic_Ports[src]->_UpStreamSlot)) error_src = PJ_TRUE;
 		else conf_src = GenericPort::_Generic_Ports[src]->_UpStreamSlot;
 		break;
+	case CORESIP_RTPPORT_ID:
+		PJ_LOG(5, (__FILE__, "######### GRABACION BridgeLink srcType CORESIP_RTPPORT_ID "));
+		if (src >= RTPport::MAX_RTP_PORTS) error_src = PJ_TRUE;
+		else if (RTPport::_RTP_Ports[src] == NULL) error_src = PJ_TRUE;
+		else if (!IsSlotValid(RTPport::_RTP_Ports[src]->_Slot)) error_src = PJ_TRUE;
+		else conf_src = RTPport::_RTP_Ports[src]->_Slot;
+		break;
 	default:
 		throw PJLibException(__FILE__, PJ_EINVAL).Msg("BridgeLink:", "Tipo de Puerto de origen srcType 0x%08x no es valido", srcType);		
 	}
@@ -3122,10 +3129,18 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 
 	case CORESIP_GENPORT_ID:
 		PJ_LOG(5, (__FILE__, "######### GRABACION BridgeLink dstType CORESIP_GENPORT_ID "));
-		if (src >= CORESIP_MAX_GENERIC_PORTS) error_src = PJ_TRUE;
-		else if (GenericPort::_Generic_Ports[src] == NULL) error_src = PJ_TRUE;
-		else if (!IsSlotValid(GenericPort::_Generic_Ports[src]->_DownStreamSlot)) error_src = PJ_TRUE;
-		else conf_dst = GenericPort::_Generic_Ports[src]->_DownStreamSlot;
+		if (dst >= CORESIP_MAX_GENERIC_PORTS) error_dst = PJ_TRUE;
+		else if (GenericPort::_Generic_Ports[dst] == NULL) error_dst = PJ_TRUE;
+		else if (!IsSlotValid(GenericPort::_Generic_Ports[dst]->_DownStreamSlot)) error_dst = PJ_TRUE;
+		else conf_dst = GenericPort::_Generic_Ports[dst]->_DownStreamSlot;
+		break;
+
+	case CORESIP_RTPPORT_ID:
+		PJ_LOG(5, (__FILE__, "######### GRABACION BridgeLink dstType CORESIP_RTPPORT_ID "));
+		if (dst >= RTPport::MAX_RTP_PORTS) error_dst = PJ_TRUE;
+		else if (RTPport::_RTP_Ports[dst] == NULL) error_dst = PJ_TRUE;
+		else if (!IsSlotValid(RTPport::_RTP_Ports[dst]->_Slot)) error_dst = PJ_TRUE;
+		else conf_dst = RTPport::_RTP_Ports[dst]->_Slot;
 		break;
 
 	default:

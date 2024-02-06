@@ -244,6 +244,7 @@
     <ClCompile Include="PresenceManag.cpp" />
     <ClCompile Include="PresSubs.cpp" />
     <ClCompile Include="RdRxPort.cpp" />
+    <ClCompile Include="RTPport.cpp" />
     <ClCompile Include="SipCall_Rd.cpp" />
     <ClCompile Include="RecordPort.cpp" />
     <ClCompile Include="SDPUtils.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="PresSubs.h" />
     <ClInclude Include="RdRxPort.h" />
     <ClInclude Include="RecordPort.h" />
+    <ClInclude Include="RTPport.h" />
     <ClInclude Include="SDPUtils.h" />
     <ClInclude Include="SignalGen.h" />
     <ClInclude Include="SipAgent.h" />

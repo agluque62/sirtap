@@ -204,6 +204,7 @@ PJ_DECL(pj_bool_t) pjmedia_stream_get_GRS_force_ptt_in_RTPRx_confirmed(pjmedia_s
 PJ_DECL(pj_status_t) pjmedia_radio_stream_modify(pjmedia_stream* stream, const pjmedia_stream_info* info);
 PJ_DECL(void) pjmedia_stream_set_ED137version(pjmedia_stream* stream, char ED137version);
 PJ_DECL(void) pjmedia_stream_set_SelCalInProgress(pjmedia_stream* stream, pj_bool_t SelCalInProgress);
+PJ_DECL(void) pjmedia_stream_set_is_for_coresip_RTPport(pjmedia_stream* stream, pj_bool_t is_for_coresip_RTPport);
 
 /**
 * Get user data of the stream.

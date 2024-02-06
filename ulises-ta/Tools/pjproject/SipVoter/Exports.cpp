@@ -3718,5 +3718,124 @@ CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 	return ret;
 }
 
+/**
+ *	CORESIP_CreateRTPport		Crea un puerto para enviar y recibir RTP
+ */
+CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS)
+	{
+		char dst[CORESIP_MAX_URI_LENGTH + 1];
+		if (dst_ip)
+		{
+			pj_memcpy(dst, dst_ip, sizeof(dst));
+			dst[CORESIP_MAX_URI_LENGTH] = '\0';
+		}
+		else
+		{
+			pj_ansi_strcpy(dst, "NULL");
+		}
+
+		PJ_LOG(3, (__FILE__, "CORESIP_CreateRTPport dst_ip %s src_port %d dst_port %d payload_type %d", dst_ip, src_port, dst_port, payload_type));
+	}
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_CreateRTPport: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			*rtpport_id = (RTPport::CreateRTPport(dst_ip, src_port, dst_port, local_multicast_ip, payload_type, action) | CORESIP_RTPPORT_ID);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_CreateRTPport result rtpport_id %d ret %d, %s", rtpport_id ? *rtpport_id : -1, ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
+/**
+ *	CORESIP_PauseResumeDestroyRTPport		Pausa reanuda y Destruye un puerto RTP
+ */
+CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_port_actions action, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyRTPport rtpport_id %d", rtpport_id));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_DestroyRTPport: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			RTPport::PauseResumeDestroyRTPport(rtpport_id & CORESIP_ID_MASK, action);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_DestroyRTPport result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
+/**
+ *	CORESIP_PauseResumeDestroyRTPport		Pausa reanuda y Destruye un puerto RTP
+ */
+CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AskRTPport_info rtpport_id %d", rtpport_id));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_AskRTPport_info: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			RTPport::AskRTPport_info(rtpport_id & CORESIP_ID_MASK);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AskRTPport_info result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
 
 /*@}*/

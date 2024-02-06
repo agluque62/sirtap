@@ -210,7 +210,7 @@ PJ_DEF(pj_status_t) pjmedia_transport_udp_create3(pjmedia_endpt *endpt,
 
     
     /* Sanity check */
-    PJ_ASSERT_RETURN(endpt && port && p_tp, PJ_EINVAL);
+    PJ_ASSERT_RETURN(endpt && /*port &&*/ p_tp, PJ_EINVAL);
 
 
     pj_bzero(&si, sizeof(pjmedia_sock_info));
@@ -239,7 +239,7 @@ PJ_DEF(pj_status_t) pjmedia_transport_udp_create3(pjmedia_endpt *endpt,
 
     /* Bind RTCP socket */
     status = pj_sockaddr_init(af, &si.rtcp_addr_name, addr, 
-			      (pj_uint16_t)(port+1));
+			      (pj_uint16_t)((port == 0)? 0 : port+1));
     if (status != PJ_SUCCESS)
 	goto on_error;
 

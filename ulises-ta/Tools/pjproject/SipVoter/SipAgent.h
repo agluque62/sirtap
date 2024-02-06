@@ -11,6 +11,7 @@
 #define CORESIP_SNDDEV_ID			0x20000000
 #define CORESIP_WAVPLAYER_ID		0x10000000
 #define CORESIP_RDRXPORT_ID			0x08000000
+#define CORESIP_RTPPORT_ID			0x05000000
 #define CORESIP_SNDRXPORT_ID		0x04000000
 #define CORESIP_GENPORT_ID			0x03000000
 #define CORESIP_ACC_ID				0x02000000
@@ -43,6 +44,7 @@
 #include "DlgSubs.h"
 #include "WG67Subs.h"
 #include "GenericPort.h"
+#include "RTPport.h"
 #include <map>
 #include <string>
 
@@ -84,6 +86,10 @@ public:
 	//Direccion llamada
 	static const int INCOM = 0;
 	static const int OUTCOM = 1;
+
+	static char uaIpAdd[32];
+	static char HostId[33];
+	static unsigned int uaPort;
 	
 	static CORESIP_Callbacks Cb;
 	static bool EnableMonitoring;
@@ -251,11 +257,7 @@ private:
 	static int _InChannels[10 * CORESIP_MAX_SOUND_DEVICES];
 	static int _OutChannels[10 * CORESIP_MAX_SOUND_DEVICES];
 	static pjmedia_aud_stream * _SndDev;
-	static pjmedia_port * _ConfMasterPort;
-
-	static char uaIpAdd[32];
-	static char HostId[33];
-	static unsigned int uaPort;
+	static pjmedia_port * _ConfMasterPort;	
 	
 	static pjsua_transport_id SipTransportId;			//Id del SIP transport (direccion IP y puerto del protocolo SIP)
 

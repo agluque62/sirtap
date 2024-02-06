@@ -103,6 +103,9 @@
     <ClCompile Include="Corelogfile.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="RTPport.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreSip.h">
@@ -214,6 +217,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Corelogfile.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="RTPport.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

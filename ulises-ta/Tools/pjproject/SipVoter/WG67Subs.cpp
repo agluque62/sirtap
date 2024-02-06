@@ -44,6 +44,22 @@ int WG67Subs::SendWG67Subscription(pjsua_acc_id acc_id, int call_id, char* dest_
 
 			//La subscripcion ya ha sido creada
 			wg67subs->SendSubscriptionMessage(expires, noRefresh);
+			if (expires == 0)
+			{
+				//Si se envia subscribe con expires a 0, arrancamos el timer que termina la subscripcion en caso de que 
+				//no se reciba el NOTIFY con status terminated.
+				wg67subs->after_no_refresh_force_destroy_subs_timer.id = PJ_FALSE;
+				pjsua_cancel_timer(&wg67subs->after_no_refresh_force_destroy_subs_timer);
+
+				pj_time_val delay;
+				pj_timer_entry_init(&wg67subs->after_no_refresh_force_destroy_subs_timer, PJ_FALSE, wg67subs, &force_destroy_subs_timer_cb);
+				delay.sec = 1;
+				delay.msec = 500;
+				if (pjsua_schedule_timer(&wg67subs->after_no_refresh_force_destroy_subs_timer, &delay) == PJ_SUCCESS)
+					wg67subs->after_no_refresh_force_destroy_subs_timer.id = PJ_TRUE;
+				else
+					PJ_LOG(3, (THIS_FILE, "ERROR: WG67Subs::SendWG67Subscription: No se puede arrancal el timer force_destroy_subs_timer_cb"));
+			}
 		}
 		else if (SipAgent::_WG67Manager->Add(acc_id, call_id, dest_uri, expires, noRefresh, by_proxy) != 0) ret = CORESIP_ERROR;
 	}
@@ -841,6 +857,7 @@ void WG67Subs::wg67_on_client_refresh(pjsip_evsub* sub)
 	{
 		if (wg67->_NoRefresh)
 		{
+			//Esta desactivado el refresco de la subscripcion
 			//Se arranca timer para finalizar la subscripcion en caso de que no se reciba un NOTIFY o se reanude el refresco, en cuyo caso se cancelaria el timer
 
 			if (wg67->after_no_refresh_force_destroy_subs_timer.id == PJ_TRUE)
