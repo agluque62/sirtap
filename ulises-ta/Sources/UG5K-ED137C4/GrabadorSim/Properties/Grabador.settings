@@ -1,0 +1,39 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GrabadorSim.Properties" GeneratedClassName="Grabador">
+  <Profiles />
+  <Settings>
+    <Setting Name="RTPPort" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">14650</Value>
+    </Setting>
+    <Setting Name="RTSPPort" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">11555</Value>
+    </Setting>
+    <Setting Name="IP" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.56.101</Value>
+    </Setting>
+    <Setting Name="IPLocal" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="RetardoAnnounce" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="RetardoSetup" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="RetardoTearDown" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="RetardoPeticion" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="RetardoMedia" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="DirectorioFicheros" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">../media</Value>
+    </Setting>
+    <Setting Name="IPRedan" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.1.234</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
