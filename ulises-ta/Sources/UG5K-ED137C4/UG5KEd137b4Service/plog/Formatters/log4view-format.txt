@@ -1,0 +1,15 @@
+<log4j:event logger="TestNLog.Program" level="INFO" timestamp="1448022393457" thread="8">
+	<log4j:message>Esto es una prueba...</log4j:message>
+	<log4j:properties>
+		<log4j:data name="log4japp" value="TestNLog.vshost.exe(5688)" />
+		<log4j:data name="log4jmachinename" value="DF1501" />
+	</log4j:properties>
+</log4j:event>
+
+<log4j:event logger="PLOG" level="INFO" timestamp="1448024455" thread="5416>
+	<log4j:message>UG5k-APPSERVER: (Version WIN) Iniciado en "./". ENTER para SALIR.</log4j:message>
+	<log4j:properties>
+		<log4j:data name="log4japp" value="PLOG" />
+		<log4j:data name="log4jmachinename" value="PLOG-M" />
+	</log4j:properties>
+</log4j:event>

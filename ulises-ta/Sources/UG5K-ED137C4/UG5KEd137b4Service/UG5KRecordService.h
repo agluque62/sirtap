@@ -22,8 +22,6 @@
 #define TX_CLIENT_ERR_CREATE_SESION	6
 #define CODIGO_MAX_ERROR			7
 #define TX_CLIENT_RX_MEDIA_NO_RECORDING	7
-
-#define ID_NO_FRQ	"NoFrequencyID"
 //--ESC
 
 class UG5KRecordService :
@@ -32,7 +30,7 @@ class UG5KRecordService :
 protected:
 	std::map<std::string, void *> _sesiones;
 	CUDPSocket _sckRxUDP;
-//	CUDPSocket _sckTxUDP;							//ESC. 17.04.2017. Comentado, empleamos un ï¿½nico socket UDP
+//	CUDPSocket _sckTxUDP;							//ESC. 17.04.2017. Comentado, empleamos un único socket UDP
 
 private:
 	int _portRx;
@@ -43,8 +41,8 @@ private:
 	bool _finalizarServ;
 	CIPAddress _CIP_RecA, _CIP_RecB;
 	std::string _uri;
-	bool _bDualRecSrv;								//ESC. 27.01.2016. Aï¿½adido
-	bool _bModoVOTERSrv;							//ESC. 24.01.2017. Aï¿½adido
+	bool _bDualRecSrv;								//ESC. 27.01.2016. Añadido
+	bool _bModoVOTERSrv;							//ESC. 24.01.2017. Añadido
 	bool _EnableGrabacionED137;
 
 public:
@@ -52,7 +50,7 @@ public:
 	~UG5KRecordService(void);
 
 	void Dispose();
-	bool GetDualRecordCfg();						//ESC. 27.01.2016. Aï¿½adido
+	bool GetDualRecordCfg();						//ESC. 27.01.2016. Añadido
 	bool GetModoVOTER();										//ESC. 25.01.2017
 //	bool GetModoVOTER_VCStelephonyUA(RTSPSession &pRtspSes);	//ESC. 26.01.2017
 	bool CPU_Pasarela_Es_Principal();							//ESC. 22.05.2017

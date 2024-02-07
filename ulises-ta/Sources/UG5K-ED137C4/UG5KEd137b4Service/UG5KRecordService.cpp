@@ -503,10 +503,8 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 			pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, sFrecRad);
 
 			if(sFrecRad.empty())
-			{
-				//return TX_CLIENT_CMD_NOTFOUND;
-				sFrecRad = ID_NO_FRQ;
-			}
+				return TX_CLIENT_CMD_NOTFOUND;
+
 			std::string connref = id;
 			pdata = (void*)Utilidades::parseNextField((char*)pdata, &recibidos, connref);
 			connref += "@" + _ipPasarela;
@@ -540,10 +538,7 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 			pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, sFrecRad);
 
 			if(sFrecRad.empty())
-			{
-				//return TX_CLIENT_CMD_NOTFOUND;
-				sFrecRad = ID_NO_FRQ;
-			}
+				return TX_CLIENT_CMD_NOTFOUND;
 
 			std::string connref = id;
 			pdata = (void*)Utilidades::parseNextField((char*)pdata, &recibidos, connref);
@@ -579,10 +574,7 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 			pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, sFrecRad);
 			
 			if(sFrecRad.empty())
-			{
-				//return TX_CLIENT_CMD_NOTFOUND;
-				sFrecRad = ID_NO_FRQ;
-			}
+				return TX_CLIENT_CMD_NOTFOUND;
 
 			propiedades.push_back(rtsp_prop("FrequencyID", sFrecRad));
 			propiedades.push_back(rtsp_prop("Direction", "2"));
@@ -612,10 +604,7 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 			pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, sFrecRad);			
 
 			if(sFrecRad.empty())
-			{
-				//return TX_CLIENT_CMD_NOTFOUND;
-				sFrecRad = ID_NO_FRQ;
-			}
+				return TX_CLIENT_CMD_NOTFOUND;
 
 			std::string connref = id;
 			pdata = (void*)Utilidades::parseNextField((char*)pdata, &recibidos, connref);

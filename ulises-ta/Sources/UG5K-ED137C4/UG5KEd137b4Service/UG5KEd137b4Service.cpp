@@ -20,10 +20,8 @@
 	static char acBuildString[] = "Version WIN";
 #else
 	#include <signal.h>
-	void setAllSignalCatch();
 	extern char acBuildString[];					//ESC. 02.12.2915. Se emplea en PPC para que el ejecutable incluya la fecha de generaci�n.
 #endif
-	static int iTerminar = 0;
 
 
 char *acStrVersion()
@@ -130,7 +128,7 @@ int main(int argc, char* argv[] )
 #else
 
 	static int iDescPerro=-1;			// Descriptor de fichero para refrescar al perro.
-	static unsigned char ucPerro=0;		// Envio al Perro...
+	static unsigned char ucPerro=0;		// Envio al Perro...		
 
 	if (argc == 2)
 	{
@@ -165,14 +163,11 @@ int main(int argc, char* argv[] )
 	{
 		UG5KRecordService _service;
 
-#ifndef _WIN32
-		setAllSignalCatch();
-#endif
 		_service.Start();
 
 		sleep(500);
 
-		while ( _service.IsRunning() && (iTerminar == 0))
+		while ( _service.IsRunning() )
 		{
 			int iHit;
 
@@ -244,94 +239,6 @@ static void sleep(int msec)
 #endif
 }
 
-#ifndef _WIN32
-/*
- * Funcion: mainGestorSenales.
- * Descripcion: Gestor de senales de la aplicacion.
- * Parametros ->
- *    (Ent) iSignal: Senal a tratar.
- * Retorna: Nada.
- */
 
-static void mainGestorSenales(int iSignal)
-{
-	switch(iSignal)
-	{
-       case SIGINT:
-       case SIGTERM:
-    	  iTerminar = 1;
-         break;
-      case SIGUSR1:
-      case SIGUSR2:
-      case SIGCHLD:
-          break;
-      case SIGKILL:
-          iTerminar = 1;
-          //exit(-1);
-          break;
-      case SIGSEGV:
-      case SIGABRT:
-    	  if (iTerminar == 0)
-    	  {
-			  iTerminar = 1;
-    	  }
-    	  exit(-1);
-          break;
-      case SIGILL:
-      case SIGBUS:
-    	  exit(-1);
-          break;
-      case SIGALRM:
-          break;
-      default:
-          iTerminar = 1;
-          break;
-      }
-  }
-
-
-/** */
-void setAllSignalCatch()
-{
-    signal(SIGHUP, &mainGestorSenales);    // 		1	 Hangup (POSIX).
-    signal(SIGINT, &mainGestorSenales);    // 		2	 Interrupt (ANSI).
-    signal(SIGQUIT, &mainGestorSenales);    // 		3	 Quit (POSIX).
-    signal(SIGILL, &mainGestorSenales);    // 		4	 Illegal instruction (ANSI).
-    signal(SIGTRAP, &mainGestorSenales);    // 		5	 Trace trap (POSIX).
-    signal(SIGABRT, &mainGestorSenales);    // 		6	 Abort (ANSI).
-    signal(SIGIOT, &mainGestorSenales);    // 		6	 IOT trap (4.2 BSD).
-    signal(SIGBUS, &mainGestorSenales);    // 		7	 BUS error (4.2 BSD).
-    signal(SIGFPE, &mainGestorSenales);    // 		8	 Floating-point exception (ANSI).
-    signal(SIGKILL, &mainGestorSenales);    // 		9	 Kill, unblockable (POSIX).
-    signal(SIGUSR1, &mainGestorSenales);    // 		10	/* User-defined signal 1 (POSIX).
-    signal(SIGSEGV, &mainGestorSenales);    // 		11	 Segmentation violation (ANSI).
-    signal(SIGUSR2, &mainGestorSenales);    // 			/* User-defined signal 2 (POSIX).
-    signal(SIGPIPE, &mainGestorSenales);    // 		13	 Broken pipe (POSIX).
-    signal(SIGALRM, &mainGestorSenales);    // 		14	 Alarm clock (POSIX).
-    signal(SIGTERM, &mainGestorSenales);    // 		15	 Termination (ANSI).
-    signal(SIGSTKFLT, &mainGestorSenales);    // 			/* Stack fault.
-                        //#define	SIGCLD		SIGCHLD	 Same as SIGCHLD (System V).
-    signal(SIGCHLD, &mainGestorSenales);    // 		17	 Child status has changed (POSIX).
-    signal(SIGCONT, &mainGestorSenales);    // 		18	 Continue (POSIX).
-    signal(SIGSTOP, &mainGestorSenales);    // 		19	 Stop, unblockable (POSIX).
-    signal(SIGTSTP, &mainGestorSenales);    // 		20	 Keyboard stop (POSIX).
-    signal(SIGTTIN, &mainGestorSenales);    // 		21	 Background read from tty (POSIX).
-    signal(SIGTTOU, &mainGestorSenales);    // 		22	 Background write to tty (POSIX).
-    signal(SIGURG, &mainGestorSenales);    // 		23	 Urgent condition on socket (4.2 BSD).
-    signal(SIGXCPU, &mainGestorSenales);    // 		24	 CPU limit exceeded (4.2 BSD).
-    signal(SIGXFSZ, &mainGestorSenales);    // 		25	 File size limit exceeded (4.2 BSD).
-    signal(SIGVTALRM, &mainGestorSenales);    // 			 Virtual alarm clock (4.2 BSD).
-    signal(SIGPROF, &mainGestorSenales);    // 		27	 Profiling alarm clock (4.2 BSD).
-    signal(SIGWINCH, &mainGestorSenales);    // 		28	 Window size change (4.3 BSD, Sun).
-    signal(SIGPOLL, &mainGestorSenales);    // 		SIGIO	 Pollable event occurred (System V).
-    signal(SIGIO, &mainGestorSenales);    // 		29	I/O now possible (4.2 BSD).
-    signal(SIGPWR, &mainGestorSenales);    // 		30	 Power failure restart (System V).
-    signal(SIGSYS, &mainGestorSenales);    // 		31	 Bad system call.
-    signal(SIGUNUSED, &mainGestorSenales);    // 			31
-
-        // #define	_NSIG		65	/* Biggest signal number + 1
-}
-
-#endif
 
 

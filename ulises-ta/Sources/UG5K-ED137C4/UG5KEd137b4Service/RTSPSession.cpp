@@ -1246,7 +1246,7 @@ void RTSPSession::AutomataGestionOrdenes(eRecorder nRec)
 #else
 						NLOG_ERROR("RTSP Sesion (%s). Error .Send_Media(%s). errno(%d). CreaNuevoSocket", cfgRec.recurso.c_str(), (nRec == eRecA) ? "REC_A" : "REC_B", errno);	//ESC. provoca excepción "sckRec.GetHostAddress().GetStringAddress().c_str()"
 #endif
-						error_envio = true;
+						error_envio = true;						
 					}					
 					free(pMedia);
 				}
