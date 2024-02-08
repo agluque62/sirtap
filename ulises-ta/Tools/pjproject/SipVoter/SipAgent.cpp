@@ -120,11 +120,6 @@ RdRxPort * SipAgent::_RdRxPorts[CORESIP_MAX_RDRX_PORTS];
  *	SipAgent::_SndRxPorts: Lista de Punteros a los Puertos de Recepcion.
  */
 SoundRxPort * SipAgent::_SndRxPorts[CORESIP_MAX_SOUND_RX_PORTS];
-/**
- *	SipAgent::_RecordPort: Punteros a los Puertos de Grabacion Tel y Rad.
- */
-RecordPort * SipAgent::_RecordPortTel = NULL;
-RecordPort * SipAgent::_RecordPortRad = NULL;
 
 /**
  *	SipAgent::FrecDesp: Gestor de grupos de climax.
@@ -235,7 +230,6 @@ float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transm
  */
 void SipAgent::Init(const CORESIP_Config * cfg)
 {
-
 	if (strlen(cfg->UserAgent) >= sizeof(cfg->UserAgent)) 
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
 
@@ -638,8 +632,6 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 
 		PJ_LOG(3,(__FILE__, "Puertos para RTP reservados: (%u - %u), para un maximo de %d sesiones", transportCfg.port, transportCfg.port+(pjsua_call_get_max_count()*2)-1, pjsua_call_get_max_count()));
 
-		
-
 		/**
 		 * Crea un control de acceso a la memoria del agente.
 		 */
@@ -655,22 +647,8 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		/**
 			* Se crea el puerto pjmedia para la grabacion
 		 */
-		if (cfg->RecordingEd137)
-		{
-			_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, cfg->IpAddress, "127.0.0.1", 65003, cfg->HostId);		
-			_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, cfg->IpAddress, "127.0.0.1", 65003, cfg->HostId);	
-		}
-		else
-		{
-			_RecordPortTel = NULL;
-			_RecordPortRad = NULL;
-		}
 
-		if (_RecordPortTel != NULL && _RecordPortRad != NULL)
-		{
-			_RecordPortTel->SetTheOtherRec(_RecordPortRad);
-			_RecordPortRad->SetTheOtherRec(_RecordPortTel);
-		}
+		RecordPort::Init(pjsua_var.pool, cfg->RecordingEd137, cfg->AgentType, cfg->IpAddress, cfg->HostId);
 
 		_FrecDesp = new FrecDesp;
 
@@ -1104,20 +1082,7 @@ void SipAgent::Stop()
 			_FrecDesp = NULL;
 		}
 
-		/**
-		 * Libera puerto de grabacion
-		 */
-		if (_RecordPortTel)
-		{
-			delete _RecordPortTel;
-			_RecordPortTel = NULL;
-		}
-
-		if (_RecordPortRad)
-		{
-			delete _RecordPortRad;
-			_RecordPortRad = NULL;
-		}
+		RecordPort::End();
 
 		/**
 		 * Libera los 'puertos'.
@@ -2662,8 +2627,8 @@ bool SipAgent::IsSlotValid(pjsua_conf_port_id slot)
  */
 int SipAgent::RecINVTel()
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecINV();
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecINV();
 }
 
 /**
@@ -2673,8 +2638,8 @@ int SipAgent::RecINVTel()
  */
 int SipAgent::RecINVRad()
 {
-	if (!_RecordPortRad) return -1;
-	return _RecordPortRad->RecINV();
+	if (!RecordPort::_RecordPortRad) return -1;
+	return RecordPort::_RecordPortRad->RecINV();
 }
 
 /**
@@ -2684,8 +2649,8 @@ int SipAgent::RecINVRad()
  */
 int SipAgent::RecBYETel()
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecBYE();
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecBYE();
 }
 
 /**
@@ -2695,8 +2660,8 @@ int SipAgent::RecBYETel()
  */
 int SipAgent::RecBYERad()
 {
-	if (!_RecordPortRad) return -1;
-	return _RecordPortRad->RecBYE();
+	if (!RecordPort::_RecordPortRad) return -1;
+	return RecordPort::_RecordPortRad->RecBYE();
 }
 
 /**
@@ -2710,8 +2675,8 @@ int SipAgent::RecBYERad()
  */
 int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal)
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
 }
 
 /**
@@ -2724,8 +2689,8 @@ int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *o
  */
 int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal)
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecCallEnd(cause, media_status, disc_origin, callIdHdrVal);
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecCallEnd(cause, media_status, disc_origin, callIdHdrVal);
 }
 
 /**
@@ -2737,8 +2702,8 @@ int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int di
  */
 int SipAgent::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal)
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecCallConnected(connected_uri, callIdHdrVal);
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecCallConnected(connected_uri, callIdHdrVal);
 }
 
 /**
@@ -2751,8 +2716,8 @@ int SipAgent::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* ca
  */
 int SipAgent::RecHold(bool on, bool llamante, pjsua_call_media_status media_status, const pj_str_t* callIdHdrVal)
 {
-	if (!_RecordPortTel) return -1;
-	return _RecordPortTel->RecHold(on, llamante, media_status, callIdHdrVal);
+	if (!RecordPort::_RecordPortTel) return -1;
+	return RecordPort::_RecordPortTel->RecHold(on, llamante, media_status, callIdHdrVal);
 }
 
 /**
@@ -2768,34 +2733,34 @@ int SipAgent::RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * error)
 	switch (cmd)
 	{
 	case CORESIP_REC_RESET:
-		if (_RecordPortTel != NULL) _RecordPortTel->RecReset();
+		if (RecordPort::_RecordPortTel != NULL) RecordPort::_RecordPortTel->RecReset();
 		break;
 	case CORESIP_REC_ENABLE:
-		if (_RecordPortTel == NULL) 
+		if (RecordPort::_RecordPortTel == NULL) 
 		{
-			_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);
+			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);
 		}
-		if (_RecordPortRad == NULL) 
+		if (RecordPort::_RecordPortRad == NULL) 
 		{
-			_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);	
+			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);	
 		}
-		if (_RecordPortTel != NULL && _RecordPortRad != NULL)
+		if (RecordPort::_RecordPortTel != NULL && RecordPort::_RecordPortRad != NULL)
 		{
-			_RecordPortTel->SetTheOtherRec(_RecordPortRad);
-			_RecordPortRad->SetTheOtherRec(_RecordPortTel);
+			RecordPort::_RecordPortTel->SetTheOtherRec(RecordPort::_RecordPortRad);
+			RecordPort::_RecordPortRad->SetTheOtherRec(RecordPort::_RecordPortTel);
 		}
 		break;
 	case CORESIP_REC_DISABLE:
-		if (_RecordPortTel != NULL)
+		if (RecordPort::_RecordPortTel != NULL)
 		{
-			RecordPort *_RecordPortTel_aux = _RecordPortTel;
-			_RecordPortTel = NULL;
+			RecordPort *_RecordPortTel_aux = RecordPort::_RecordPortTel;
+			RecordPort::_RecordPortTel = NULL;
 			delete _RecordPortTel_aux;
 		}
-		if (_RecordPortRad != NULL)
+		if (RecordPort::_RecordPortRad != NULL)
 		{
-			RecordPort *_RecordPortRad_aux = _RecordPortRad;
-			_RecordPortRad = NULL;
+			RecordPort *_RecordPortRad_aux = RecordPort::_RecordPortRad;
+			RecordPort::_RecordPortRad = NULL;
 			delete _RecordPortRad_aux;
 		}
 		break;
@@ -2825,7 +2790,7 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
 	//Este evento de PTT lo llama la aplicacion del HMI cuando cambia el estado de PTT que nos retorna el transmisor
 	//tendremos que tener en cuenta el estado del PTT local para dar por bueno este evento
 
-	if (!_RecordPortRad) return;	
+	if (!RecordPort::_RecordPortRad) return;	
 
 	if (on == false && SipAgent::PTT_local_activado == PJ_TRUE)
 	{
@@ -2843,7 +2808,7 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
 		return;
 	}
 
-	_RecordPortRad->RecPTT(on, freqId, dev, PTT_type);
+	RecordPort::_RecordPortRad->RecPTT(on, freqId, dev, PTT_type);
 }
 
 /**
@@ -2857,8 +2822,8 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
  */
 void SipAgent::RdSquEvent(bool on, const char *freqId, const char *resourceId, const char *bssMethod, unsigned int bssQidx)
 {
-	if (!_RecordPortRad) return;
-	_RecordPortRad->RecSQU(on, freqId, resourceId, bssMethod, bssQidx);
+	if (!RecordPort::_RecordPortRad) return;
+	RecordPort::_RecordPortRad->RecSQU(on, freqId, resourceId, bssMethod, bssQidx);
 }
 
 /**
@@ -2985,13 +2950,13 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 			error_dst = PJ_TRUE;
 		}
 
-		if (srcType == CORESIP_SNDDEV_ID && _RecordPortTel != NULL)
+		if (srcType == CORESIP_SNDDEV_ID && RecordPort::_RecordPortTel != NULL)
 		{
 			//Si se conecta un puerto de sonido hacia un puerto del tipo telefonia
 			//Entonces hay que conectar ese puerto de sonido con la grabacion
 			if (on)
 			{
-				RecConnectSndPort(on, src, _RecordPortTel);
+				RecConnectSndPort(on, src, RecordPort::_RecordPortTel);
 			}
 			else
 			{
@@ -2999,7 +2964,7 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 				if (ncalls <= 1)
 				{
 					//Si hay más de una llamada en curso entonces no cortamos el puerto de sonido de la grabación.
-					RecConnectSndPort(on, src, _RecordPortTel);
+					RecConnectSndPort(on, src, RecordPort::_RecordPortTel);
 				}
 			}			
 		}
@@ -3050,18 +3015,18 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		{
 			//Si el origen es una llamada telefonica y el destino es un dispositivo de salida de audio
 			//Grabamos el retorno del dispositivo de salida de audio.
-			if (on && _RecordPortTel != NULL && !error_src) 
+			if (on && RecordPort::_RecordPortTel != NULL && !error_src) 
 			{
 				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
 				if (dev_to_record != -1)
 				{
 					RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a _RecordPortTel", src_string));
+					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
 
-					RecConnectSndPort(true, dev_to_record, _RecordPortTel);
+					RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortTel);
 				}
 			}
-			else if (!on && _RecordPortTel != NULL && !error_src)
+			else if (!on && RecordPort::_RecordPortTel != NULL && !error_src)
 			{
 				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
 				if (dev_to_record != -1)
@@ -3074,9 +3039,9 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 					{	
 						//Si se se va a quedar sin slots de telefonia conectados a este dispositivo, entonces lo desconectamos de la grabacion de telefonia
 						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a _RecordPortTel", src_string));
+						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
 
-						RecConnectSndPort(false, dev_to_record, _RecordPortTel);
+						RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortTel);
 					}
 				}
 			}
@@ -3086,18 +3051,18 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		{
 			//Si el origen es un puerto RDRX y el destino es un dispositivo de salida de audio
 			//Grabamos el retorno del dispositivo de salida de audio.
-			if (on && _RecordPortRad != NULL && !error_src) 
+			if (on && RecordPort::_RecordPortRad != NULL && !error_src) 
 			{
 				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
 				if (dev_to_record != -1)
 				{
 					RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a _RecordPortRad", src_string));
+					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
 
-					RecConnectSndPort(true, dev_to_record, _RecordPortRad);
+					RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortRad);
 				}
 			}
-			else if (!on && _RecordPortTel != NULL && !error_src)
+			else if (!on && RecordPort::_RecordPortTel != NULL && !error_src)
 			{
 				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
 				if (dev_to_record != -1)
@@ -3110,9 +3075,9 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 					{
 						//Si se se va a quedar sin slots, que no son de telefonia, conectados a este dispositivo, entonces lo desconectamos de la grabacion de radio
 						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a _RecordPortRad", src_string));
+						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
 
-						RecConnectSndPort(false, dev_to_record, _RecordPortRad);
+						RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortRad);
 					}
 				}
 			}
@@ -3259,10 +3224,10 @@ void SipAgent::SendToRemote(int typeDev, int dev, bool on, const char * id, cons
 		_SndPorts[dev]->Remote(on, id, ip, port);
 		SipAgent::PTT_local_activado = on;			//Esta funcion se llama cuando hay un PTT local en el puesto. Esta variable 
 													//guarda el estado del PTT local
-		if (_RecordPortRad != NULL)
+		if (RecordPort::_RecordPortRad != NULL)
 		{
 			//Se conecta el puerto de audio TX (microfono) pasado por dev al puerto de grabacion
-			SipAgent::RecConnectSndPort(on, dev, _RecordPortRad);
+			SipAgent::RecConnectSndPort(on, dev, RecordPort::_RecordPortRad);
 		}
 	}
 	else

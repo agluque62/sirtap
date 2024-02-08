@@ -65,6 +65,8 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_SOUND_NAMES				16
 #define CORESIP_MAX_DTMF_DIGITS				128
 #define CORESIP_AUD_PACKET_LEN				160
+#define CORESIP_MAX_RESOURCEID_LENGTH		256
+#define CORESIP_MAX_HMI_RESOURCES			1024
 
 #ifdef _ED137_
 // PlugTest FAA 05/2011
@@ -271,6 +273,13 @@ typedef enum CORESIP_RTP_port_actions
 	CORESIP_STOP,
 	CORESIP_DESTROY
 } CORESIP_RTP_port_actions;
+
+typedef enum CORESIP_Agent_Type
+{
+	ULISES = 0,
+	SIRTAP_HMI = 1,
+	SIRTAP_NBX = 2
+} CORESIP_Agent_Type;
 
 typedef struct CORESIP_Error
 {
@@ -645,6 +654,28 @@ typedef struct CORESIP_GenericPortBuffer
 	short buffer[CORESIP_AUD_PACKET_LEN];		//Paquete audio. 
 } CORESIP_GenericPortBuffer;
 
+typedef enum CORESIP_Resource_Type
+{
+	Rd,
+	Tlf,
+	IA
+} CORESIP_Resource_Type;
+
+typedef struct CORESIP_HMI_Resources_Info
+{
+	int NumResources;	//Numero de recursos
+
+	struct
+	{
+		char Id[CORESIP_MAX_RESOURCEID_LENGTH];		//Identificador del recurso.
+		//En caso de radio, es el identificador del destino de radio. 
+		//En la aplicacion web aparede como Id. En el SOAP es DescDestino
+		//En el caso de telefonia y IA, es el numero del llamado, es decir, es el user de la URI del destino
+		CORESIP_Resource_Type Type;					//Tipo de recurso
+		pj_bool_t Secure;								//Establece si es seguro
+	} HMIResources[CORESIP_MAX_HMI_RESOURCES];
+} CORESIP_HMI_Resources_Info;
+
 typedef struct CORESIP_Callbacks
 {
 	void (*LogCb)(int level, const char * data, int len);
@@ -795,6 +826,8 @@ typedef struct CORESIP_Config
 	unsigned DIA_TxAttenuation_dB;					//Atenuacion de las llamadas DIA en Tx (Antes de transmistir por RTP). En dB
 	unsigned IA_TxAttenuation_dB;					//Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En dB
 	unsigned RD_TxAttenuation_dB;					//Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En dB
+
+	CORESIP_Agent_Type AgentType;		//Es el tipo de agente.
 
 } CORESIP_Config;
 
@@ -1789,7 +1822,18 @@ extern "C" {
 	Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
 	@param rtpport_id. Manejador del puerto.
 	*/
-	CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error);
+	CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error);	
+
+	/*
+	Funcion para para pasar la informacion de los recursos configurados en el HMI. 
+	Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+	necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+	@param Resources_Info. Estructura con la informacion.
+	* @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	* @return	CORESIP_OK OK, CORESIP_ERROR  error.
+	*/
+	CORESIP_API int CORESIP_Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info, CORESIP_Error* error);
+
 
 
 #ifdef __cplusplus

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 using U5ki.Infrastructure;
+using static U5ki.Infrastructure.CORESIP_tone_digit_map;
 
 #if !_AMPER_ULISES_
 namespace Amper.Etm.SipServices.CoreSip;
@@ -451,6 +452,13 @@ namespace U5ki.Infrastructure
         CORESIP_DESTROY
     }
 
+    public enum CORESIP_Agent_Type
+    {
+        ULISES = 0,
+        SIRTAP_HMI = 1,
+        SIRTAP_NBX = 2
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -768,6 +776,32 @@ namespace U5ki.Infrastructure
         public short[] buffer;
     }
 
+    public enum CORESIP_Resource_Type
+    {
+        Rd,
+        Tlf,
+        IA
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public class CORESIP_HMI_Resources_Info
+    {
+        public int NumResources;   //Numero de recursos
+
+        public struct coresip_hmi_res
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SipAgent.CORESIP_MAX_RESOURCEID_LENGTH)]
+            public string Id;                       //Identificador del recurso.
+                                                    //En caso de radio, es el identificador del destino de radio. 
+                                                    //En la aplicacion web aparede como Id. En el SOAP es DescDestino
+                                                    //En el caso de telefonia y IA, es el numero del llamado, es decir, es el user de la URI del destino
+            CORESIP_Resource_Type Type;             //Tipo de recurso
+            bool Secure;                            //Establece si es seguro
+        }
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = SipAgent.CORESIP_MAX_HMI_RESOURCES)]
+        public coresip_hmi_res[] HMIResources;
+    }
 
     /// <summary>
     /// 
@@ -963,6 +997,8 @@ namespace U5ki.Infrastructure
         public const int CORESIP_MAX_SELCAL_LENGTH = 4;
         public const int CORESIP_MAX_DTMF_DIGITS = 128;
         public const int CORESIP_AUD_PACKET_LEN = 160;
+        public const int CORESIP_MAX_RESOURCEID_LENGTH = 256;
+        public const int CORESIP_MAX_HMI_RESOURCES = 1024;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct CORESIP_Error
@@ -1051,6 +1087,8 @@ namespace U5ki.Infrastructure
             public uint DIA_TxAttenuation_dB;       //Atenuacion de las llamadas DIA en Tx (Antes de transmistir por RTP). En dB
             public uint IA_TxAttenuation_dB;        //Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En dB
             public uint RD_TxAttenuation_dB;        //Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En dB
+
+            public CORESIP_Agent_Type AgentType;	//Es el tipo de agente.
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -2127,6 +2165,18 @@ namespace U5ki.Infrastructure
 	    */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_AskRTPport_info(int rtpport_id, out CORESIP_Error error);
+
+        /*
+        Funcion para para pasar la informacion de los recursos configurados en el HMI. 
+        Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+        necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+        @param Resources_Info. Estructura con la informacion.
+        * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+        * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_Set_HMI_Resources_Info([In] CORESIP_HMI_Resources_Info Resources_Info, out CORESIP_Error error);
+
 
         #endregion
 

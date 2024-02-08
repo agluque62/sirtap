@@ -46,6 +46,14 @@ typedef enum recSessionStatus
 class RecordPort
 {
 public:
+
+	static RecordPort* _RecordPortTel;
+	static RecordPort* _RecordPortRad;
+	static RecordPort* _RecordPortIA;
+	static RecordPort* _RecordPortTelSec;
+	static RecordPort* _RecordPortRadSec;
+	static RecordPort* _RecordPortIASec;
+
 	pjsua_conf_port_id Slot;	
 
 	//Puerto estatico por para comunicarse con el servicio de grabacion
@@ -68,10 +76,12 @@ public:
 	static const int TRIES_SENDING_CMD = 3;
 
 	char _RecursoTipoTerminal[256];
-
+		
 	pj_mutex_t *record_mutex;																	
 
 public:
+	static void Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
+	static void End();
 	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, const char *TerminalId);	
 	~RecordPort(void);
 	int RecResetSession();	
@@ -92,6 +102,7 @@ public:
 	void SetTheOtherRec(RecordPort *TheOtherRec_);
 	static int GetSndDevToRecord(int dev_in);
 	static void GetSndTypeString(CORESIP_SndDevType type, char* SndDevType_returned, int size_SndDevType_returned);
+	static void Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info);
 	
 private:
 	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
@@ -206,6 +217,10 @@ private:
 	
 	COMMAND_QUEUE Rec_Command_queue;	//Cola de mensajes de acciones sobre el grabador, excepto RECORD y PAUSE
 	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue
+		
+	static CORESIP_Agent_Type AgentType;
+	static CORESIP_HMI_Resources_Info Resources_Info;
+	static pj_mutex_t* static_mutex;
 
 #ifdef REC_IN_FILE
 	pj_oshandle_t sim_rec_fd;

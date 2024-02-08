@@ -3837,5 +3837,45 @@ CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error)
 	return ret;
 }
 
+/*
+	Funcion para para pasar la informacion de los recursos configurados en el HMI.
+	Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+	necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+	@param Resources_Info. Estructura con la informacion.
+	* @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	* @return	CORESIP_OK OK, CORESIP_ERROR  error.
+	*/
+CORESIP_API int CORESIP_Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "Set_CORESIP_HMI_Resources_Info"));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR Set_CORESIP_HMI_Resources_Info: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			RecordPort::Set_HMI_Resources_Info(Resources_Info);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "Set_CORESIP_HMI_Resources_Info result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
 
 /*@}*/

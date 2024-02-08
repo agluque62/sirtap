@@ -242,9 +242,7 @@ private:
 	static WavPlayer * _WavPlayers[CORESIP_MAX_WAV_PLAYERS];
 	static WavRecorder * _WavRecorders[CORESIP_MAX_WAV_RECORDERS];
 	static RdRxPort * _RdRxPorts[CORESIP_MAX_RDRX_PORTS];
-	static SoundRxPort * _SndRxPorts[CORESIP_MAX_SOUND_RX_PORTS];
-	static RecordPort * _RecordPortTel;
-	static RecordPort * _RecordPortRad;
+	static SoundRxPort * _SndRxPorts[CORESIP_MAX_SOUND_RX_PORTS];	
 	
 	static std::map<std::string, SoundRxPort*> _SndRxIds;
 	static pj_sock_t _Sock;

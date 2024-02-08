@@ -40,6 +40,120 @@ const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje enviado por el ser
 
 int RecordPort::timer_id = 1;
 
+CORESIP_Agent_Type RecordPort::AgentType = ULISES;
+RecordPort* RecordPort::_RecordPortTel = NULL;
+RecordPort* RecordPort::_RecordPortRad = NULL;
+RecordPort* RecordPort::_RecordPortIA = NULL;
+RecordPort* RecordPort::_RecordPortTelSec = NULL;
+RecordPort* RecordPort::_RecordPortRadSec = NULL;
+RecordPort* RecordPort::_RecordPortIASec = NULL;
+CORESIP_HMI_Resources_Info RecordPort::Resources_Info;
+pj_mutex_t* RecordPort::static_mutex = NULL;
+
+void RecordPort::Init(pj_pool_t *pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char *IpAddress, const char *HostId)
+{
+	AgentType = agentType;
+	Resources_Info.NumResources = 0;
+	pj_status_t st = pj_mutex_create_simple(pool, "RecActionsMtx", &static_mutex);
+	if (st != PJ_SUCCESS) static_mutex = NULL;
+	PJ_CHECK_STATUS(st, ("ERROR creando mutex estatico de RecordPort"));
+
+	if (ED137_record_enabled)
+	{
+		if (AgentType == ULISES)
+		{
+			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		}
+		else if (AgentType == SIRTAP_HMI)
+		{
+			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortIA = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortIASec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		}
+		else if (AgentType == SIRTAP_NBX)
+		{
+			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+			RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		}
+		else
+		{
+			RecordPort::_RecordPortTelSec = NULL;
+			RecordPort::_RecordPortRadSec = NULL;
+			RecordPort::_RecordPortIA = NULL;
+			RecordPort::_RecordPortIASec = NULL;
+		}
+	}
+	else
+	{
+		RecordPort::_RecordPortTel = NULL;
+		RecordPort::_RecordPortRad = NULL;
+		RecordPort::_RecordPortTelSec = NULL;
+		RecordPort::_RecordPortRadSec = NULL;
+		RecordPort::_RecordPortIA = NULL;
+		RecordPort::_RecordPortIASec = NULL;
+	}
+
+	if (RecordPort::_RecordPortTel != NULL && AgentType == ULISES)
+	{
+		RecordPort::_RecordPortTel->SetTheOtherRec(RecordPort::_RecordPortRad);
+	}
+
+	if (RecordPort::_RecordPortRad != NULL && AgentType == ULISES)
+	{
+		RecordPort::_RecordPortRad->SetTheOtherRec(RecordPort::_RecordPortTel);
+	}
+}
+
+void RecordPort::End()
+{	
+	if (RecordPort::_RecordPortTel)
+	{
+		delete RecordPort::_RecordPortTel;
+		RecordPort::_RecordPortTel = NULL;
+	}
+
+	if (RecordPort::_RecordPortRad)
+	{
+		delete RecordPort::_RecordPortRad;
+		RecordPort::_RecordPortRad = NULL;
+	}
+
+	if (RecordPort::_RecordPortTelSec)
+	{
+		delete RecordPort::_RecordPortTelSec;
+		RecordPort::_RecordPortTelSec = NULL;
+	}
+
+	if (RecordPort::_RecordPortRadSec)
+	{
+		delete RecordPort::_RecordPortRadSec;
+		RecordPort::_RecordPortRadSec = NULL;
+	}
+
+	if (RecordPort::_RecordPortIA)
+	{
+		delete RecordPort::_RecordPortIA;
+		RecordPort::_RecordPortIA = NULL;
+	}
+
+	if (RecordPort::_RecordPortIASec)
+	{
+		delete RecordPort::_RecordPortIASec;
+		RecordPort::_RecordPortIASec = NULL;
+	}
+
+	if (static_mutex != NULL)
+	{
+		pj_mutex_destroy(static_mutex);
+	}
+	Resources_Info.NumResources = 0; 
+}
+
+
 /**
  * RecordPort.	...
  * Crea el puerto pjmedia de grabación.
@@ -2833,6 +2947,11 @@ void RecordPort::GetSndTypeString(CORESIP_SndDevType type, char * SndDevType_ret
 		pj_ansi_snprintf(SndDevType_returned, size_SndDevType_returned, "%s", "CORESIP_SND_UNKNOWN");
 		break;
 	}
+}
+
+void RecordPort::Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info)
+{
+
 }
 
 
