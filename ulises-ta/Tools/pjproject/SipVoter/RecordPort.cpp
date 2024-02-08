@@ -40,6 +40,9 @@ const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje enviado por el ser
 
 int RecordPort::timer_id = 1;
 
+pj_sock_t RecordPort::_SockSt = PJ_INVALID_SOCKET;
+pj_activesock_t* RecordPort::_RemoteStSock = NULL;
+
 CORESIP_Agent_Type RecordPort::AgentType = ULISES;
 RecordPort* RecordPort::_RecordPortTel = NULL;
 RecordPort* RecordPort::_RecordPortRad = NULL;
@@ -50,62 +53,67 @@ RecordPort* RecordPort::_RecordPortIASec = NULL;
 CORESIP_HMI_Resources_Info RecordPort::Resources_Info;
 pj_mutex_t* RecordPort::static_mutex = NULL;
 
-void RecordPort::Init(pj_pool_t *pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char *IpAddress, const char *HostId)
+void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
 {
+	if (ED137_record_enabled == 0) return;
+
 	AgentType = agentType;
 	Resources_Info.NumResources = 0;
 	pj_status_t st = pj_mutex_create_simple(pool, "RecActionsMtx", &static_mutex);
 	if (st != PJ_SUCCESS) static_mutex = NULL;
 	PJ_CHECK_STATUS(st, ("ERROR creando mutex estatico de RecordPort"));
 
-	if (ED137_record_enabled)
+	if (AgentType == ULISES)
 	{
-		if (AgentType == ULISES)
-		{
-			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		}
-		else if (AgentType == SIRTAP_HMI)
-		{
-			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortIA = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortIASec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		}
-		else if (AgentType == SIRTAP_NBX)
-		{
-			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-			RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		}
-		else
-		{
-			RecordPort::_RecordPortTelSec = NULL;
-			RecordPort::_RecordPortRadSec = NULL;
-			RecordPort::_RecordPortIA = NULL;
-			RecordPort::_RecordPortIASec = NULL;
-		}
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+	}
+	else if (AgentType == SIRTAP_HMI)
+	{
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortIA = new RecordPort(RecordPort::IA_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortIASec = new RecordPort(RecordPort::IA_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+	}
+	else if (AgentType == SIRTAP_NBX)
+	{
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
 	}
 	else
 	{
-		RecordPort::_RecordPortTel = NULL;
-		RecordPort::_RecordPortRad = NULL;
 		RecordPort::_RecordPortTelSec = NULL;
 		RecordPort::_RecordPortRadSec = NULL;
 		RecordPort::_RecordPortIA = NULL;
 		RecordPort::_RecordPortIASec = NULL;
 	}
 
-	if (RecordPort::_RecordPortTel != NULL && AgentType == ULISES)
-	{
-		RecordPort::_RecordPortTel->SetTheOtherRec(RecordPort::_RecordPortRad);
-	}
+	//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
+	//Sirve para recibir ordenes del servicio de grabacion. Como por ejemplo la que que se reseteen los puertos de grabacion.
+	pj_sockaddr_in addStIpToBind;
+	pj_bzero(&addStIpToBind, sizeof(addStIpToBind));
+	addStIpToBind.sin_family = pj_AF_INET();
+	addStIpToBind.sin_port = pj_htons(ST_PORT);
 
-	if (RecordPort::_RecordPortRad != NULL && AgentType == ULISES)
-	{
-		RecordPort::_RecordPortRad->SetTheOtherRec(RecordPort::_RecordPortTel);
-	}
+	st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
+	PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
+
+	st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
+	PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", ST_PORT));
+
+	//Se crea el active socket para comunicacion con el servicio de grabacion por el puerto estatico 65001
+	//Sirve para recibir ordenes del servicio de grabacion. Como por ejemplo la que que se reseteen los puertos de grabacion.
+	pj_activesock_cb st_cb = { NULL };
+	st_cb.on_data_recvfrom = &OnDataReceivedSt;
+
+	st = pj_activesock_create(pool, _SockSt, pj_SOCK_DGRAM(), NULL, pjsip_endpt_get_ioqueue(pjsua_get_pjsip_endpt()), &st_cb, NULL, &_RemoteStSock);
+	PJ_CHECK_STATUS(st, ("ERROR creando servidor de lectura respuestas del grabador"));
+
+	st = pj_activesock_start_recvfrom(_RemoteStSock, pool, MAX_MSG_LEN, 0);
+	PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
+
 }
 
 void RecordPort::End()
@@ -146,6 +154,18 @@ void RecordPort::End()
 		RecordPort::_RecordPortIASec = NULL;
 	}
 
+	if (_RemoteStSock != NULL)
+	{
+		pj_activesock_close(_RemoteStSock);
+		_RemoteStSock = NULL;
+	}
+
+	if (_SockSt != PJ_INVALID_SOCKET)
+	{
+		pj_sock_close(_SockSt);
+		_SockSt = PJ_INVALID_SOCKET;
+	}
+
 	if (static_mutex != NULL)
 	{
 		pj_mutex_destroy(static_mutex);
@@ -168,12 +188,9 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 	pj_memset(this, 0, sizeof(RecordPort));	
 
 	_Pool = NULL;
-	_Sock = PJ_INVALID_SOCKET;
-	_SockSt = PJ_INVALID_SOCKET;
-	_RemoteSock = NULL;
-	_RemoteStSock = NULL;
+	_Sock = PJ_INVALID_SOCKET;	
+	_RemoteSock = NULL;	
 	_Lock = NULL;
-	TheOtherRec = NULL;
 	Slot = PJSUA_INVALID_ID;
 	ctrlSessEvent = NULL;
 	actions_thread = NULL;
@@ -210,6 +227,8 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		strcpy(_RecursoTipoTerminal, TerminalId);
 		if (resType == TEL_RESOURCE)
 			strcat(_RecursoTipoTerminal, "-TEL");
+		else if (resType == IA_RESOURCE)
+			strcat(_RecursoTipoTerminal, "-IA");
 		else
 			strcat(_RecursoTipoTerminal, "-RAD");
 
@@ -222,22 +241,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		_Port.port_data.pdata = this;
 		_Port.put_frame = &PutFrame;     //Se llama cuando el puerto src hace put_frame hacia este puerto
 		_Port.reset = &Reset;
-
-		if (resType == TEL_RESOURCE)
-		{
-			//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
-			//Se crea solamente en el recurso del tipo telefonia
-			pj_sockaddr_in addStIpToBind;
-			pj_bzero(&addStIpToBind, sizeof(addStIpToBind));
-			addStIpToBind.sin_family = pj_AF_INET();
-			addStIpToBind.sin_port = pj_htons(ST_PORT);
-
-			st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
-			PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
-
-			st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
-			PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", ST_PORT));
-		}
 
 		st = pj_mutex_create_simple(_Pool, "frequencies_mutex", &frequencies_mutex);
 		PJ_CHECK_STATUS(st, ("ERROR creando frequencies_mutex del puerto del grabador"));
@@ -294,20 +297,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		
 		st = pj_activesock_start_recvfrom(_RemoteSock, _Pool, MAX_MSG_LEN, 0);
 		PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
-
-		if (resType == TEL_RESOURCE)
-		{
-			//Se crea el active socket para comunicacion con el servicio de grabacion por el puerto estatico 65001
-			//Se crea solamente en el recurso del tipo telefonia
-			pj_activesock_cb st_cb = { NULL };
-			st_cb.on_data_recvfrom = &OnDataReceivedSt;
-
-			st = pj_activesock_create(_Pool, _SockSt, pj_SOCK_DGRAM(), NULL, pjsip_endpt_get_ioqueue(pjsua_get_pjsip_endpt()), &st_cb, this, &_RemoteStSock);
-			PJ_CHECK_STATUS(st, ("ERROR creando servidor de lectura respuestas del grabador"));
-		
-			st = pj_activesock_start_recvfrom(_RemoteStSock, _Pool, MAX_MSG_LEN, 0);
-			PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
-		}		
 
 		//Thread de control de la session
 		st = pj_event_create(_Pool, "CtrlSessEvent", false, false, &ctrlSessEvent);
@@ -412,16 +401,6 @@ void RecordPort::Dispose()
 		pj_sock_close(_Sock);
 	}
 
-	if (_RemoteStSock != NULL)
-	{
-		pj_activesock_close(_RemoteStSock);
-	}
-
-	if (_SockSt != PJ_INVALID_SOCKET)
-	{
-		pj_sock_close(_SockSt);
-	}
-
 	if (_Pool)
 	{
 		pj_pool_release(_Pool);
@@ -431,14 +410,6 @@ void RecordPort::Dispose()
 RecordPort::~RecordPort(void)
 {
 	Dispose();
-}
-
-void RecordPort::SetTheOtherRec(RecordPort *TheOtherRec_)
-{
-	if (TheOtherRec_ != this)
-	{
-		TheOtherRec = TheOtherRec_;
-	}
 }
 
 /**
@@ -1017,8 +988,6 @@ pj_bool_t RecordPort::OnDataReceived(pj_activesock_t * asock, void * data, pj_si
 
 pj_bool_t RecordPort::OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status)
 {
-	RecordPort * wp = (RecordPort*)pj_activesock_get_user_data(asock);
-	if (!wp) return PJ_TRUE;
 	pj_status_t st = PJ_SUCCESS;
 	char mess[MAX_MSG_LEN+1];
 	
@@ -1036,11 +1005,13 @@ pj_bool_t RecordPort::OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_
 		if (strcmp(RECORD_SRV_REINI, mess) == 0)
 		{
 			PJ_LOG(3,(__FILE__, "RecordPort: Recibido mensaje por el puerto estatico %u: %s. Se ha reiniciado el servicio de grabacion", ST_PORT, mess));	
-			wp->RecResetSession();
-			if (wp->TheOtherRec != NULL)
-			{
-				wp->TheOtherRec->RecResetSession();
-			}
+
+			if (RecordPort::_RecordPortTel) RecordPort::_RecordPortTel->RecResetSession();
+			if (RecordPort::_RecordPortRad) RecordPort::_RecordPortRad->RecResetSession();
+			if (RecordPort::_RecordPortTelSec) RecordPort::_RecordPortTelSec->RecResetSession();
+			if (RecordPort::_RecordPortRadSec) RecordPort::_RecordPortRadSec->RecResetSession();
+			if (RecordPort::_RecordPortIA) RecordPort::_RecordPortIA->RecResetSession();
+			if (RecordPort::_RecordPortIASec) RecordPort::_RecordPortIASec->RecResetSession();
 		}
 		else
 		{

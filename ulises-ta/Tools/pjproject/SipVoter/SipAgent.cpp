@@ -201,6 +201,7 @@ pjsip_sip_uri *SipAgent::pContacUrl = NULL;
 
 char SipAgent::uaIpAdd[32];
 char SipAgent::HostId[33];
+CORESIP_Agent_Type SipAgent::AgentType = ULISES; 		//Es el tipo de agente.
 unsigned int SipAgent::uaPort = 0;
 pjsua_transport_id SipAgent::SipTransportId = PJSUA_INVALID_ID;
 
@@ -230,6 +231,8 @@ float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transm
  */
 void SipAgent::Init(const CORESIP_Config * cfg)
 {
+	SipAgent::AgentType = cfg->AgentType;
+
 	if (strlen(cfg->UserAgent) >= sizeof(cfg->UserAgent)) 
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
 
@@ -2733,36 +2736,21 @@ int SipAgent::RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * error)
 	switch (cmd)
 	{
 	case CORESIP_REC_RESET:
+		//Cuanquier objeto de grabacion puede enviar el comando al servicio de grabador. Lo manda el primero que no sea NULL
 		if (RecordPort::_RecordPortTel != NULL) RecordPort::_RecordPortTel->RecReset();
+		else if (RecordPort::_RecordPortRad != NULL) RecordPort::_RecordPortRad->RecReset();
+		else if (RecordPort::_RecordPortTelSec != NULL) RecordPort::_RecordPortTelSec->RecReset();
+		else if (RecordPort::_RecordPortRadSec != NULL) RecordPort::_RecordPortRadSec->RecReset();
+		else if (RecordPort::_RecordPortIA != NULL) RecordPort::_RecordPortIA->RecReset();
+		else if (RecordPort::_RecordPortIASec != NULL) RecordPort::_RecordPortIASec->RecReset();
 		break;
 	case CORESIP_REC_ENABLE:
-		if (RecordPort::_RecordPortTel == NULL) 
-		{
-			RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);
-		}
-		if (RecordPort::_RecordPortRad == NULL) 
-		{
-			RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId);	
-		}
-		if (RecordPort::_RecordPortTel != NULL && RecordPort::_RecordPortRad != NULL)
-		{
-			RecordPort::_RecordPortTel->SetTheOtherRec(RecordPort::_RecordPortRad);
-			RecordPort::_RecordPortRad->SetTheOtherRec(RecordPort::_RecordPortTel);
-		}
+		RecordPort::End();
+		pj_thread_sleep(250);
+		RecordPort::Init(pjsua_var.pool, PJ_TRUE, SipAgent::AgentType, SipAgent::uaIpAdd, SipAgent::HostId);
 		break;
 	case CORESIP_REC_DISABLE:
-		if (RecordPort::_RecordPortTel != NULL)
-		{
-			RecordPort *_RecordPortTel_aux = RecordPort::_RecordPortTel;
-			RecordPort::_RecordPortTel = NULL;
-			delete _RecordPortTel_aux;
-		}
-		if (RecordPort::_RecordPortRad != NULL)
-		{
-			RecordPort *_RecordPortRad_aux = RecordPort::_RecordPortRad;
-			RecordPort::_RecordPortRad = NULL;
-			delete _RecordPortRad_aux;
-		}
+		RecordPort::End();
 		break;
 	default:
 		ret = CORESIP_ERROR;

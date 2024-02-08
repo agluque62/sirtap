@@ -56,12 +56,13 @@ public:
 
 	pjsua_conf_port_id Slot;	
 
-	//Puerto estatico por para comunicarse con el servicio de grabacion
+	//Puerto estatico por para comunicarse con el servicio de grabacion, por el que se reciben ordenes de actuacion sobre la coresip.
 	static const pj_uint16_t ST_PORT = 65001;
 
 	//Tipos de recursos
 	static const int TEL_RESOURCE = 0;	//Telefonia
 	static const int RAD_RESOURCE = 1;	//Radio
+	static const int IA_RESOURCE = 3;	//Recurso del tipo IA. Se utiliza en principio para SIRTAP
 
 	//Direccion llamada
 	static const int INCOM = 0;
@@ -99,7 +100,6 @@ public:
 	int RecSQU_send(bool on, const char *freq, char* squConnRef);
 	int RecSQU(bool on, const char *freq, const char *resourceId, const char *bssMethod, unsigned int bssQidx);		
 	bool IsSlotConnectedToRecord(pjsua_conf_port_id slot);
-	void SetTheOtherRec(RecordPort *TheOtherRec_);
 	static int GetSndDevToRecord(int dev_in);
 	static void GetSndTypeString(CORESIP_SndDevType type, char* SndDevType_returned, int size_SndDevType_returned);
 	static void Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info);
@@ -163,15 +163,14 @@ private:
 	static const char *COMMAND_ERROR;
 	static const char *SESSION_IS_CREATED;
 	static const char *ERROR_INI_SESSION;
-	static const char *RECORD_SRV_REINI;	
+	static const char *RECORD_SRV_REINI;
+
+	static pj_sock_t _SockSt;
 
 	pj_pool_t * _Pool;
-	pjmedia_port _Port;
-	pj_sock_t _SockSt;
+	pjmedia_port _Port;	
 	pj_sock_t _Sock;
 	pj_lock_t * _Lock;
-
-	RecordPort *TheOtherRec;		//Puntero al otro RecordPort que graba
 
 	char RecTerminalIpAdd[32];
 	pj_sockaddr_in recAddr;			//Dirección y puerto del grabador
@@ -253,8 +252,8 @@ private:
 
 	pj_activesock_t * _RemoteSock;
 	static pj_bool_t OnDataReceived(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status);
-
-	pj_activesock_t * _RemoteStSock;
+	
+	static pj_activesock_t* _RemoteStSock;
 	static pj_bool_t OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status);
 };
 

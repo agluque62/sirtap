@@ -89,6 +89,7 @@ public:
 
 	static char uaIpAdd[32];
 	static char HostId[33];
+	static CORESIP_Agent_Type SipAgent::AgentType;
 	static unsigned int uaPort;
 	
 	static CORESIP_Callbacks Cb;
