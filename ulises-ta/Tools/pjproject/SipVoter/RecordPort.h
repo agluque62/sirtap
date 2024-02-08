@@ -62,7 +62,6 @@ public:
 	//Tipos de recursos
 	static const int TEL_RESOURCE = 0;	//Telefonia
 	static const int RAD_RESOURCE = 1;	//Radio
-	static const int IA_RESOURCE = 3;	//Recurso del tipo IA. Se utiliza en principio para SIRTAP
 
 	//Direccion llamada
 	static const int INCOM = 0;
@@ -83,7 +82,7 @@ public:
 public:
 	static void Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
 	static void End();
-	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, const char *TerminalId);	
+	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, const char *TerminalId, const char* TerminalId_sufix, pj_bool_t toSecureRecorder);
 	~RecordPort(void);
 	int RecResetSession();	
 	int RecSession(bool on, bool wait_end);	
@@ -171,6 +170,7 @@ private:
 	pjmedia_port _Port;	
 	pj_sock_t _Sock;
 	pj_lock_t * _Lock;
+	pj_bool_t ToSecureRecorder;		//Indica si la grabacion es hacia el grabador seguro
 
 	char RecTerminalIpAdd[32];
 	pj_sockaddr_in recAddr;			//Dirección y puerto del grabador

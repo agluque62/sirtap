@@ -5,11 +5,12 @@
 #include "RecordPort.h"
 
 //Comandos al grabador
-const char *RecordPort::NOTIF_IPADD = "V,I00,";
-const char *RecordPort::INI_SES_REC_TERM = "V,T00,";
-const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";
-const char *RecordPort::INI_SES_REC_RAD = "V,G00,";
-const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";
+//Valores del campo <grabador>: 0 graba en los dos, 1 graba en el primero y 2 graba en el segundo.
+const char *RecordPort::NOTIF_IPADD = "V,I00,";				//V,I00,<ip del puesto o pasarela> Notifica al servicio de grabacion la IP del puesto o pasarela
+const char *RecordPort::INI_SES_REC_TERM = "V,T00,";		//V,T00,<Identificador del Recurso Tipo Terminal>,<grabador> Inicia la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";		//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::INI_SES_REC_RAD = "V,G00,";			//V,G00,<Identificador del Recurso Tipo Terminal>,<grabador> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";			//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
 const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";
 const char *RecordPort::REC_INV = "V,INV,";
 const char *RecordPort::REC_BYE = "V,BYE,";
@@ -36,7 +37,7 @@ const char *RecordPort::OVRFLOW = "G,E00,3";
 const char *RecordPort::COMMAND_ERROR = "G,E00,4";
 const char *RecordPort::SESSION_IS_CREATED = "G,E00,5";
 const char *RecordPort::ERROR_INI_SESSION = "G,E00,6"; 
-const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje enviado por el servicio de grabacion por el 65001
+const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje recibido desde el servicio de grabacion por el 65001
 
 int RecordPort::timer_id = 1;
 
@@ -65,22 +66,22 @@ void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_T
 
 	if (AgentType == ULISES)
 	{
-		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", PJ_FALSE);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", PJ_FALSE);
 	}
 	else if (AgentType == SIRTAP_HMI)
 	{
-		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortIA = new RecordPort(RecordPort::IA_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortIASec = new RecordPort(RecordPort::IA_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", PJ_FALSE);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", PJ_FALSE);
+		RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", PJ_TRUE);
+		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", PJ_TRUE);
+		RecordPort::_RecordPortIA = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-IA", PJ_FALSE);
+		RecordPort::_RecordPortIASec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-IA", PJ_TRUE);
 	}
 	else if (AgentType == SIRTAP_NBX)
 	{
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
-		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", PJ_FALSE);
+		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", PJ_TRUE);
 	}
 	else
 	{
@@ -177,13 +178,16 @@ void RecordPort::End()
 /**
  * RecordPort.	...
  * Crea el puerto pjmedia de grabación.
+ * @param	resType				Tipo de recurso TEL_RESOURCE o RAD_RESOURCE
  * @param	TerminalIpAdd		Direccion IP del Terminal/Pasarela. Es la que se envía con el comando de Notificacion direccion IP Pasarela
- * @param	RecIp				Direccion IP del grabador.
- * @param	recPort				Puerto IP del grabador.
- * @param	RecursoTipoTerminal		Cadena de caracteres con el identificacor del Recurso Tipo Terminal
+ * @param	RecIp				Direccion IP del servicio de grabacion.
+ * @param	recPort				Puerto IP del servicio de grabacion.
+ * @param	TerminalId			Prefijo del Recurso Tipo Terminal. En el Puesto es el PICT0x.
+ * @param	TerminalId_sufix	Suficho del Recurso Tipo Terminal. "-RAD", "-TEL", "-IA"
+ * @param	toSecureRecorder	Si es PJ_TRUE, entonces la grabacion se hace en el grabador seguro.
  * @return	nada.
  */
-RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * RecIp, unsigned recPort, const char *TerminalId)
+RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * RecIp, unsigned recPort, const char *TerminalId, const char* TerminalId_sufix, pj_bool_t toSecureRecorder)
 {
 	pj_memset(this, 0, sizeof(RecordPort));	
 
@@ -204,6 +208,8 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 	recording_by_rad = 0;
 	recording_by_tel = 0;
 	memset(frequencies, 0, sizeof(frequencies));
+
+	ToSecureRecorder = toSecureRecorder;
 	
 	SES_TIM_ID = ++timer_id;
 	COM_TIM_ID = ++timer_id;
@@ -225,12 +231,7 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		pj_assert(sizeof(_RecursoTipoTerminal) > strlen(TerminalId));
 
 		strcpy(_RecursoTipoTerminal, TerminalId);
-		if (resType == TEL_RESOURCE)
-			strcat(_RecursoTipoTerminal, "-TEL");
-		else if (resType == IA_RESOURCE)
-			strcat(_RecursoTipoTerminal, "-IA");
-		else
-			strcat(_RecursoTipoTerminal, "-RAD");
+		strcat(_RecursoTipoTerminal, TerminalId_sufix);
 
 		pj_status_t st = pj_lock_create_recursive_mutex(_Pool, NULL, &_Lock);
 		PJ_CHECK_STATUS(st, ("ERROR creando seccion critica para puerto de grabacion RecordPort"));
