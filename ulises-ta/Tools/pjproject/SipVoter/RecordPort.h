@@ -75,6 +75,15 @@ public:
 
 	static const int TRIES_SENDING_CMD = 3;
 
+	typedef enum RECORDERS_TO_RECORD
+	{
+		BOTH_RECORDERS = (int)'0',		//Graba en los dos grabadores
+		RECORDER1 = (int)'1',			//Graba en el 1
+		RECORDER2 = (int)'2',			//Graba en el 2
+		NONSECURE_RECORDER = RECORDER1,
+		SECURE_RECORDER = RECORDER2		//Grabador seguro
+	} RECORDERS_TO_RECORD;
+
 	char _RecursoTipoTerminal[256];
 		
 	pj_mutex_t *record_mutex;																	
@@ -82,7 +91,8 @@ public:
 public:
 	static void Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
 	static void End();
-	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, const char *TerminalId, const char* TerminalId_sufix, pj_bool_t toSecureRecorder);
+	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, 
+		const char *TerminalId, const char* TerminalId_sufix, RECORDERS_TO_RECORD recorders_to_record);
 	~RecordPort(void);
 	int RecResetSession();	
 	int RecSession(bool on, bool wait_end);	
@@ -170,7 +180,8 @@ private:
 	pjmedia_port _Port;	
 	pj_sock_t _Sock;
 	pj_lock_t * _Lock;
-	pj_bool_t ToSecureRecorder;		//Indica si la grabacion es hacia el grabador seguro
+
+	RECORDERS_TO_RECORD RecordersToRecord;
 
 	char RecTerminalIpAdd[32];
 	pj_sockaddr_in recAddr;			//Dirección y puerto del grabador
