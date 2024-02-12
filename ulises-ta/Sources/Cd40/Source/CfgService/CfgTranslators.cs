@@ -740,23 +740,33 @@ namespace U5ki.CfgService
 
 		public static void Translate(Cd40Cfg cfg, SoapCfg.ConferenciasPreprogramadas conferencias)
 		{
-			foreach (SoapCfg.Conferencia conf in conferencias.ConferenciaProgramada)
+			try
 			{
-				U5ki.Infrastructure.Conferencia cfg_conf = new U5ki.Infrastructure.Conferencia();
-				cfg_conf.TipoConferencia = conf.TipoConferencia;
-                cfg_conf.IdSalaBkk = conf.IdSalaBkk;
-				cfg_conf.Alias = conf.Alias;
-				cfg_conf.PosHMI = conf.PosHMI;
-				
-				foreach (SoapCfg.Participantes part in conf.ParticipantesConferencia)
+				if (conferencias == null) return;
+				if (conferencias.ConferenciaProgramada != null)
 				{
-					U5ki.Infrastructure.Participantes participante = new U5ki.Infrastructure.Participantes();
-					participante.SipUri = part.SipUri;
-					participante.Descripcion = part.Descripcion;
-                    cfg_conf.participantesConferencia.Add(participante);
-                }
+					foreach (SoapCfg.Conferencia conf in conferencias.ConferenciaProgramada)
+					{
+						U5ki.Infrastructure.Conferencia cfg_conf = new U5ki.Infrastructure.Conferencia();
+						cfg_conf.TipoConferencia = conf.TipoConferencia;
+						cfg_conf.IdSalaBkk = conf.IdSalaBkk;
+						cfg_conf.Alias = conf.Alias;
+						cfg_conf.PosHMI = conf.PosHMI;
 
-				cfg.ConferenciasPreprogramadas.Add(cfg_conf);
+						foreach (SoapCfg.Participantes part in conf.ParticipantesConferencia)
+						{
+							U5ki.Infrastructure.Participantes participante = new U5ki.Infrastructure.Participantes();
+							participante.SipUri = part.SipUri;
+							participante.Descripcion = part.Descripcion;
+							cfg_conf.participantesConferencia.Add(participante);
+						}
+
+						cfg.ConferenciasPreprogramadas.Add(cfg_conf);
+					}
+				}
+			}
+			catch (Exception)
+			{
 			}
 		}
 	}
