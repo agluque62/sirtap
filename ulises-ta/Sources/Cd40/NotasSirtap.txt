@@ -1,0 +1,43 @@
+Configurar una radio SIRTAP hasta que se configure lo nuevo:
+------------------------------------------------------------
+
+------En el equipo externo:
+
+El identificador tiene que comenzar con NOED137
+IP de la Red 1 es la IP unicast de la radio. 
+
+IP de la Red 2 es la IP multicast a la que se envía el RTP. Y es la del grupo en el que se recibe el RTP.
+
+'Puerto SIP' es el puerto de origen, es decir en el que recibimos el RTP.
+'Puerto SIP' + 2 es el puerto destino, el de la radio.
+
+Para modificar esto buscar:     
+//HASTA QUE SE RESUELVA LA CONFIGURACION, DE MOMENTO TOMAMOS ASI LOS DATOS
+
+------En el recurso de radio:
+
+El identificador tiene que comenzar con NOED137. Para identificarlo como una radio NO ED137, y del tipo Sirtap. Así está definido en la función:
+static public bool IsRadioNOED137(CfgRecursoEnlaceExterno rec);
+
+En la pestaña "Asignación HW" selecionar el equipo externo y en gestión de multifrecuencias seleccionar Jotron.
+
+En el telemando se decide si es del tipo Sirtap con esta condición:
+
+En el telemando buscar:
+if (res.ID.StartsWith("NOED137"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
