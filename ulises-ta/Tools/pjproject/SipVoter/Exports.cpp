@@ -3634,20 +3634,7 @@ CORESIP_API int CORESIP_GetWindowsSoundDeviceNames(int captureType, CORESIP_SndW
 
 	Try
 	{
-		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
-		{
-			ret = CORESIP_ERROR;
-			if (error != NULL)
-			{
-				error->Code = ret;
-				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "ERROR CORESIP_GetWindowsSoundDeviceNames: CORESIP NO INICIALIZADA");
-			}
-		}
-		else
-		{
-			SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
-		}
+		SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
 	}
 	catch_all;
 
