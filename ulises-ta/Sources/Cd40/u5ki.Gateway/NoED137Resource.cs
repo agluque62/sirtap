@@ -504,6 +504,8 @@ namespace U5ki.Gateway
         {
             if (sirtap_params.RC == null) return false;
 
+            //return true;            //Comentar para que se haga polling de la presencia
+
             bool presence = true;
             TlmdoAsk msg = new TlmdoAsk();
             msg.msgType = TlmdoAsk.MsgType.TLMDO_GET_FREQUENCY;

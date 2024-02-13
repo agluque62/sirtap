@@ -23,8 +23,58 @@ En la pestaña "Asignación HW" selecionar el equipo externo y en gestión de multi
 
 En el telemando se decide si es del tipo Sirtap con esta condición:
 
-En el telemando buscar:
+En el telemando y otros sitios buscar:
 if (res.ID.StartsWith("NOED137"))
+
+ENVIO DE TONO EN TRANSMISION
+Se envía un tono cuando hay PTT. he modificado estas funciones.
+
+public void PttOff ()
+        {
+            if (Connected)
+            {
+                SipAgent.PttOff(SipCallId);
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 0, out error);
+                    }
+                }
+                catch { }
+            }
+        }
+        /// <summary>
+        /// Sends Ptt on to SipAgent
+        /// </summary>
+        public void PttOn(CORESIP_PttType srcPtt)
+        {
+            if (Connected && TunedFrequencyOK)
+            {
+                SipAgent.PttOn(SipCallId, PttId, srcPtt, PttMute);
+
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 1, out error);
+                    }
+                }
+                catch { }
+            }
+        }
+
+------- Presencia
+
+La función que llama el timer de polling para chequear la presencia:
+
+SIRTAP_Get_Presence
+
+Si queremos que siempre esté presente forzamos que devuelva true.
+
+
 
 
 

@@ -7,6 +7,8 @@ using U5ki.Infrastructure;
 using U5ki.RdService.Properties;
 using U5ki.RdService.NM; //20180323 CONTROL M+N FORBIDDEN 
 using NLog;
+using static U5ki.Infrastructure.SipAgent;
+using System.Runtime.InteropServices;
 
 namespace U5ki.RdService
 {
@@ -635,7 +637,18 @@ namespace U5ki.RdService
         public void PttOff ()
         {
             if (Connected)
+            {
                 SipAgent.PttOff(SipCallId);
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 0, out error);
+                    }
+                }
+                catch { }
+            }
         }
         /// <summary>
         /// Sends Ptt on to SipAgent
@@ -643,7 +656,19 @@ namespace U5ki.RdService
         public void PttOn(CORESIP_PttType srcPtt)
         {
             if (Connected && TunedFrequencyOK)
+            {
                 SipAgent.PttOn(SipCallId, PttId, srcPtt, PttMute);
+
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 1, out error);
+                    }
+                }
+                catch { }
+            }
         }
         /// <summary>
         /// 

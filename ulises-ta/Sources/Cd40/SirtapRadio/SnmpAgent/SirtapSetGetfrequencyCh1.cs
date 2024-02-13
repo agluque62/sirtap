@@ -9,6 +9,7 @@ using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Pipeline;
 using Newtonsoft.Json;
 using Lextm.SharpSnmpLib.Objects;
+using System.Threading;
 
 namespace SnmpAgent
 {
