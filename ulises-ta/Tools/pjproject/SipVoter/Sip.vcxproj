@@ -255,6 +255,7 @@
     <ClCompile Include="SoundPort.cpp" />
     <ClCompile Include="SoundRxPort.cpp" />
     <ClCompile Include="SubscriptionServer.cpp" />
+    <ClCompile Include="CUtils.cpp" />
     <ClCompile Include="WavPlayer.cpp" />
     <ClCompile Include="WavPlayerToRemote.cpp" />
     <ClCompile Include="WavRecorder.cpp" />
@@ -295,6 +296,7 @@
     <ClInclude Include="SoundRxPort.h" />
     <ClInclude Include="ClientSubscriptionManager.h" />
     <ClInclude Include="SubscriptionServer.h" />
+    <ClInclude Include="CUtils.h" />
     <ClInclude Include="WavPlayer.h" />
     <ClInclude Include="WavPlayerToRemote.h" />
     <ClInclude Include="WavRecorder.h" />

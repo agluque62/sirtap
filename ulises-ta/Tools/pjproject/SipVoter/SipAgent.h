@@ -185,10 +185,8 @@ public:
 
 	static int RecConnectSndPort(bool on, int dev, RecordPort *recordport);
 	static int RecConnectSndPorts(bool on, RecordPort *recordport);
-	static int RecINVTel();
-	static int RecINVRad();
-	static int RecBYETel();
-	static int RecBYERad();
+	static int RecINV(pj_str_t* uri, CORESIP_CallType callType);
+	static int RecBYE(pj_str_t* uri, CORESIP_CallType callType);
 	static int RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal);
 	static int RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal);
 	static int RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal);

@@ -16,6 +16,7 @@
 #include "WG67subs.h"
 #include "WavPlayerToRemote.h"
 #include "SoundDevHw.h"
+#include "CUtils.h"
 
 #define Try\
 	pj_thread_desc desc;\
@@ -3853,7 +3854,7 @@ CORESIP_API int CORESIP_Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resou
 		}
 		else
 		{
-			RecordPort::Set_HMI_Resources_Info(Resources_Info);
+			CUtils::Set_HMI_Resources_Info(Resources_Info);
 		}
 	}
 	catch_all;

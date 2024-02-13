@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include "SDPUtils.h"
 #include "SoundDevHw.h"
+#include "CUtils.h"
 
 /**
  * OnMemAllocFail: Rutina de tratamiento de las excepciones de Memoria.
@@ -647,10 +648,11 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		pj_status_t st = pj_lock_create_recursive_mutex(pjsua_var.pool, NULL, &_ECLCMic_mutex);
 		PJ_CHECK_STATUS(st, ("ERROR creando _ECLCMic_mutex"));
 
+		CUtils::Init(pjsua_var.pool);
+
 		/**
 			* Se crea el puerto pjmedia para la grabacion
 		 */
-
 		RecordPort::Init(pjsua_var.pool, cfg->RecordingEd137, cfg->AgentType, cfg->IpAddress, cfg->HostId);
 
 		_FrecDesp = new FrecDesp;
@@ -1160,7 +1162,7 @@ void SipAgent::Stop()
 		}
 
 		pjmedia_aud_stream *_SndDev_aux = _SndDev;
-		_SndDev = NULL;
+		_SndDev = NULL;		
 
 		lock.Unlock();
 
@@ -1181,6 +1183,8 @@ void SipAgent::Stop()
 		pj_thread_sleep(100);
 
 		pj_lock_destroy(_Lock);
+
+		CUtils::End();
 
 		SipAgent::ETM = PJ_FALSE;
 
@@ -2624,47 +2628,43 @@ bool SipAgent::IsSlotValid(pjsua_conf_port_id slot)
 }
 
 /**
- * RecINVTel.	...
+ * RecINV.	...
  * Envía el comando INV al modulo de grabacion para telefonia 
+ * @param uri. Uri del llamado si la llamada es saliente o llamante si es entrante
+ * @param callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecINVTel()
+int SipAgent::RecINV(pj_str_t *uri, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecINV();
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
+
+	RecordPort* recPort = RecordPort::GetRecordPortFromResourceUri(uri, type);
+
+	if (!recPort) return -1;
+	return recPort->RecINV();
 }
 
 /**
- * RecINVRad.	...
- * Envía el comando INV al modulo de grabacion para radio 
- * @return	0 OK, -1  error.
- */
-int SipAgent::RecINVRad()
-{
-	if (!RecordPort::_RecordPortRad) return -1;
-	return RecordPort::_RecordPortRad->RecINV();
-}
-
-/**
- * RecBYETel.	...
+ * RecBYE.	...
  * Envía el comando BYE al modulo de grabacion para telefonia 
+ * @param uri. Uri del llamado si la llamada es saliente o llamante si es entrante
+ * @param callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecBYETel()
+int SipAgent::RecBYE(pj_str_t* uri, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecBYE();
-}
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
 
-/**
- * RecBYERad.	...
- * Envía el comando BYE al modulo de grabacion para radio
- * @return	0 OK, -1  error.
- */
-int SipAgent::RecBYERad()
-{
-	if (!RecordPort::_RecordPortRad) return -1;
-	return RecordPort::_RecordPortRad->RecBYE();
+	RecordPort* recPort = RecordPort::GetRecordPortFromResourceUri(uri, type);
+
+	if (!recPort) return -1;
+	return recPort->RecBYE();
 }
 
 /**

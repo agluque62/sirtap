@@ -3,6 +3,7 @@
 #include "Guard.h"
 #include "SipAgent.h"
 #include "RecordPort.h"
+#include "CUtils.h"
 
 //Comandos al grabador
 //Valores del campo <grabador>: 0 graba en los dos, 1 graba en el primero y 2 graba en el segundo.
@@ -11,7 +12,7 @@ const char *RecordPort::INI_SES_REC_TERM = "V,T00,";		//V,T00,<Identificador del
 const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";		//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
 const char *RecordPort::INI_SES_REC_RAD = "V,G00,";			//V,G00,<Identificador del Recurso Tipo Terminal>,<grabador> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
 const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";			//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
-const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";			//V,DDD,<Identificador del Recurso Tipo Terminal> Elimina en elservicio de grabación el objeto de la sesion de grabacion
+const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";			//V,DDD,<Identificador del Recurso Tipo Terminal> Elimina en el servicio de grabacion el objeto de la sesion de grabacion
 const char *RecordPort::REC_INV = "V,INV,";					//V,INV,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al inicio de la llamada. Necesario cuando el grabador esta en modo VOTER
 const char *RecordPort::REC_BYE = "V,BYE,";					//V,BYE,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al fin de la llamada. Necesario cuando el grabador esta en modo VOTER
 const char *RecordPort::SQUELCH_ON = "V,G02,";				//V,G02,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<connref> SQH on
@@ -27,6 +28,7 @@ const char *RecordPort::REC_HOLDOFF = "V,T09,";				//V,T09,<Identificador del Re
 const char *RecordPort::REC_RECORD = "V,I01,";				//V,I01,<Identificador del Recurso Tipo Terminal>,<grabador>,<connref> RECORD
 const char *RecordPort::REC_PAUSE = "V,I02,";				//V,I02,<Identificador del Recurso Tipo Terminal>,<grabador>,<connref> PAUSE
 const char *RecordPort::REC_RESET = "C,H02";				//C,H02	Para el servicio de grabacion
+const char* RecordPort::REC_MEDIA = "V,MMM,";				//V,MMM,<Identificador del Recurso Tipo Terminal>,<grabador>,<num secuencia>,<muestras de audio> Mesaje de media
 
 const char *RecordPort::REC_NOT_MESSAGE = "NOMES";
 
@@ -52,18 +54,12 @@ RecordPort* RecordPort::_RecordPortIA = NULL;
 RecordPort* RecordPort::_RecordPortTelSec = NULL;
 RecordPort* RecordPort::_RecordPortRadSec = NULL;
 RecordPort* RecordPort::_RecordPortIASec = NULL;
-CORESIP_HMI_Resources_Info RecordPort::Resources_Info;
-pj_mutex_t* RecordPort::static_mutex = NULL;
 
 void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
 {
 	if (ED137_record_enabled == 0) return;
 
-	AgentType = agentType;
-	Resources_Info.NumResources = 0;
-	pj_status_t st = pj_mutex_create_simple(pool, "RecActionsMtx", &static_mutex);
-	if (st != PJ_SUCCESS) static_mutex = NULL;
-	PJ_CHECK_STATUS(st, ("ERROR creando mutex estatico de RecordPort"));
+	AgentType = agentType;		
 
 	if (AgentType == ULISES)
 	{
@@ -99,7 +95,7 @@ void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_T
 	addStIpToBind.sin_family = pj_AF_INET();
 	addStIpToBind.sin_port = pj_htons(ST_PORT);
 
-	st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
+	pj_status_t st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
 	PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
 
 	st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
@@ -166,13 +162,7 @@ void RecordPort::End()
 	{
 		pj_sock_close(_SockSt);
 		_SockSt = PJ_INVALID_SOCKET;
-	}
-
-	if (static_mutex != NULL)
-	{
-		pj_mutex_destroy(static_mutex);
-	}
-	Resources_Info.NumResources = 0; 
+	}	 
 }
 
 
@@ -2342,10 +2332,10 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 	pj_utoa((unsigned long) pThis->nsec_media, snsec);
 		
 	pThis->mess_media[0] = 0;
-	strcpy(pThis->mess_media, "V,MMM,");
+	strcpy(pThis->mess_media, REC_MEDIA);
 
 	size_t mess_len;
-	mess_len = strlen(pThis->mess_media) + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size/2;
+	mess_len = strlen(pThis->mess_media) + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + 1 /*grabador*/ + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size / 2;
 
 #ifdef REC_IN_FILE
 	pj_ssize_t mess_len_tx = mess_len - frame->size/2;
@@ -2354,6 +2344,10 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 	pj_assert(mess_len <= sizeof(pThis->mess_media));
 
 	strcat(pThis->mess_media, pThis->_RecursoTipoTerminal);
+	strcat(pThis->mess_media, ",");
+
+	char recTorec[2] = { (char)pThis->RecordersToRecord, 0 };
+	strcat(pThis->mess_media, recTorec);
 	strcat(pThis->mess_media, ",");
 		
 	strcat(pThis->mess_media, snsec);
@@ -2954,10 +2948,58 @@ void RecordPort::GetSndTypeString(CORESIP_SndDevType type, char * SndDevType_ret
 	}
 }
 
-void RecordPort::Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info)
+RecordPort* RecordPort::GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Resource_Type type)
 {
+	pj_assert(uri);
 
+	if (AgentType == ULISES)
+	{
+		if (type == Rd) return _RecordPortRad;
+		else return _RecordPortTel;
+	}
+
+	if (AgentType == SIRTAP_NBX && type != Rd) return NULL;
+
+	char user[CORESIP_MAX_URI_LENGTH];
+	char host[CORESIP_MAX_URI_LENGTH];
+	int ret = CUtils::GetUriElements(uri, user, sizeof(user), host, sizeof(host), NULL);
+	if (ret != 0)
+	{
+		char uriaux[CORESIP_MAX_URI_LENGTH];
+		pj_ssize_t maxlen = uri->slen;
+		if (uri->slen > (CORESIP_MAX_URI_LENGTH - 1)) maxlen = (CORESIP_MAX_URI_LENGTH - 1);
+		pj_ansi_strncpy(uriaux, uri->ptr, maxlen);
+		uriaux[maxlen] = '\0';
+		PJ_LOG(3, (__FILE__, "ERROR: GetRecordPortFromResourceUri no puede parsear la uri %s", uriaux));
+		return NULL;
+	}
+
+	pj_bool_t Secure;
+	pj_bool_t found = CUtils::Get_HMI_Resource_Info(user, type, &Secure);
+	if (type == Rd)
+	{
+		if (!found) return _RecordPortRad;
+		else if (Secure) return _RecordPortRadSec;
+		else return _RecordPortRad;
+	}
+
+	if (type == Tlf)
+	{
+		if (!found) return _RecordPortTel;
+		else if (Secure) return _RecordPortTelSec;
+		else return _RecordPortTel;
+	}
+
+	if (type == IA)
+	{
+		if (!found) return _RecordPortIA;
+		else if (Secure) return _RecordPortIASec;
+		else return _RecordPortIA;
+	}
+
+	return NULL;
 }
+
 
 
 

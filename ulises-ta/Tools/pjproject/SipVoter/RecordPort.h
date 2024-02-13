@@ -111,7 +111,7 @@ public:
 	bool IsSlotConnectedToRecord(pjsua_conf_port_id slot);
 	static int GetSndDevToRecord(int dev_in);
 	static void GetSndTypeString(CORESIP_SndDevType type, char* SndDevType_returned, int size_SndDevType_returned);
-	static void Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info);
+	static RecordPort* GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Resource_Type type);
 	
 private:
 	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
@@ -162,6 +162,7 @@ private:
 	static const char *REC_RECORD;
 	static const char *REC_PAUSE;
 	static const char *REC_RESET;
+	static const char* REC_MEDIA;
 	static const char *REC_NOT_MESSAGE;
 
 	//Respuestas del grabador
@@ -228,9 +229,7 @@ private:
 	COMMAND_QUEUE Rec_Command_queue;	//Cola de mensajes de acciones sobre el grabador, excepto RECORD y PAUSE
 	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue
 		
-	static CORESIP_Agent_Type AgentType;
-	static CORESIP_HMI_Resources_Info Resources_Info;
-	static pj_mutex_t* static_mutex;
+	static CORESIP_Agent_Type AgentType;	
 
 #ifdef REC_IN_FILE
 	pj_oshandle_t sim_rec_fd;
