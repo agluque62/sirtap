@@ -64,7 +64,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	{
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init IP address or dst_port is invalid"));
 		return -1;
-	}
+	}	
 
 	pjmedia_stream_info info;		
 
@@ -159,6 +159,45 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 		Stream = NULL;
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init stream cannot be created"));
 		return -1;
+	}
+
+	//Si la direccion remota a la que se envia es multicast se fuerza a que salga por el interfaz
+	if ((pj_ntohl(rem_addr.sin_addr.s_addr) & 0xF0000000) == 0xE0000000)
+	{
+		pjmedia_transport_info tpinfo;
+		st = pjmedia_transport_get_info(Transport, &tpinfo);
+		if (st == PJ_SUCCESS)
+		{
+			//Se fuerza que los paquetes salgan por el interfaz que utiliza el agente.
+			struct pj_in_addr in_uaIpAdd;
+			pj_str_t str_uaIpAdd;
+			str_uaIpAdd.ptr = SipAgent::Get_uaIpAdd();
+			str_uaIpAdd.slen = (pj_ssize_t)strlen(SipAgent::Get_uaIpAdd());
+			pj_inet_aton((const pj_str_t*)&str_uaIpAdd, &in_uaIpAdd);
+			st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_IF, (void*)&in_uaIpAdd, sizeof(in_uaIpAdd));
+			if (st != PJ_SUCCESS)
+				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, PJ_IP_MULTICAST_IF. El envio de audio a %s:%d no se puede forzar por el interface %s",
+					dst_ip, dst_port, SipAgent::Get_uaIpAdd()));
+
+			st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_IF, (void*)&in_uaIpAdd, sizeof(in_uaIpAdd));
+			if (st != PJ_SUCCESS)
+				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, PJ_IP_MULTICAST_IF. El envio de audio a %s:%d no se puede forzar por el interface %s",
+					dst_ip, dst_port, SipAgent::Get_uaIpAdd()));
+
+			
+			pj_uint32_t multicastloop = 0;
+			st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+			if (st != PJ_SUCCESS)
+				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+					dst_ip, dst_port));
+
+			multicastloop = 0;
+			st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+			if (st != PJ_SUCCESS)
+				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+					dst_ip, dst_port));
+					
+		}
 	}
 
 	pjmedia_stream_set_is_for_coresip_RTPport(Stream, PJ_TRUE);

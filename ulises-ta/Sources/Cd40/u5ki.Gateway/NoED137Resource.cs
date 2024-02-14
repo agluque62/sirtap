@@ -108,10 +108,10 @@ namespace U5ki.Gateway
 
             //HASTA QUE SE RESUELVA LA CONFIGURACION, DE MOMENTO TOMAMOS ASI LOS DATOS
             sirtap_params.dst_ip = DireccionamientoIP.IpRed2;
-            sirtap_params.src_port = (int)EquipoExterno.SipPort;
-            sirtap_params.dst_port = sirtap_params.src_port + 2;
+            sirtap_params.src_port = (int)EquipoExterno.SipPort + 2;
+            sirtap_params.dst_port = sirtap_params.src_port;
             sirtap_params.local_multicast_ip = DireccionamientoIP.IpRed2;
-            sirtap_params.payload_type = 8;
+            sirtap_params.payload_type = 0;
             //Si el identificador del recurso termina en 2, entonces consideramos que es el canal 2 de la radios SIRTAP
             //Si es cualquier otro caracter, entonces es el canal 1
             if (IdRecurso.ElementAt(IdRecurso.Length - 1) == 2) sirtap_params.channel = 2;
@@ -504,7 +504,7 @@ namespace U5ki.Gateway
         {
             if (sirtap_params.RC == null) return false;
 
-            //return true;            //Comentar para que se haga polling de la presencia
+            return true;            //Comentar para que se haga polling de la presencia
 
             bool presence = true;
             TlmdoAsk msg = new TlmdoAsk();

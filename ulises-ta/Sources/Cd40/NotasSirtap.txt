@@ -74,6 +74,13 @@ SIRTAP_Get_Presence
 
 Si queremos que siempre esté presente forzamos que devuelva true.
 
+REunion
+
+OID de TX inibit rcvOnlymode
+OID wf ch1wf,ch2wf
+powerLevelCh1  LO MD HI
+
+miguel.sanchez-puebla@airbus.com
 
 
 
