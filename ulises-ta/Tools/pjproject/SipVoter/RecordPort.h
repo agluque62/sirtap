@@ -89,7 +89,7 @@ public:
 	pj_mutex_t *record_mutex;																	
 
 public:
-	static void Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
+	static void Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
 	static void End();
 	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, 
 		const char *TerminalId, const char* TerminalId_sufix, RECORDERS_TO_RECORD recorders_to_record);
@@ -175,6 +175,9 @@ private:
 	static const char *ERROR_INI_SESSION;
 	static const char *RECORD_SRV_REINI;
 
+	static CORESIP_Agent_Type AgentType;
+	static pj_bool_t ED137_record_enabled;
+
 	static pj_sock_t _SockSt;
 
 	pj_pool_t * _Pool;
@@ -182,7 +185,7 @@ private:
 	pj_sock_t _Sock;
 	pj_lock_t * _Lock;
 
-	RECORDERS_TO_RECORD RecordersToRecord;
+	RECORDERS_TO_RECORD RecordersToRecord;	
 
 	char RecTerminalIpAdd[32];
 	pj_sockaddr_in recAddr;			//Dirección y puerto del grabador
@@ -227,9 +230,8 @@ private:
 	} COMMAND_QUEUE;	
 	
 	COMMAND_QUEUE Rec_Command_queue;	//Cola de mensajes de acciones sobre el grabador, excepto RECORD y PAUSE
-	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue
-		
-	static CORESIP_Agent_Type AgentType;	
+	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue	
+	
 
 #ifdef REC_IN_FILE
 	pj_oshandle_t sim_rec_fd;

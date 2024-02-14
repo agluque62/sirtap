@@ -48,6 +48,7 @@ pj_sock_t RecordPort::_SockSt = PJ_INVALID_SOCKET;
 pj_activesock_t* RecordPort::_RemoteStSock = NULL;
 
 CORESIP_Agent_Type RecordPort::AgentType = ULISES;
+pj_bool_t RecordPort::ED137_record_enabled = PJ_FALSE;
 RecordPort* RecordPort::_RecordPortTel = NULL;
 RecordPort* RecordPort::_RecordPortRad = NULL;
 RecordPort* RecordPort::_RecordPortIA = NULL;
@@ -55,9 +56,10 @@ RecordPort* RecordPort::_RecordPortTelSec = NULL;
 RecordPort* RecordPort::_RecordPortRadSec = NULL;
 RecordPort* RecordPort::_RecordPortIASec = NULL;
 
-void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
+void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
 {
-	if (ED137_record_enabled == 0) return;
+	ED137_record_enabled = eD137_record_enabled != 0 ? PJ_TRUE : PJ_FALSE;
+	if (eD137_record_enabled == 0) return;
 
 	AgentType = agentType;		
 
@@ -116,6 +118,7 @@ void RecordPort::Init(pj_pool_t* pool, int ED137_record_enabled, CORESIP_Agent_T
 
 void RecordPort::End()
 {	
+	ED137_record_enabled = PJ_FALSE; 
 	if (RecordPort::_RecordPortTel)
 	{
 		delete RecordPort::_RecordPortTel;
@@ -2951,6 +2954,8 @@ void RecordPort::GetSndTypeString(CORESIP_SndDevType type, char * SndDevType_ret
 RecordPort* RecordPort::GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Resource_Type type)
 {
 	pj_assert(uri);
+
+	if (!ED137_record_enabled) return NULL;
 
 	if (AgentType == ULISES)
 	{
