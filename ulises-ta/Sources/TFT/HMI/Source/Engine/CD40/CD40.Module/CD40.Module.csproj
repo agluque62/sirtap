@@ -111,6 +111,7 @@
     <Compile Include="BusinessEntities\AsioChannels.cs" />
     <Compile Include="BusinessEntities\CBinauralHwManager.cs" />
     <Compile Include="BusinessEntities\CfgManager.cs" />
+    <Compile Include="BusinessEntities\SirtapMixerManager.cs" />
     <Compile Include="BusinessEntities\TlfConferencePrepro.cs" />
     <Compile Include="BusinessEntities\TlfForward.cs" />
     <Compile Include="BusinessEntities\TlfPickUp.cs" />
@@ -139,7 +140,6 @@
     <Compile Include="BusinessEntities\TlfPositionMd.cs" />
     <Compile Include="BusinessEntities\TlfTransfer.cs" />
     <Compile Include="BusinessEntities\Top.cs" />
-    <Compile Include="BusinessEntities\MixerManager.cs" />
     <Compile Include="BusinessEntities\RdPosition.cs" />
     <Compile Include="BusinessEntities\TlfPosition.cs" />
     <Compile Include="BusinessEntities\RegistryManager.cs" />

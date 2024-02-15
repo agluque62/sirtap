@@ -1158,6 +1158,7 @@ namespace HMI.CD40.Module.BusinessEntities
                                 if(Squelch == SquelchState.SquelchOnlyPort)
                                 {
                                     MixerDev dev = (_AudioVia == RdRxAudioVia.HeadPhones ? MixerDev.MhpRd : (_AudioVia == RdRxAudioVia.HfSpeaker ? MixerDev.SpkHf : MixerDev.SpkRd));
+                                    // AGL. AUDIO_PRIORITIES RX-RADIO => dev = MixerDev.MhpRd ?? 
                                     Top.Mixer.Link(port, dev, MixerDir.Send, Mixer.RD_PRIORITY, FuentesGlp.RxRadio);
                                 }
                                 else if (Squelch == SquelchState.NoSquelch)
