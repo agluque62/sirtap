@@ -73,9 +73,13 @@ namespace U5ki.Gateway
         public bool ConfigurationOfResourceChange(CfgRecursoEnlaceExterno res, AsignacionRecursosGW equipo_externo, DireccionamientoIP direccionamientoIP)
         {
             if (IdRecurso != res.IdRecurso) return true;
-            if (sirtap_params.dst_ip != direccionamientoIP.IpRed1) return true;
-            if (sirtap_params.src_port != (int)equipo_externo.SipPort) return true;
-            if (sirtap_params.local_multicast_ip != direccionamientoIP.IpRed2) return true;
+
+            if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+            {
+                if (DireccionamientoIP.IpRed1 != direccionamientoIP.IpRed1) return true;
+                if (DireccionamientoIP.IpRed2 != direccionamientoIP.IpRed2) return true;
+                if (EquipoExterno.SipPort != (int)equipo_externo.SipPort) return true;                
+            }
             return false;
         }
 
