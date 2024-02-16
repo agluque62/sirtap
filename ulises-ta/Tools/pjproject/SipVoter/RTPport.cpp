@@ -184,19 +184,20 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, PJ_IP_MULTICAST_IF. El envio de audio a %s:%d no se puede forzar por el interface %s",
 					dst_ip, dst_port, SipAgent::Get_uaIpAdd()));
 
-			
-			pj_uint32_t multicastloop = 0;
-			st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
-			if (st != PJ_SUCCESS)
-				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
-					dst_ip, dst_port));
+			if (src_port == dst_port)
+			{
+				pj_uint32_t multicastloop = 0;
+				st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+				if (st != PJ_SUCCESS)
+					PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+						dst_ip, dst_port));
 
-			multicastloop = 0;
-			st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
-			if (st != PJ_SUCCESS)
-				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
-					dst_ip, dst_port));
-					
+				multicastloop = 0;
+				st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+				if (st != PJ_SUCCESS)
+					PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+						dst_ip, dst_port));
+			}
 		}
 	}
 
