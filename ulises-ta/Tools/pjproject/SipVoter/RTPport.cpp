@@ -115,7 +115,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 
 	/* Create media transport */
 	pj_str_t src_addr = pj_str(SipAgent::uaIpAdd);
-	st = pjmedia_transport_udp_create2(pjsua_var.med_endpt, NULL, &src_addr, src_port,	0, &Transport);
+	st = pjmedia_transport_udp_create2(pjsua_var.med_endpt, NULL, &src_addr, src_port, PJMEDIA_UDP_NO_RTCP, &Transport);
 	if (st != PJ_SUCCESS)
 	{
 		Transport = NULL;
