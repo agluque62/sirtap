@@ -830,7 +830,7 @@ int SipCall::Hacer_la_llamada_saliente()
 		SipAgent::RecINV(&pj_str(const_cast<char*>(make_call_params.dst_uri)), _Info.Type);
 		if (_Info.Type != CORESIP_CALL_RD)
 		{			
-			SipAgent::RecCallStart(SipAgent::OUTCOM, _Info.Priority, &info_acc.acc_uri, &pj_str(const_cast<char*>(make_call_params.dst_uri)), &dlg->call_id->id);
+			SipAgent::RecCallStart(SipAgent::OUTCOM, _Info.Priority, &info_acc.acc_uri, &pj_str(const_cast<char*>(make_call_params.dst_uri)), &dlg->call_id->id, _Info.Type);
 		}
 
 		pjsip_dlg_dec_lock(dlg);
@@ -2070,12 +2070,12 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				if (st == PJ_SUCCESS)
 				{
 					callIdHdrVal = &dlg->call_id->id;
-					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, pjcall->media_st, CALLEND_UNKNOWN, callIdHdrVal);
+					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, pjcall->media_st, CALLEND_UNKNOWN, callIdHdrVal, call->_Info.Type);
 					pjsip_dlg_dec_lock(dlg);
 				}
 				else
 				{
-					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_UNKNOWN, callIdHdrVal);
+					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_UNKNOWN, callIdHdrVal, call->_Info.Type);
 				}
 			}
 
@@ -2591,12 +2591,12 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				default:
 					cause = Q850_CALL_REJECTED;
 				}
-				SipAgent::RecCallEnd(cause, pjcall->media_st, CALLEND_DEST, callIdHdrVal);
+				SipAgent::RecCallEnd(cause, pjcall->media_st, CALLEND_DEST, callIdHdrVal, call->_Info.Type);
 				pjsip_dlg_dec_lock(dlg);
 			}
 			else
 			{
-				SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_DEST, callIdHdrVal);
+				SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_DEST, callIdHdrVal, call->_Info.Type);
 			}
 		}
 
@@ -3162,7 +3162,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 			SipAgent::RecINV(&info_call_id.remote_contact, info.Type);
 			if (info.Type != CORESIP_CALL_RD)
 			{
-				SipAgent::RecCallStart(SipAgent::INCOM, info.Priority, &info_call_id.remote_contact, &info_acc_id.acc_uri, &dlg->call_id->id);
+				SipAgent::RecCallStart(SipAgent::INCOM, info.Priority, &info_call_id.remote_contact, &info_acc_id.acc_uri, &dlg->call_id->id, info.Type);
 				RecCallStart_sent = PJ_TRUE;
 			}
 		}
@@ -3350,7 +3350,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 					{	
 						if (sipcall->_Info.Type != CORESIP_CALL_RD)
 						{
-							SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id);
+							SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id, info.Type);
 						}
 						SipAgent::RecBYE(&info_call_id.remote_contact, info.Type);
 					}
@@ -3367,7 +3367,7 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 				{
 					if (sipcall->_Info.Type != CORESIP_CALL_RD)
 					{
-						SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id);
+						SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id, info.Type);
 					}
 					SipAgent::RecBYE(&info_call_id.remote_contact, info.Type);
 				}

@@ -111,7 +111,7 @@ public:
 	bool IsSlotConnectedToRecord(pjsua_conf_port_id slot);
 	static int GetSndDevToRecord(int dev_in);
 	static void GetSndTypeString(CORESIP_SndDevType type, char* SndDevType_returned, int size_SndDevType_returned);
-	static RecordPort* GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Resource_Type type);
+	static RecordPort* GetRecordPortFromResource(const pj_str_t* uri, const pj_str_t* Id, CORESIP_Resource_Type type);
 	
 private:
 	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes

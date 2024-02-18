@@ -23,7 +23,7 @@ void CUtils::End()
 	Resources_Info.NumResources = 0;
 }
 
-int CUtils::GetUriElements(pj_str_t *uriToParse, char* user, int len_user_buf, char* host, int len_host_buf, int *port)
+int CUtils::GetUriElements(const pj_str_t *uriToParse, char* user, int len_user_buf, char* host, int len_host_buf, int *port)
 {
 	pj_pool_t* tmppool = pjsua_pool_create("CUtils::GetUriElements", 64, 32);
 	if (tmppool == NULL)

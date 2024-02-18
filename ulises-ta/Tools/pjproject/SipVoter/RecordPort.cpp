@@ -2951,19 +2951,28 @@ void RecordPort::GetSndTypeString(CORESIP_SndDevType type, char * SndDevType_ret
 	}
 }
 
-RecordPort* RecordPort::GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Resource_Type type)
+/**
+ * GetRecordPortFromResource.	...
+ * Retorna el RecordPort.
+ * @param   uri. Uri del recurso. Puede ser NULL.
+ * @param	Id. Identificador del recurso. Seria el usuario de la uri. Puede ser NULL.
+ * @param	type. Tipo de recurso
+ * @param	SndDevType_returned. String retornado
+ * @return	El tipo de dispositivo que se graba.
+ */
+RecordPort* RecordPort::GetRecordPortFromResource(const pj_str_t* uri, const pj_str_t* Id, CORESIP_Resource_Type type)
 {
-	pj_assert(uri);
-
 	if (!ED137_record_enabled) return NULL;
 
-	if (AgentType == ULISES)
+	if (AgentType == ULISES || AgentType == SIRTAP_HMI)
 	{
 		if (type == Rd) return _RecordPortRad;
 		else return _RecordPortTel;
 	}
 
 	if (AgentType == SIRTAP_NBX && type != Rd) return NULL;
+
+	if (uri == NULL) return NULL;
 
 	char user[CORESIP_MAX_URI_LENGTH];
 	char host[CORESIP_MAX_URI_LENGTH];
@@ -2975,7 +2984,7 @@ RecordPort* RecordPort::GetRecordPortFromResourceUri(pj_str_t* uri, CORESIP_Reso
 		if (uri->slen > (CORESIP_MAX_URI_LENGTH - 1)) maxlen = (CORESIP_MAX_URI_LENGTH - 1);
 		pj_ansi_strncpy(uriaux, uri->ptr, maxlen);
 		uriaux[maxlen] = '\0';
-		PJ_LOG(3, (__FILE__, "ERROR: GetRecordPortFromResourceUri no puede parsear la uri %s", uriaux));
+		PJ_LOG(3, (__FILE__, "ERROR: GetRecordPortFromResource no puede parsear la uri %s", uriaux));
 		return NULL;
 	}
 

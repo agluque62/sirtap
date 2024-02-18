@@ -2641,7 +2641,7 @@ int SipAgent::RecINV(pj_str_t *uri, CORESIP_CallType callType)
 	else if (callType == CORESIP_CALL_IA) type = IA;
 	else type = Tlf;
 
-	RecordPort* recPort = RecordPort::GetRecordPortFromResourceUri(uri, type);
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(uri, NULL, type);
 
 	if (!recPort) return -1;
 	return recPort->RecINV();
@@ -2661,7 +2661,7 @@ int SipAgent::RecBYE(pj_str_t* uri, CORESIP_CallType callType)
 	else if (callType == CORESIP_CALL_IA) type = IA;
 	else type = Tlf;
 
-	RecordPort* recPort = RecordPort::GetRecordPortFromResourceUri(uri, type);
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(uri, NULL, type);
 
 	if (!recPort) return -1;
 	return recPort->RecBYE();
@@ -2674,12 +2674,21 @@ int SipAgent::RecBYE(pj_str_t* uri, CORESIP_CallType callType)
  * @param	priority	Prioridad
  * @param	ori_uri		URI del llamante
  * @param	dest_uri	URI del llamado
+ * @param	callIdHdrVal. Valor de la cabecera Call ID.
+ * @param	callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal)
+int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
+
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(dest_uri, NULL, type);
+
+	if (!recPort) return -1;
+	return recPort->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
 }
 
 /**
@@ -2688,12 +2697,24 @@ int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *o
  * @param	cause		causa de desconexion
  * @param	inv_cause	causa de inv->cause
  * @param	disc_origin		origen de la desconexion
+ * @param	callIdHdrVal. Valor de la cabecera Call ID.
+ * @param	callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal)
+int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal, CORESIP_CallType callType)
 {
 	if (!RecordPort::_RecordPortTel) return -1;
 	return RecordPort::_RecordPortTel->RecCallEnd(cause, media_status, disc_origin, callIdHdrVal);
+
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
+
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(dest_uri, NULL, type);
+
+	if (!recPort) return -1;
+	return recPort->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
 }
 
 /**
@@ -2810,8 +2831,11 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
  */
 void SipAgent::RdSquEvent(bool on, const char *freqId, const char *resourceId, const char *bssMethod, unsigned int bssQidx)
 {
-	if (!RecordPort::_RecordPortRad) return;
-	RecordPort::_RecordPortRad->RecSQU(on, freqId, resourceId, bssMethod, bssQidx);
+	CORESIP_Resource_Type type = Rd;
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(NULL, &pj_str((char *)resourceId), type);
+
+	if (!recPort) return;
+	recPort->RecSQU(on, freqId, resourceId, bssMethod, bssQidx);
 }
 
 /**
