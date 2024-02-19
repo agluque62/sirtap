@@ -185,6 +185,7 @@ public:
 
 	static int RecConnectSndPort(bool on, int dev, RecordPort *recordport);
 	static int RecConnectSndPorts(bool on, RecordPort *recordport);
+	static int RecConnectConfPortId(bool on, pjsua_conf_port_id portId, RecordPort* recordport);
 	static int RecINV(pj_str_t* uri, CORESIP_CallType callType);
 	static int RecBYE(pj_str_t* uri, CORESIP_CallType callType);
 	static int RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal, CORESIP_CallType callType);

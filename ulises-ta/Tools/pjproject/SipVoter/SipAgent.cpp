@@ -232,7 +232,7 @@ float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transm
  */
 void SipAgent::Init(const CORESIP_Config * cfg)
 {
-	SipAgent::AgentType = cfg->AgentType;
+	SipAgent::AgentType = cfg->AgentType;	
 
 	if (strlen(cfg->UserAgent) >= sizeof(cfg->UserAgent)) 
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR User Agent name is very long"));
@@ -2500,6 +2500,47 @@ int SipAgent::RecConnectSndPort(bool on, int dev, RecordPort *recordport)
 }
 
 /**
+ * RecConnectConfPortId.	...
+ * Conecta/desconecta un puerto de la conferencia al de grabacion
+ * @param	on						true - record / false - pause
+ * @param  portId			Identificador del puerto de la conferencia que se quiere enviar al recordport
+ * @return	0 OK, -1  error.
+ */
+int SipAgent::RecConnectConfPortId(bool on, pjsua_conf_port_id portId, RecordPort* recordport)
+{
+	pj_status_t st = PJ_SUCCESS;
+	int ret = 0;
+
+	if (portId == PJSUA_INVALID_ID)
+		return ret;
+
+	if (on)
+	{
+		if (!IsSlotValid(portId))
+		{
+		}
+		else if (!recordport->IsSlotConnectedToRecord(portId))
+		{
+			st = pjsua_conf_connect(portId, recordport->Slot);
+			PJ_CHECK_STATUS(st, ("ERROR RecConnectConfPortId: conectando puertos", "(%d --> puerto grabacion %d)", portId, recordport->Slot));
+		}
+	}
+	else
+	{
+		if (!IsSlotValid(portId))
+		{
+		}
+		else if (recordport->IsSlotConnectedToRecord(portId))
+		{
+			st = pjsua_conf_disconnect(portId, recordport->Slot);
+			PJ_CHECK_STATUS(st, ("ERROR RecConnectConfPortId: desconectando puertos", "(%d --> puerto grabacion %d)", portId, recordport->Slot));
+		}
+	}
+
+	return ret;
+}
+
+/**
  * RecConnectSndPorts.	...
  * Conecta/desconecta los puertos de sonido al de grabacion
  * @param	on						true - record / false - pause
@@ -3040,35 +3081,51 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		if (srcType == CORESIP_CALL_ID)
 		{
 			//Si el origen es una llamada telefonica y el destino es un dispositivo de salida de audio
-			//Grabamos el retorno del dispositivo de salida de audio.
-			if (on && RecordPort::_RecordPortTel != NULL && !error_src) 
+			
+			if (on && RecordPort::_RecordPortTel != NULL && !error_src)
 			{
-				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
-				if (dev_to_record != -1)
+				if (SipAgent::AgentType == ULISES)
 				{
-					RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
+					int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
+					if (dev_to_record != -1)
+					{
+						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
+						PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
 
-					RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortTel);
+						RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortTel);
+					}
+				}				
+				else if (SipAgent::AgentType == SIRTAP_HMI)
+				{
+					//En este caso se graba lo que se envia al dispositivo de salida. No hay IA4
+					RecConnectConfPortId(true, conf_src, RecordPort::_RecordPortTel);
 				}
 			}
 			else if (!on && RecordPort::_RecordPortTel != NULL && !error_src)
 			{
-				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
-				if (dev_to_record != -1)
+				if (SipAgent::AgentType == ULISES)
 				{
-					pj_bool_t from_tlf = PJ_TRUE;
-					int slots_connected_to_dst = GetPortsCountAreConnectedToSlot(conf_dst, from_tlf);
-					PJ_LOG(5, (__FILE__, "######### GRABACION 0 slots_connected_to_dst %d tlf", slots_connected_to_dst));
+					int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
+					if (dev_to_record != -1)
+					{
+						pj_bool_t from_tlf = PJ_TRUE;
+						int slots_connected_to_dst = GetPortsCountAreConnectedToSlot(conf_dst, from_tlf);
+						PJ_LOG(5, (__FILE__, "######### GRABACION 0 slots_connected_to_dst %d tlf", slots_connected_to_dst));
 
-					if (slots_connected_to_dst <= 1)
-					{	
-						//Si se se va a quedar sin slots de telefonia conectados a este dispositivo, entonces lo desconectamos de la grabacion de telefonia
-						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
+						if (slots_connected_to_dst <= 1)
+						{
+							//Si se se va a quedar sin slots de telefonia conectados a este dispositivo, entonces lo desconectamos de la grabacion de telefonia
+							RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
+							PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortTel", src_string));
 
-						RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortTel);
+							RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortTel);
+						}
 					}
+				}
+				else if (SipAgent::AgentType == SIRTAP_HMI)
+				{
+					//En este caso se graba lo que se envia al dispositivo de salida. No hay IA4. Lo desconectamos de la grabacion de telefonia
+					RecConnectConfPortId(false, conf_src, RecordPort::_RecordPortTel);
 				}
 			}
 		}		
@@ -3076,35 +3133,51 @@ void SipAgent::BridgeLink(int srcType, int src, int dstType, int dst, bool on)
 		if (srcType == CORESIP_RDRXPORT_ID)
 		{
 			//Si el origen es un puerto RDRX y el destino es un dispositivo de salida de audio
-			//Grabamos el retorno del dispositivo de salida de audio.
+			
 			if (on && RecordPort::_RecordPortRad != NULL && !error_src) 
 			{
-				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
-				if (dev_to_record != -1)
+				if (SipAgent::AgentType == ULISES)
 				{
-					RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-					PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
+					int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
+					if (dev_to_record != -1)
+					{
+						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
+						PJ_LOG(5, (__FILE__, "######### GRABACION 1 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
 
-					RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortRad);
+						RecConnectSndPort(true, dev_to_record, RecordPort::_RecordPortRad);
+					}
+				}
+				else if (SipAgent::AgentType == SIRTAP_HMI)
+				{
+					//En este caso se graba lo que se envia al dispositivo de salida. No hay IA4
+					RecConnectConfPortId(true, conf_src, RecordPort::_RecordPortRad);
 				}
 			}
-			else if (!on && RecordPort::_RecordPortTel != NULL && !error_src)
+			else if (!on && RecordPort::_RecordPortRad != NULL && !error_src)
 			{
-				int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
-				if (dev_to_record != -1)
+				if (SipAgent::AgentType == ULISES)
 				{
-					pj_bool_t not_from_tlf = PJ_FALSE;
-					int slots_connected_to_dst = GetPortsCountAreConnectedToSlot(conf_dst, not_from_tlf);
-					PJ_LOG(5, (__FILE__, "######### GRABACION 0 slots_connected_to_dst %d radio", slots_connected_to_dst));
-
-					if (slots_connected_to_dst <= 1)
+					int dev_to_record = RecordPort::GetSndDevToRecord(dst);		//Buscamos el dispositivo de retorno de audio del mismo tipo para grabarlo
+					if (dev_to_record != -1)
 					{
-						//Si se se va a quedar sin slots, que no son de telefonia, conectados a este dispositivo, entonces lo desconectamos de la grabacion de radio
-						RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
-						PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
+						pj_bool_t not_from_tlf = PJ_FALSE;
+						int slots_connected_to_dst = GetPortsCountAreConnectedToSlot(conf_dst, not_from_tlf);
+						PJ_LOG(5, (__FILE__, "######### GRABACION 0 slots_connected_to_dst %d radio", slots_connected_to_dst));
 
-						RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortRad);
+						if (slots_connected_to_dst <= 1)
+						{
+							//Si se se va a quedar sin slots, que no son de telefonia, conectados a este dispositivo, entonces lo desconectamos de la grabacion de radio
+							RecordPort::GetSndTypeString(_SndPorts[dev_to_record]->_Type, src_string, sizeof(src_string));
+							PJ_LOG(5, (__FILE__, "######### GRABACION 0 srcType CORESIP_SNDDEV_ID %s a RecordPort::_RecordPortRad", src_string));
+
+							RecConnectSndPort(false, dev_to_record, RecordPort::_RecordPortRad);
+						}
 					}
+				}
+				else if (SipAgent::AgentType == SIRTAP_HMI)
+				{
+					//En este caso se graba lo que se envia al dispositivo de salida. No hay IA4. Se desconecta de la grabacion de radio
+					RecConnectConfPortId(false, conf_src, RecordPort::_RecordPortRad);
 				}
 			}
 		}
