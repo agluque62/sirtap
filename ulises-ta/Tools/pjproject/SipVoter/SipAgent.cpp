@@ -2776,10 +2776,6 @@ int SipAgent::RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * error)
 		//Cuanquier objeto de grabacion puede enviar el comando al servicio de grabador. Lo manda el primero que no sea NULL
 		if (RecordPort::_RecordPortTel != NULL) RecordPort::_RecordPortTel->RecReset();
 		else if (RecordPort::_RecordPortRad != NULL) RecordPort::_RecordPortRad->RecReset();
-		else if (RecordPort::_RecordPortTelSec != NULL) RecordPort::_RecordPortTelSec->RecReset();
-		else if (RecordPort::_RecordPortRadSec != NULL) RecordPort::_RecordPortRadSec->RecReset();
-		else if (RecordPort::_RecordPortIA != NULL) RecordPort::_RecordPortIA->RecReset();
-		else if (RecordPort::_RecordPortIASec != NULL) RecordPort::_RecordPortIASec->RecReset();
 		break;
 	case CORESIP_REC_ENABLE:
 		RecordPort::End();

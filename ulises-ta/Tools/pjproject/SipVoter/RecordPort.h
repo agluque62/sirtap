@@ -49,10 +49,6 @@ public:
 
 	static RecordPort* _RecordPortTel;
 	static RecordPort* _RecordPortRad;
-	static RecordPort* _RecordPortIA;
-	static RecordPort* _RecordPortTelSec;
-	static RecordPort* _RecordPortRadSec;
-	static RecordPort* _RecordPortIASec;
 
 	pjsua_conf_port_id Slot;	
 

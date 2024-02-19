@@ -51,10 +51,6 @@ CORESIP_Agent_Type RecordPort::AgentType = ULISES;
 pj_bool_t RecordPort::ED137_record_enabled = PJ_FALSE;
 RecordPort* RecordPort::_RecordPortTel = NULL;
 RecordPort* RecordPort::_RecordPortRad = NULL;
-RecordPort* RecordPort::_RecordPortIA = NULL;
-RecordPort* RecordPort::_RecordPortTelSec = NULL;
-RecordPort* RecordPort::_RecordPortRadSec = NULL;
-RecordPort* RecordPort::_RecordPortIASec = NULL;
 
 void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
 {
@@ -63,31 +59,20 @@ void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_T
 
 	AgentType = agentType;		
 
-	if (AgentType == ULISES)
+	if (AgentType == ULISES || AgentType == SIRTAP_HMI)
 	{
 		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", BOTH_RECORDERS);
 		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", BOTH_RECORDERS);
 	}
-	else if (AgentType == SIRTAP_HMI)
-	{
-		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", NONSECURE_RECORDER);
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", NONSECURE_RECORDER);
-		RecordPort::_RecordPortTelSec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", SECURE_RECORDER);
-		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", SECURE_RECORDER);
-		RecordPort::_RecordPortIA = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-IA", NONSECURE_RECORDER);
-		RecordPort::_RecordPortIASec = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-IA", SECURE_RECORDER);
-	}
 	else if (AgentType == SIRTAP_NBX)
 	{
 		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", NONSECURE_RECORDER);
-		RecordPort::_RecordPortRadSec = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", SECURE_RECORDER);
+		_RecordPortTel = NULL;
 	}
 	else
 	{
-		RecordPort::_RecordPortTelSec = NULL;
-		RecordPort::_RecordPortRadSec = NULL;
-		RecordPort::_RecordPortIA = NULL;
-		RecordPort::_RecordPortIASec = NULL;
+		_RecordPortTel = NULL;
+		_RecordPortRad = NULL;
 	}
 
 	//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
@@ -129,31 +114,7 @@ void RecordPort::End()
 	{
 		delete RecordPort::_RecordPortRad;
 		RecordPort::_RecordPortRad = NULL;
-	}
-
-	if (RecordPort::_RecordPortTelSec)
-	{
-		delete RecordPort::_RecordPortTelSec;
-		RecordPort::_RecordPortTelSec = NULL;
-	}
-
-	if (RecordPort::_RecordPortRadSec)
-	{
-		delete RecordPort::_RecordPortRadSec;
-		RecordPort::_RecordPortRadSec = NULL;
-	}
-
-	if (RecordPort::_RecordPortIA)
-	{
-		delete RecordPort::_RecordPortIA;
-		RecordPort::_RecordPortIA = NULL;
-	}
-
-	if (RecordPort::_RecordPortIASec)
-	{
-		delete RecordPort::_RecordPortIASec;
-		RecordPort::_RecordPortIASec = NULL;
-	}
+	}	
 
 	if (_RemoteStSock != NULL)
 	{
@@ -1003,11 +964,7 @@ pj_bool_t RecordPort::OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_
 			PJ_LOG(3,(__FILE__, "RecordPort: Recibido mensaje por el puerto estatico %u: %s. Se ha reiniciado el servicio de grabacion", ST_PORT, mess));	
 
 			if (RecordPort::_RecordPortTel) RecordPort::_RecordPortTel->RecResetSession();
-			if (RecordPort::_RecordPortRad) RecordPort::_RecordPortRad->RecResetSession();
-			if (RecordPort::_RecordPortTelSec) RecordPort::_RecordPortTelSec->RecResetSession();
-			if (RecordPort::_RecordPortRadSec) RecordPort::_RecordPortRadSec->RecResetSession();
-			if (RecordPort::_RecordPortIA) RecordPort::_RecordPortIA->RecResetSession();
-			if (RecordPort::_RecordPortIASec) RecordPort::_RecordPortIASec->RecResetSession();
+			if (RecordPort::_RecordPortRad) RecordPort::_RecordPortRad->RecResetSession();			
 		}
 		else
 		{
@@ -2971,44 +2928,7 @@ RecordPort* RecordPort::GetRecordPortFromResource(const pj_str_t* uri, const pj_
 
 	if (AgentType == SIRTAP_NBX && type != Rd) return NULL;
 
-	if (uri == NULL) return NULL;
-
-	char user[CORESIP_MAX_URI_LENGTH];
-	char host[CORESIP_MAX_URI_LENGTH];
-	int ret = CUtils::GetUriElements(uri, user, sizeof(user), host, sizeof(host), NULL);
-	if (ret != 0)
-	{
-		char uriaux[CORESIP_MAX_URI_LENGTH];
-		pj_ssize_t maxlen = uri->slen;
-		if (uri->slen > (CORESIP_MAX_URI_LENGTH - 1)) maxlen = (CORESIP_MAX_URI_LENGTH - 1);
-		pj_ansi_strncpy(uriaux, uri->ptr, maxlen);
-		uriaux[maxlen] = '\0';
-		PJ_LOG(3, (__FILE__, "ERROR: GetRecordPortFromResource no puede parsear la uri %s", uriaux));
-		return NULL;
-	}
-
-	pj_bool_t Secure;
-	pj_bool_t found = CUtils::Get_HMI_Resource_Info(user, type, &Secure);
-	if (type == Rd)
-	{
-		if (!found) return _RecordPortRad;
-		else if (Secure) return _RecordPortRadSec;
-		else return _RecordPortRad;
-	}
-
-	if (type == Tlf)
-	{
-		if (!found) return _RecordPortTel;
-		else if (Secure) return _RecordPortTelSec;
-		else return _RecordPortTel;
-	}
-
-	if (type == IA)
-	{
-		if (!found) return _RecordPortIA;
-		else if (Secure) return _RecordPortIASec;
-		else return _RecordPortIA;
-	}
+	
 
 	return NULL;
 }
