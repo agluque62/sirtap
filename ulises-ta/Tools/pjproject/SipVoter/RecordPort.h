@@ -8,6 +8,8 @@
  */
 /*@{*/
 
+#include <map>
+
 #ifndef __CORESIP_RECORDPORT_H__
 #define __CORESIP_RECORDPORT_H__
 
@@ -49,6 +51,8 @@ public:
 
 	static RecordPort* _RecordPortTel;
 	static RecordPort* _RecordPortRad;
+	static std::map<string, RecordPort*> _RecordPortGWRadMap;		//RecordPort por cada recurso. Indice es el identificador del recurso
+	static pj_mutex_t* recordPortGWRadMap_mutex;
 
 	pjsua_conf_port_id Slot;	
 
@@ -80,13 +84,13 @@ public:
 		SECURE_RECORDER = RECORDER2		//Grabador seguro
 	} RECORDERS_TO_RECORD;
 
-	char _RecursoTipoTerminal[256];
-		
-	pj_mutex_t *record_mutex;																	
+	char _RecursoTipoTerminal[256];																	
 
 public:
-	static void Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId);
+	static void Init(pj_pool_t* pool, int eD137_record_enabled);
 	static void End();
+	static void CreateRecordPortGWRad(char *resourceId);
+	static void DestroyRecordPortGWRad(char* resourceId);
 	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, 
 		const char *TerminalId, const char* TerminalId_sufix, RECORDERS_TO_RECORD recorders_to_record);
 	~RecordPort(void);
@@ -170,9 +174,8 @@ private:
 	static const char *SESSION_IS_CREATED;
 	static const char *ERROR_INI_SESSION;
 	static const char *RECORD_SRV_REINI;
-
-	static CORESIP_Agent_Type AgentType;
-	static pj_bool_t ED137_record_enabled;
+		
+	static pj_bool_t ED137_record_enabled;	
 
 	static pj_sock_t _SockSt;
 

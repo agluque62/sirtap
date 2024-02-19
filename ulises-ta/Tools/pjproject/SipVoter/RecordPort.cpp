@@ -47,33 +47,30 @@ int RecordPort::timer_id = 1;
 pj_sock_t RecordPort::_SockSt = PJ_INVALID_SOCKET;
 pj_activesock_t* RecordPort::_RemoteStSock = NULL;
 
-CORESIP_Agent_Type RecordPort::AgentType = ULISES;
 pj_bool_t RecordPort::ED137_record_enabled = PJ_FALSE;
 RecordPort* RecordPort::_RecordPortTel = NULL;
 RecordPort* RecordPort::_RecordPortRad = NULL;
+std::map<string, RecordPort*> RecordPort::_RecordPortGWRadMap;
+pj_mutex_t* RecordPort::recordPortGWRadMap_mutex = NULL;
 
-void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_Type agentType, const char* IpAddress, const char* HostId)
+void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled)
 {
 	ED137_record_enabled = eD137_record_enabled != 0 ? PJ_TRUE : PJ_FALSE;
 	if (eD137_record_enabled == 0) return;
 
-	AgentType = agentType;		
-
-	if (AgentType == ULISES || AgentType == SIRTAP_HMI)
-	{
-		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-TEL", BOTH_RECORDERS);
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", BOTH_RECORDERS);
-	}
-	else if (AgentType == SIRTAP_NBX)
-	{
-		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, IpAddress, "127.0.0.1", 65003, HostId, "-RAD", NONSECURE_RECORDER);
-		_RecordPortTel = NULL;
-	}
+	if (SipAgent::AgentType == ULISES || SipAgent::AgentType == SIRTAP_HMI)
+	{		
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId, "-TEL", BOTH_RECORDERS);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId, "-RAD", BOTH_RECORDERS);
+	}	
 	else
 	{
 		_RecordPortTel = NULL;
 		_RecordPortRad = NULL;
 	}
+
+	pj_status_t st = pj_mutex_create_simple(pool, "RecordPort::Init", &recordPortGWRadMap_mutex);
+	PJ_CHECK_STATUS(st, ("ERROR RecordPort::Init creando recordPortGWRadMap_mutex"));
 
 	//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
 	//Sirve para recibir ordenes del servicio de grabacion. Como por ejemplo la que que se reseteen los puertos de grabacion.
@@ -82,7 +79,7 @@ void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled, CORESIP_Agent_T
 	addStIpToBind.sin_family = pj_AF_INET();
 	addStIpToBind.sin_port = pj_htons(ST_PORT);
 
-	pj_status_t st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
+	st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
 	PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
 
 	st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
@@ -116,6 +113,15 @@ void RecordPort::End()
 		RecordPort::_RecordPortRad = NULL;
 	}	
 
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	for (std::map<string, RecordPort*>::iterator it = _RecordPortGWRadMap.begin(); it != _RecordPortGWRadMap.end(); it++)
+	{
+		delete it->second;
+	}
+	_RecordPortGWRadMap.clear();
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
+	pj_mutex_destroy(recordPortGWRadMap_mutex);
+
 	if (_RemoteStSock != NULL)
 	{
 		pj_activesock_close(_RemoteStSock);
@@ -127,6 +133,56 @@ void RecordPort::End()
 		pj_sock_close(_SockSt);
 		_SockSt = PJ_INVALID_SOCKET;
 	}	 
+}
+
+/**
+ * CreateRecordPortGWRad.	...
+ * Crea un Recordport para grabar un recurso de radio del tipo RTPport usado en Sirtap .
+ * @param	resourceId			Identificador del recurso de radio
+ * @return	nada.
+ */
+void RecordPort::CreateRecordPortGWRad(char* resourceId)
+{
+	pj_bool_t resourceID_exists = PJ_FALSE;
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	string resId = resourceId;
+
+	std::map<string, RecordPort*>::iterator it;
+	it = _RecordPortGWRadMap.find(resId);
+	if (it != _RecordPortGWRadMap.end()) resourceID_exists = PJ_TRUE;
+
+	if (!resourceID_exists)
+	{		
+		RecordPort *recport = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, resourceId, "", BOTH_RECORDERS);
+		_RecordPortGWRadMap[resId] = recport;
+	}
+
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
+}
+
+/**
+ * DestroyRecordPortGWRad.	...
+ * Destruye un Recordport para grabar un recurso de radio del tipo RTPport usado en Sirtap .
+ * @param	resourceId			Identificador del recurso de radio
+ * @return	nada.
+ */
+void RecordPort::DestroyRecordPortGWRad(char* resourceId)
+{
+	pj_bool_t resourceID_exists = PJ_FALSE;
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	string resId = resourceId;
+
+	std::map<string, RecordPort*>::iterator it;
+	it = _RecordPortGWRadMap.find(resId);
+	if (it != _RecordPortGWRadMap.end()) resourceID_exists = PJ_TRUE;
+
+	if (resourceID_exists)
+	{
+		delete _RecordPortGWRadMap[resId];
+		_RecordPortGWRadMap.erase(it);
+	}
+
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
 }
 
 
@@ -217,8 +273,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", 0));
 
 		//Thread ejecucion acciones sobre grabador
-		st = pj_mutex_create_simple(_Pool, "RecActionsMtx", &record_mutex);
-		PJ_CHECK_STATUS(st, ("ERROR creando mutex de conexion puerto audio con grabador"));
 
 		st = pj_sem_create(_Pool, "RecActionsSem", 0, MAX_REC_COMMANDS_QUEUE*2, &actions_sem);
 		PJ_CHECK_STATUS(st, ("ERROR creando semaforo de acciones al grabador"));		
@@ -2920,13 +2974,13 @@ RecordPort* RecordPort::GetRecordPortFromResource(const pj_str_t* uri, const pj_
 {
 	if (!ED137_record_enabled) return NULL;
 
-	if (AgentType == ULISES || AgentType == SIRTAP_HMI)
+	if (SipAgent::AgentType == ULISES || SipAgent::AgentType == SIRTAP_HMI)
 	{
 		if (type == Rd) return _RecordPortRad;
 		else return _RecordPortTel;
 	}
 
-	if (AgentType == SIRTAP_NBX && type != Rd) return NULL;
+	if (SipAgent::AgentType == SIRTAP_NBX && type != Rd) return NULL;
 
 	
 

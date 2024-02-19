@@ -653,7 +653,7 @@ void SipAgent::Init(const CORESIP_Config * cfg)
 		/**
 			* Se crea el puerto pjmedia para la grabacion
 		 */
-		RecordPort::Init(pjsua_var.pool, cfg->RecordingEd137, cfg->AgentType, cfg->IpAddress, cfg->HostId);
+		RecordPort::Init(pjsua_var.pool, cfg->RecordingEd137);
 
 		_FrecDesp = new FrecDesp;
 
@@ -2821,7 +2821,7 @@ int SipAgent::RecorderCmd(CORESIP_RecCmdType cmd, CORESIP_Error * error)
 	case CORESIP_REC_ENABLE:
 		RecordPort::End();
 		pj_thread_sleep(250);
-		RecordPort::Init(pjsua_var.pool, PJ_TRUE, SipAgent::AgentType, SipAgent::uaIpAdd, SipAgent::HostId);
+		RecordPort::Init(pjsua_var.pool, PJ_TRUE);
 		break;
 	case CORESIP_REC_DISABLE:
 		RecordPort::End();
