@@ -212,12 +212,13 @@
     <Property Id="STD_WIN_INSTRUCTOR_DEV" Value="-none-"/>
     <Property Id="STD_WIN_ALUMN_DEV" Value="-none-"/>
     <Property Id="STD_WIN_RD_DEV" Value="-none-"/>
-    <Property Id="STD_WIN_LC_DEV" Value="-none-"/>
+	<Property Id="STD_WIN_LC_DEV" Value="-none-"/>
     <Property Id="ASIO_DEVS" Value="-none-"/>
     <Property Id="STD_ASIO_INSTRUCTOR_DEV" Value="-none-"/>
     <Property Id="STD_ASIO_ALUMN_DEV" Value="-none-"/>
     <Property Id="STD_ASIO_RD_DEV" Value="-none-"/>
-    <Property Id="STD_ASIO_LC_DEV" Value="-none-"/>
+	<Property Id="STD_ASIO_LC_DEV" Value="-none-"/>
+	<Property Id="STD_ASIO_MIC_DEV" Value="-none-"/>
     <Property Id="TIPOAUDIOUSB" Value="1"/>
 
 	<Property Id="NEXT_BUTTON_DIALOG3" Value="False"/>
@@ -434,12 +435,12 @@
 				  ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='RdSpkWindowsId'[\]]/value"
 			  Value="[STD_WIN_RD_DEV]"/>
 
-		  <util:XmlFile Id="LcSpkWindowsId" Action="setValue"
-				  File = "[#HMI.config]"
-				  ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='LcSpkWindowsId'[\]]/value"
-			  Value="[STD_WIN_LC_DEV]"/>
+			<util:XmlFile Id="LcSpkWindowsId" Action="setValue"
+					File = "[#HMI.config]"
+					ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='LcSpkWindowsId'[\]]/value"
+				Value="[STD_WIN_LC_DEV]"/>
 
-          <!--******************-->
+			<!--******************-->
 		  <!--<util:XmlFile Id="CasAsioId" Action="setValue"
 				  File = "[#HMI.config]"
 				  ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='CasAsioId'[\]]/value"
@@ -459,9 +460,13 @@
 				  File = "[#HMI.config]"
 				  ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='LcSpkAsioId'[\]]/value"
 			  Value="[STD_ASIO_LC_DEV]"/>
-		  
 
-		  <util:XmlFile Id="AudioCardStandard" Action="setValue"
+			<util:XmlFile Id="MicAsioId" Action="setValue"
+					File = "[#HMI.config]"
+					ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='MicAsioId'[\]]/value"
+				Value="[STD_ASIO_MIC_DEV]"/>
+
+			<util:XmlFile Id="AudioCardStandard" Action="setValue"
 				  File = "[#HMI.config]"
 				  ElementPath="/configuration/applicationSettings/HMI.CD40.Module.Properties.Settings/setting[\[]@name='AudioCardStandard'[\]]/value"
 			  Value="[STDAUDIODEV]"/>
@@ -1671,7 +1676,16 @@
           </Condition>
         </Control>
 
-        <!--Dispositivos de salida de audio de ASIO-->
+		  <Control Id="Mic_Label"   Type="Text" X="10" Y="210" Width="100" Height="18" TabSkip="no" Text="Microfono" >
+			  <Condition Action="show">
+				  <![CDATA[STDAUDIODEV = "True"]]>
+			  </Condition>
+			  <Condition Action="hide">
+				  <![CDATA[STDAUDIODEV = "False"]]>
+			  </Condition>
+		  </Control>
+
+		  <!--Dispositivos de salida de audio de ASIO-->
         <Control Id="ASIODevicesAsk_Label" Type="Text" X="200"  Y="80" Width="150" Height="18" TabSkip="no" Text="Dispositivos de ASIO" >
           <Condition Action="show">
             <![CDATA[STDAUDIODEV = "True"]]>
@@ -1717,7 +1731,8 @@
             <![CDATA[STDAUDIODEV = "False"]]>
           </Condition>
         </Control>
-        <Control Id="StdASIOLCDevAsk_Value"  Type="ComboBox" X="200" Y="190" Width="150"  Height="18" Property="STD_ASIO_LC_DEV" ComboList="yes" >
+
+		  <Control Id="StdASIOLCDevAsk_Value"  Type="ComboBox" X="200" Y="190" Width="150"  Height="18" Property="STD_ASIO_LC_DEV" ComboList="yes" >
 			<!--PAra quitar warning-->
 			<ComboBox Property="STD_ASIO_LC_DEV">
 				<ListItem Text="Dummy" Value="Dummy" />
@@ -1730,7 +1745,22 @@
           </Condition>
         </Control>
 
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)"/>
+		  <!--Microfono ASIO-->
+		  <Control Id="StdASIOMICDevAsk_Value"  Type="ComboBox" X="200" Y="220" Width="150"  Height="18" Property="STD_ASIO_MIC_DEV" ComboList="yes" >
+			  <!--PAra quitar warning-->
+			  <ComboBox Property="STD_ASIO_MIC_DEV">
+				  <ListItem Text="Dummy" Value="Dummy" />
+			  </ComboBox>
+			  <Condition Action="show">
+				  <![CDATA[STDAUDIODEV = "True"]]>
+			  </Condition>
+			  <Condition Action="hide">
+				  <![CDATA[STDAUDIODEV = "False"]]>
+			  </Condition>
+		  </Control>
+
+		  
+		  <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)"/>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" >
           <Publish Event="DoAction" Value="CustomActionCheckSndDevs"><![CDATA[STDAUDIODEV = "True"]]></Publish>
           <Publish Event="NewDialog" Value="OptionsDlg2"><![CDATA[NEXT_BUTTON_DIALOG3 = "False" AND STDAUDIODEV = "True"]]></Publish>

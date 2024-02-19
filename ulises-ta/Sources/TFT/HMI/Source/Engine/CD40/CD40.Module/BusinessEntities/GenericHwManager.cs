@@ -769,7 +769,10 @@ namespace HMI.CD40.Module.BusinessEntities
             _output_channels.Clear();
 
             AsioChannels.Init();
-            foreach (String name in AsioChannels.InChannels)
+            // Filtrar y quitar los canales que finalizan en "2"
+            List <string > InChannels = AsioChannels.InChannels.Where(canal => !canal.EndsWith("2")).ToList();
+
+            foreach (String name in InChannels)
             {
                 CORESIP_SndDevType tipo = GetTipoIn(name);
                 _input_channels[_nchannel++] = new DevData { TipoDev = tipo, AsioName = name };
