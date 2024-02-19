@@ -2698,36 +2698,42 @@ int SipAgent::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *o
  * @param	inv_cause	causa de inv->cause
  * @param	disc_origin		origen de la desconexion
  * @param	callIdHdrVal. Valor de la cabecera Call ID.
+ * @param   remote_uri.	Uri del remoto
  * @param	callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal, CORESIP_CallType callType)
+int SipAgent::RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal, const pj_str_t* remote_uri, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecCallEnd(cause, media_status, disc_origin, callIdHdrVal);
-
 	CORESIP_Resource_Type type;
 	if (callType == CORESIP_CALL_RD) type = Rd;
 	else if (callType == CORESIP_CALL_IA) type = IA;
 	else type = Tlf;
 
-	RecordPort* recPort = RecordPort::GetRecordPortFromResource(dest_uri, NULL, type);
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(remote_uri, NULL, type);
 
 	if (!recPort) return -1;
-	return recPort->RecCallStart(dir, priority, ori_uri, dest_uri, callIdHdrVal);
+	return recPort->RecCallEnd(cause, media_status, disc_origin, callIdHdrVal);
+	
 }
 
 /**
  * RecCallConnected.	...
- * Envía llamada telefonia establecida al grabador
- * @param	cause		causa de desconexion
- * @param	disc_origin		origen de la desconexion
+ * @param	connected_uri	Uri con la que se ha conectado
+ * @param	callIdHdrVal. Valor de la cabecera Call ID.
+ * @param	callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal)
+int SipAgent::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecCallConnected(connected_uri, callIdHdrVal);
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
+
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(connected_uri, NULL, type);
+
+	if (!recPort) return -1;
+	return recPort->RecCallConnected(connected_uri, callIdHdrVal);
 }
 
 /**
@@ -2736,12 +2742,22 @@ int SipAgent::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* ca
  * @param	on	true=ON, false=OFF
  * @param	llamante true=llamante false=llamado
  * @param	media_status	media status
+ * @param	callIdHdrVal. Valor de la cabecera Call ID.
+ * @param	remote_uri
+ * @param	callType. Tipo de llamada
  * @return	0 OK, -1  error.
  */
-int SipAgent::RecHold(bool on, bool llamante, pjsua_call_media_status media_status, const pj_str_t* callIdHdrVal)
+int SipAgent::RecHold(bool on, bool llamante, pjsua_call_media_status media_status, const pj_str_t* callIdHdrVal, const pj_str_t* remote_uri, CORESIP_CallType callType)
 {
-	if (!RecordPort::_RecordPortTel) return -1;
-	return RecordPort::_RecordPortTel->RecHold(on, llamante, media_status, callIdHdrVal);
+	CORESIP_Resource_Type type;
+	if (callType == CORESIP_CALL_RD) type = Rd;
+	else if (callType == CORESIP_CALL_IA) type = IA;
+	else type = Tlf;
+
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(remote_uri, NULL, type);
+
+	if (!recPort) return -1;
+	return recPort->RecHold(on, llamante, media_status, callIdHdrVal);
 }
 
 /**
@@ -2799,8 +2815,6 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
 	//Este evento de PTT lo llama la aplicacion del HMI cuando cambia el estado de PTT que nos retorna el transmisor
 	//tendremos que tener en cuenta el estado del PTT local para dar por bueno este evento
 
-	if (!RecordPort::_RecordPortRad) return;	
-
 	if (on == false && SipAgent::PTT_local_activado == PJ_TRUE)
 	{
 		//Si el estado de ptt que nos envia la aplicacion es false pero el estado en local es true
@@ -2817,7 +2831,11 @@ void SipAgent::RdPttEvent(bool on, const char *freqId, int dev, CORESIP_PttType 
 		return;
 	}
 
-	RecordPort::_RecordPortRad->RecPTT(on, freqId, dev, PTT_type);
+	CORESIP_Resource_Type type = Rd;
+	RecordPort* recPort = RecordPort::GetRecordPortFromResource(NULL, NULL, type);
+
+	if (!recPort) return;
+	recPort->RecPTT(on, freqId, dev, PTT_type);
 }
 
 /**

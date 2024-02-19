@@ -277,7 +277,7 @@ typedef enum CORESIP_RTP_port_actions
 typedef enum CORESIP_Agent_Type
 {
 	ULISES = 0,
-	SIRTAP_HMI = 1,
+	SIRTAP_HMI = ULISES,
 	SIRTAP_NBX = 2
 } CORESIP_Agent_Type;
 
