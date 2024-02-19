@@ -8,27 +8,27 @@
 //Comandos al grabador
 //Valores del campo <grabador>: 0 graba en los dos, 1 graba en el primero y 2 graba en el segundo.
 const char *RecordPort::NOTIF_IPADD = "V,I00,";				//V,I00,<ip del puesto o pasarela> Notifica al servicio de grabacion la IP del puesto o pasarela
-const char *RecordPort::INI_SES_REC_TERM = "V,T00,";		//V,T00,<Identificador del Recurso Tipo Terminal>,<grabador> Inicia la sesion del Recurso tel (puesto o pasarela) en el grabador
-const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";		//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
-const char *RecordPort::INI_SES_REC_RAD = "V,G00,";			//V,G00,<Identificador del Recurso Tipo Terminal>,<grabador> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
-const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";			//V,T01,<Identificador del Recurso Tipo Terminal>,<grabador> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
+const char *RecordPort::INI_SES_REC_TERM = "V,T00,";		//V,T00,<grabador>,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";		//V,T01,<grabador>,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::INI_SES_REC_RAD = "V,G00,";			//V,G00,<grabador>,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";			//V,T01,<grabador>,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
 const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";			//V,DDD,<Identificador del Recurso Tipo Terminal> Elimina en el servicio de grabacion el objeto de la sesion de grabacion
-const char *RecordPort::REC_INV = "V,INV,";					//V,INV,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al inicio de la llamada. Necesario cuando el grabador esta en modo VOTER
-const char *RecordPort::REC_BYE = "V,BYE,";					//V,BYE,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al fin de la llamada. Necesario cuando el grabador esta en modo VOTER
-const char *RecordPort::SQUELCH_ON = "V,G02,";				//V,G02,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<connref> SQH on
-const char *RecordPort::SQUELCH_OFF = "V,G03,";				//V,G03,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<connref> SQH off
-const char *RecordPort::REC_BSS = "V,G06,";					//V,G06,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<selected_resource>,<bss method used>,<qidx> Recurso seleccionado en BSS
-const char *RecordPort::REC_CALLSTART = "V,T02,";			//V,T02,<Identificador del Recurso Tipo Terminal>,<grabador>,<callType:in,out,other>,<priority>,<orig tel num>,<dest tel num>,<call id header> Call start
-const char *RecordPort::REC_CALLEND = "V,T03,";				//V,T03,<Identificador del Recurso Tipo Terminal>,<grabador>,<cause>,<origin>,<call id header> Call end
-const char *RecordPort::REC_CALLCONNECTED = "V,T04,";		//V,T04,<Identificador del Recurso Tipo Terminal>,<grabador>,<connected tel num>,<call id header> Call connected
-const char *RecordPort::REC_PTTON = "V,T20,";				//V,T20,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<ptt type>,<connref> PTT ON
-const char *RecordPort::REC_PTTOFF = "V,T21,";				//V,T21,<Identificador del Recurso Tipo Terminal>,<grabador>,<freq>,<connref> PTT OFF
-const char *RecordPort::REC_HOLDON = "V,T08,";				//V,T08,<Identificador del Recurso Tipo Terminal>,<grabador>,<orig num>,<call id header> Hold ON
-const char *RecordPort::REC_HOLDOFF = "V,T09,";				//V,T09,<Identificador del Recurso Tipo Terminal>,<grabador>,<call id header> Hold OFF
-const char *RecordPort::REC_RECORD = "V,I01,";				//V,I01,<Identificador del Recurso Tipo Terminal>,<grabador>,<connref> RECORD
-const char *RecordPort::REC_PAUSE = "V,I02,";				//V,I02,<Identificador del Recurso Tipo Terminal>,<grabador>,<connref> PAUSE
+const char *RecordPort::REC_INV = "V,INV,";					//V,INV,<grabador>,<Identificador del Recurso Tipo Terminal> Se envia al inicio de la llamada. Necesario cuando el grabador esta en modo VOTER
+const char *RecordPort::REC_BYE = "V,BYE,";					//V,BYE,<grabador>,<Identificador del Recurso Tipo Terminal> Se envia al fin de la llamada. Necesario cuando el grabador esta en modo VOTER
+const char *RecordPort::SQUELCH_ON = "V,G02,";				//V,G02,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH on
+const char *RecordPort::SQUELCH_OFF = "V,G03,";				//V,G03,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH off
+const char *RecordPort::REC_BSS = "V,G06,";					//V,G06,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<selected_resource>,<bss method used>,<qidx> Recurso seleccionado en BSS
+const char *RecordPort::REC_CALLSTART = "V,T02,";			//V,T02,<grabador>,<Identificador del Recurso Tipo Terminal>,<callType:in,out,other>,<priority>,<orig tel num>,<dest tel num>,<call id header> Call start
+const char *RecordPort::REC_CALLEND = "V,T03,";				//V,T03,<grabador>,<Identificador del Recurso Tipo Terminal>,<cause>,<origin>,<call id header> Call end
+const char *RecordPort::REC_CALLCONNECTED = "V,T04,";		//V,T04,<grabador>,<Identificador del Recurso Tipo Terminal>,<connected tel num>,<call id header> Call connected
+const char *RecordPort::REC_PTTON = "V,T20,";				//V,T20,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<ptt type>,<connref> PTT ON
+const char *RecordPort::REC_PTTOFF = "V,T21,";				//V,T21,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> PTT OFF
+const char *RecordPort::REC_HOLDON = "V,T08,";				//V,T08,<grabador>,<Identificador del Recurso Tipo Terminal>,<orig num>,<call id header> Hold ON
+const char *RecordPort::REC_HOLDOFF = "V,T09,";				//V,T09,<grabador>,<Identificador del Recurso Tipo Terminal>,<call id header> Hold OFF
+const char *RecordPort::REC_RECORD = "V,I01,";				//V,I01,<grabador>,<Identificador del Recurso Tipo Terminal>,<connref> RECORD
+const char *RecordPort::REC_PAUSE = "V,I02,";				//V,I02,<grabador>,<Identificador del Recurso Tipo Terminal>,<connref> PAUSE
 const char *RecordPort::REC_RESET = "C,H02";				//C,H02	Para el servicio de grabacion
-const char* RecordPort::REC_MEDIA = "V,MMM,";				//V,MMM,<Identificador del Recurso Tipo Terminal>,<grabador>,<num secuencia>,<muestras de audio> Mesaje de media
+const char* RecordPort::REC_MEDIA = "V,MMM,";				//V,MMM,<grabador>,<Identificador del Recurso Tipo Terminal>,<num secuencia>,<muestras de audio> Mesaje de media
 
 const char *RecordPort::REC_NOT_MESSAGE = "NOMES";
 
@@ -1288,7 +1288,7 @@ int RecordPort::RecSession(bool on, bool wait_end)
 		else strcpy(mess, FIN_SES_REC_TERM);
 	}
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + 1 + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1297,10 +1297,10 @@ int RecordPort::RecSession(bool on, bool wait_end)
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0};
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);		
 		size_t messlen = strlen((const char *) mess);
 
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
@@ -1415,7 +1415,7 @@ int RecordPort::RecINV()
 	pj_bzero(mess, sizeof(mess));	
 	strcpy(mess, REC_INV);
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + 1 + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1424,10 +1424,10 @@ int RecordPort::RecINV()
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		size_t messlen = strlen((const char *) mess);
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
 		if (ret)
@@ -1460,7 +1460,7 @@ int RecordPort::RecBYE()
 	pj_bzero(mess, sizeof(mess));	
 	strcpy(mess, REC_BYE);
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + 1 + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1469,10 +1469,10 @@ int RecordPort::RecBYE()
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		size_t messlen = strlen((const char *) mess);		
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
 		if (ret)
@@ -1561,7 +1561,7 @@ int RecordPort::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_CALLSTART);	
 
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+9+strlen(_tel)+strlen(ori_tel)+strlen(_tel)+strlen(dest_tel)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+7+strlen(_tel)+strlen(ori_tel)+strlen(_tel)+strlen(dest_tel)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1570,11 +1570,11 @@ int RecordPort::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t 
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
-		strcat(mess, recTorec);
-		strcat(mess, ",");		
 
 		switch(dir)
 		{
@@ -1682,7 +1682,7 @@ int RecordPort::RecCallEnd(int cause, pjsua_call_media_status media_status, int 
 	pj_bzero(buforigin, sizeof(buforigin));
 	pj_utoa((unsigned long)	disc_origin, buforigin);
 
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+5+strlen(bufcause)+strlen(buforigin)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+3+strlen(bufcause)+strlen(buforigin)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1691,10 +1691,10 @@ int RecordPort::RecCallEnd(int cause, pjsua_call_media_status media_status, int 
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, bufcause);
 		strcat(mess, ",");
@@ -1760,7 +1760,7 @@ int RecordPort::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* 
 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_CALLCONNECTED);
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+4+strlen(_tel)+strlen(connected_tel)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+2+strlen(_tel)+strlen(connected_tel)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1769,10 +1769,10 @@ int RecordPort::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* 
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, _tel);
 		strcat(mess, connected_tel);
@@ -1845,12 +1845,12 @@ int RecordPort::RecHold(bool on, bool llamante, pjsua_call_media_status media_st
 	if (on) 
 	{
 		strcpy(mess, REC_HOLDON);
-		len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+1+1+strlen(charcallIdHdrVal);
+		len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+1+1+strlen(charcallIdHdrVal);
 	}
 	else 
 	{
 		strcpy(mess, REC_HOLDOFF);
-		len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+strlen(charcallIdHdrVal);
+		len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(charcallIdHdrVal);
 	}
 	if (len_mess >= sizeof(mess)) 
 	{
@@ -1860,10 +1860,10 @@ int RecordPort::RecHold(bool on, bool llamante, pjsua_call_media_status media_st
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		if (on && llamante) 
 			strncat(mess, "1", 1);
@@ -1963,9 +1963,9 @@ int RecordPort::RecPTT_send(bool on, const char *freq, CORESIP_PttType PTT_type,
 	size_t len_mess;
 	
 	if (on)
-		len_mess = strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + 1 + 1 + strlen(freq) + 1 + 1 + 1 + strlen(pttConnRef);
+		len_mess = strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + 1 + 1 + strlen(pttConnRef);
 	else
-		len_mess = strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + 1 + 1 + strlen(freq) + 1 + strlen(pttConnRef);
+		len_mess = strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + strlen(pttConnRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1975,11 +1975,10 @@ int RecordPort::RecPTT_send(bool on, const char *freq, CORESIP_PttType PTT_type,
 	if (ret == 0)
 	{
 		//nsec_media = 0;		
-
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);		
 		if (on)
@@ -2102,7 +2101,7 @@ int RecordPort::RecSQU_send(bool on, const char *freq, char* squConnRef)
 	{	
 		strcpy(mess, SQUELCH_OFF);
 	}
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+strlen(freq)+1+strlen(squConnRef);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+strlen(squConnRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -2113,10 +2112,10 @@ int RecordPort::RecSQU_send(bool on, const char *freq, char* squConnRef)
 	{
 		//nsec_media = 0;		
 
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);
 		strcat(mess, ",");
@@ -2169,7 +2168,7 @@ int RecordPort::Record(bool on, char* connRef)
 	{	
 		strcpy(mess, REC_PAUSE);
 	}
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+strlen(connRef);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(connRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -2180,10 +2179,10 @@ int RecordPort::Record(bool on, char* connRef)
 	{
 		nsec_media = 0;		
 
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, connRef);
 		
@@ -2245,7 +2244,7 @@ int RecordPort::RecBSS_send(const char *freq, const char *selected_resource, con
 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_BSS);
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+strlen(freq)+1+
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+
 		strlen(selected_resource)+1+strlen(sbssmethod)+1+strlen(sqidx);
 	if (len_mess >= sizeof(mess)) 
 	{
@@ -2255,10 +2254,10 @@ int RecordPort::RecBSS_send(const char *freq, const char *selected_resource, con
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
-		strcat(mess, ",");
-		char recTorec[2] = { (char)RecordersToRecord, 0 };
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
 		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);
 		strcat(mess, ",");
@@ -2338,7 +2337,7 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 	strcpy(pThis->mess_media, REC_MEDIA);
 
 	size_t mess_len;
-	mess_len = strlen(pThis->mess_media) + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + 1 /*grabador*/ + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size / 2;
+	mess_len = strlen(pThis->mess_media) + 4 /*grabador*/ + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size / 2;
 
 #ifdef REC_IN_FILE
 	pj_ssize_t mess_len_tx = mess_len - frame->size/2;
@@ -2346,13 +2345,13 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 
 	pj_assert(mess_len <= sizeof(pThis->mess_media));
 
+	char recTorec[4] = { '#', (char)pThis->RecordersToRecord, '#', 0 };
+	strcat(pThis->mess_media, recTorec);
+	strcat(pThis->mess_media, ",");
+
 	strcat(pThis->mess_media, pThis->_RecursoTipoTerminal);
 	strcat(pThis->mess_media, ",");
 
-	char recTorec[2] = { (char)pThis->RecordersToRecord, 0 };
-	strcat(pThis->mess_media, recTorec);
-	strcat(pThis->mess_media, ",");
-		
 	strcat(pThis->mess_media, snsec);
 	strcat(pThis->mess_media, ",");
 	pThis->nsec_media++;
