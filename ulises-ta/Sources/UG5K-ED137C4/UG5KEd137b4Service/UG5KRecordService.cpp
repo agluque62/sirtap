@@ -14,54 +14,52 @@
 #include "Utilidades.h"
 #include <fstream>								//std::ifstream
 
-
-/** Estructura de eventos: EEE#RECURSO#PARAM=VALOR#.... */
-std::string CtlSetIPValue = "I00";				// Eventos generales
-std::string CmdRecord = "I01";					//ESC. 15.01.2016. A�adido
-std::string CmdPause = "I02";					//ESC. 15.01.2016. A�adido
+std::string CtlSetIPValue = "I00";				// Eventos generales. //V,I00,<ip del puesto o pasarela> Notifica al servicio de grabacion la IP del puesto o pasarela
+std::string CmdRecord = "I01";					//V,<grabador>,I01,<Identificador del Recurso Tipo Terminal>,<connref> RECORD
+std::string CmdPause = "I02";					//V,<grabador>,I02,<Identificador del Recurso Tipo Terminal>,<connref> PAUSE
 
 
 std::string CtlEnd = "H00";	
-std::string CtlConfig = "H02";					//Se recibe cuando cambian el fichero de configuracion para que el servicio se reinicie				
+std::string CtlConfig = "H02";					//Se recibe cuando cambian el fichero de configuracion para que el servicio se reinicie. //C,H02	Para el servicio de grabacion			
 
 /** Valores de eventos */        
-std::string DeleteObjetoRec = "DDD";			//18.07.2016. V�lido para Radio y Telefon�a
-std::string EvSIP_Invite = "INV";				//VOTER. Acelera conexi�n TCP y Ejecutar�a ANN+SETUP.
-std::string EvSIP_BYE = "BYE";					//18.01.2017. VOTER, Ejecutar�a TEARDOWN.
+std::string DeleteObjetoRec = "DDD";			//V,DDD,<Identificador del Recurso Tipo Terminal> Elimina en el servicio de grabacion el objeto de la sesion de grabacion
+std::string EvSIP_Invite = "INV";				//VOTER. Acelera conexi�n TCP y Ejecutar�a ANN+SETUP. //V,INV,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al inicio de la llamada. Necesario cuando el grabador esta en modo VOTER
+std::string EvSIP_BYE = "BYE";					//18.01.2017. VOTER, Ejecutar�a TEARDOWN. //V,BYE,<Identificador del Recurso Tipo Terminal>,<grabador> Se envia al fin de la llamada. Necesario cuando el grabador esta en modo VOTER
 std::string EvSesionSIP_ON = "I10";				//Pendiente de implementar. Ejecutar�a ANN+SETUP
 
-std::string GrsCreaObjetoRec = "G00";			// Eventos generados por las radios..
-std::string GrsReInitSession = "G01";
-std::string GrsSqOn = "G02";
-std::string GrsSqOff = "G03";
+std::string GrsCreaObjetoRec = "G00";			//V,<grabador>,G00,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
+std::string GrsReInitSession = "G01";			//V,<grabador>,G01,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
+std::string GrsSqOn = "G02";					//V,<grabador>,G02,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH on
+std::string GrsSqOff = "G03";					//V,<grabador>,G03,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH off
 std::string GrsSimulTxOn = "G04";
 std::string GrsSimulTxOff = "G05";
 
-std::string TerCreaObjetoRec = "T00";			// Eventos generados por los terminales..
-std::string TerReInitSession = "T01";
-std::string TerCallStart = "T02";				// VCS-Telefonia...
-std::string TerCallEnd = "T03";
-std::string TerCallConnected = "T04";
+std::string TerCreaObjetoRec = "T00";			//V,<grabador>,T00,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso tel (puesto o pasarela) en el grabador
+std::string TerReInitSession = "T01";			//V,<grabador>,T01,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
+std::string TerCallStart = "T02";				//V,<grabador>,T02,<Identificador del Recurso Tipo Terminal>,<callType:in,out,other>,<priority>,<orig tel num>,<dest tel num>,<call id header> Call start
+std::string TerCallEnd = "T03";					//V,<grabador>,T03,<Identificador del Recurso Tipo Terminal>,<cause>,<origin>,<call id header> Call end
+std::string TerCallConnected = "T04";			//V,<grabador>,T04,<Identificador del Recurso Tipo Terminal>,<connected tel num>,<call id header> Call connected
 // NO SE UTILIZAN LOS COMANDOS DE TRANSFERENCIA
 //std::string TerCallTransferStart = "T05";        // Cuando se inicia la llamada al que se quiere transferir.
 //std::string TerCallTransferDisc = "T06";         // Cuando se desconecta el origen...
 //std::string TerCallTransferConn = "T07";         // Cuando se conecta el nuevo destino...
-std::string TerCallHoldOn = "T08";
-std::string TerCallHoldOff= "T09";
+std::string TerCallHoldOn = "T08";				//V,<grabador>,T08,<Identificador del Recurso Tipo Terminal>,<orig num>,<call id header> Hold ON
+std::string TerCallHoldOff= "T09";				//V,<grabador>,T09,<Identificador del Recurso Tipo Terminal>,<call id header> Hold OFF
 												// VCS-Radio...
-std::string TerPttOn = "T20";
-std::string TerPttOff= "T21";
+std::string TerPttOn = "T20";					//V,<grabador>,T20,<Identificador del Recurso Tipo Terminal>,<freq>,<ptt type>,<connref> PTT ON
+std::string TerPttOff= "T21";					//V,<grabador>,T21,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> PTT OFF
 
 
 /** Estructura de MEDIA: MMM#RECURSO#media */
-std::string RecMedia = "MMM";						// Envio de MEDIA...
+std::string RecMedia = "MMM";					//V,<grabador>,MMM,<Identificador del Recurso Tipo Terminal>,<num secuencia>,<muestras de audio> Mesaje de media
+
+//IMPORTANTE: <grabador> Puede ser: "#0" graba en los dos, "#1" graba en el primero y "#2" graba en el segundo. 
+//Si este campo no esta, entonces se considera "#0". Es decir, que grabaría en los dos
 
 
 //ESC. 17.04.2017. Mensaje hacia Nucleo para informar sobre arranque M�dulo Grabaci�n.
 char sMsjeStartModRecToNucleo[]= "G,T11";
-
-
-
 
 
 /** */
@@ -230,9 +228,28 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 	std::string origmsje;
 	pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, origmsje);
 
-	/** id del evento */
+	/** Grabador o id del evento*/
+	std::string grabador;		// = valores.at(1);
 	std::string evento;		// = valores.at(1);
-	pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, evento);
+	bool campo_grabador_encontrado = false;
+	pdata = (void*)Utilidades::parseNextField((char*)pdata, &recibidos, grabador);
+	if (grabador[0] == '#')
+	{
+		//Este campo corresponde al grabador donde se graba. De momento lo ignoramos
+		campo_grabador_encontrado = true;
+	}
+	else
+	{
+		//Este campo corresponde al evento donde se graba. Es decir que no tiene el campo del grabador
+		campo_grabador_encontrado = false;
+		evento = grabador;
+	}
+
+	if (campo_grabador_encontrado)
+	{
+		/** id del evento */
+		pdata = (void*)Utilidades::parseNextField((char*)pdata, &recibidos, evento);
+	}
 
 /*
 	// NOTA: C�digo provisional, debido a que por error se estaban recibiendo otros comandos de fuentes/m�dulos no previstas
@@ -244,7 +261,7 @@ int UG5KRecordService::Interprete(int recibidos, void *pdata, int &estSesRecA, i
 
 	/** id del Recurso */
 	std::string id;			// = valores.at(2);
-	pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, id);
+	pdata = (void *) Utilidades::parseNextField((char *) pdata, &recibidos, id);	
 
 	/** marca de la lista de sesiones */
 	std::map<std::string, void*>::iterator it = _sesiones.find(id);
