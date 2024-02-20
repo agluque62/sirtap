@@ -38,6 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notas", "Notas", "{988B11CB-8D90-4E21-9DC7-1EB6CABCAE7E}"
 	ProjectSection(SolutionItems) = preProject
 		notas.txt = notas.txt
+		NotasSirtap.txt = NotasSirtap.txt
 		Pendientes.txt = Pendientes.txt
 	EndProjectSection
 EndProject

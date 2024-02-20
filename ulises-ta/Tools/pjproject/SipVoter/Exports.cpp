@@ -16,6 +16,7 @@
 #include "WG67subs.h"
 #include "WavPlayerToRemote.h"
 #include "SoundDevHw.h"
+#include "CUtils.h"
 
 #define Try\
 	pj_thread_desc desc;\
@@ -3634,20 +3635,7 @@ CORESIP_API int CORESIP_GetWindowsSoundDeviceNames(int captureType, CORESIP_SndW
 
 	Try
 	{
-		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
-		{
-			ret = CORESIP_ERROR;
-			if (error != NULL)
-			{
-				error->Code = ret;
-				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "ERROR CORESIP_GetWindowsSoundDeviceNames: CORESIP NO INICIALIZADA");
-			}
-		}
-		else
-		{
-			SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
-		}
+		SoundDevHw::GetWindowsSoundDeviceNames(captureType, Devices, PJ_FALSE, NULL);
 	}
 	catch_all;
 
@@ -3721,7 +3709,8 @@ CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned i
 /**
  *	CORESIP_CreateRTPport		Crea un puerto para enviar y recibir RTP
  */
-CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action, CORESIP_Error* error)
+CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action,
+	pj_bool_t record_reception, char* frequencyLiteral, char* resourceId, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
@@ -3756,7 +3745,8 @@ CORESIP_API int CORESIP_CreateRTPport(int *rtpport_id, char* dst_ip, int src_por
 		}
 		else
 		{
-			*rtpport_id = (RTPport::CreateRTPport(dst_ip, src_port, dst_port, local_multicast_ip, payload_type, action) | CORESIP_RTPPORT_ID);
+			*rtpport_id = (RTPport::CreateRTPport(dst_ip, src_port, dst_port, local_multicast_ip, payload_type, action,
+													record_reception, frequencyLiteral, resourceId) | CORESIP_RTPPORT_ID);
 		}
 	}
 	catch_all;
@@ -3833,6 +3823,46 @@ CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error)
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
 	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_AskRTPport_info result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
+/*
+	Funcion para para pasar la informacion de los recursos configurados en el HMI.
+	Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+	necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+	@param Resources_Info. Estructura con la informacion.
+	* @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	* @return	CORESIP_OK OK, CORESIP_ERROR  error.
+	*/
+CORESIP_API int CORESIP_Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "Set_CORESIP_HMI_Resources_Info"));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR Set_CORESIP_HMI_Resources_Info: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			CUtils::Set_HMI_Resources_Info(Resources_Info);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "Set_CORESIP_HMI_Resources_Info result ret %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }

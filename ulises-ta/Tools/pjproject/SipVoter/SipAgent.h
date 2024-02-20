@@ -89,6 +89,7 @@ public:
 
 	static char uaIpAdd[32];
 	static char HostId[33];
+	static CORESIP_Agent_Type SipAgent::AgentType;
 	static unsigned int uaPort;
 	
 	static CORESIP_Callbacks Cb;
@@ -184,14 +185,13 @@ public:
 
 	static int RecConnectSndPort(bool on, int dev, RecordPort *recordport);
 	static int RecConnectSndPorts(bool on, RecordPort *recordport);
-	static int RecINVTel();
-	static int RecINVRad();
-	static int RecBYETel();
-	static int RecBYERad();
-	static int RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal);
-	static int RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal);
-	static int RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal);
-	static int RecHold(bool on, bool llamante, pjsua_call_media_status media_status, const pj_str_t* callIdHdrVal);
+	static int RecConnectConfPortId(bool on, pjsua_conf_port_id portId, RecordPort* recordport);
+	static int RecINV(pj_str_t* uri, CORESIP_CallType callType);
+	static int RecBYE(pj_str_t* uri, CORESIP_CallType callType);
+	static int RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t *ori_uri, const pj_str_t *dest_uri, const pj_str_t* callIdHdrVal, CORESIP_CallType callType);
+	static int RecCallEnd(int cause, pjsua_call_media_status media_status, int disc_origin, const pj_str_t* callIdHdrVal, const pj_str_t* remote_uri, CORESIP_CallType callType);
+	static int RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* callIdHdrVal, CORESIP_CallType callType);
+	static int RecHold(bool on, bool llamante, pjsua_call_media_status media_status, const pj_str_t* callIdHdrVal, const pj_str_t* remote_uri, CORESIP_CallType callType);
 	static unsigned NumConfirmedCalls();
 	static bool IsSlotValid(pjsua_conf_port_id slot);
 	friend static int RecordPort::GetSndDevToRecord(int dev_in);
@@ -242,9 +242,7 @@ private:
 	static WavPlayer * _WavPlayers[CORESIP_MAX_WAV_PLAYERS];
 	static WavRecorder * _WavRecorders[CORESIP_MAX_WAV_RECORDERS];
 	static RdRxPort * _RdRxPorts[CORESIP_MAX_RDRX_PORTS];
-	static SoundRxPort * _SndRxPorts[CORESIP_MAX_SOUND_RX_PORTS];
-	static RecordPort * _RecordPortTel;
-	static RecordPort * _RecordPortRad;
+	static SoundRxPort * _SndRxPorts[CORESIP_MAX_SOUND_RX_PORTS];	
 	
 	static std::map<std::string, SoundRxPort*> _SndRxIds;
 	static pj_sock_t _Sock;

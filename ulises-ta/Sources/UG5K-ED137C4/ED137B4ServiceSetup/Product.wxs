@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="ED137B4ServiceSetup" Language="1033" Version="1.0.0.0" Manufacturer="DF NUCLEO" UpgradeCode="9e849960-1513-40b3-80a2-0fe422e41e8f">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+    <Property Id="NETFRAMEWORK45">
+      <RegistrySearch Id="NetFramework" Root="HKLM" Type="raw" Name="Release" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"/>
+    </Property>
+    <Condition Message="Esta aplicacion requiere .NET Framework 4.5 o superior Instale .NET Framework 4.5 o superior y reintente la instalacion de ED137B4Services.">
+      <![CDATA[Installed OR NETFRAMEWORK45>="#378389"]]>
+    </Condition>
+
+    <Feature Id="ProductFeature" Title="ED137B4ServiceSetup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <UIRef Id="WixUI_Minimal"/>
+    <WixVariable Id="WixUIDialogBmp" Value="bkg-image.jpg"/>
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+  </Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="COMPANYFOLDER" Name="NucleoDF">
+          <Directory Id="INSTALLFOLDER" Name="ED137B4Service" />
+        </Directory>
+      </Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER" Source="..\ED137B4WindowsService\bin\Release">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+      <Component Id="Auxiliares" Guid="{85B513C8-0229-496C-B155-0A9BC28FB7EE}">
+        <File Id="NLOG" Name="nlog.dll"></File>
+        <File Id="NLOG.Config" Name="NLog.config"></File>
+      </Component>
+      <Component Id ="MainProgram" Guid="{77D51A18-DDF1-4FE8-BCC1-957BBBBF09BA}">
+        <File Id="UG5KEd137b4Service" Name="UG5KEd137b4Service.exe"></File>
+        <File Id="pthreadVC2" Name="pthreadVC2.dll"></File>
+        <File Id="ug5krec_config" Name="ug5krec-config.ini"></File>
+        <File Id="wplog" Name="wplog.conf"></File>
+      </Component>
+      <Component Id="MainService" Guid="{653E5FAA-A8ED-405F-8267-A5A0BF50E006}">
+        <File Id="ED137B4WindowsService" Name="ED137B4WindowsService.exe"></File>
+        <File Id="ED137B4WindowsService_config" Name="ED137B4WindowsService.exe.config"></File>
+        <ServiceInstall
+                  Id="ServiceInstaller"
+                  Type="ownProcess"
+                  Name="ED137B4Service"
+                  DisplayName="Ed137b4 Service"
+                  Description="Servicio de Grabación según ED137B4"
+                  Start="auto"
+                  Account="LocalSystem"
+                  ErrorControl="ignore"
+                  Interactive="no">
+        </ServiceInstall>
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="ED137B4Service" Wait="yes" />
+      </Component>
+    </ComponentGroup>
+	</Fragment>
+</Wix>

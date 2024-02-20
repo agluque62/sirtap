@@ -74,6 +74,7 @@ namespace SnmpAgent
                 /*new User(new OctetString("neither"), DefaultPrivacyProvider.DefaultPair),
                 new User(new OctetString("authen"), new DefaultPrivacyProvider(new MD5AuthenticationProvider(new OctetString("authentication")))),
                 new User(new OctetString("privacy"), new DESPrivacyProvider(new OctetString("privacyphrase"), new MD5AuthenticationProvider(new OctetString("authentication")))),*/
+                new User(new OctetString("initial"), DefaultPrivacyProvider.DefaultPair),
                 new User(new OctetString(userName), new AESPrivacyProvider(new OctetString(privKey), new SHA1AuthenticationProvider(new OctetString(authKey))))
             };
             UserRegistry userRegistry = new UserRegistry(users);

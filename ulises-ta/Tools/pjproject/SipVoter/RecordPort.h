@@ -8,6 +8,8 @@
  */
 /*@{*/
 
+#include <map>
+
 #ifndef __CORESIP_RECORDPORT_H__
 #define __CORESIP_RECORDPORT_H__
 
@@ -46,9 +48,15 @@ typedef enum recSessionStatus
 class RecordPort
 {
 public:
+
+	static RecordPort* _RecordPortTel;
+	static RecordPort* _RecordPortRad;
+	static std::map<string, RecordPort*> _RecordPortGWRadMap;		//RecordPort por cada recurso. Indice es el identificador del recurso
+	static pj_mutex_t* recordPortGWRadMap_mutex;
+
 	pjsua_conf_port_id Slot;	
 
-	//Puerto estatico por para comunicarse con el servicio de grabacion
+	//Puerto estatico por para comunicarse con el servicio de grabacion, por el que se reciben ordenes de actuacion sobre la coresip.
 	static const pj_uint16_t ST_PORT = 65001;
 
 	//Tipos de recursos
@@ -67,12 +75,32 @@ public:
 
 	static const int TRIES_SENDING_CMD = 3;
 
-	char _RecursoTipoTerminal[256];
+	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
+	static const unsigned int SLEEP_FOR_SIMU = 0;   //Retardo para que el simulador de grabacion no pierda mensajes
+	static const int MAX_NUM_FREQUENCIES = 64;
+	static const int MAX_FREQ_LITERAL = 32;
+	static const int MAX_BSSMETHOD_LITERAL = 32;
+	static const int MAX_RESOURCEID_LITERAL = 32;
+	static const int MAX_CONNREF_LEN = 32;
 
-	pj_mutex_t *record_mutex;																	
+	typedef enum RECORDERS_TO_RECORD
+	{
+		BOTH_RECORDERS = (int)'0',		//Graba en los dos grabadores
+		RECORDER1 = (int)'1',			//Graba en el 1
+		RECORDER2 = (int)'2',			//Graba en el 2
+		NONSECURE_RECORDER = RECORDER1,
+		SECURE_RECORDER = RECORDER2		//Grabador seguro
+	} RECORDERS_TO_RECORD;
+
+	char _RecursoTipoTerminal[256];																	
 
 public:
-	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, const char *TerminalId);	
+	static void Init(pj_pool_t* pool, int eD137_record_enabled);
+	static void End();
+	static void CreateRecordPortGWRad(char *resourceId);
+	static void DestroyRecordPortGWRad(char* resourceId);
+	RecordPort(int resType, const char * AddrIpToBind, const char * RecIp, unsigned recPort, 
+		const char *TerminalId, const char* TerminalId_sufix, RECORDERS_TO_RECORD recorders_to_record);
 	~RecordPort(void);
 	int RecResetSession();	
 	int RecSession(bool on, bool wait_end);	
@@ -89,18 +117,11 @@ public:
 	int RecSQU_send(bool on, const char *freq, char* squConnRef);
 	int RecSQU(bool on, const char *freq, const char *resourceId, const char *bssMethod, unsigned int bssQidx);		
 	bool IsSlotConnectedToRecord(pjsua_conf_port_id slot);
-	void SetTheOtherRec(RecordPort *TheOtherRec_);
 	static int GetSndDevToRecord(int dev_in);
 	static void GetSndTypeString(CORESIP_SndDevType type, char* SndDevType_returned, int size_SndDevType_returned);
+	static RecordPort* GetRecordPortFromResource(const pj_str_t* uri, const pj_str_t* Id, CORESIP_Resource_Type type);
 	
 private:
-	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
-	static const unsigned int SLEEP_FOR_SIMU = 0;   //Retardo para que el simulador de grabacion no pierda mensajes
-	static const int MAX_NUM_FREQUENCIES = 64;
-	static const int MAX_FREQ_LITERAL = 32;
-	static const int MAX_BSSMETHOD_LITERAL = 32;
-	static const int MAX_RESOURCEID_LITERAL = 32;
-	static const int MAX_CONNREF_LEN = 32;
 
 	int Resource_type;
 	RECSESSIONSTATUS SessStatus;
@@ -142,6 +163,7 @@ private:
 	static const char *REC_RECORD;
 	static const char *REC_PAUSE;
 	static const char *REC_RESET;
+	static const char* REC_MEDIA;
 	static const char *REC_NOT_MESSAGE;
 
 	//Respuestas del grabador
@@ -152,15 +174,18 @@ private:
 	static const char *COMMAND_ERROR;
 	static const char *SESSION_IS_CREATED;
 	static const char *ERROR_INI_SESSION;
-	static const char *RECORD_SRV_REINI;	
+	static const char *RECORD_SRV_REINI;
+		
+	static pj_bool_t ED137_record_enabled;	
+
+	static pj_sock_t _SockSt;
 
 	pj_pool_t * _Pool;
-	pjmedia_port _Port;
-	pj_sock_t _SockSt;
+	pjmedia_port _Port;	
 	pj_sock_t _Sock;
 	pj_lock_t * _Lock;
 
-	RecordPort *TheOtherRec;		//Puntero al otro RecordPort que graba
+	RECORDERS_TO_RECORD RecordersToRecord;	
 
 	char RecTerminalIpAdd[32];
 	pj_sockaddr_in recAddr;			//Dirección y puerto del grabador
@@ -205,7 +230,8 @@ private:
 	} COMMAND_QUEUE;	
 	
 	COMMAND_QUEUE Rec_Command_queue;	//Cola de mensajes de acciones sobre el grabador, excepto RECORD y PAUSE
-	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue
+	COMMAND_QUEUE Rec_RecPau_queue;		//Cola de mensajes RECORD y PAUSE. tienen prioridad sobre Rec_Command_queue	
+	
 
 #ifdef REC_IN_FILE
 	pj_oshandle_t sim_rec_fd;
@@ -238,8 +264,8 @@ private:
 
 	pj_activesock_t * _RemoteSock;
 	static pj_bool_t OnDataReceived(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status);
-
-	pj_activesock_t * _RemoteStSock;
+	
+	static pj_activesock_t* _RemoteStSock;
 	static pj_bool_t OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status);
 };
 

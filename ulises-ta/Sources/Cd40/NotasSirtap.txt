@@ -1,0 +1,100 @@
+Configurar una radio SIRTAP hasta que se configure lo nuevo:
+------------------------------------------------------------
+
+------En el equipo externo:
+
+El identificador tiene que comenzar con NOED137
+IP de la Red 1 es la IP unicast de la radio. 
+
+IP de la Red 2 es la IP multicast a la que se envía el RTP. Y es la del grupo en el que se recibe el RTP.
+
+'Puerto SIP' es el puerto de origen, es decir en el que recibimos el RTP.
+'Puerto SIP' + 2 es el puerto destino, el de la radio.
+
+Para modificar esto buscar:     
+//HASTA QUE SE RESUELVA LA CONFIGURACION, DE MOMENTO TOMAMOS ASI LOS DATOS
+
+------En el recurso de radio:
+
+El identificador tiene que comenzar con NOED137. Para identificarlo como una radio NO ED137, y del tipo Sirtap. Así está definido en la función:
+static public bool IsRadioNOED137(CfgRecursoEnlaceExterno rec);
+
+En la pestaña "Asignación HW" selecionar el equipo externo y en gestión de multifrecuencias seleccionar Jotron.
+
+En el telemando se decide si es del tipo Sirtap con esta condición:
+
+En el telemando y otros sitios buscar:
+if (res.ID.StartsWith("NOED137"))
+
+ENVIO DE TONO EN TRANSMISION
+Se envía un tono cuando hay PTT. he modificado estas funciones.
+
+public void PttOff ()
+        {
+            if (Connected)
+            {
+                SipAgent.PttOff(SipCallId);
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 0, out error);
+                    }
+                }
+                catch { }
+            }
+        }
+        /// <summary>
+        /// Sends Ptt on to SipAgent
+        /// </summary>
+        public void PttOn(CORESIP_PttType srcPtt)
+        {
+            if (Connected && TunedFrequencyOK)
+            {
+                SipAgent.PttOn(SipCallId, PttId, srcPtt, PttMute);
+
+                try
+                {
+                    if (ID.StartsWith("NOED137"))
+                    {
+                        CORESIP_Error error;
+                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 1, out error);
+                    }
+                }
+                catch { }
+            }
+        }
+
+------- Presencia
+
+La función que llama el timer de polling para chequear la presencia:
+
+SIRTAP_Get_Presence
+
+Si queremos que siempre esté presente forzamos que devuelva true.
+
+REunion
+
+OID de TX inibit rcvOnlymode
+OID wf ch1wf,ch2wf
+powerLevelCh1  LO MD HI
+
+miguel.sanchez-puebla@airbus.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
