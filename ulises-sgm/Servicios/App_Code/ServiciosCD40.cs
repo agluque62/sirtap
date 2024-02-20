@@ -110,7 +110,15 @@ public struct DatosControlBackup
 [XmlInclude(typeof(Conferencias))]
 [XmlInclude(typeof(ConferenciasParticipantes))]
 
+[XmlInclude(typeof(Misiones))]
+[XmlInclude(typeof(Misiones_Operadores))]
+[XmlInclude(typeof(Misiones_Paginas))]
+[XmlInclude(typeof(Misiones_LCEN))]
+[XmlInclude(typeof(Misiones_Alarmas_Acusticas))]
+[XmlInclude(typeof(Alarmas_Acusticas))]
+
 #endregion
+
 
 public partial class ServiciosCD40 : System.Web.Services.WebService
 {
@@ -2450,6 +2458,12 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         return Procedimientos.VersionSectorizacion(GestorBDCD40.ConexionMySql, idSistema);
     }
 
+    [WebMethod(Description = "Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos")]
+    public string GetMisionAsignada(string Id_Operador, string Id_Clave)
+    {
+        return Procedimientos.GetMisionAsignada(GestorBDCD40.ConexionMySql, Id_Operador, Id_Clave);
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -3831,7 +3845,7 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
                             {
                                 if (ds["IdSector"] != DBNull.Value && (string)ds["IdSector"] != "**FS**")
                                 {
-                                    if (ds["IdSector"] == idSector)
+                                    if ((string)ds["IdSector"] == idSector)
                                     {
                                         iEstaLiberado++;
                                     }
@@ -3957,5 +3971,39 @@ public partial class ServiciosCD40 : System.Web.Services.WebService
         strCadena.Clear();
         return bExiste;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="IdMision"></param>
+    /// <returns></returns>
+    [WebMethod(Description = "Devuelve la lista de alarmas asociadas a misiones")]
+    public DataSet GetAlarmasAsociadasAMisiones(uint IdMision)
+    {
+        DataSet datosControl = null;
+        string consulta = "SELECT * FROM new_cd40_trans.alarmas_acusticas aac" +
+                            " where aac.idalarmaacustica IN (select  maac.idalarmaacustica from  new_cd40_trans.misiones_alarmas_acusticas maac " +
+                            " where maac.idmision = " + IdMision + " )";
+
+        datosControl = GestorBDCD40.GetDataSet(consulta, null);
+        return datosControl;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="IdMision"></param>
+    /// <returns></returns>
+    [WebMethod(Description = "Devuelve una lista de operadores sin asignar a mision")]
+    public DataSet GetOperadoresNoAsignadosMisiones()
+    {
+        DataSet datosControl = null;
+        string consulta = "SELECT op.IdOperador as IdOperador from operadores as op" +
+                          " where op.nivelacceso = 5 and op.IdOperador NOT IN (SELECT mo.idoperador from misiones_operadores as mo)";
+
+        datosControl = GestorBDCD40.GetDataSet(consulta, null);
+        return datosControl;
+    }
+
 }
 

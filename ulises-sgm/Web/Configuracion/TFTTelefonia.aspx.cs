@@ -29,12 +29,10 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
         }
     }
 
-    //private const uint MAX_POSICIONES_PAGINA = 20;
-
     private static uint NumPaginas;
     private static uint NumPosicionesPag;
     // Número de columnas fijas en la cuadrícula gráfica
-    private const uint NUM_COLUMNAS_FIJAS = 5;
+    private const uint NUM_COLUMNAS_FIJAS = 6;
     private static uint NumColumnasVisibles = NUM_COLUMNAS_FIJAS;
     private static uint numPagActual = 0;
 	private static bool Modificando = false;
@@ -110,10 +108,12 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 			{
 				NumPaginas = ((ServiciosCD40.ParametrosSector)d[0]).NumPagDestinosInt;
 				NumPosicionesPag = ((ServiciosCD40.ParametrosSector)d[0]).NumDestinosInternosPag;
-                if (NumPosicionesPag > 15) NumColumnasVisibles = 5;
+               /* if (NumPosicionesPag > 15) NumColumnasVisibles = 5;
                 else if (NumPosicionesPag > 8) NumColumnasVisibles = 4;
                 else if (NumPosicionesPag > 3) NumColumnasVisibles = 3;
                 else NumColumnasVisibles = 2;
+                * */
+                NumColumnasVisibles = 6;
 			}
 		}
 		catch (Exception ex)
@@ -136,7 +136,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
         Session["PaginaTF"] = numPagActual;
         LabelPag.Text = (string)GetGlobalResourceObject("Espaniol", "Pagina") + " " + numPagActual.ToString();
         LimpiarPanel();
-        CBSeguro.Enabled = true;
+        CBSeguro.Enabled = false;// true;
         CBSeguro.Checked = false;
         MostrarInternos();
         MostrarExternos();
@@ -156,7 +156,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
         Session["PaginaTF"] = numPagActual;
         LabelPag.Text = (string)GetGlobalResourceObject("Espaniol", "Pagina") + " " + numPagActual.ToString();
         LimpiarPanel();
-        CBSeguro.Enabled = true;
+        CBSeguro.Enabled = false;// true;
         CBSeguro.Checked = false;
         MostrarInternos();
         MostrarExternos();
@@ -211,7 +211,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
     {
 
         LimpiarPanel();
-        CBSeguro.Enabled = true;
+        CBSeguro.Enabled = false;// true;
 
         CargaDestinosInternos();
         MostrarInternos();
@@ -268,6 +268,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
             }
         }
     }
+   
     private uint CalculatePosHmi(uint buttonIndex)
     {
         uint fila = ((uint)buttonIndex - 1) / NUM_COLUMNAS_FIJAS; //0..NUM_COLUMNAS_FIJAS

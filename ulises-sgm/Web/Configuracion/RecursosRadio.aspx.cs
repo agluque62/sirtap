@@ -1204,7 +1204,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
         DListFlujosAudio.Enabled = habilita;
 
         HabilitaTablaTifx(habilita);
-        CBSeguro.Enabled = habilita;
+        CBSeguro.Enabled = false;// habilita;
     }
 
     private void HabilitaTablaTifx(bool habilita)
@@ -1501,7 +1501,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 			}
 
             // TPD Validación parámetro Seguro SIRTAP.
-            n.Seguro = CBSeguro.Checked;
+            n.Seguro = false;// CBSeguro.Checked;
 
 			if (!Modificando) //Recurso nuevo
 			{
@@ -1509,35 +1509,11 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 				{
 					if (ServicioCD40.InsertSQL(n) < 0) // Inserta Recursos
 						logDebugView.Warn("(RecursosDeRadio-GuardarCambios): No se ha podido insertar el elemento.");
-					else
-					{
-						Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-						KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-						if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-						{
-							SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-							switch (sincro.AltaCanalRadio(n.IdRecurso, 0, 'F', 'H', 'H', Int32.Parse(TxtTiempoPTT.Text)))
-							{
-								case 127:
-									cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-									break;
-								case 128:
-									cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-									break;
-								default:
-									break;
-							}
-							if (DLDestino.SelectedValue != "0")
-							{/*Comprobar que ese destino radio no tiene otro recurso con el mismo emplazamiento*/
-								sincro.AltaFrecuencia(DListEmplazamiento.SelectedItem.Text, DLDestino.SelectedItem.Text, 0, n.IdRecurso);
-							}
-						}
-					}
-				
-					InsertaParametrosRecurso(n);    // Inserta parámetros del recurso
-
-                    TxtIdRecurso.Enabled = false;
-
+                    else
+                    {
+					    InsertaParametrosRecurso(n);    // Inserta parámetros del recurso
+                        TxtIdRecurso.Enabled = false;
+                    }
 					ActualizaWebPadre(true);
 
 				}
@@ -1555,28 +1531,6 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
 					logDebugView.Warn("(RecursosDeRadio-GuardarCambios): No se ha podido actualizar el elemento.");
 				else
 				{
-					Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-					KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-					if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-					{
-						SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-						switch (sincro.ModificacionCanalRadio(n.IdRecurso, 0, 'F', 'H', 'H', Int32.Parse(TxtTiempoPTT.Text)))
-						{
-							case 127:
-								cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-								break;
-							case 128:
-								cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-								break;
-							default:
-								break;
-						}
-						if (DLDestino.SelectedValue != "0")
-						{/*Comprobar que ese destino radio no tiene otro recurso con el mismo emplazamiento*/
-							sincro.ModificacionFrecuencia(DLDestino.SelectedItem.Text, DListEmplazamiento.SelectedItem.Text, n.IdRecurso, 0);
-						}
-					}
-
 					InsertaParametrosRecurso(n);    // Inserta parámetros del recurso
 				}
 			}
@@ -2134,25 +2088,7 @@ public partial class RecursosDeRadio : PageBaseCD40.PageCD40 //	System.Web.UI.Pa
                     logDebugView.Warn("(RecursosDeRadio-EliminarElemento): No se ha borrado el elemento.");
                 else
                 {
-                    Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                    KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                    if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                    {
-                        SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                        switch (sincro.BajaCanalRadio(n.IdRecurso))
-                        {
-                            case 127:
-                                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod127"));
-                                break;
-                            case 128:
-                                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "Cod128"));
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                        cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
+                       cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
                 }
             }
 		}

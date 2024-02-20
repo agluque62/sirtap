@@ -13,7 +13,7 @@
 		meta:resourcekey="Label6Resource1"/>
 
         <asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 516px; position: absolute;
-            top: 76px" Text="Seguro: " TextAlign="Left" Enabled="True" 
+            top: 76px" Text="Seguro: " TextAlign="Left" Enabled="True"  Visible ="false"
             AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial"
             meta:resourcekey="LSeguroResource1"/>
 
@@ -284,7 +284,7 @@
         position: absolute; top: 129px" Width="195px" Rows="100" AutoPostBack="True"  OnSelectedIndexChanged="LBoxDestinos_SelectedIndexChanged"
 		meta:resourcekey="LBoxDestinosResource1"></asp:ListBox>
    <asp:Label ID="Label1" runat="server" Style="z-index: 106; left: 516px; position: absolute;
-        top: 102px" Text="Destinos disponibles:" 
+        top: 106px" Text="Destinos disponibles:" 
 		meta:resourcekey="Label1Resource1"></asp:Label>
 
     <asp:Label ID="LblRecAsignados" runat="server" Style="z-index: 110; left: 516px; position: absolute; top: 486px;height: 17px;"

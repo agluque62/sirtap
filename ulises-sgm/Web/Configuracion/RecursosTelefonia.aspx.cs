@@ -1171,7 +1171,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
             PresentaParamAGCRx(false);
         }
 
-        CBSeguro.Enabled = habilita;
+        CBSeguro.Enabled = false;// habilita;
 
         /* MVO.20170707: los valores nominales de protocolo y los valores máximos de temporización o supervisión no son modificables
 		TxtT1.Enabled = habilita;
@@ -1532,7 +1532,7 @@ public partial class RecursosDeTelefonia : PageBaseCD40.PageCD40	// System.Web.U
                 }
             }
             // TPD Validación parámetro Seguro SIRTAP.
-            n.Seguro = CBSeguro.Checked;
+            n.Seguro = false;// CBSeguro.Checked;
 
             if (!Modificando) //Recurso nuevo
             {

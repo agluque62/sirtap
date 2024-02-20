@@ -101,9 +101,7 @@ public partial class CD40 : System.Web.UI.MasterPage
             if (false == IsPostBack)
             {
                 bAccesoConferenciasPreprogramadas = MostrarConferenciasPreprogramadas(); 
-                // 20210317 #4749
-                // Acceso a configuración dependenciasATS
-                //bAccesoDependenciasATS = SistemaConDependenciasATS();
+
                 // RQF-33
                 if (SistemaEnConfiguracionOffline())
                 {
@@ -518,27 +516,6 @@ public partial class CD40 : System.Web.UI.MasterPage
             }
             
         }
-    }
-
-    //20210317 #4749
-    public bool SistemaConDependenciasATS()
-    {
-        const string CONF_KEY_CON_DEPATS = "DependenciasATS";
-        bool bConDepATS = false;
-
-        Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-        KeyValueConfigurationElement objConf = null;
-
-        //Se obtiene el parametro que indica si se debe o no visualizar la gestion de dependencias ATS
-        objConf = config.AppSettings.Settings[CONF_KEY_CON_DEPATS];
-
-        if ((objConf != null) && (!string.IsNullOrEmpty(objConf.Value) && string.Compare(objConf.Value, "SI", true) == 0))
-        {
-            //El sistema está configurado con gestión de dependencias ATS
-            bConDepATS = true;
-        }
-
-        return bConDepATS;
     }
 
     // RQF-33

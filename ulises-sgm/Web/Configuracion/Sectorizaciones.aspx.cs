@@ -679,29 +679,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
                 }
                 else
                 {
-                    Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                    KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                    if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                    {
-                        SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                        switch (sincro.BajaSectorizacion(n.IdSectorizacion))
-                        {
-                            case 106:
-                                string s = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-                                    + String.Format((string)GetGlobalResourceObject("Espaniol", "Cod106"), n.IdSectorizacion);
-                                cMsg.alert(s);
-                                break;
-                            case 107:
-                                string s1 = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-                                    + String.Format((string)GetGlobalResourceObject("Espaniol", "Cod107"), n.IdSectorizacion);
-                                cMsg.alert(s1);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                        cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
+                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
                 }
             }
         }

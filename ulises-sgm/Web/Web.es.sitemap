@@ -51,12 +51,14 @@
       <siteMapNode url="~/Configuracion/TIFX.aspx" title="Pasarelas"  description="Gestión de Pasarelas" />
       <siteMapNode url="~/Configuracion/EquiposExternos.aspx" title="Equipos Externos"  description="Gestión de equipos externos" />
     </siteMapNode>
+    <siteMapNode url="" title="Misiones"  description="Misiones">
+      <siteMapNode url="~/Configuracion/Misiones.aspx" title="Gestión de Misiones"  description="Gestión de Misiones de Operador" />
+      <siteMapNode url="~/Configuracion/MisionesAsignacion.aspx" title="Asignación de Misiones"  description="Asignación de Misiones a Operadores" />
+    </siteMapNode>    
     <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Sectorizaciones"  description="Gestión de Sectorizaciones">
       <siteMapNode url="~/Configuracion/Sector.aspx" title="Sectores"  description="Gestión de Sectores" />
       <siteMapNode url="~/Configuracion/Agrupacion.aspx" title="Agrupaciones"  description="Gestión de Agrupaciones" />
     </siteMapNode>
-      <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Backup Restore Base de Datos" identificador="BackupRestore"/>
-
-    
+      <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Backup Restore Base de Datos" identificador="BackupRestore"/>  
   </siteMapNode>
 </siteMap>

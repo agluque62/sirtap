@@ -15,7 +15,12 @@ namespace CD40.BD.Entidades
             get { return _IdMision; }
             set { _IdMision = value; }
         }
-
+        private uint _PosMision;
+        public uint PosMision
+        {
+            get { return _PosMision; }
+            set { _PosMision = value; }
+        }
         private uint _PosHMI;
         public uint PosHMI
         {
@@ -48,6 +53,7 @@ namespace CD40.BD.Entidades
                     Misiones_LCEN r = new Misiones_LCEN();
 
                     r.IdMision = (uint)dr["IdMision"];
+                    r.PosMision = (uint)dr["PosMision"];
                     r.PosHMI = (uint)dr["PosHMI"];
                     ListaResultado.Add(r);
                 }
@@ -60,9 +66,10 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO Misiones_LCEN (IdMision,PosHMI)" +
+            Consulta.Append("INSERT INTO Misiones_LCEN (IdMision,PosMision,PosHMI)" +
                             " VALUES (" + IdMision + "," +
-                                         PosHMI + ")");
+                                          PosMision + "," +
+                                          PosHMI + ")");
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(null, "Misiones_LCEN");
 			return consulta;
@@ -79,7 +86,7 @@ namespace CD40.BD.Entidades
 
 			Consulta.Remove(0, Consulta.Length);
 			if (IdMision != 0 && PosHMI != 0)
-                Consulta.Append("DELETE FROM Misiones_LCEN WHERE IdMision=" + IdMision + " AND PosHMI=" + PosHMI);
+                Consulta.Append("DELETE FROM Misiones_LCEN WHERE IdMision=" + IdMision + " AND PosMision=" + PosMision);
 			else if (IdMision != 0)
 				Consulta.Append("DELETE FROM Misiones_LCEN WHERE IdMision=" + IdMision);
 

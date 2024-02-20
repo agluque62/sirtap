@@ -16,7 +16,7 @@ using log4net.Config;
 public partial class DependenciasATS : PageBaseCD40.PageCD40	
 {
     private static ServiciosCD40.Tablas[] datos;
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
     private static ILog _logDebugView;
 
 

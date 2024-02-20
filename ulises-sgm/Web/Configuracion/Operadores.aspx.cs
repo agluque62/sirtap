@@ -24,7 +24,7 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
     private static int _SesionActiva = 0;
     private static int _SesionEstado = 0;
 	private static ServiciosCD40.Tablas[] datos;
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
 	private static ILog _logDebugView;
 	public static ILog logDebugView
 	{
@@ -195,6 +195,10 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
             return;
         }
         op.TimeoutSesion = timeoutvalido;
+        if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5)
+            op.Seguro = false;//CBSeguro.Checked;
+        else
+            op.Seguro = true;
 
         NewItem = TBUsuario.Text;
 
@@ -229,6 +233,11 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
         op.TimeoutSesion = timeoutvalido;
         op.SesionActiva = _SesionActiva;
         op.SesionEstado = _SesionEstado;
+        //// PENDIENTE DE VALIDAR SI ESTÁ ASIGNADO A UNA MISIÓN Y CONSECUENCIAS 20240207
+        if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5)
+            op.Seguro = false;//CBSeguro.Checked;
+        else
+            op.Seguro = true;
 
         IndexListBox1 = LBOperadores.SelectedIndex;
 
@@ -367,7 +376,19 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
             TBTimeoutSesion.Text = ((ServiciosCD40.Operadores)datos[elemento]).TimeoutSesion.ToString();
             _SesionActiva = ((ServiciosCD40.Operadores)datos[elemento]).SesionActiva;
             _SesionEstado = ((ServiciosCD40.Operadores)datos[elemento]).SesionEstado;
-
+            if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5)
+            {
+                CBSeguro.Checked = ((ServiciosCD40.Operadores)datos[elemento]).Seguro;
+                CBSeguro.Visible = false;
+                LBLTBTimeoutSesion.Visible = false;
+                TBTimeoutSesion.Visible = false;
+            }
+            else
+            {
+                CBSeguro.Visible = false;
+                LBLTBTimeoutSesion.Visible = true;
+                TBTimeoutSesion.Visible = true;
+            }
             // 20210317 #4749
             try
             {
@@ -402,6 +423,20 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		LkBCambiarClave.Visible = true;
     
         IndexListBox1 = LBOperadores.SelectedIndex;
+
+        if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5)
+        {
+            CBSeguro.Enabled = false;
+            LBLTBTimeoutSesion.Visible = false;
+            TBTimeoutSesion.Visible = false;
+        }
+        else
+        {
+            CBSeguro.Visible = false;
+            CBSeguro.Enabled = false;
+            LBLTBTimeoutSesion.Visible = true;
+            TBTimeoutSesion.Visible = true;
+        }
         // 20210317 #4749
         if (ControlDependenciasATS)
         {
@@ -419,6 +454,7 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		TBTelefono.Text = string.Empty;
         TBTimeoutSesion.Text = string.Empty;
 		DDLPerfil.SelectedIndex = 0;
+        CBSeguro.Visible = false;
 	}
 
 	protected void BtnNuevo_Click(object sender, EventArgs e)
@@ -469,7 +505,7 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 		BtnNuevo.Visible = true;
 		BtnAceptar.Visible = BtnCancelar.Visible = false;
 		LkBCambiarClave.Visible = false;
-
+        CBSeguro.Visible = false;
 		MuestraDatos(DameDatos());
 	}
 
@@ -556,6 +592,22 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
     protected void DDLPerfil_SelectedIndexChanged(object sender, EventArgs e)
 	{
+
+        if (Convert.ToUInt32(DDLPerfil.SelectedValue) == 5)
+        {
+            CBSeguro.Enabled = false;
+            CBSeguro.Visible = false;
+            LBLTBTimeoutSesion.Visible = false;
+            TBTimeoutSesion.Visible = false;
+        }
+        else
+        {
+            CBSeguro.Enabled = false;
+            CBSeguro.Visible = false;
+            LBLTBTimeoutSesion.Visible = true;
+            TBTimeoutSesion.Visible = true;
+        }
+
         // 20210317 #4749
         if (ControlDependenciasATS)
         {
@@ -688,5 +740,10 @@ public partial class Operadores : PageBaseCD40.PageCD40	// System.Web.UI.Page
     {
         Label4.Visible = Label5.Visible = Label7.Visible = LBLTBTimeoutSesion.Visible = false;
         TBNombre.Visible = TBApellidos.Visible = TBTelefono.Visible = TBTimeoutSesion.Visible = false;
+    }
+
+    protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
+    {
+
     }
 }

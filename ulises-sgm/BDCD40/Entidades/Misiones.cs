@@ -29,7 +29,13 @@ namespace CD40.BD.Entidades
             get { return _Tipo; }
             set { _Tipo = value; }
         }
-
+        // Modo de Operación
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
 
 
@@ -40,10 +46,12 @@ namespace CD40.BD.Entidades
         public override string DataSetSelectSQL()
         {
             Consulta.Remove(0, Consulta.Length);
-            if (IdMision != 0)
+            if (!String.IsNullOrEmpty(Descripcion))
+                Consulta.Append("SELECT * FROM Misiones WHERE Descripcion='" + Descripcion +"'");
+            else if (IdMision > 0)
                 Consulta.Append("SELECT * FROM Misiones WHERE IdMision=" + IdMision);
             else 
-                Consulta.Append("SELECT * FROM Misiones");
+                Consulta.Append("SELECT * FROM Misiones ORDER BY Descripcion");
             return Consulta.ToString();
         }
 
@@ -59,7 +67,7 @@ namespace CD40.BD.Entidades
                     r.IdMision = (uint)dr["IdMision"];
                     r.Descripcion = (string)dr["Descripcion"];
                     r.Tipo = (uint)dr["Tipo"];
-
+                    r.Seguro = Convert.ToBoolean(dr["Seguro"]);
                     ListaResultado.Add(r);
                 }
             }
@@ -71,9 +79,10 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO Misiones (Descripcion,Tipo)" +
+            Consulta.Append("INSERT INTO Misiones (Descripcion,Tipo,Seguro)" +
                             " VALUES ('" + Descripcion + "'," +
-                                         Tipo + ")");
+                                         Tipo +
+                                         "," + Seguro +")");
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(null, "Misiones");
 			return consulta;
@@ -85,7 +94,8 @@ namespace CD40.BD.Entidades
 
 			Consulta.Remove(0, Consulta.Length);
             Consulta.Append("UPDATE Misiones SET Descripcion='" + Descripcion + "'," +
-                                            "Tipo=" + Tipo + " " +
+                                            "Tipo=" + Tipo + ", " +
+                                            "Seguro=" + Seguro + " " +
                                             "WHERE IdMision=" + IdMision
                                             );
 
@@ -108,6 +118,5 @@ namespace CD40.BD.Entidades
 			consulta[1] = ReplaceSQL(null, "Misiones");
 			return consulta;
 		}
-
 	}
 }

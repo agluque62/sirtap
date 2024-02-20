@@ -209,7 +209,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             {
                 TBDestino.Text = "";
                 TBDestino.ReadOnly = false;
-                CBSeguro.Enabled = true;
+                CBSeguro.Enabled = false;
                 CBSeguro.Checked = false;
                 DDLPrefijo.SelectedValue = "-1";
                 TBGrupo.Text = "";
@@ -230,7 +230,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             }
             else
             {
-                CBSeguro.Enabled = !DestinoDeTelefoniaAsignado();
+                CBSeguro.Enabled = false;// !DestinoDeTelefoniaAsignado();
 				RequiredFieldValidator3.Visible = TBRecurso.Visible = LblRecursosLibres.Visible = 
 				LblRecurso.Visible = DDLRecursos.Visible = DDLPrefijo.SelectedValue == "32" || DDLPrefijo.SelectedValue == "1";
 
@@ -368,7 +368,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
             // Aunque IdGrupo no es de la tabla DestinosExternos, la clase hereda de 
             // DestinosTelefonía y se hace una llamada a base.Insert()
 			dExterno.IdGrupo = (TBGrupo.Text.Length > 0) ? TBGrupo.Text : null;
-            dExterno.Seguro = CBSeguro.Checked;        
+            dExterno.Seguro = false;// CBSeguro.Checked;        
 			ServiceServiciosCD40.AnadeDestino(dExterno, TBRecurso.Text, TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null);
     }
         catch (Exception e)
@@ -396,7 +396,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
         // Aunque IdGrupo no es de la tabla DestinosExternos, 
         // la clase hereda de DestinosTelefonía y se hace una llamada a base.Update()
 		dExterno.IdGrupo = (TBGrupo.Text.Length > 0) ? TBGrupo.Text : null;
-        dExterno.Seguro = CBSeguro.Checked;
+        dExterno.Seguro = false;// CBSeguro.Checked;
 		ServiceServiciosCD40.ActualizaDestino(dExterno, TBRecurso.Text, TBGrupo.Text.Length > 0 && DDLGrupo.Items.FindByText(TBGrupo.Text) == null);    
     }
 
@@ -597,7 +597,7 @@ public partial class DestinosTelefonia : PageBaseCD40.PageCD40	// System.Web.UI.
 
 			DDLPrefijo.SelectedValue = Convert.ToString((uint)dr["IdPrefijo"]);
             
-            CBSeguro.Checked = Convert.ToBoolean(dr["Seguro"]);
+            //CBSeguro.Checked = Convert.ToBoolean(dr["Seguro"]);
 
             if (iIdPrefijo != 1 && iIdPrefijo != 3)
             {
