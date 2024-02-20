@@ -710,12 +710,13 @@ namespace HMI.CD40.Module.BusinessEntities
 
         protected void CheckPresencia()
         {
-            // Fuerza la presencia del altavoz radio
-            SetPresenceRdSpeaker(true);
+            // Quita la presencia del altavoz radio
+            SetPresenceRdSpeaker(false);
             // Fuerza la presencia del altavoz TF/LC
             _Logger.Info("CheckPresencia LcSpeakerSimul={0}", Settings.Default.LcSpeakerSimul);
             //if (Settings.Default.LcSpeakerSimul)
-            SetPresenceLcSpeaker(true);
+            // Quita la presencia del altavoz LC
+            SetPresenceLcSpeaker(false);
         }
 
         /// <summary>
