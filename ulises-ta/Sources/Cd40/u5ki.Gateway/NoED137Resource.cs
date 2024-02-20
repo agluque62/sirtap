@@ -363,7 +363,8 @@ namespace U5ki.Gateway
             CORESIP_Error err;
             int coreret = SipAgent.CORESIP_CreateRTPport(out sirtap_params.rtp_port_id, sirtap_params.dst_ip,
                 sirtap_params.src_port, sirtap_params.dst_port, sirtap_params.local_multicast_ip,
-                sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, out err);
+                sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, 
+                false, null, null, out err);
             if (coreret != 0)
             {
                 LogError<NoED137Resource>($"Create_SIRTAP_Resource: {IdRecurso} Creating RTP port: {err.Info}");

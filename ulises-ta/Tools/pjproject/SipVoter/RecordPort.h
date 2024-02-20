@@ -75,6 +75,14 @@ public:
 
 	static const int TRIES_SENDING_CMD = 3;
 
+	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
+	static const unsigned int SLEEP_FOR_SIMU = 0;   //Retardo para que el simulador de grabacion no pierda mensajes
+	static const int MAX_NUM_FREQUENCIES = 64;
+	static const int MAX_FREQ_LITERAL = 32;
+	static const int MAX_BSSMETHOD_LITERAL = 32;
+	static const int MAX_RESOURCEID_LITERAL = 32;
+	static const int MAX_CONNREF_LEN = 32;
+
 	typedef enum RECORDERS_TO_RECORD
 	{
 		BOTH_RECORDERS = (int)'0',		//Graba en los dos grabadores
@@ -114,13 +122,6 @@ public:
 	static RecordPort* GetRecordPortFromResource(const pj_str_t* uri, const pj_str_t* Id, CORESIP_Resource_Type type);
 	
 private:
-	//static const unsigned int SLEEP_FOR_SIMU = 700;   //Retardo para que el simulador de grabacion no pierda mensajes
-	static const unsigned int SLEEP_FOR_SIMU = 0;   //Retardo para que el simulador de grabacion no pierda mensajes
-	static const int MAX_NUM_FREQUENCIES = 64;
-	static const int MAX_FREQ_LITERAL = 32;
-	static const int MAX_BSSMETHOD_LITERAL = 32;
-	static const int MAX_RESOURCEID_LITERAL = 32;
-	static const int MAX_CONNREF_LEN = 32;
 
 	int Resource_type;
 	RECSESSIONSTATUS SessStatus;

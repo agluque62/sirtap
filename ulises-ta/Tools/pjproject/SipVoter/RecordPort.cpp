@@ -143,6 +143,8 @@ void RecordPort::End()
  */
 void RecordPort::CreateRecordPortGWRad(char* resourceId)
 {
+	if (!ED137_record_enabled) return;
+
 	pj_bool_t resourceID_exists = PJ_FALSE;
 	pj_mutex_lock(recordPortGWRadMap_mutex);
 	string resId = resourceId;

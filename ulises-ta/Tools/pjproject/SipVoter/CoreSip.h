@@ -1801,15 +1801,19 @@ extern "C" {
 
 	/*
 	Funcion que Crea un puerto de media para enviar y recibir por RTP
-	@param rtpport_id. Manejador del puerto que se retorna.
+	@param rtpport_id. Manejador del puerto que se retorna.	
 	@param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
 	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
 	@param dst_port. Puerto de destino del flujo RTP.
 	@param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
 	@param payload_type. Valor 0: PCMU, valor 8: PCMA
 	@param action. Indica el puerto RTP enconde, decode o las dos cosas.
+	@param record_reception. Establece si se graba la recepcion RTP como ED137.
+	@param frequencyLiteral. Literal de la frecuencia sintonizada en la radio. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	@param resourceId. Es el identificador del recurso de radio, de la herramienta de configuracion. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
 	*/
-	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action, CORESIP_Error* error);
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action,
+		pj_bool_t record_reception, char* frequencyLiteral, char* resourceId, CORESIP_Error* error);
 
 	/*
 	Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP

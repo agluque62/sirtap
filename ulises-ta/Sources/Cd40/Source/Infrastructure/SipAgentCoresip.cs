@@ -2147,9 +2147,13 @@ namespace U5ki.Infrastructure
 	    @param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
 	    @param payload_type. Valor 0: PCMU, valor 8: PCMA
 	    @param action. Indica el puerto RTP enconde, decode o las dos cosas.
+        @param record_reception. Establece si se graba la recepcion RTP como ED137.
+	    @param frequencyLiteral. Literal de la frecuencia sintonizada en la radio. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	    @param resourceId. Es el identificador del recurso de radio, de la herramienta de configuracion. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
 	    */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
-        public static extern int CORESIP_CreateRTPport(out int rtpport_id, string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, [In] CORESIP_RTP_port_actions action, out CORESIP_Error error);
+        public static extern int CORESIP_CreateRTPport(out int rtpport_id, string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, [In] CORESIP_RTP_port_actions action,
+            bool record_reception, string frequencyLiteral, string resourceId, out CORESIP_Error error);
 
         /*
 	    Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP

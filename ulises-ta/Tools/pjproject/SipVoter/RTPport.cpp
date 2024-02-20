@@ -3,6 +3,7 @@
 #include "Guard.h"
 #include "RTPport.h"
 #include "SipAgent.h"
+#include "RecordPort.h"
 
 RTPport* RTPport::_RTP_Ports[MAX_RTP_PORTS];
 
@@ -18,7 +19,8 @@ RTPport::RTPport(int rtp_port_id)
 	ReceivingRTP = -1;
 }
 
-int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action)
+int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action, 
+	pj_bool_t record_reception, char* frequencyLiteral, char* resourceId)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -370,9 +372,9 @@ void RTPport::RTP_Received(void* stream, void* frame, void* codec, unsigned seq,
 void RTPport::AskRTPport_info()
 {
 	pj_lock_acquire(_Lock);
-	ReceivingRTP = 0;
+	
 	CORESIP_RTPport_info info;
-	info.receiving = (ReceivingRTP) ? PJ_TRUE : PJ_FALSE;
+	info.receiving = (ReceivingRTP <= 0) ? PJ_FALSE : PJ_TRUE;
 
 	if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(RTPport_id | CORESIP_RTPPORT_ID, &info);
 	pj_lock_release(_Lock);
@@ -415,8 +417,33 @@ RTPport::~RTPport(void)
 
 // -----------   Funciones estaticas ----------------------------------------------
 
-int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action)
+int RTPport::CreateRTPport(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action,
+	pj_bool_t record_reception, char* frequencyLiteral, char* resourceId)
 {
+	if (record_reception && (frequencyLiteral == NULL || resourceId == NULL))
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport Si record_reception es true entonces frequencyLiteral y resourceId no pueden ser NULL"));
+		return -1;
+	}
+	
+	if (frequencyLiteral != NULL)
+	{
+		if (pj_ansi_strlen(frequencyLiteral) > (RecordPort::MAX_FREQ_LITERAL - 1))
+		{
+			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport longitud de frequencyLiteral no puede soprepasar ", "%d", RecordPort::MAX_FREQ_LITERAL - 1));
+			return -1;
+		}
+	}
+
+	if (resourceId != NULL)
+	{
+		if (pj_ansi_strlen(resourceId) > (RecordPort::MAX_RESOURCEID_LITERAL - 1))
+		{
+			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport longitud de resourceId no puede soprepasar ", "%d", RecordPort::MAX_RESOURCEID_LITERAL - 1));
+			return -1;
+		}
+	}
+
 	if (dst_ip == NULL)
 	{
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport dst_ip  is NULL"));
@@ -458,7 +485,8 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local
 		return -1;
 	}
 
-	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, local_multicast_ip, (pjmedia_rtp_pt) payload_type, action) < 0)
+	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, local_multicast_ip, (pjmedia_rtp_pt) payload_type, action,
+		record_reception, frequencyLiteral, resourceId) < 0)
 	{
 		delete _RTP_Ports[port_id];
 		_RTP_Ports[port_id] = NULL;
