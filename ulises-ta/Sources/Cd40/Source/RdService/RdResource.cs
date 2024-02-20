@@ -639,15 +639,6 @@ namespace U5ki.RdService
             if (Connected)
             {
                 SipAgent.PttOff(SipCallId);
-                try
-                {
-                    if (ID.StartsWith("NOED137"))
-                    {
-                        CORESIP_Error error;
-                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 0, out error);
-                    }
-                }
-                catch { }
             }
         }
         /// <summary>
@@ -658,16 +649,6 @@ namespace U5ki.RdService
             if (Connected && TunedFrequencyOK)
             {
                 SipAgent.PttOn(SipCallId, PttId, srcPtt, PttMute);
-
-                try
-                {
-                    if (ID.StartsWith("NOED137"))
-                    {
-                        CORESIP_Error error;
-                        CORESIP_SendToneToCall(SipCallId, 1000, 0.0f, 1, out error);
-                    }
-                }
-                catch { }
             }
         }
         /// <summary>
