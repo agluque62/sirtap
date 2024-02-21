@@ -109,22 +109,24 @@ message ConferenceStatus
 
 message SirTapAudAlarmMsg
 {
-	enum EventType
+	enum AlertStates
 	{
-		Stop = 0;		//Finaliza la alarma
-		Start = 1;		//Inicia la alarma
-		Cancel = 2;		//Cancela la alarma
+		off = 0;	//Finaliza la alarma
+		on = 1;		//Inicia la alarma
+	}	
+
+	enum RPA_types
+	{
+		single = 0;
+		multicontrol_console_1 = 1;
+		multicontrol_console_2 = 2;
 	}
 
-	enum Category
-	{
-		Alert = 0;
-		Alarm = 1;
-	}
-
-	required string identity = 1;
-	required EventType eventtype = 2;
-	required Category category = 3;
+	required uint32	timeStamp = 1;
+	required uint32 alertId = 2;
+	required AlertStates state = 3;
+	required uint32 priority = 4;
+	required RPA_types rpa_associated = 5;
 }
 
 message TlmdoAsk
