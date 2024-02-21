@@ -1155,6 +1155,18 @@ extern "C" {
 	CORESIP_API int	CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * error);
 
 	/**
+	 *	CORESIP_SetRxStreamingVolume
+	 *	Ajusta el volumen del streaming que se recibe. Por ejemplo, si el identificador se refiere 
+	 *  al un puerto del tipo RdRxPort por el que se recibe el audio de una frecuencia de radio desde el Nodebox,
+	 *  se ajusta el nivel de las muestras recibidas.
+	 *	@param	id			Identificador del puerto de audio
+	 *	@param	volume		Es el porcentaje del nivel maximo para cada dispoisitivo, segun winaudio.ini
+	 *	@param	error		Puntero a la Estructura de error
+	 *	@return				Codigo de Error
+	 */
+	CORESIP_API int	CORESIP_SetRxStreamingVolume(int id, unsigned volume, CORESIP_Error* error);
+
+	/**
 	 *	CORESIP_CallMake
 	 *	@param	info		Puntero a la informacion de llamada
 	 *	@param	outInfo
