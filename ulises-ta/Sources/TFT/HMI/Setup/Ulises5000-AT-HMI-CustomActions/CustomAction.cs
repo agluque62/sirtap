@@ -239,11 +239,10 @@ namespace Ulises5000_AT_HMI_CustomActions
         [CustomAction]
         public static ActionResult CustomActionGetWindowsSndDevs(Session session)
         {
-            
             CORESIP_Error err;
             CORESIP_SndWindowsDevices Devices;
-            CORESIP_GetWindowsSoundDeviceNames(0, out Devices, out err);            
-            
+            CORESIP_GetWindowsSoundDeviceNames(0, out Devices, out err);
+
             session.Log("Begin CustomActionGetWindowsSndDevs");
 
             List<string> DeviceList = new List<string>();

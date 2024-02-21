@@ -15,7 +15,7 @@ using log4net.Config;
 
 public partial class Grupos :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 {
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
     private static ILog _logDebugView;
     public static ILog logDebugView
     {

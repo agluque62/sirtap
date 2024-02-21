@@ -323,7 +323,6 @@ namespace HMI.CD40.Module.BusinessEntities
 				if (msg.Type == Identifiers.SIRTAP_AUD_ALM)
 				{
 					SirTapAudAlarmMsg sirTapAudAlarmMsgmsg = Deserialize<SirTapAudAlarmMsg>(msg.Data, msg.Length);
-                    _Logger.Info($"OnMsgReceived: SIRTAP_AUD_ALM received {sirTapAudAlarmMsgmsg.identity} {sirTapAudAlarmMsgmsg.eventtype} {sirTapAudAlarmMsgmsg.category}");
                 }
                 else if ((msg.Type == Identifiers.FR_TX_CHANGE_RESPONSE_MSG) ||
 					(msg.Type == Identifiers.FR_RX_CHANGE_RESPONSE_MSG))

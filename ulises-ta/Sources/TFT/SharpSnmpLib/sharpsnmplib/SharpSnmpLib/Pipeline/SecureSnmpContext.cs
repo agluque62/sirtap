@@ -161,7 +161,8 @@ namespace Lextm.SharpSnmpLib.Pipeline
             }
 
             var parameters = request.Parameters;
-            if (parameters.UserName == OctetString.Empty)
+            if (parameters.UserName == OctetString.Empty || 
+                (parameters.UserName == new OctetString("initial") && parameters.EngineId == OctetString.Empty))
             {
                 HandleDiscovery();
                 return true;

@@ -135,27 +135,27 @@
    </asp:Table> 
 
         <asp:CheckBox ID="CBSeguro1" runat="server" Style="z-index: 105; left: 107px; position: absolute;
-    top: 102px" Text="Seg.: " TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: " TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
         <asp:CheckBox ID="CBSeguro2" runat="server" Style="z-index: 105; left: 191px; position: absolute;
-    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
         <asp:CheckBox ID="CBSeguro3" runat="server" Style="z-index: 105; left: 269px; position: absolute;
-    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
         <asp:CheckBox ID="CBSeguro4" runat="server" Style="z-index: 105; left: 351px; position: absolute;
-    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
         <asp:CheckBox ID="CBSeguro5" runat="server" Style="z-index: 105; left: 431px; position: absolute;
-    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
         <asp:CheckBox ID="CBSeguro6" runat="server" Style="z-index: 105; left: 512px; position: absolute;
-    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False" 
+    top: 102px" Text="Seg.: "  TextAlign="Left" Enabled="False"  Visible ="false"
     AutoPostBack="False"  Font-Size="Small" Height="14px" Font-Names="Arial"
     meta:resourcekey="LSeguroResource1"/>
 

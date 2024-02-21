@@ -3,6 +3,7 @@
 #include "Guard.h"
 #include "RTPport.h"
 #include "SipAgent.h"
+#include "RecordPort.h"
 
 RTPport* RTPport::_RTP_Ports[MAX_RTP_PORTS];
 
@@ -18,7 +19,8 @@ RTPport::RTPport(int rtp_port_id)
 	ReceivingRTP = -1;
 }
 
-int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action)
+int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, pjmedia_rtp_pt payload_type, CORESIP_RTP_port_actions action, 
+	pj_bool_t record_reception, char* frequencyLiteral, char* resourceId)
 {
 	pjmedia_dir dir;
 	switch (action)
@@ -64,7 +66,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 	{
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init IP address or dst_port is invalid"));
 		return -1;
-	}
+	}	
 
 	pjmedia_stream_info info;		
 
@@ -115,7 +117,7 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 
 	/* Create media transport */
 	pj_str_t src_addr = pj_str(SipAgent::uaIpAdd);
-	st = pjmedia_transport_udp_create2(pjsua_var.med_endpt, NULL, &src_addr, src_port,	0, &Transport);
+	st = pjmedia_transport_udp_create2(pjsua_var.med_endpt, NULL, &src_addr, src_port, PJMEDIA_UDP_NO_RTCP, &Transport);
 	if (st != PJ_SUCCESS)
 	{
 		Transport = NULL;
@@ -159,6 +161,52 @@ int RTPport::Init(char* dst_ip, int src_port, int dst_port, char* local_multicas
 		Stream = NULL;
 		PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init stream cannot be created"));
 		return -1;
+	}
+
+	//Si la direccion remota a la que se envia es multicast se fuerza a que salga por el interfaz
+	if ((pj_ntohl(rem_addr.sin_addr.s_addr) & 0xF0000000) == 0xE0000000)
+	{
+		pjmedia_transport_info tpinfo;
+		st = pjmedia_transport_get_info(Transport, &tpinfo);
+		if (st == PJ_SUCCESS)
+		{
+			//Se fuerza que los paquetes salgan por el interfaz que utiliza el agente.
+			struct pj_in_addr in_uaIpAdd;
+			pj_str_t str_uaIpAdd;
+			str_uaIpAdd.ptr = SipAgent::Get_uaIpAdd();
+			str_uaIpAdd.slen = (pj_ssize_t)strlen(SipAgent::Get_uaIpAdd());
+			pj_inet_aton((const pj_str_t*)&str_uaIpAdd, &in_uaIpAdd);
+			if (tpinfo.sock_info.rtcp_sock != PJ_INVALID_SOCKET)
+			{
+				st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_IF, (void*)&in_uaIpAdd, sizeof(in_uaIpAdd));
+				if (st != PJ_SUCCESS)
+					PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, PJ_IP_MULTICAST_IF. El envio de audio a %s:%d no se puede forzar por el interface %s",
+						dst_ip, dst_port, SipAgent::Get_uaIpAdd()));
+			}
+
+			st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_IF, (void*)&in_uaIpAdd, sizeof(in_uaIpAdd));
+			if (st != PJ_SUCCESS)
+				PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, PJ_IP_MULTICAST_IF. El envio de audio a %s:%d no se puede forzar por el interface %s",
+					dst_ip, dst_port, SipAgent::Get_uaIpAdd()));
+
+			if (src_port == dst_port)
+			{
+				pj_uint32_t multicastloop = 0;
+				if (tpinfo.sock_info.rtcp_sock != PJ_INVALID_SOCKET)
+				{
+					st = pj_sock_setsockopt(tpinfo.sock_info.rtcp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+					if (st != PJ_SUCCESS)
+						PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+							dst_ip, dst_port));
+				}
+
+				multicastloop = 0;
+				st = pj_sock_setsockopt(tpinfo.sock_info.rtp_sock, IPPROTO_IP, IP_MULTICAST_LOOP, (void*)&multicastloop, sizeof(multicastloop));
+				if (st != PJ_SUCCESS)
+					PJ_LOG(3, (__FILE__, "ERROR: RTPport::Init setsockopt, IP_MULTICAST_LOOP. %s:%d",
+						dst_ip, dst_port));
+			}
+		}
 	}
 
 	pjmedia_stream_set_is_for_coresip_RTPport(Stream, PJ_TRUE);
@@ -324,9 +372,9 @@ void RTPport::RTP_Received(void* stream, void* frame, void* codec, unsigned seq,
 void RTPport::AskRTPport_info()
 {
 	pj_lock_acquire(_Lock);
-	ReceivingRTP = 0;
+	
 	CORESIP_RTPport_info info;
-	info.receiving = (ReceivingRTP) ? PJ_TRUE : PJ_FALSE;
+	info.receiving = (ReceivingRTP <= 0) ? PJ_FALSE : PJ_TRUE;
 
 	if (SipAgent::Cb.RTPport_infoCb) SipAgent::Cb.RTPport_infoCb(RTPport_id | CORESIP_RTPPORT_ID, &info);
 	pj_lock_release(_Lock);
@@ -369,8 +417,33 @@ RTPport::~RTPport(void)
 
 // -----------   Funciones estaticas ----------------------------------------------
 
-int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action)
+int RTPport::CreateRTPport(char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action,
+	pj_bool_t record_reception, char* frequencyLiteral, char* resourceId)
 {
+	if (record_reception && (frequencyLiteral == NULL || resourceId == NULL))
+	{
+		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport Si record_reception es true entonces frequencyLiteral y resourceId no pueden ser NULL"));
+		return -1;
+	}
+	
+	if (frequencyLiteral != NULL)
+	{
+		if (pj_ansi_strlen(frequencyLiteral) > (RecordPort::MAX_FREQ_LITERAL - 1))
+		{
+			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport longitud de frequencyLiteral no puede soprepasar ", "%d", RecordPort::MAX_FREQ_LITERAL - 1));
+			return -1;
+		}
+	}
+
+	if (resourceId != NULL)
+	{
+		if (pj_ansi_strlen(resourceId) > (RecordPort::MAX_RESOURCEID_LITERAL - 1))
+		{
+			PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport longitud de resourceId no puede soprepasar ", "%d", RecordPort::MAX_RESOURCEID_LITERAL - 1));
+			return -1;
+		}
+	}
+
 	if (dst_ip == NULL)
 	{
 		PJ_CHECK_STATUS(PJ_EINVAL, ("ERROR: RTPport::CreateRTPport dst_ip  is NULL"));
@@ -412,7 +485,8 @@ int RTPport::CreateRTPport(char *dst_ip, int src_port, int dst_port, char* local
 		return -1;
 	}
 
-	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, local_multicast_ip, (pjmedia_rtp_pt) payload_type, action) < 0)
+	if (_RTP_Ports[port_id]->Init(dst_ip, src_port, dst_port, local_multicast_ip, (pjmedia_rtp_pt) payload_type, action,
+		record_reception, frequencyLiteral, resourceId) < 0)
 	{
 		delete _RTP_Ports[port_id];
 		_RTP_Ports[port_id] = NULL;

@@ -1,0 +1,38 @@
+Directorios UG5K-ED137
+----------------------
+
+
+=== [bin]
+    Ejecutable del servicio de Grabación ED137b4 para Win7, y ficheros de configuración
+    NOTA: El fichero .reg se utilizaba en la primera versión del instalador del servicio.
+
+=== [install]
+    Ejecutable del instalador del servicio de Grabación ED137b4 para Win7
+
+=== [InstallUG5K]
+    Proyecto del Instalador del servicio de Grabación ED137b4 en Win7
+
+=== [LINUX]
+Ficheros fuente y make del módulo de grabación de la máquina virtual de Ginés, para la plataforma PPC/LiNUX.
+OJO: Puede ser necesario adaptar algunos ficheros/variables de entorno si la estructura de directorios NO COINCIDE con la de la máquina de Ginés.
+En .\bin\ppc se encuentra el ejecutable para la pasarela con la última funcionalidad (Mauritania).
+
+En teoría los ficheros del directorio "d:\Datos\Empresa\Visual Studio 2012\Projects\UG5K-ED137B4\LINUX\UG5KEd137b4Service\" deben ser idénticos a los del mismo nombre del directorio "d:\Datos\Empresa\Visual Studio 2012\Projects\UG5K-ED137B4\UG5KEd137b4Service\".
+Verficada casi en su totalidad en la CPU de la pasarela hacia el grabador de Ricochet.
+
+=== [UG5KEd137b4Service]
+    Proyecto del servicio de Grabación ED137b4 para Win7.
+
+=== [GrabadorSim]
+    Proyecto del Simulador de Grabador ED137b4.
+
+=== [TestUG5KEd137b4Service]
+    Proyecto del Simulador del Núcleo (módulo de la Pasarela) / Puesto Ulises, de cara a verificar la funcionalidad del módulo de Grabación
+
+=== [packages]
+    Librería utilizada por el proyecto de TestUG5KEd137b4Service. Lee/carga ficheros de audio.
+
+=== [Entorno PPC FIN REDAN]
+    Proyectos del entorno PowerPC del módulo de Grabación con la funcionalidad "reducida" requerida en el expediente de la pasarela REDAN (no se incluian metadata de telefonía, ni era compatible con un servicio de Windows).
+Verificada en la CPU de la pasarela hacia el grabador de Ricochet.
+    

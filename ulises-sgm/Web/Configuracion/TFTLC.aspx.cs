@@ -198,7 +198,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                         ibut.CssClass = "BtnPanelTfAsignado";
                         ibut.Text = ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).Literal;
                         prefijosPosiciones[pos] = ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).IdPrefijo;
-                        MuestraCheckSeguro(pos, true, ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).Seguro);
+                        MuestraCheckSeguro(pos, false, ((ServiciosCD40.DestinosInternosSector)datosLCint[i]).Seguro);
                     }
                 }
             }
@@ -238,7 +238,7 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                             else
                                 ibut.ToolTip = string.Empty;
                         }
-                        MuestraCheckSeguro(pos, true, ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).Seguro);
+                        MuestraCheckSeguro(pos, false, ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).Seguro);
                     }
                 }
             }

@@ -62,7 +62,7 @@ namespace SirtapRadio
             {
                 CORESIP_Error err;
                 int coreret = CORESIP_CreateRTPport(out Rtp_port_id, dst_ip, src_port, dst_port, local_multicast_ip, payload_type,
-                    CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, out err);
+                    CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, false, null, null, out err);
                 if (coreret != 0)
                 {
                     messagebox_text += " Init: CORESIP_CreateRTPport " + err.Info;

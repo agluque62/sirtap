@@ -1,0 +1,117 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="NucleoSim.Properties" GeneratedClassName="NucleoSim">
+  <Profiles />
+  <Settings>
+    <Setting Name="FicheroDatos" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Desarrollo\sonidos\ALARM-alaw1.wav</Value>
+    </Setting>
+    <Setting Name="RecursoGRS1" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">121.500</Value>
+    </Setting>
+    <Setting Name="RecursoTER1" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Puesto1</Value>
+    </Setting>
+    <Setting Name="ServerIP1" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="ServerPort1" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">65001</Value>
+    </Setting>
+    <Setting Name="InterbaloDat" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="TextoIP1" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Local </Value>
+    </Setting>
+    <Setting Name="TextoIP2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Debian7 </Value>
+    </Setting>
+    <Setting Name="ServerIP2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.56.102</Value>
+    </Setting>
+    <Setting Name="ServerPort2" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">65001</Value>
+    </Setting>
+    <Setting Name="RecursoGRS2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">243.000</Value>
+    </Setting>
+    <Setting Name="RecursoGRS3" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">225.050</Value>
+    </Setting>
+    <Setting Name="TamPaquetes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">160</Value>
+    </Setting>
+    <Setting Name="ResponsePort" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">64001</Value>
+    </Setting>
+    <Setting Name="IPPasarela" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">10.0.2.61</Value>
+    </Setting>
+    <Setting Name="TextoIP3" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Pasarela</Value>
+    </Setting>
+    <Setting Name="ServerIP3" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.1.11</Value>
+    </Setting>
+    <Setting Name="ServerPort3" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">65001</Value>
+    </Setting>
+    <Setting Name="RecursoGRS4" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">399.975</Value>
+    </Setting>
+    <Setting Name="RecursoGRS5" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">300.000</Value>
+    </Setting>
+    <Setting Name="RecursoGRS6" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">300.025</Value>
+    </Setting>
+    <Setting Name="RecursoGRS7" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">300.050</Value>
+    </Setting>
+    <Setting Name="RecursoGRS8" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">300.075</Value>
+    </Setting>
+    <Setting Name="RecursoGRS9" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">310.000</Value>
+    </Setting>
+    <Setting Name="RecursoGRS10" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">310.025</Value>
+    </Setting>
+    <Setting Name="RecursoGRS11" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">310.050</Value>
+    </Setting>
+    <Setting Name="RecursoGRS12" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">310.075</Value>
+    </Setting>
+    <Setting Name="RecursoGRS13" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">320.000</Value>
+    </Setting>
+    <Setting Name="RecursoGRS14" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">320.025</Value>
+    </Setting>
+    <Setting Name="RecursoGRS15" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">320.050</Value>
+    </Setting>
+    <Setting Name="RecursoGRS16" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">320.075</Value>
+    </Setting>
+    <Setting Name="Telefono" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">+34912174548</Value>
+    </Setting>
+    <Setting Name="TelefonoExterno" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">+34934587211</Value>
+    </Setting>
+    <Setting Name="TelefonoEntrante" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">+34962113710</Value>
+    </Setting>
+    <Setting Name="DireccionLlamada" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="RecursoEntrante" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Puesto2</Value>
+    </Setting>
+    <Setting Name="IPPasarela2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">192.168.1.11</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

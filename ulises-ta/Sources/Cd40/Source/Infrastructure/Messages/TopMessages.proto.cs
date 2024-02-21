@@ -448,50 +448,64 @@ namespace U5ki.Infrastructure
   {
     public SirTapAudAlarmMsg() {}
     
-    private string _identity;
-    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"identity", DataFormat = global::ProtoBuf.DataFormat.Default)]
-    public string identity
+    private uint _timeStamp;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"timeStamp", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint timeStamp
     {
-      get { return _identity; }
-      set { _identity = value; }
+      get { return _timeStamp; }
+      set { _timeStamp = value; }
     }
-    private U5ki.Infrastructure.SirTapAudAlarmMsg.EventType _eventtype;
-    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"eventtype", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public U5ki.Infrastructure.SirTapAudAlarmMsg.EventType eventtype
+    private uint _alertId;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"alertId", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint alertId
     {
-      get { return _eventtype; }
-      set { _eventtype = value; }
+      get { return _alertId; }
+      set { _alertId = value; }
     }
-    private U5ki.Infrastructure.SirTapAudAlarmMsg.Category _category;
-    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"category", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public U5ki.Infrastructure.SirTapAudAlarmMsg.Category category
+    private U5ki.Infrastructure.SirTapAudAlarmMsg.AlertStates _state;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"state", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.SirTapAudAlarmMsg.AlertStates state
     {
-      get { return _category; }
-      set { _category = value; }
+      get { return _state; }
+      set { _state = value; }
     }
-    [global::ProtoBuf.ProtoContract(Name=@"EventType")]
-    public enum EventType
+    private uint _priority;
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true, Name=@"priority", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public uint priority
+    {
+      get { return _priority; }
+      set { _priority = value; }
+    }
+    private U5ki.Infrastructure.SirTapAudAlarmMsg.RPA_types _rpa_associated;
+    [global::ProtoBuf.ProtoMember(5, IsRequired = true, Name=@"rpa_associated", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public U5ki.Infrastructure.SirTapAudAlarmMsg.RPA_types rpa_associated
+    {
+      get { return _rpa_associated; }
+      set { _rpa_associated = value; }
+    }
+    [global::ProtoBuf.ProtoContract(Name=@"AlertStates")]
+    public enum AlertStates
     {
             
-      [global::ProtoBuf.ProtoEnum(Name=@"Stop", Value=0)]
-      Stop = 0,
+      [global::ProtoBuf.ProtoEnum(Name=@"off", Value=0)]
+      off = 0,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"Start", Value=1)]
-      Start = 1,
-            
-      [global::ProtoBuf.ProtoEnum(Name=@"Cancel", Value=2)]
-      Cancel = 2
+      [global::ProtoBuf.ProtoEnum(Name=@"on", Value=1)]
+      on = 1
     }
   
-    [global::ProtoBuf.ProtoContract(Name=@"Category")]
-    public enum Category
+    [global::ProtoBuf.ProtoContract(Name=@"RPA_types")]
+    public enum RPA_types
     {
             
-      [global::ProtoBuf.ProtoEnum(Name=@"Alert", Value=0)]
-      Alert = 0,
+      [global::ProtoBuf.ProtoEnum(Name=@"single", Value=0)]
+      single = 0,
             
-      [global::ProtoBuf.ProtoEnum(Name=@"Alarm", Value=1)]
-      Alarm = 1
+      [global::ProtoBuf.ProtoEnum(Name=@"multicontrol_console_1", Value=1)]
+      multicontrol_console_1 = 1,
+            
+      [global::ProtoBuf.ProtoEnum(Name=@"multicontrol_console_2", Value=2)]
+      multicontrol_console_2 = 2
     }
   
     private global::ProtoBuf.IExtension extensionObject;

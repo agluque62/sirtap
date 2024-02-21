@@ -73,9 +73,13 @@ namespace U5ki.Gateway
         public bool ConfigurationOfResourceChange(CfgRecursoEnlaceExterno res, AsignacionRecursosGW equipo_externo, DireccionamientoIP direccionamientoIP)
         {
             if (IdRecurso != res.IdRecurso) return true;
-            if (sirtap_params.dst_ip != direccionamientoIP.IpRed1) return true;
-            if (sirtap_params.src_port != (int)equipo_externo.SipPort) return true;
-            if (sirtap_params.local_multicast_ip != direccionamientoIP.IpRed2) return true;
+
+            if (NOED137RadioType == NOED137RadioTypes.SIRTAP)
+            {
+                if (DireccionamientoIP.IpRed1 != direccionamientoIP.IpRed1) return true;
+                if (DireccionamientoIP.IpRed2 != direccionamientoIP.IpRed2) return true;
+                if (EquipoExterno.SipPort != (int)equipo_externo.SipPort) return true;                
+            }
             return false;
         }
 
@@ -109,9 +113,9 @@ namespace U5ki.Gateway
             //HASTA QUE SE RESUELVA LA CONFIGURACION, DE MOMENTO TOMAMOS ASI LOS DATOS
             sirtap_params.dst_ip = DireccionamientoIP.IpRed2;
             sirtap_params.src_port = (int)EquipoExterno.SipPort;
-            sirtap_params.dst_port = sirtap_params.src_port + 2;
+            sirtap_params.dst_port = (int)EquipoExterno.SipPort;
             sirtap_params.local_multicast_ip = DireccionamientoIP.IpRed2;
-            sirtap_params.payload_type = 8;
+            sirtap_params.payload_type = 0;
             //Si el identificador del recurso termina en 2, entonces consideramos que es el canal 2 de la radios SIRTAP
             //Si es cualquier otro caracter, entonces es el canal 1
             if (IdRecurso.ElementAt(IdRecurso.Length - 1) == 2) sirtap_params.channel = 2;
@@ -359,7 +363,8 @@ namespace U5ki.Gateway
             CORESIP_Error err;
             int coreret = SipAgent.CORESIP_CreateRTPport(out sirtap_params.rtp_port_id, sirtap_params.dst_ip,
                 sirtap_params.src_port, sirtap_params.dst_port, sirtap_params.local_multicast_ip,
-                sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, out err);
+                sirtap_params.payload_type, CORESIP_RTP_port_actions.CORESIP_CREATE_ENCODING_DECODING, 
+                false, null, null, out err);
             if (coreret != 0)
             {
                 LogError<NoED137Resource>($"Create_SIRTAP_Resource: {IdRecurso} Creating RTP port: {err.Info}");
@@ -503,6 +508,8 @@ namespace U5ki.Gateway
         private bool SIRTAP_Get_Presence()
         {
             if (sirtap_params.RC == null) return false;
+
+            //return true;            //Comentar para que se haga polling de la presencia
 
             bool presence = true;
             TlmdoAsk msg = new TlmdoAsk();

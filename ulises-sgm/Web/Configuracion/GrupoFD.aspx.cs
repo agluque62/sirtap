@@ -203,7 +203,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
     protected void BtNuevo_Click(object sender, EventArgs e)
     {
         Panel1.Enabled = true;
-        CBSeguro.Enabled = true;
+        CBSeguro.Enabled = false;
         RequiredFieldIdentificador.Enabled = RequiredFieldIdentificador.Visible = true;
         errores.Visible = true;
         MostrarMenu();
@@ -1428,7 +1428,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             // 20211210 #2857 Analisis centralizado QIDX
             n.PorcentajeRSSI = DLPorcentajeRSSI.SelectedValue;
             // TPD Validación parámetro Seguro SIRTAP.
-            n.Seguro = CBSeguro.Checked;
+            n.Seguro = false;// CBSeguro.Checked;
             //En el tipo frecuencia HF, la frecuencia sintonizada es obligatoria
             if (DESTINORADIO_TIPOFRECUENCIA_HF == DListTipo.SelectedValue && TblTunedFreq.Visible)
             {
@@ -1612,7 +1612,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
             if (GuardarCambios() == true)
                 cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "AceptarCambios"), "aceptparam");
         }
-
         else
             cMsg.confirm((string)GetGlobalResourceObject("Espaniol", "AvisoDestinoSinRecurso"), "aceptparam");
     }
@@ -1693,7 +1692,7 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
         IButQuitar.Visible = true;
         IButAsignar.Visible = true;
         if (!DestinoAsignadoATft(ListBox1.SelectedValue.ToString()))
-            CBSeguro.Enabled = true;
+            CBSeguro.Enabled = false;
     }
 
     protected void BtEliminar_Click(object sender, EventArgs e)
@@ -3512,6 +3511,6 @@ public partial class GrupoFD : PageBaseCD40.PageCD40
     }
     private void ControlaValorSeguro()
     {
-        CBSeguro.Enabled = (ListRecursos.Items.Count == 0);
+        CBSeguro.Enabled = false;// (ListRecursos.Items.Count == 0);
     }
 }

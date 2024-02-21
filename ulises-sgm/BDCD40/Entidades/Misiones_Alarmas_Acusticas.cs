@@ -60,7 +60,7 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO Misiones_Alarmas_Acusticas (IdMision,Tipo)" +
+            Consulta.Append("INSERT INTO Misiones_Alarmas_Acusticas (IdMision,IdAlarmaAcustica)" +
                             " VALUES (" + IdMision + "," +
                                          IdAlarmaAcustica + ")");
 			consulta[0] = Consulta.ToString();

@@ -78,22 +78,22 @@ namespace SirtapRadio
         private void Form1_Load(object sender, EventArgs e)
         {
             loadConfig();
-            
-            if (Agent.Init() != 0)
-            {
-                Application.Exit();
-            }
 
             try
             {
-                string IpAddress = ConfigurationManager.AppSettings["BindIpAddress"].ToString();
+                string IpAddress = ConfigurationManager.AppSettings["BindIpAddress"].ToString();                
                 label_hostip.Text = IpAddress;
             }
             catch (Exception)
             {
                 MessageBox.Show($"CORESIP_Init: Fichero config incorrecto. Parece que falta el parametro BindIpAddress", "ERROR",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);                
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            if (Agent.Init() != 0)
+            {
+                Application.Exit();
+            }            
 
             button_ConfigSet_Click(sender, e);
             button_ConfigSet2_Click(sender, e);

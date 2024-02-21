@@ -3399,27 +3399,30 @@ PJ_DEF(pj_status_t) pjmedia_stream_create( pjmedia_endpt *endpt,
 				}
 			}
 
-			QoSFlowId_rtcp = 0;
-			QoSResult = QOSAddSocketToFlow(stream->QoSHandle, tpinfo.sock_info.rtcp_sock, (PSOCKADDR)&info->rem_addr, QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId_rtcp);
-			if (QoSResult != TRUE)
+			if (tpinfo.sock_info.rtcp_sock != PJ_INVALID_SOCKET)
 			{
-				int werror = WSAGetLastError();
-				PJ_LOG(3, (__FILE__, "ERROR: pjmedia_stream_create: RTCP Changing DSCP mark QOSAddSocketToFlow failed. Error %d", werror));
-			}
-			else
-			{
-				DWORD DSCPValue = PJSIP_RTCP_PROTOCOL_DSCP;
-				QoSResult = QOSSetFlow(stream->QoSHandle, QoSFlowId_rtcp, QOSSetOutgoingDSCPValue, sizeof(DSCPValue), &DSCPValue, 0, NULL);
+				QoSFlowId_rtcp = 0;
+				QoSResult = QOSAddSocketToFlow(stream->QoSHandle, tpinfo.sock_info.rtcp_sock, (PSOCKADDR)&info->rem_addr, QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId_rtcp);
 				if (QoSResult != TRUE)
 				{
 					int werror = WSAGetLastError();
-					if (werror == ERROR_ACCESS_DENIED)
+					PJ_LOG(3, (__FILE__, "ERROR: pjmedia_stream_create: RTCP Changing DSCP mark QOSAddSocketToFlow failed. Error %d", werror));
+				}
+				else
+				{
+					DWORD DSCPValue = PJSIP_RTCP_PROTOCOL_DSCP;
+					QoSResult = QOSSetFlow(stream->QoSHandle, QoSFlowId_rtcp, QOSSetOutgoingDSCPValue, sizeof(DSCPValue), &DSCPValue, 0, NULL);
+					if (QoSResult != TRUE)
 					{
-						PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed. Error %d. Changing DSCP requires the calling application be a member of the Administrators or the Network Configuration Operators group", werror));
-					}
-					else
-					{
-						PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed Changing DSCP mark. Error %d", werror));
+						int werror = WSAGetLastError();
+						if (werror == ERROR_ACCESS_DENIED)
+						{
+							PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed. Error %d. Changing DSCP requires the calling application be a member of the Administrators or the Network Configuration Operators group", werror));
+						}
+						else
+						{
+							PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed Changing DSCP mark. Error %d", werror));
+						}
 					}
 				}
 			}

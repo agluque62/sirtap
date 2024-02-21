@@ -28,6 +28,13 @@ namespace CD40.BD.Entidades
             get { return _TipoDestino; }
             set { _TipoDestino = value; }
         }
+        // Modo de Operación
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }
         #endregion
 
         public Misiones_Paginas()
@@ -37,7 +44,9 @@ namespace CD40.BD.Entidades
         public override string DataSetSelectSQL()
         {
             Consulta.Remove(0, Consulta.Length);
-            if (IdMision != 0 )
+            if (IdMision != 0 &&  TipoDestino != 99)
+                Consulta.Append("SELECT * FROM Misiones_Paginas WHERE IdMision=" + IdMision + " AND TipoDestino=" + TipoDestino);
+            else if (IdMision != 0 )
                 Consulta.Append("SELECT * FROM Misiones_Paginas WHERE IdMision=" + IdMision);
             else 
                 Consulta.Append("SELECT * FROM Misiones_Paginas");
@@ -56,6 +65,7 @@ namespace CD40.BD.Entidades
                     r.IdMision = (uint)dr["IdMision"];
                     r.IdPagina = (uint)dr["IdPagina"];
                     r.TipoDestino = (uint)dr["TipoDestino"];
+                    r.Seguro = Convert.ToBoolean(dr["Seguro"]);
                     ListaResultado.Add(r);
                 }
             }
@@ -67,10 +77,11 @@ namespace CD40.BD.Entidades
 			string[] consulta = new string[2];
 
             Consulta.Remove(0, Consulta.Length);
-            Consulta.Append("INSERT INTO Misiones_Paginas (IdMision,IdPagina,TipoDestino)" +
+            Consulta.Append("INSERT INTO Misiones_Paginas (IdMision,IdPagina,TipoDestino,Seguro)" +
                             " VALUES (" + IdMision + "," +
                                           IdPagina + "," +
-                                          TipoDestino + ")");
+                                          TipoDestino + "," +
+                                          Seguro + ")");
 			consulta[0] = Consulta.ToString();
 			consulta[1] = ReplaceSQL(null, "Misiones_Paginas");
 			return consulta;

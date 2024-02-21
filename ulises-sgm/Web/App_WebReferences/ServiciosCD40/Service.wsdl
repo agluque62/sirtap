@@ -16,6 +16,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetMisionAsignada">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Id_Operador" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Id_Clave" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetMisionAsignadaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMisionAsignadaResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="NumTestValido">
         <s:complexType>
           <s:sequence>
@@ -129,14 +144,79 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="TroncalesRuta">
+      <s:complexType name="Tabla_bss_recurso">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdTroncal" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Central" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdRuta" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Id_Tabla_bss_recurso" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Tabla_bss_idtabla_bss" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Alarmas_Acusticas">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdAlarmaAcustica" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="Descripcion" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Tipo" type="s:unsignedInt" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Misiones_Alarmas_Acusticas">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="IdAlarmaAcustica" type="s:unsignedInt" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Misiones_LCEN">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="PosMision" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="PosHMI" type="s:unsignedInt" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Misiones_Paginas">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="IdPagina" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="TipoDestino" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Misiones_Operadores">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdOperador" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Misiones">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="Descripcion" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Tipo" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -306,17 +386,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="MetodosbssDestinosradio">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:Tablas">
-            <s:sequence>
-              <s:element minOccurs="1" maxOccurs="1" name="Idmetodosbss_Destinosradio" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Metodos_bss_Idmetodos_bss" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Metodosbss_Destinosradio_fk" type="s:int" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="MetodosBss">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
@@ -327,12 +396,16 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="Tabla_bss_recurso">
+      <s:complexType name="RadioParam">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
-              <s:element minOccurs="1" maxOccurs="1" name="Id_Tabla_bss_recurso" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="Tabla_bss_idtabla_bss" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IdRadio_Param" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrsDelay" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="OffSetFrequency" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="EnableEventPttSq" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Metodos_bss_idmetodos_bss" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -480,6 +553,18 @@
               <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="TroncalesRuta">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdTroncal" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Central" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdRuta" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1233,6 +1318,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="TimeoutSesion" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="SesionActiva" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="SesionEstado" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1323,16 +1409,13 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="RadioParam">
+      <s:complexType name="MetodosbssDestinosradio">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
-              <s:element minOccurs="1" maxOccurs="1" name="IdRadio_Param" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="GrsDelay" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="OffSetFrequency" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="EnableEventPttSq" type="s:boolean" />
-              <s:element minOccurs="1" maxOccurs="1" name="Metodos_bss_idmetodos_bss" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Idmetodosbss_Destinosradio" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Metodos_bss_Idmetodos_bss" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Metodosbss_Destinosradio_fk" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1957,6 +2040,44 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="SalaBKKExisteResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAlarmasAsociadasAMisiones">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IdMision" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAlarmasAsociadasAMisionesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAlarmasAsociadasAMisionesResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOperadoresNoAsignadosMisiones">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetOperadoresNoAsignadosMisionesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOperadoresNoAsignadosMisionesResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -3630,6 +3751,12 @@
   <wsdl:message name="GetVersionConfiguracionSoapOut">
     <wsdl:part name="parameters" element="tns:GetVersionConfiguracionResponse" />
   </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMisionAsignada" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMisionAsignadaResponse" />
+  </wsdl:message>
   <wsdl:message name="NumTestValidoSoapIn">
     <wsdl:part name="parameters" element="tns:NumTestValido" />
   </wsdl:message>
@@ -3845,6 +3972,18 @@
   </wsdl:message>
   <wsdl:message name="SalaBKKExisteSoapOut">
     <wsdl:part name="parameters" element="tns:SalaBKKExisteResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAlarmasAsociadasAMisionesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAlarmasAsociadasAMisiones" />
+  </wsdl:message>
+  <wsdl:message name="GetAlarmasAsociadasAMisionesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAlarmasAsociadasAMisionesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOperadoresNoAsignadosMisionesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOperadoresNoAsignadosMisiones" />
+  </wsdl:message>
+  <wsdl:message name="GetOperadoresNoAsignadosMisionesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOperadoresNoAsignadosMisionesResponse" />
   </wsdl:message>
   <wsdl:message name="ControladoresRecuperaSectorizacionesSoapIn">
     <wsdl:part name="parameters" element="tns:ControladoresRecuperaSectorizaciones" />
@@ -4409,6 +4548,11 @@
       <wsdl:input message="tns:GetVersionConfiguracionSoapIn" />
       <wsdl:output message="tns:GetVersionConfiguracionSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
+      <wsdl:input message="tns:GetMisionAsignadaSoapIn" />
+      <wsdl:output message="tns:GetMisionAsignadaSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="NumTestValido">
       <wsdl:input message="tns:NumTestValidoSoapIn" />
       <wsdl:output message="tns:NumTestValidoSoapOut" />
@@ -4577,6 +4721,16 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve true si en el sistema existe una Sala de Conferencia Brekeke con el identificador dado.</wsdl:documentation>
       <wsdl:input message="tns:SalaBKKExisteSoapIn" />
       <wsdl:output message="tns:SalaBKKExisteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAlarmasAsociadasAMisiones">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve la lista de alarmas asociadas a misiones</wsdl:documentation>
+      <wsdl:input message="tns:GetAlarmasAsociadasAMisionesSoapIn" />
+      <wsdl:output message="tns:GetAlarmasAsociadasAMisionesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOperadoresNoAsignadosMisiones">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve una lista de operadores sin asignar a mision</wsdl:documentation>
+      <wsdl:input message="tns:GetOperadoresNoAsignadosMisionesSoapIn" />
+      <wsdl:output message="tns:GetOperadoresNoAsignadosMisionesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ControladoresRecuperaSectorizaciones">
       <wsdl:input message="tns:ControladoresRecuperaSectorizacionesSoapIn" />
@@ -5038,6 +5192,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <soap:operation soapAction="http://CD40.es/GetMisionAsignada" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="NumTestValido">
       <soap:operation soapAction="http://CD40.es/NumTestValido" style="document" />
       <wsdl:input>
@@ -5355,6 +5518,24 @@
     </wsdl:operation>
     <wsdl:operation name="SalaBKKExiste">
       <soap:operation soapAction="http://CD40.es/SalaBKKExiste" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAlarmasAsociadasAMisiones">
+      <soap:operation soapAction="http://CD40.es/GetAlarmasAsociadasAMisiones" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOperadoresNoAsignadosMisiones">
+      <soap:operation soapAction="http://CD40.es/GetOperadoresNoAsignadosMisiones" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -6211,6 +6392,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <soap12:operation soapAction="http://CD40.es/GetMisionAsignada" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="NumTestValido">
       <soap12:operation soapAction="http://CD40.es/NumTestValido" style="document" />
       <wsdl:input>
@@ -6528,6 +6718,24 @@
     </wsdl:operation>
     <wsdl:operation name="SalaBKKExiste">
       <soap12:operation soapAction="http://CD40.es/SalaBKKExiste" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAlarmasAsociadasAMisiones">
+      <soap12:operation soapAction="http://CD40.es/GetAlarmasAsociadasAMisiones" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOperadoresNoAsignadosMisiones">
+      <soap12:operation soapAction="http://CD40.es/GetOperadoresNoAsignadosMisiones" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

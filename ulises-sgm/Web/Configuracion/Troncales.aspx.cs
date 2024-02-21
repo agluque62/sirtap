@@ -28,7 +28,7 @@ public partial class Troncales : PageBaseCD40.PageCD40	// System.Web.UI.Page
             return _logDebugView;
         }
     }
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
     private static ServiciosCD40.Tablas[] datos;
 	static bool PermisoSegunPerfil;
 	private static ServiciosCD40.ServiciosCD40 ServicioCD40 = new ServiciosCD40.ServiciosCD40();

@@ -3,29 +3,33 @@
 #include "Guard.h"
 #include "SipAgent.h"
 #include "RecordPort.h"
+#include "CUtils.h"
 
 //Comandos al grabador
-const char *RecordPort::NOTIF_IPADD = "V,I00,";
-const char *RecordPort::INI_SES_REC_TERM = "V,T00,";
-const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";
-const char *RecordPort::INI_SES_REC_RAD = "V,G00,";
-const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";
-const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";
-const char *RecordPort::REC_INV = "V,INV,";
-const char *RecordPort::REC_BYE = "V,BYE,";
-const char *RecordPort::SQUELCH_ON = "V,G02,";
-const char *RecordPort::SQUELCH_OFF = "V,G03,";
-const char *RecordPort::REC_BSS = "V,G06,";			//Seleccion de mejor recurso por el BSS
-const char *RecordPort::REC_CALLSTART = "V,T02,";
-const char *RecordPort::REC_CALLEND = "V,T03,";
-const char *RecordPort::REC_CALLCONNECTED = "V,T04,";
-const char *RecordPort::REC_PTTON = "V,T20,";
-const char *RecordPort::REC_PTTOFF = "V,T21,";
-const char *RecordPort::REC_HOLDON = "V,T08,";
-const char *RecordPort::REC_HOLDOFF = "V,T09,";
-const char *RecordPort::REC_RECORD = "V,I01,";
-const char *RecordPort::REC_PAUSE = "V,I02,";
-const char *RecordPort::REC_RESET = "C,H02";
+//Valores del campo <grabador>: 0 graba en los dos, 1 graba en el primero y 2 graba en el segundo.
+const char *RecordPort::NOTIF_IPADD = "V,I00,";				//V,I00,<ip del puesto o pasarela> Notifica al servicio de grabacion la IP del puesto o pasarela
+const char *RecordPort::INI_SES_REC_TERM = "V,T00,";		//V,T00,<grabador>,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_TERM = "V,T01,";		//V,T01,<grabador>,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso tel (puesto o pasarela) en el grabador
+const char *RecordPort::INI_SES_REC_RAD = "V,G00,";			//V,G00,<grabador>,<Identificador del Recurso Tipo Terminal> Inicia la sesion del Recurso rad (puesto o pasarela) en el grabador
+const char *RecordPort::FIN_SES_REC_RAD = "V,G01,";			//V,T01,<grabador>,<Identificador del Recurso Tipo Terminal> Finaliza la sesion del Recurso rad (puesto o pasarela) en el grabador
+const char *RecordPort::REMOVE_REC_OBJ = "V,DDD,";			//V,DDD,<Identificador del Recurso Tipo Terminal> Elimina en el servicio de grabacion el objeto de la sesion de grabacion
+const char *RecordPort::REC_INV = "V,INV,";					//V,INV,<grabador>,<Identificador del Recurso Tipo Terminal> Se envia al inicio de la llamada. Necesario cuando el grabador esta en modo VOTER
+const char *RecordPort::REC_BYE = "V,BYE,";					//V,BYE,<grabador>,<Identificador del Recurso Tipo Terminal> Se envia al fin de la llamada. Necesario cuando el grabador esta en modo VOTER
+const char *RecordPort::SQUELCH_ON = "V,G02,";				//V,G02,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH on
+const char *RecordPort::SQUELCH_OFF = "V,G03,";				//V,G03,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> SQH off
+const char *RecordPort::REC_BSS = "V,G06,";					//V,G06,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<selected_resource>,<bss method used>,<qidx> Recurso seleccionado en BSS
+const char *RecordPort::REC_CALLSTART = "V,T02,";			//V,T02,<grabador>,<Identificador del Recurso Tipo Terminal>,<callType:in,out,other>,<priority>,<orig tel num>,<dest tel num>,<call id header> Call start
+const char *RecordPort::REC_CALLEND = "V,T03,";				//V,T03,<grabador>,<Identificador del Recurso Tipo Terminal>,<cause>,<origin>,<call id header> Call end
+const char *RecordPort::REC_CALLCONNECTED = "V,T04,";		//V,T04,<grabador>,<Identificador del Recurso Tipo Terminal>,<connected tel num>,<call id header> Call connected
+const char *RecordPort::REC_PTTON = "V,T20,";				//V,T20,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<ptt type>,<connref> PTT ON
+const char *RecordPort::REC_PTTOFF = "V,T21,";				//V,T21,<grabador>,<Identificador del Recurso Tipo Terminal>,<freq>,<connref> PTT OFF
+const char *RecordPort::REC_HOLDON = "V,T08,";				//V,T08,<grabador>,<Identificador del Recurso Tipo Terminal>,<orig num>,<call id header> Hold ON
+const char *RecordPort::REC_HOLDOFF = "V,T09,";				//V,T09,<grabador>,<Identificador del Recurso Tipo Terminal>,<call id header> Hold OFF
+const char *RecordPort::REC_RECORD = "V,I01,";				//V,I01,<grabador>,<Identificador del Recurso Tipo Terminal>,<connref> RECORD
+const char *RecordPort::REC_PAUSE = "V,I02,";				//V,I02,<grabador>,<Identificador del Recurso Tipo Terminal>,<connref> PAUSE
+const char *RecordPort::REC_RESET = "C,H02";				//C,H02	Para el servicio de grabacion
+const char* RecordPort::REC_MEDIA = "V,MMM,";				//V,MMM,<grabador>,<Identificador del Recurso Tipo Terminal>,<num secuencia>,<muestras de audio> Mesaje de media
+
 const char *RecordPort::REC_NOT_MESSAGE = "NOMES";
 
 //Respuestas del grabador
@@ -36,30 +40,175 @@ const char *RecordPort::OVRFLOW = "G,E00,3";
 const char *RecordPort::COMMAND_ERROR = "G,E00,4";
 const char *RecordPort::SESSION_IS_CREATED = "G,E00,5";
 const char *RecordPort::ERROR_INI_SESSION = "G,E00,6"; 
-const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje enviado por el servicio de grabacion por el 65001
+const char *RecordPort::RECORD_SRV_REINI = "G,T11";	//Mensaje recibido desde el servicio de grabacion por el 65001
 
 int RecordPort::timer_id = 1;
+
+pj_sock_t RecordPort::_SockSt = PJ_INVALID_SOCKET;
+pj_activesock_t* RecordPort::_RemoteStSock = NULL;
+
+pj_bool_t RecordPort::ED137_record_enabled = PJ_FALSE;
+RecordPort* RecordPort::_RecordPortTel = NULL;
+RecordPort* RecordPort::_RecordPortRad = NULL;
+std::map<string, RecordPort*> RecordPort::_RecordPortGWRadMap;
+pj_mutex_t* RecordPort::recordPortGWRadMap_mutex = NULL;
+
+void RecordPort::Init(pj_pool_t* pool, int eD137_record_enabled)
+{
+	ED137_record_enabled = eD137_record_enabled != 0 ? PJ_TRUE : PJ_FALSE;
+	if (eD137_record_enabled == 0) return;
+
+	if (SipAgent::AgentType == ULISES || SipAgent::AgentType == SIRTAP_HMI)
+	{		
+		RecordPort::_RecordPortTel = new RecordPort(RecordPort::TEL_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId, "-TEL", BOTH_RECORDERS);
+		RecordPort::_RecordPortRad = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, SipAgent::HostId, "-RAD", BOTH_RECORDERS);
+	}	
+	else
+	{
+		_RecordPortTel = NULL;
+		_RecordPortRad = NULL;
+	}
+
+	pj_status_t st = pj_mutex_create_simple(pool, "RecordPort::Init", &recordPortGWRadMap_mutex);
+	PJ_CHECK_STATUS(st, ("ERROR RecordPort::Init creando recordPortGWRadMap_mutex"));
+
+	//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
+	//Sirve para recibir ordenes del servicio de grabacion. Como por ejemplo la que que se reseteen los puertos de grabacion.
+	pj_sockaddr_in addStIpToBind;
+	pj_bzero(&addStIpToBind, sizeof(addStIpToBind));
+	addStIpToBind.sin_family = pj_AF_INET();
+	addStIpToBind.sin_port = pj_htons(ST_PORT);
+
+	st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
+	PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
+
+	st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
+	PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", ST_PORT));
+
+	//Se crea el active socket para comunicacion con el servicio de grabacion por el puerto estatico 65001
+	//Sirve para recibir ordenes del servicio de grabacion. Como por ejemplo la que que se reseteen los puertos de grabacion.
+	pj_activesock_cb st_cb = { NULL };
+	st_cb.on_data_recvfrom = &OnDataReceivedSt;
+
+	st = pj_activesock_create(pool, _SockSt, pj_SOCK_DGRAM(), NULL, pjsip_endpt_get_ioqueue(pjsua_get_pjsip_endpt()), &st_cb, NULL, &_RemoteStSock);
+	PJ_CHECK_STATUS(st, ("ERROR creando servidor de lectura respuestas del grabador"));
+
+	st = pj_activesock_start_recvfrom(_RemoteStSock, pool, MAX_MSG_LEN, 0);
+	PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
+
+}
+
+void RecordPort::End()
+{	
+	ED137_record_enabled = PJ_FALSE; 
+	if (RecordPort::_RecordPortTel)
+	{
+		delete RecordPort::_RecordPortTel;
+		RecordPort::_RecordPortTel = NULL;
+	}
+
+	if (RecordPort::_RecordPortRad)
+	{
+		delete RecordPort::_RecordPortRad;
+		RecordPort::_RecordPortRad = NULL;
+	}	
+
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	for (std::map<string, RecordPort*>::iterator it = _RecordPortGWRadMap.begin(); it != _RecordPortGWRadMap.end(); it++)
+	{
+		delete it->second;
+	}
+	_RecordPortGWRadMap.clear();
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
+	pj_mutex_destroy(recordPortGWRadMap_mutex);
+
+	if (_RemoteStSock != NULL)
+	{
+		pj_activesock_close(_RemoteStSock);
+		_RemoteStSock = NULL;
+	}
+
+	if (_SockSt != PJ_INVALID_SOCKET)
+	{
+		pj_sock_close(_SockSt);
+		_SockSt = PJ_INVALID_SOCKET;
+	}	 
+}
+
+/**
+ * CreateRecordPortGWRad.	...
+ * Crea un Recordport para grabar un recurso de radio del tipo RTPport usado en Sirtap .
+ * @param	resourceId			Identificador del recurso de radio
+ * @return	nada.
+ */
+void RecordPort::CreateRecordPortGWRad(char* resourceId)
+{
+	if (!ED137_record_enabled) return;
+
+	pj_bool_t resourceID_exists = PJ_FALSE;
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	string resId = resourceId;
+
+	std::map<string, RecordPort*>::iterator it;
+	it = _RecordPortGWRadMap.find(resId);
+	if (it != _RecordPortGWRadMap.end()) resourceID_exists = PJ_TRUE;
+
+	if (!resourceID_exists)
+	{		
+		RecordPort *recport = new RecordPort(RecordPort::RAD_RESOURCE, SipAgent::uaIpAdd, "127.0.0.1", 65003, resourceId, "", BOTH_RECORDERS);
+		_RecordPortGWRadMap[resId] = recport;
+	}
+
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
+}
+
+/**
+ * DestroyRecordPortGWRad.	...
+ * Destruye un Recordport para grabar un recurso de radio del tipo RTPport usado en Sirtap .
+ * @param	resourceId			Identificador del recurso de radio
+ * @return	nada.
+ */
+void RecordPort::DestroyRecordPortGWRad(char* resourceId)
+{
+	pj_bool_t resourceID_exists = PJ_FALSE;
+	pj_mutex_lock(recordPortGWRadMap_mutex);
+	string resId = resourceId;
+
+	std::map<string, RecordPort*>::iterator it;
+	it = _RecordPortGWRadMap.find(resId);
+	if (it != _RecordPortGWRadMap.end()) resourceID_exists = PJ_TRUE;
+
+	if (resourceID_exists)
+	{
+		delete _RecordPortGWRadMap[resId];
+		_RecordPortGWRadMap.erase(it);
+	}
+
+	pj_mutex_unlock(recordPortGWRadMap_mutex);
+}
+
 
 /**
  * RecordPort.	...
  * Crea el puerto pjmedia de grabación.
+ * @param	resType				Tipo de recurso TEL_RESOURCE o RAD_RESOURCE
  * @param	TerminalIpAdd		Direccion IP del Terminal/Pasarela. Es la que se envía con el comando de Notificacion direccion IP Pasarela
- * @param	RecIp				Direccion IP del grabador.
- * @param	recPort				Puerto IP del grabador.
- * @param	RecursoTipoTerminal		Cadena de caracteres con el identificacor del Recurso Tipo Terminal
+ * @param	RecIp				Direccion IP del servicio de grabacion.
+ * @param	recPort				Puerto IP del servicio de grabacion.
+ * @param	TerminalId			Prefijo del Recurso Tipo Terminal. En el Puesto es el PICT0x.
+ * @param	TerminalId_sufix	Suficho del Recurso Tipo Terminal. "-RAD", "-TEL", "-IA"
+ * @param   recorders_to_record Donde se graba.
  * @return	nada.
  */
-RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * RecIp, unsigned recPort, const char *TerminalId)
+RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * RecIp, unsigned recPort, 
+	const char *TerminalId, const char* TerminalId_sufix, RECORDERS_TO_RECORD recorders_to_record)
 {
 	pj_memset(this, 0, sizeof(RecordPort));	
 
 	_Pool = NULL;
-	_Sock = PJ_INVALID_SOCKET;
-	_SockSt = PJ_INVALID_SOCKET;
-	_RemoteSock = NULL;
-	_RemoteStSock = NULL;
+	_Sock = PJ_INVALID_SOCKET;	
+	_RemoteSock = NULL;	
 	_Lock = NULL;
-	TheOtherRec = NULL;
 	Slot = PJSUA_INVALID_ID;
 	ctrlSessEvent = NULL;
 	actions_thread = NULL;
@@ -73,6 +222,8 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 	recording_by_rad = 0;
 	recording_by_tel = 0;
 	memset(frequencies, 0, sizeof(frequencies));
+
+	RecordersToRecord = recorders_to_record;
 	
 	SES_TIM_ID = ++timer_id;
 	COM_TIM_ID = ++timer_id;
@@ -94,10 +245,7 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		pj_assert(sizeof(_RecursoTipoTerminal) > strlen(TerminalId));
 
 		strcpy(_RecursoTipoTerminal, TerminalId);
-		if (resType == TEL_RESOURCE)
-			strcat(_RecursoTipoTerminal, "-TEL");
-		else
-			strcat(_RecursoTipoTerminal, "-RAD");
+		strcat(_RecursoTipoTerminal, TerminalId_sufix);
 
 		pj_status_t st = pj_lock_create_recursive_mutex(_Pool, NULL, &_Lock);
 		PJ_CHECK_STATUS(st, ("ERROR creando seccion critica para puerto de grabacion RecordPort"));
@@ -108,22 +256,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		_Port.port_data.pdata = this;
 		_Port.put_frame = &PutFrame;     //Se llama cuando el puerto src hace put_frame hacia este puerto
 		_Port.reset = &Reset;
-
-		if (resType == TEL_RESOURCE)
-		{
-			//Se crea el socket para comunicacion con el servicio de grabacion por el puerto estatico ST_PORT
-			//Se crea solamente en el recurso del tipo telefonia
-			pj_sockaddr_in addStIpToBind;
-			pj_bzero(&addStIpToBind, sizeof(addStIpToBind));
-			addStIpToBind.sin_family = pj_AF_INET();
-			addStIpToBind.sin_port = pj_htons(ST_PORT);
-
-			st = pj_sock_socket(pj_AF_INET(), pj_SOCK_DGRAM(), 0, &_SockSt);
-			PJ_CHECK_STATUS(st, ("ERROR creando socket _SockSt para envio al grabador"));
-
-			st = pj_sock_bind(_SockSt, &addStIpToBind, sizeof(addStIpToBind));
-			PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", ST_PORT));
-		}
 
 		st = pj_mutex_create_simple(_Pool, "frequencies_mutex", &frequencies_mutex);
 		PJ_CHECK_STATUS(st, ("ERROR creando frequencies_mutex del puerto del grabador"));
@@ -143,8 +275,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		PJ_CHECK_STATUS(st, ("ERROR enlazando socket para puerto de grabacion", "[Ip=%s][Port=%d]", "0.0.0.0", 0));
 
 		//Thread ejecucion acciones sobre grabador
-		st = pj_mutex_create_simple(_Pool, "RecActionsMtx", &record_mutex);
-		PJ_CHECK_STATUS(st, ("ERROR creando mutex de conexion puerto audio con grabador"));
 
 		st = pj_sem_create(_Pool, "RecActionsSem", 0, MAX_REC_COMMANDS_QUEUE*2, &actions_sem);
 		PJ_CHECK_STATUS(st, ("ERROR creando semaforo de acciones al grabador"));		
@@ -180,20 +310,6 @@ RecordPort::RecordPort(int resType, const char * TerminalIpAdd, const char * Rec
 		
 		st = pj_activesock_start_recvfrom(_RemoteSock, _Pool, MAX_MSG_LEN, 0);
 		PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
-
-		if (resType == TEL_RESOURCE)
-		{
-			//Se crea el active socket para comunicacion con el servicio de grabacion por el puerto estatico 65001
-			//Se crea solamente en el recurso del tipo telefonia
-			pj_activesock_cb st_cb = { NULL };
-			st_cb.on_data_recvfrom = &OnDataReceivedSt;
-
-			st = pj_activesock_create(_Pool, _SockSt, pj_SOCK_DGRAM(), NULL, pjsip_endpt_get_ioqueue(pjsua_get_pjsip_endpt()), &st_cb, this, &_RemoteStSock);
-			PJ_CHECK_STATUS(st, ("ERROR creando servidor de lectura respuestas del grabador"));
-		
-			st = pj_activesock_start_recvfrom(_RemoteStSock, _Pool, MAX_MSG_LEN, 0);
-			PJ_CHECK_STATUS(st, ("ERROR iniciando lectura respuestas del grabador"));
-		}		
 
 		//Thread de control de la session
 		st = pj_event_create(_Pool, "CtrlSessEvent", false, false, &ctrlSessEvent);
@@ -298,16 +414,6 @@ void RecordPort::Dispose()
 		pj_sock_close(_Sock);
 	}
 
-	if (_RemoteStSock != NULL)
-	{
-		pj_activesock_close(_RemoteStSock);
-	}
-
-	if (_SockSt != PJ_INVALID_SOCKET)
-	{
-		pj_sock_close(_SockSt);
-	}
-
 	if (_Pool)
 	{
 		pj_pool_release(_Pool);
@@ -317,14 +423,6 @@ void RecordPort::Dispose()
 RecordPort::~RecordPort(void)
 {
 	Dispose();
-}
-
-void RecordPort::SetTheOtherRec(RecordPort *TheOtherRec_)
-{
-	if (TheOtherRec_ != this)
-	{
-		TheOtherRec = TheOtherRec_;
-	}
 }
 
 /**
@@ -903,8 +1001,6 @@ pj_bool_t RecordPort::OnDataReceived(pj_activesock_t * asock, void * data, pj_si
 
 pj_bool_t RecordPort::OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_size_t size, const pj_sockaddr_t *src_addr, int addr_len, pj_status_t status)
 {
-	RecordPort * wp = (RecordPort*)pj_activesock_get_user_data(asock);
-	if (!wp) return PJ_TRUE;
 	pj_status_t st = PJ_SUCCESS;
 	char mess[MAX_MSG_LEN+1];
 	
@@ -922,11 +1018,9 @@ pj_bool_t RecordPort::OnDataReceivedSt(pj_activesock_t * asock, void * data, pj_
 		if (strcmp(RECORD_SRV_REINI, mess) == 0)
 		{
 			PJ_LOG(3,(__FILE__, "RecordPort: Recibido mensaje por el puerto estatico %u: %s. Se ha reiniciado el servicio de grabacion", ST_PORT, mess));	
-			wp->RecResetSession();
-			if (wp->TheOtherRec != NULL)
-			{
-				wp->TheOtherRec->RecResetSession();
-			}
+
+			if (RecordPort::_RecordPortTel) RecordPort::_RecordPortTel->RecResetSession();
+			if (RecordPort::_RecordPortRad) RecordPort::_RecordPortRad->RecResetSession();			
 		}
 		else
 		{
@@ -1207,7 +1301,7 @@ int RecordPort::RecSession(bool on, bool wait_end)
 		else strcpy(mess, FIN_SES_REC_TERM);
 	}
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1216,7 +1310,10 @@ int RecordPort::RecSession(bool on, bool wait_end)
 
 	if (ret == 0)
 	{
-		strcat(mess, _RecursoTipoTerminal);
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0};
+		strcat(mess, recTorec);
+		strcat(mess, ",");
+		strcat(mess, _RecursoTipoTerminal);		
 		size_t messlen = strlen((const char *) mess);
 
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
@@ -1331,7 +1428,7 @@ int RecordPort::RecINV()
 	pj_bzero(mess, sizeof(mess));	
 	strcpy(mess, REC_INV);
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1340,9 +1437,11 @@ int RecordPort::RecINV()
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		size_t messlen = strlen((const char *) mess);
-
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
 		if (ret)
 		{
@@ -1374,7 +1473,7 @@ int RecordPort::RecBYE()
 	pj_bzero(mess, sizeof(mess));	
 	strcpy(mess, REC_BYE);
 
-	if ((strlen(mess) + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
+	if ((strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1) > sizeof(mess))
 	{
 		//La cadena no cabe en mess
 		st = PJ_ENOMEM;
@@ -1383,9 +1482,11 @@ int RecordPort::RecBYE()
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
-		size_t messlen = strlen((const char *) mess);
-
+		size_t messlen = strlen((const char *) mess);		
 		ret = Add_Rec_Command_Queue(mess, messlen, &Rec_Command_queue);
 		if (ret)
 		{
@@ -1473,7 +1574,7 @@ int RecordPort::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_CALLSTART);	
 
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+7+strlen(_tel)+strlen(ori_tel)+strlen(_tel)+strlen(dest_tel)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+7+strlen(_tel)+strlen(ori_tel)+strlen(_tel)+strlen(dest_tel)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1482,6 +1583,9 @@ int RecordPort::RecCallStart(int dir, CORESIP_Priority priority, const pj_str_t 
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 
@@ -1591,7 +1695,7 @@ int RecordPort::RecCallEnd(int cause, pjsua_call_media_status media_status, int 
 	pj_bzero(buforigin, sizeof(buforigin));
 	pj_utoa((unsigned long)	disc_origin, buforigin);
 
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+3+strlen(bufcause)+strlen(buforigin)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+3+strlen(bufcause)+strlen(buforigin)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1600,6 +1704,9 @@ int RecordPort::RecCallEnd(int cause, pjsua_call_media_status media_status, int 
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, bufcause);
@@ -1666,7 +1773,7 @@ int RecordPort::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* 
 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_CALLCONNECTED);
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+2+strlen(_tel)+strlen(connected_tel)+strlen(charcallIdHdrVal);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+2+strlen(_tel)+strlen(connected_tel)+strlen(charcallIdHdrVal);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1675,6 +1782,9 @@ int RecordPort::RecCallConnected(const pj_str_t *connected_uri, const pj_str_t* 
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, _tel);
@@ -1748,12 +1858,12 @@ int RecordPort::RecHold(bool on, bool llamante, pjsua_call_media_status media_st
 	if (on) 
 	{
 		strcpy(mess, REC_HOLDON);
-		len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+1+1+strlen(charcallIdHdrVal);
+		len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+1+1+strlen(charcallIdHdrVal);
 	}
 	else 
 	{
 		strcpy(mess, REC_HOLDOFF);
-		len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+strlen(charcallIdHdrVal);
+		len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(charcallIdHdrVal);
 	}
 	if (len_mess >= sizeof(mess)) 
 	{
@@ -1763,6 +1873,9 @@ int RecordPort::RecHold(bool on, bool llamante, pjsua_call_media_status media_st
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		if (on && llamante) 
@@ -1863,9 +1976,9 @@ int RecordPort::RecPTT_send(bool on, const char *freq, CORESIP_PttType PTT_type,
 	size_t len_mess;
 	
 	if (on)
-		len_mess = strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + 1 + 1 + strlen(pttConnRef);
+		len_mess = strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + 1 + 1 + strlen(pttConnRef);
 	else
-		len_mess = strlen(mess) + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + strlen(pttConnRef);
+		len_mess = strlen(mess) + 4 + strlen(_RecursoTipoTerminal) + 1 + strlen(freq) + 1 + strlen(pttConnRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -1875,7 +1988,9 @@ int RecordPort::RecPTT_send(bool on, const char *freq, CORESIP_PttType PTT_type,
 	if (ret == 0)
 	{
 		//nsec_media = 0;		
-
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);		
@@ -1999,7 +2114,7 @@ int RecordPort::RecSQU_send(bool on, const char *freq, char* squConnRef)
 	{	
 		strcpy(mess, SQUELCH_OFF);
 	}
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+strlen(squConnRef);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+strlen(squConnRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -2010,6 +2125,9 @@ int RecordPort::RecSQU_send(bool on, const char *freq, char* squConnRef)
 	{
 		//nsec_media = 0;		
 
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);
@@ -2063,7 +2181,7 @@ int RecordPort::Record(bool on, char* connRef)
 	{	
 		strcpy(mess, REC_PAUSE);
 	}
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+strlen(connRef);
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(connRef);
 	if (len_mess >= sizeof(mess)) 
 	{
 		st = PJ_ENOMEM;
@@ -2074,6 +2192,9 @@ int RecordPort::Record(bool on, char* connRef)
 	{
 		nsec_media = 0;		
 
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, connRef);
@@ -2136,7 +2257,7 @@ int RecordPort::RecBSS_send(const char *freq, const char *selected_resource, con
 
 	pj_bzero(mess, sizeof(mess));
 	strcpy(mess, REC_BSS);
-	size_t len_mess = strlen(mess)+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+
+	size_t len_mess = strlen(mess)+4+strlen(_RecursoTipoTerminal)+1+strlen(freq)+1+
 		strlen(selected_resource)+1+strlen(sbssmethod)+1+strlen(sqidx);
 	if (len_mess >= sizeof(mess)) 
 	{
@@ -2146,6 +2267,9 @@ int RecordPort::RecBSS_send(const char *freq, const char *selected_resource, con
 
 	if (ret == 0)
 	{
+		char recTorec[4] = { '#', (char)RecordersToRecord, '#', 0 };
+		strcat(mess, recTorec);
+		strcat(mess, ",");
 		strcat(mess, _RecursoTipoTerminal);
 		strcat(mess, ",");
 		strcat(mess, freq);
@@ -2223,10 +2347,10 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 	pj_utoa((unsigned long) pThis->nsec_media, snsec);
 		
 	pThis->mess_media[0] = 0;
-	strcpy(pThis->mess_media, "V,MMM,");
+	strcpy(pThis->mess_media, REC_MEDIA);
 
 	size_t mess_len;
-	mess_len = strlen(pThis->mess_media) + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size/2;
+	mess_len = strlen(pThis->mess_media) + 4 /*grabador*/ + strlen(pThis->_RecursoTipoTerminal) + 1 /* , */ + strlen(snsec) + 1 /* , */ + frame->size / 2;
 
 #ifdef REC_IN_FILE
 	pj_ssize_t mess_len_tx = mess_len - frame->size/2;
@@ -2234,9 +2358,13 @@ pj_status_t RecordPort::PutFrame(pjmedia_port * port, const pjmedia_frame *frame
 
 	pj_assert(mess_len <= sizeof(pThis->mess_media));
 
+	char recTorec[4] = { '#', (char)pThis->RecordersToRecord, '#', 0 };
+	strcat(pThis->mess_media, recTorec);
+	strcat(pThis->mess_media, ",");
+
 	strcat(pThis->mess_media, pThis->_RecursoTipoTerminal);
 	strcat(pThis->mess_media, ",");
-		
+
 	strcat(pThis->mess_media, snsec);
 	strcat(pThis->mess_media, ",");
 	pThis->nsec_media++;
@@ -2834,6 +2962,33 @@ void RecordPort::GetSndTypeString(CORESIP_SndDevType type, char * SndDevType_ret
 		break;
 	}
 }
+
+/**
+ * GetRecordPortFromResource.	...
+ * Retorna el RecordPort.
+ * @param   uri. Uri del recurso. Puede ser NULL.
+ * @param	Id. Identificador del recurso. Seria el usuario de la uri. Puede ser NULL.
+ * @param	type. Tipo de recurso
+ * @param	SndDevType_returned. String retornado
+ * @return	El tipo de dispositivo que se graba.
+ */
+RecordPort* RecordPort::GetRecordPortFromResource(const pj_str_t* uri, const pj_str_t* Id, CORESIP_Resource_Type type)
+{
+	if (!ED137_record_enabled) return NULL;
+
+	if (SipAgent::AgentType == ULISES || SipAgent::AgentType == SIRTAP_HMI)
+	{
+		if (type == Rd) return _RecordPortRad;
+		else return _RecordPortTel;
+	}
+
+	if (SipAgent::AgentType == SIRTAP_NBX && type != Rd) return NULL;
+
+	
+
+	return NULL;
+}
+
 
 
 

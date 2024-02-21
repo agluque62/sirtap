@@ -263,7 +263,7 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
             if (datosRadio != null)
             {
-                CBSeguro.Enabled = true;
+                CBSeguro.Enabled = false;// true;
                 for (int i = 0; i < datosRadio.Length; i++)
                 {
                     uint pos = ((ServiciosCD40.DestinosRadioSector)datosRadio[i]).PosHMI;

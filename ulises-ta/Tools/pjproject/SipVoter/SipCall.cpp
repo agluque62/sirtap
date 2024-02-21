@@ -827,14 +827,10 @@ int SipCall::Hacer_la_llamada_saliente()
 		//Envia CallStart al grabador
 		pjsua_acc_info info_acc;
 		pjsua_acc_get_info(make_call_params.acc_id, &info_acc);
+		SipAgent::RecINV(&pj_str(const_cast<char*>(make_call_params.dst_uri)), _Info.Type);
 		if (_Info.Type != CORESIP_CALL_RD)
-		{
-			SipAgent::RecINVTel();
-			SipAgent::RecCallStart(SipAgent::OUTCOM, _Info.Priority, &info_acc.acc_uri, &pj_str(const_cast<char*>(make_call_params.dst_uri)), &dlg->call_id->id);
-		}
-		else
-		{
-			SipAgent::RecINVRad();
+		{			
+			SipAgent::RecCallStart(SipAgent::OUTCOM, _Info.Priority, &info_acc.acc_uri, &pj_str(const_cast<char*>(make_call_params.dst_uri)), &dlg->call_id->id, _Info.Type);
 		}
 
 		pjsip_dlg_dec_lock(dlg);
@@ -2065,6 +2061,9 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				EliminarRadSessionDelGrupo(call);					
 			}
 
+			pj_str_t* remote_uri = NULL;
+			if (call->_Dlg) remote_uri = &call->_Dlg->remote.info_str;
+			
 			if (call->_Info.Type != CORESIP_CALL_RD)
 			{
 				pj_str_t* callIdHdrVal = NULL;
@@ -2074,19 +2073,16 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				if (st == PJ_SUCCESS)
 				{
 					callIdHdrVal = &dlg->call_id->id;
-					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, pjcall->media_st, CALLEND_UNKNOWN, callIdHdrVal);
+					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, pjcall->media_st, CALLEND_UNKNOWN, callIdHdrVal, remote_uri, call->_Info.Type);
 					pjsip_dlg_dec_lock(dlg);
 				}
 				else
 				{
-					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_UNKNOWN, callIdHdrVal);
+					SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_UNKNOWN, callIdHdrVal, remote_uri, call->_Info.Type);
 				}
-				SipAgent::RecBYETel();
 			}
-			else
-			{
-				SipAgent::RecBYERad();
-			}
+			
+			SipAgent::RecBYE(remote_uri, call->_Info.Type);
 
 			SignalGen::StopAllTones(call_id);
 			SignalGen::StopNoiseToCall(call_id);
@@ -2563,26 +2559,19 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 			if (st == PJ_SUCCESS)
 			{
 				callIdHdrVal = &dlg->call_id->id;
-				SipAgent::RecCallConnected(&callInfo.remote_info, callIdHdrVal);
+				SipAgent::RecCallConnected(&callInfo.remote_info, callIdHdrVal, call->_Info.Type);
 				pjsip_dlg_dec_lock(dlg);
 			}
 			else
 			{
-				SipAgent::RecCallConnected(&callInfo.remote_info, callIdHdrVal);
+				SipAgent::RecCallConnected(&callInfo.remote_info, callIdHdrVal, call->_Info.Type);
 			}
 		}	
 	}
 	else if (callInfo.state == PJSIP_INV_STATE_DISCONNECTED)
 	{	
-		if (call->_Info.Type == CORESIP_CALL_RD)
-		{
-			SipAgent::RecBYERad();
-		}
-		else
-		{
-			SipAgent::RecBYETel();
-		}
-
+		pj_str_t* remote_uri = NULL;
+		if (call->_Dlg) remote_uri = &call->_Dlg->remote.info_str;
 		if (call->_Info.Type != CORESIP_CALL_RD)
 		{				
 			pj_str_t* callIdHdrVal = NULL;
@@ -2605,19 +2594,16 @@ void SipCall::OnStateChanged(pjsua_call_id call_id, pjsip_event * e)
 				default:
 					cause = Q850_CALL_REJECTED;
 				}
-				SipAgent::RecCallEnd(cause, pjcall->media_st, CALLEND_DEST, callIdHdrVal);
+				SipAgent::RecCallEnd(cause, pjcall->media_st, CALLEND_DEST, callIdHdrVal, remote_uri, call->_Info.Type);
 				pjsip_dlg_dec_lock(dlg);
 			}
 			else
 			{
-				SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_DEST, callIdHdrVal);
+				SipAgent::RecCallEnd(Q850_NORMAL_CALL_CLEARING, PJSUA_CALL_MEDIA_ACTIVE, CALLEND_DEST, callIdHdrVal, remote_uri, call->_Info.Type);
 			}
-			SipAgent::RecBYETel();
 		}
-		else
-		{
-			SipAgent::RecBYERad();
-		}	
+		
+		SipAgent::RecBYE(remote_uri, call->_Info.Type);
 
 		if (call->assigned_pttid != 0)
 		{
@@ -3169,21 +3155,17 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
 		pj_bool_t RecCallStart_sent = PJ_FALSE;
 		//Envia mensaje CallStart al grabador
-		if (info.Type != CORESIP_CALL_RD)
+		//Para extraer la uri origen
+		pjsua_call_info info_call_id;
+		st = pjsua_call_get_info(call_id, &info_call_id);
+		if (st == PJ_SUCCESS)
 		{
-			//Para extraer la uri origen
-			pjsua_call_info info_call_id;
-			st = pjsua_call_get_info(call_id, &info_call_id);
-			if (st == PJ_SUCCESS)
+			SipAgent::RecINV(&info_call_id.remote_contact, info.Type);
+			if (info.Type != CORESIP_CALL_RD)
 			{
-				SipAgent::RecINVTel();
-				SipAgent::RecCallStart(SipAgent::INCOM, info.Priority, &info_call_id.remote_contact, &info_acc_id.acc_uri, &dlg->call_id->id);
+				SipAgent::RecCallStart(SipAgent::INCOM, info.Priority, &info_call_id.remote_contact, &info_acc_id.acc_uri, &dlg->call_id->id, info.Type);
 				RecCallStart_sent = PJ_TRUE;
 			}
-		}
-		else
-		{
-			SipAgent::RecINVRad();
 		}
 
 		pjsip_dlg_dec_lock(dlg);
@@ -3366,16 +3348,12 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 					pjsua_call_answer(call_id, PJSIP_SC_BAD_REQUEST, NULL, NULL);	
 
 					if (RecCallStart_sent)
-					{
+					{	
 						if (sipcall->_Info.Type != CORESIP_CALL_RD)
 						{
-							SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id);
-							SipAgent::RecBYETel();
+							SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id, &info_call_id.remote_contact, info.Type);
 						}
-						else
-						{
-							SipAgent::RecBYERad();
-						}
+						SipAgent::RecBYE(&info_call_id.remote_contact, info.Type);
 					}
 
 					return;
@@ -3390,13 +3368,9 @@ void SipCall::OnIncommingCall(pjsua_acc_id acc_id, pjsua_call_id call_id,
 				{
 					if (sipcall->_Info.Type != CORESIP_CALL_RD)
 					{
-						SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id);
-						SipAgent::RecBYETel();
+						SipAgent::RecCallEnd(Q850_CALL_REJECTED, PJSUA_CALL_MEDIA_NONE, CALLEND_DEST, &sipcall->_Dlg->call_id->id, &info_call_id.remote_contact, info.Type);
 					}
-					else
-					{
-						SipAgent::RecBYERad();
-					}
+					SipAgent::RecBYE(&info_call_id.remote_contact, info.Type);
 				}
 
 				return;
@@ -3625,32 +3599,32 @@ void SipCall::OnMediaStateChanged(pjsua_call_id call_id, int *returned_code)
 					{
 						if (callInfo.media_status == PJSUA_CALL_MEDIA_LOCAL_HOLD)
 						{
-							SipAgent::RecHold(true, true, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(true, true, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}
 						else if (callInfo.media_status == PJSUA_CALL_MEDIA_ACTIVE)
 						{
-							SipAgent::RecHold(false, true, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(false, true, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}
 						else if (callInfo.media_status == CORESIP_MEDIA_REMOTE_HOLD ||
 							callInfo.media_status == PJSUA_CALL_MEDIA_NONE) 
 						{
-							SipAgent::RecHold(true, false, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(true, false, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}
 					}
 					else												//Este agente es el llamado
 					{
 						if (callInfo.media_status == PJSUA_CALL_MEDIA_LOCAL_HOLD)
 						{
-							SipAgent::RecHold(true, false, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(true, false, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}
 						else if (callInfo.media_status == PJSUA_CALL_MEDIA_ACTIVE)
 						{
-							SipAgent::RecHold(false, false, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(false, false, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}
 						else if (callInfo.media_status == CORESIP_MEDIA_REMOTE_HOLD ||
 							callInfo.media_status == PJSUA_CALL_MEDIA_NONE) 
 						{
-							SipAgent::RecHold(true, true, callInfo.media_status, &dlg->call_id->id);
+							SipAgent::RecHold(true, true, callInfo.media_status, &dlg->call_id->id, &dlg->remote.info_str, sipcall->_Info.Type);
 						}										
 					}
 				}
