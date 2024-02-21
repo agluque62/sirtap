@@ -51,10 +51,10 @@
             this._MainTLP.Margin = new System.Windows.Forms.Padding(0);
             this._MainTLP.Name = "_MainTLP";
             this._MainTLP.RowCount = 4;
-            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.811587F));
-            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.30475F));
-            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 41.78699F));
-            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.09667F));
+            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.811587F));
+            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 36.30475F));
+            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 39.78699F));
+            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.09667F));
             this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             //this._MainTLP.Size = new System.Drawing.Size(600, 800);
             this._MainTLP.Size = new System.Drawing.Size(800, 1280);//240221
@@ -95,6 +95,7 @@
             this._RdWS.Name = "_RdWS";
             //this._RdWS.Size = new System.Drawing.Size(598, 304);
             this._RdWS.Size = new System.Drawing.Size(800-2, 304);//240221
+            this._RdWS.Size = new System.Drawing.Size(800-2, 304);//240221
             this._RdWS.TabIndex = 1;
             this._RdWS.Text = "deckWorkspace2";
             // 
@@ -117,7 +118,7 @@
             this.Controls.Add(this._MainTLP);
             this.Name = "ShellLayoutView";
             //this.Size = new System.Drawing.Size(600, 800);
-            this.Size = new System.Drawing.Size(800,1280);//240225
+            this.Size = new System.Drawing.Size(800,1280);//240221
             this._MainTLP.ResumeLayout(false);
             this.ResumeLayout(false);
 
