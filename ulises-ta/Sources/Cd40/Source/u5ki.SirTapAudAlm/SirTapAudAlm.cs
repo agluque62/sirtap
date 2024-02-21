@@ -318,6 +318,8 @@ namespace u5ki.SirTapAudAlm
                         MemoryStream ms = new MemoryStream(data);
                         SirTapAudAlarmMsg alarmaMsg = Serializer.Deserialize<SirTapAudAlarmMsg>(ms);
 
+                        LogInfo<SirTapAudAlm>($"Alarma recibida: timeStamp {alarmaMsg.timeStamp} alertId {alarmaMsg.alertId} state {alarmaMsg.state} priority {alarmaMsg.priority} rpa {alarmaMsg.rpa_associated} ");
+
                         MemoryStream mstream = new MemoryStream();
                         Serializer.Serialize(mstream, alarmaMsg);
                         byte[] data_to_send = mstream.ToArray();

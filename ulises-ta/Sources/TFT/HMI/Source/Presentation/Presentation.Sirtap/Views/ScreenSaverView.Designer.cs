@@ -108,6 +108,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "ScreenSaverView";
             this.Size = new System.Drawing.Size(800, 600);
+            this.Size = new System.Drawing.Size(1280, 800);//240221
             ((System.ComponentModel.ISupportInitialize)(this._LogoPB)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

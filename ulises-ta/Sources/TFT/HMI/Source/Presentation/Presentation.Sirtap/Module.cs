@@ -208,6 +208,7 @@ namespace HMI.Presentation.Sirtap
             // Add window workspace to be used for modal windows
             //231124
             _shellLayout.ParentForm.Size = new System.Drawing.Size(600, 800);
+            _shellLayout.ParentForm.Size = new System.Drawing.Size(800, 1280);//240221
             WindowWorkspace wsp = new WindowWorkspace(_shellLayout.ParentForm);
             _rootWorkItem.Workspaces.Add(wsp, WorkspaceNames.ModalWindows);
 

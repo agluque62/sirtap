@@ -64,7 +64,8 @@ namespace HMI.Presentation.Sirtap.UI
             get { return _LevelBar.Value; }
             set
             {
-                _LevelBar.Value = value;
+                if (value>=0)
+                    _LevelBar.Value = value;
                 _DownBT.Enabled = _LevelBar.Value > _LevelBar.Minimum;
                 _UpBT.Enabled = _LevelBar.Value < _LevelBar.Maximum;
             }

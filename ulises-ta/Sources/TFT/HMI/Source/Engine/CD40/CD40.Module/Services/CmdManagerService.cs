@@ -2338,11 +2338,13 @@ namespace HMI.CD40.Module.Services
 
             if (Top.Recorder.Briefing)  // Si se hace PTT mientras está abierta una sesión briefing, esta se corta
                 Top.Recorder.SessionGlp(FuentesGlp.Briefing, false);
- 
+
             // no se permite llamar si el altavoz no está presente
-            if (!Top.Hw.LCSpeaker)
+            //if (!Top.Hw.LCSpeaker)
+            // En sirtap solo se necesitan los cascos para usar la lina caliente
+            if (!Top.Hw.AlumnJack)
             {
-                int _BadOperationTone = SipAgent.CreateWavPlayer("Resources/Tones/Falsa_Maniobra.wav", true);
+                    int _BadOperationTone = SipAgent.CreateWavPlayer("Resources/Tones/Falsa_Maniobra.wav", true);
                 Top.Mixer.Link(_BadOperationTone, MixerDev.SpkRd, MixerDir.Send, Mixer.RD_PRIORITY, FuentesGlp.RxRadio);
                 Top.Mixer.SetVolumeTones(CORESIP_SndDevType.CORESIP_SND_RD_SPEAKER);//#5829
                 Top.PublisherThread.Enqueue(EventTopicNames.ShowNotifMsgEngine, delegate()

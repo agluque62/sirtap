@@ -435,7 +435,10 @@ namespace HMI.Presentation.Sirtap.Views
             //    }
             //}
             //Estados de los botones
-            _PttBT.ButtonColor = _StateManager.Radio.PttOn ? VisualStyle.Colors.Blue : VisualStyle.ButtonColorN;
+            if (_StateManager.Tft.ModoNocturno)
+                _PttBT.ButtonColor = _StateManager.Radio.PttOn ? VisualStyle.Colors.Blue : VisualStyle.ButtonColorN;
+            else
+                _PttBT.ButtonColor = _StateManager.Radio.PttOn ? VisualStyle.Colors.Blue : VisualStyle.ButtonColor;
             _PttBT.ForeColor = VisualStyle.TextoRadioColor;
             _RtxBT.Enabled = _RtxEnabled;
             _RdPageBT.Enabled = _RdPageEnabled;
