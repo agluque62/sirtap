@@ -536,4 +536,38 @@ namespace ConfiguracionElementosHw
         public Conferencia[] ConferenciaProgramada;
     }
     #endregion
+    #region Misiones
+    public class MisionLC
+    {
+        public string MisionPosicion;
+        public string MisionHmi;
+        public string Segura;
+    }
+    public class MisionRadio
+    {
+        public string IdPagina;
+    }
+    public class MisionTelefonia
+    {
+        public string IdPagina;
+    }
+    public class MisionAlarmasAcusticas
+    {
+        public string IdAlarma;
+        public string Tipo;
+    }
+    public class Mision
+    {
+        public string Descripcion;
+        public string Tipo;
+        public MisionRadio[] MSR;
+        public MisionTelefonia[] MST;
+        public MisionLC[] MLC;
+        public MisionAlarmasAcusticas[] MAA;
+    }
+    public class MisionesProgramadas
+    {
+        public  Mision[] MisionesProg; 
+    }
+    #endregion
 }

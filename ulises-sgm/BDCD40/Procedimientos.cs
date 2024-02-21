@@ -95,6 +95,10 @@ namespace CD40.BD
             return string.Empty;
         }
 
+
+
+
+
         public static string[] UsuariosImplicadosEnRecurso(MySqlConnection mySqlConnectionToCd40, string id_sistema, string id_destino)
         {
             int i = 0;
@@ -5229,5 +5233,64 @@ namespace CD40.BD
             }
             return null;
         }
+
+        //(Description = "Pasándole el identificador de operador y clave, devuelve la misión asignada")
+        public static string GetMisionAsignada(MySqlConnection mySqlConnectionToCd40, string Id_Operador, string Id_Clave)
+        {
+            if (mySqlConnectionToCd40 != null)
+            {
+                System.Data.IDataParameter[] parametros;
+                DataSet dataResultado = new DataSet();
+
+                MySqlCommand myCommand = new MySqlCommand("GetMisionAsignada", mySqlConnectionToCd40);
+                myCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                MySqlParameter p1 = new MySqlParameter("id_operador", MySqlDbType.Text);
+                MySqlParameter p2 = new MySqlParameter("id_clave", MySqlDbType.Text);
+                MySqlParameter p3 = new MySqlParameter("descripcion", MySqlDbType.Text);
+                p1.Direction = System.Data.ParameterDirection.Input;
+                p2.Direction = System.Data.ParameterDirection.Input;
+                p3.Direction = System.Data.ParameterDirection.Output;
+
+                p1.Value = Id_Operador;
+                p2.Value = Id_Clave;
+                myCommand.Parameters.Add(p1);
+                myCommand.Parameters.Add(p2);
+                myCommand.Parameters.Add(p3);
+                try
+                {
+                    if (myCommand.Connection.State != ConnectionState.Open)
+                    {
+                        myCommand.Connection.Open();
+
+                        MySqlDataAdapter myDataAdapter = new MySqlDataAdapter(myCommand);
+                        dataResultado.Clear();
+                        myDataAdapter.Fill(dataResultado);
+                        parametros = myDataAdapter.GetFillParameters();
+                        myCommand.Connection.Close();
+                        if (parametros[2].Value != null)
+                            return parametros[2].Value.ToString();
+                    }
+                    else
+                    {
+                        MySqlDataAdapter myDataAdapter = new MySqlDataAdapter(myCommand);
+                        dataResultado.Clear();
+                        myDataAdapter.Fill(dataResultado);
+                        parametros = myDataAdapter.GetFillParameters();
+                        myCommand.Connection.Close();
+
+                        if (parametros[2].Value != null)
+                            return parametros[2].Value.ToString();
+                    }
+                }
+                catch (MySqlException)
+                {
+                    myCommand.Connection.Close();
+                }
+
+            }
+            return string.Empty;
+        }
+
+
     }
 }

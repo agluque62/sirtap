@@ -21,7 +21,7 @@ public partial class GestionBR : PageBaseCD40.PageCD40
 {
     /// 
     /// </summary>
-    private Mensajes.msgBox cMsg;
+   // private Mensajes.msgBox cMsg;
     /// 
     /// </summary>
     private static ILog _logDebugView;

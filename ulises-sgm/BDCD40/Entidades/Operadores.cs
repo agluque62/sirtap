@@ -94,15 +94,19 @@ namespace CD40.BD.Entidades
             set { _SesionEstado = value; }
         }
 
+        // Modo de Operación
+        private bool _Seguro;
+        public bool Seguro
+        {
+            get { return _Seguro; }
+            set { _Seguro = value; }
+        }  
 
         #endregion
 
-		//static AccesoABaseDeDatos ServiceAccesoABaseDeDatos;
 
         public Operadores()
         {
-			//if (ServiceAccesoABaseDeDatos == null)
-			//    ServiceAccesoABaseDeDatos = new AccesoABaseDeDatos();
         }
 
         public override string DataSetSelectSQL()
@@ -154,7 +158,8 @@ namespace CD40.BD.Entidades
                         top.SesionActiva = (int)dr["SesionActiva"];
                     if (dr["SesionEstado"] != System.DBNull.Value)
                         top.SesionEstado = (int)dr["SesionEstado"];
-
+                    if (dr["Seguro"] != System.DBNull.Value)
+                        top.Seguro = Convert.ToBoolean(dr["Seguro"]);
                     ListaResultado.Add(top);
                 }
             }
@@ -166,8 +171,8 @@ namespace CD40.BD.Entidades
             string[] consulta = new string[2];
             StringBuilder strConsulta = new StringBuilder();
 
-            strConsulta.Append("INSERT INTO Operadores (IdOperador,IdSistema,Clave,NivelAcceso,Nombre,Apellidos,Telefono,FechaUltAcceso,Comentarios,TimeoutSesion, SesionActiva, SesionEstado) ");
-            strConsulta.AppendFormat("VALUES ('{0}','{1}','{2}',{3},'{4}','{5}','{6}',STR_TO_DATE('{7}','%d/%m/%Y'),'{8}',{9},{10},{11})", IdOperador, IdSistema, Clave, NivelAcceso, Nombre, Apellidos, Telefono, FechaUltimoAcceso.ToString("dd/MM/yyyy"), Comentarios, TimeoutSesion, SesionActiva, SesionEstado);
+            strConsulta.Append("INSERT INTO Operadores (IdOperador,IdSistema,Clave,NivelAcceso,Nombre,Apellidos,Telefono,FechaUltAcceso,Comentarios,TimeoutSesion, SesionActiva, SesionEstado, Seguro) ");
+            strConsulta.AppendFormat("VALUES ('{0}','{1}','{2}',{3},'{4}','{5}','{6}',STR_TO_DATE('{7}','%d/%m/%Y'),'{8}',{9},{10},{11},{12})", IdOperador, IdSistema, Clave, NivelAcceso, Nombre, Apellidos, Telefono, FechaUltimoAcceso.ToString("dd/MM/yyyy"), Comentarios, TimeoutSesion, SesionActiva, SesionEstado, Seguro);
 
             consulta[0] = strConsulta.ToString();
             consulta[1] = ReplaceSQL(IdSistema, "Operadores");
@@ -184,10 +189,8 @@ namespace CD40.BD.Entidades
             StringBuilder strConsulta = new StringBuilder();
 
             strConsulta.AppendFormat("UPDATE Operadores SET IdOperador='{0}', IdSistema='{1}',Clave='{2}',NivelAcceso={3},Nombre='{4}',Apellidos='{5}',Telefono='{6}',", IdOperador, IdSistema, Clave, NivelAcceso, Nombre, Apellidos, Telefono);
-            strConsulta.AppendFormat("FechaUltAcceso=STR_TO_DATE('{0}','%d/%m/%Y'),Comentarios='{1}', TimeoutSesion={2}, SesionActiva={3}, SesionEstado={4} ", FechaUltimoAcceso.ToString("dd/MM/yyyy"), Comentarios, TimeoutSesion, SesionActiva, SesionEstado);
+            strConsulta.AppendFormat("FechaUltAcceso=STR_TO_DATE('{0}','%d/%m/%Y'),Comentarios='{1}', TimeoutSesion={2}, SesionActiva={3}, SesionEstado={4},Seguro={5} ", FechaUltimoAcceso.ToString("dd/MM/yyyy"), Comentarios, TimeoutSesion, SesionActiva, SesionEstado,Seguro);
             strConsulta.AppendFormat("WHERE IdOperador='{0}' AND IdSistema='{1}'", IdOperador, IdSistema);
-
-
             consulta[0] = strConsulta.ToString();
             consulta[1] = ReplaceSQL(IdSistema, "Operadores");
 
@@ -216,13 +219,5 @@ namespace CD40.BD.Entidades
 
             return consulta;
         }
-
-		//public override int SelectCountSQL(string where)
-		//{
-		//    Consulta.Remove(0, Consulta.Length);
-		//    Consulta.Append("SELECT COUNT(*) FROM Operadores WHERE " + where);
-
-		//    return Convert.ToInt32(ServiceAccesoABaseDeDatos.ExecuteScalar(Consulta.ToString()));
-		//}
     }
 }

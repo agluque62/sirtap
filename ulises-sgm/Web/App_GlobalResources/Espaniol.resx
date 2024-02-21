@@ -1018,4 +1018,16 @@
   <data name="TXTEliminarElemento" xml:space="preserve">
     <value>¿Esta usted seguro de eliminar la conferencia:?</value>
   </data>
+  <data name="AvisoOperadoresAsignadosAMision" xml:space="preserve">
+    <value>Operadores asignados a misión. No es posible modificación.</value>
+  </data>
+  <data name="EliminarMision" xml:space="preserve">
+    <value>¿Desea eliminar la misión: "{0}"?</value>
+  </data>
+  <data name="ErrorEliminarMision" xml:space="preserve">
+    <value>Ha ocurrido un error: La misión "{0}" no ha sido borrada.</value>
+  </data>
+  <data name="AvisoNoExistenMisiones" xml:space="preserve">
+    <value>No existen misiones. Debe usted crear una misión.</value>
+  </data>
 </root>

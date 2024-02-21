@@ -30,7 +30,6 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
     private static bool OldSeleccionadoFS = false;
     //20210317 #4749
     private enum accion { alta = 0, baja = 1, modificacion = 2, presentacion = 3 };
-    private static bool ControlDependenciasATS = false;
     //20210518 #4824
     private enum Estado_Sector { NO_ASOCIADO = 1, ASOCIADO_NOACTIVA = 2, ASOCIADO_ACTIVANOSACTA = 3, ASOCIADO_ACTIVASACTA = 4, ERROR_SQL = 5 }
     private static uint NumSectoresActuales = 0;
@@ -141,10 +140,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                     NewItem = (string)Session["NombreSector"];
                     Session["NombreSector"] = null;
                 }
-                // 20210317 #4749
-                // ControlDependenciasATS = SistemaConDependenciasATS();
-                // RQF-4
-                ControlDependenciasATS = false;
+
                 ObtenerNumeroMaximoSectores();
 
 				MuestraDatos(DameDatos());
@@ -371,6 +367,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                 }
                 catch (Exception ex)
                 {
+                    logDebugView.Error("(Sector:MostrarElemento): ", ex);
                     DListTipoPosicion.SelectedValue = "C";
                 }
 
@@ -1034,64 +1031,6 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
     			ActualizaWebPadre(true);
 
             ActualizaPermisosRedes(n.IdSector);
-
-            Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-            KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-            if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-            {
-                List<string> listaNumPub = new List<string>();
-                List<string> listaNumATS = new List<string>();
-
-                if (DSNumerosAbonados.Tables.Count > 0)
-                {
-                    ServiciosCD40.UsuariosAbonados t = new ServiciosCD40.UsuariosAbonados();
-
-                    for (int i = 0; i < DSNumerosAbonados.Tables[0].Rows.Count; i++)
-                    {
-                        t.IdPrefijo = (uint)DSNumerosAbonados.Tables[0].Rows[i].ItemArray[1];
-                        t.IdAbonado = (string)DSNumerosAbonados.Tables[0].Rows[i].ItemArray[2];
-                        //falta el prefijo
-                        if (t.IdPrefijo == 3)//ATS
-                            listaNumATS.Add(t.IdAbonado);
-                        else
-                            if (t.IdPrefijo > 3) //NumPub
-                                listaNumPub.Add(t.IdAbonado);
-                    }
-                }
-                SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                if (TxtIdSector.Enabled) //Sector nuevo
-                {                    
-                    switch (sincro.AltaUsuario(n.IdNucleo, n.IdSector, n.Tipo, (int)n.NumSacta, (int)n.PrioridadR2, listaNumPub.ToArray(), listaNumATS.ToArray()))
-                    {
-                        case 114:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod114"), n.IdSector));
-                            break;
-                        case 115:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod115"), n.IdSector));
-                            break;
-                        case 116:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod116"), n.IdSector));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (sincro.ModificacionUsuario(n.IdNucleo, n.IdSector, n.Tipo, (int)n.NumSacta, (int)n.PrioridadR2, listaNumPub.ToArray(), listaNumATS.ToArray()))
-                    {
-                        case 127:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod127"), n.IdSector));
-                            break;
-                        case 128:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod128"), n.IdSector));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
         }
         catch (Exception ex)
         {
@@ -1289,30 +1228,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
             }
             else
             {
-                Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                {
-                    SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                    switch (sincro.BajaUsuario(DListNucleo.SelectedValue, n.IdSector))
-                    {
-                        case 117:
-                            string s = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-                                + String.Format((string)GetGlobalResourceObject("Espaniol", "Cod117"), n.IdSector);
-                            cMsg.alert(s);
-                            break;
-                        case 118:
-                            string s1 = (string)GetGlobalResourceObject("Espaniol", "ElementoEliminado") + "\\n\\n"
-                                + String.Format((string)GetGlobalResourceObject("Espaniol", "Cod118"), n.IdSector);
-                            cMsg.alert(s1);
-                            break;
-                        default:
-                            break;
-                    }
-				}
-                else
-                    cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
-
+                cMsg.alert((string)GetGlobalResourceObject("Espaniol", "ElementoEliminado"));
                 ServiciosCD40.SectoresSector ss = new ServiciosCD40.SectoresSector();
                 ss.IdSistema = (string)Session["idsistema"];
                 ss.IdSectorOriginal = (string)Session["elemento"];

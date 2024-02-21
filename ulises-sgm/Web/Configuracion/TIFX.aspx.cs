@@ -20,7 +20,7 @@ public partial class TIFX_Cfg : PageBaseCD40.PageCD40	// System.Web.UI.Page
 
     const string MODO_SINCRO_NTP = "2";
 
-    private Mensajes.msgBox cMsg; 
+   // private Mensajes.msgBox cMsg; 
     /// <summary>
     /// 
     /// </summary>
@@ -307,11 +307,7 @@ public partial class TIFX_Cfg : PageBaseCD40.PageCD40	// System.Web.UI.Page
                         DDLRecorder2.SelectedValue = ((ServiciosCD40.TifX)datos[i]).Grabador2;
                         TBRtspPort1.Text = ((ServiciosCD40.TifX)datos[i]).RtspGrabador2.ToString();
                     }
-
-                    if (((ServiciosCD40.TifX)datos[i]).GrabacionED137 == null)
-                        CBGrabacionED137.Checked = false;
-                    else
-                        CBGrabacionED137.Checked = (((ServiciosCD40.TifX)datos[i]).GrabacionED137 == 1);
+                    CBGrabacionED137.Checked = (((ServiciosCD40.TifX)datos[i]).GrabacionED137 == 1);
                     // Salva los valores presentados...
                     old_index_rec1 = DDLRecorder1.SelectedIndex;
                     old_rstp_rec1 = TBRtspPort.Text;

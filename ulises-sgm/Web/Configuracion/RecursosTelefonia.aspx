@@ -349,7 +349,7 @@
                 </asp:DropDownList>
 
 				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 300px; position: absolute;
-					  top: 12px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+					  top: 12px" Text="Seguro: " TextAlign="Left" Enabled="False"  Visible ="false"
 					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" 
 					meta:resourcekey="LSeguroResource1"/>
 

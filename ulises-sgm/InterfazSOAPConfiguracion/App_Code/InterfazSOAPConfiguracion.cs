@@ -120,6 +120,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
     CfgEnlaceExterno []ConfiguracionEnlaceExterno;
     CfgEnlaceInterno []ConfiguracionEnlaceInterno;
     ConfiguracionElementosHw.ConferenciasPreprogramadas CfgCP;
+    ConfiguracionElementosHw.MisionesProgramadas CfgMP;
 
 	static object Sync = new object();
 
@@ -143,7 +144,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
         CfgSistema = new ConfiguracionSistema();
         CfgSistema.ParametrosGenerales = new ParametrosGeneralesSistema();
         CfgCP = new ConfiguracionElementosHw.ConferenciasPreprogramadas();
-
+        CfgMP = new ConfiguracionElementosHw.MisionesProgramadas();
     }
 
     #region Métodos
@@ -586,6 +587,14 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
 	{
 		return Procedimientos.VersionSectorizacion(GestorBDCD40.ConexionMySql, id_sistema);
 	}
+
+    [WebMethod(Description = "Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos")]
+    public string GetMisionAsignada(string Id_Operador, string Id_Clave)
+    {
+        return Procedimientos.GetMisionAsignada(GestorBDCD40.ConexionMySql, Id_Operador, Id_Clave);
+    }
+
+
 
 	[WebMethod(Description = "Pasándole el identificador de sistema, devuelve el Scv [1|2] activo. 0 si error")]
 	public string GetScvActivo(string idSistema)
@@ -1861,5 +1870,103 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
             return CfgCP;
         }
     }
+
+    [WebMethod(Description = "Devuelve las misiones programadas")]
+    public  MisionesProgramadas GetMisiones()
+    {
+        int ims = 0;
+        int indmprtlc = 0;
+        lock (Sync)
+        {
+            Misiones ms = new Misiones();
+            List<Tablas> listaMisiones = GestorBDCD40.ListSelectSQL(ms, null);
+            if (listaMisiones.Count > 0)
+            {
+                CfgMP.MisionesProg = new Mision[listaMisiones.Count];
+                foreach (Misiones lstmisiones in listaMisiones)
+                {
+                    uint idmision = lstmisiones.IdMision;
+                    CfgMP.MisionesProg[ims] = new Mision();
+                    CfgMP.MisionesProg[ims].Descripcion = lstmisiones.Descripcion;
+                    CfgMP.MisionesProg[ims].Tipo = lstmisiones.Tipo.ToString();
+                    Misiones_Paginas mpr = new Misiones_Paginas();
+                    // Paginas Radio
+                    mpr.IdMision = idmision;
+                    mpr.TipoDestino = 0; // Tipo Radio
+                    indmprtlc = 0;
+                    List<Tablas> listaMisionPaginasR = GestorBDCD40.ListSelectSQL(mpr, null);
+                    int tamlistaelementos = listaMisionPaginasR.Count;
+                    CfgMP.MisionesProg[ims].MSR = new MisionRadio[tamlistaelementos];
+                    if (listaMisionPaginasR.Count > 0)
+                    {
+                        foreach (Misiones_Paginas pradio in listaMisionPaginasR)
+                        {
+                            CfgMP.MisionesProg[ims].MSR[indmprtlc] = new MisionRadio();
+                            CfgMP.MisionesProg[ims].MSR[indmprtlc].IdPagina = pradio.IdPagina.ToString();
+                            indmprtlc++;
+                        }
+                    }
+                    // Paginas Radio
+                    Misiones_Paginas mpt = new Misiones_Paginas();
+                    mpt.IdMision = idmision;
+                    mpt.TipoDestino = 1; // Tipo Telefonía
+                    indmprtlc = 0;
+                   
+                    List<Tablas> listaMisionPaginasT = GestorBDCD40.ListSelectSQL(mpt, null);
+                    tamlistaelementos = listaMisionPaginasT.Count;
+                    CfgMP.MisionesProg[ims].MST = new MisionTelefonia[listaMisionPaginasT.Count];
+                    if (listaMisionPaginasT.Count > 0)
+                    {
+                        foreach (Misiones_Paginas ptelefonia in listaMisionPaginasT)
+                        {
+                            CfgMP.MisionesProg[ims].MST[indmprtlc] = new MisionTelefonia();
+                            CfgMP.MisionesProg[ims].MST[indmprtlc].IdPagina = ptelefonia.IdPagina.ToString();
+                            indmprtlc++;
+                        }
+                    }
+
+                    // Paginas Linea Caliente
+                    indmprtlc = 0;
+                    Misiones_LCEN mplc = new Misiones_LCEN();                
+                    mplc.IdMision = lstmisiones.IdMision;
+                    List<Tablas> listaMisionBotonesLC = GestorBDCD40.ListSelectSQL(mplc, null);
+                    tamlistaelementos = listaMisionBotonesLC.Count;
+
+                    CfgMP.MisionesProg[ims].MLC = new MisionLC[tamlistaelementos];
+                    if (listaMisionBotonesLC.Count > 0)
+                    {
+                        foreach (Misiones_LCEN plcen in listaMisionBotonesLC)
+                        {
+                            CfgMP.MisionesProg[ims].MLC[indmprtlc] = new MisionLC();
+                            CfgMP.MisionesProg[ims].MLC[indmprtlc].MisionPosicion = plcen.PosMision.ToString();
+                            CfgMP.MisionesProg[ims].MLC[indmprtlc].MisionHmi = plcen.PosHMI.ToString();
+                            indmprtlc++;
+                        }
+                    }
+
+                    // Alarmas Acusticas Asignadas
+                    indmprtlc = 0;
+                    Misiones_Alarmas_Acusticas maa = new Misiones_Alarmas_Acusticas();
+                    maa.IdMision = idmision;
+                    List<Tablas> listaAlarmaAcusticas= GestorBDCD40.ListSelectSQL(maa, null);
+                    tamlistaelementos = listaAlarmaAcusticas.Count;
+                    CfgMP.MisionesProg[ims].MAA = new MisionAlarmasAcusticas[tamlistaelementos];
+                    if (listaAlarmaAcusticas.Count > 0)
+                    {
+                        foreach (Misiones_Alarmas_Acusticas aa in listaAlarmaAcusticas)
+                        {
+                            CfgMP.MisionesProg[ims].MAA[indmprtlc] = new MisionAlarmasAcusticas();
+                            CfgMP.MisionesProg[ims].MAA[indmprtlc].IdAlarma = aa.IdAlarmaAcustica.ToString();
+                            CfgMP.MisionesProg[ims].MAA[indmprtlc].Tipo = "0"; // TPD
+                            indmprtlc++;
+                        }
+                    }
+                    ims++;
+                }
+            }
+            return CfgMP;
+        }
+    }
+
     #endregion
 }

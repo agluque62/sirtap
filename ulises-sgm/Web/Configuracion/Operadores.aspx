@@ -78,28 +78,33 @@ CodeFileBaseClass="PageBaseCD40.PageCD40" Title="Gestión de operadores" EnableEv
 			id="TBTimeoutSesion" runat="server" Width="131px" 
 			meta:resourcekey="TBTimeoutSesionResource1"></asp:TextBox>
 
-		<asp:LinkButton ID="LkBCambiarClave" runat="server" Style="z-index: 116; left: 252px;
+        <asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 204px; position: absolute; width: 100px;
+            top: 80px" Text="Seguro: " TextAlign="Left" Enabled="False" Visible="false"
+            AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px"  Font-Names="Arial" 
+            meta:resourcekey="LSeguroResource1"/>
+
+		<asp:LinkButton ID="LkBCambiarClave" runat="server" Style="z-index: 116; left: 360px;
 			position: absolute; top: 14px" Visible="False" OnClick="LkBCambiarClave_Click" 
 			meta:resourcekey="LkBCambiarClaveResource1">Cambiar clave</asp:LinkButton>
 
-		<asp:Label ID="Label9" runat="server" Style="z-index: 118; left: 252px; position: absolute;
+		<asp:Label ID="Label9" runat="server" Style="z-index: 118; left: 360px; position: absolute;
 			top: 60px" Text="Clave antigua" Visible="False" 
 			meta:resourcekey="Label9Resource1"></asp:Label>
-		<asp:TextBox ID="TBClaveAntigua" runat="server" Style="z-index: 119; left: 252px; position: absolute;
+		<asp:TextBox ID="TBClaveAntigua" runat="server" Style="z-index: 119; left: 360px; position: absolute;
 			top: 80px" Visible="False" Width="145px" TextMode="Password" MaxLength="32"
 			meta:resourcekey="TBClaveAntiguaResource1"></asp:TextBox>
 
-		<asp:Label style="Z-INDEX: 101; LEFT: 252px; POSITION: absolute; TOP: 106px" 
+		<asp:Label style="Z-INDEX: 101; left: 360px; POSITION: absolute; TOP: 106px" 
 			id="Label2" runat="server" Text="Clave" Visible="False" 
 			meta:resourcekey="Label2Resource1"></asp:Label>
-		<asp:TextBox style="Z-INDEX: 104; LEFT: 252px; POSITION: absolute; TOP: 126px" 
+		<asp:TextBox style="Z-INDEX: 104; left: 360px; POSITION: absolute; TOP: 126px" 
 			id="TBClave" runat="server" Visible="False" Width="145px" TextMode="Password" MaxLength="32"
 			meta:resourcekey="TBClaveResource1"></asp:TextBox>
 
-		<asp:Label style="Z-INDEX: 106; LEFT: 252px; POSITION: absolute; TOP: 152px" 
+		<asp:Label style="Z-INDEX: 106; left: 360px; POSITION: absolute; TOP: 152px" 
 			id="Label8" runat="server" Text="Confirma clave" Visible="False" 
 			meta:resourcekey="Label8Resource1"></asp:Label>
-		<asp:TextBox style="Z-INDEX: 107; LEFT: 252px; POSITION: absolute; TOP: 172px" 
+		<asp:TextBox style="Z-INDEX: 107; left: 360px; POSITION: absolute; TOP: 172px" 
 			id="TBConfirmaClave" runat="server" 
 				Width="145px" Visible="False" TextMode="Password" MaxLength="32"
 			meta:resourcekey="TBConfirmaClaveResource1"></asp:TextBox>	
