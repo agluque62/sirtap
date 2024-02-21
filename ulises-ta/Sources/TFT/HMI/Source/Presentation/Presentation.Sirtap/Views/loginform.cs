@@ -28,13 +28,7 @@ namespace HMI.Presentation.Sirtap.Views
         {
             _CmdManager = cmdManager;
             _StateManager = stateManager;
-            //InitializeComponent();
-            if (stateManager.Tft.ModoNocturno)
-                this.hmiButtonModo.Text = "Modo Diurno";
-            else
-                this.hmiButtonModo.Text = "Modo Nocturno";
             txtContrasena.Text = "";
-            MostrarModo(null);
 
         }
         public loginform()
@@ -254,27 +248,5 @@ namespace HMI.Presentation.Sirtap.Views
             }
             */
         }
-
-        private void hmiButtonModo_MouseUp(object sender, MouseEventArgs e)
-        {
-            _StateManager.Tft.ModoNocturno = !_StateManager.Tft.ModoNocturno;
-            if (_StateManager.Tft.ModoNocturno)
-                hmiButtonModo.Text = "Modo Diurno";
-            else
-                hmiButtonModo.Text = "Modo Nocturno";
-            ChangeColors();
-        }
-        private void ChangeColors()
-        {
-            if (_StateManager.Tft.ModoNocturno)
-                BackColor = Color.Gray;
-            else
-                BackColor = Color.White;
-        }
-        private void MostrarModo(object sender)
-        {
-            ChangeColors();
-        }
-
     }
 }
