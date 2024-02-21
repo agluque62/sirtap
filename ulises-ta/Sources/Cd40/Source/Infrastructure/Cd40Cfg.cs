@@ -276,8 +276,8 @@ namespace U5ki.Infrastructure
 		/// <param name="ip"></param>
 		/// <returns></returns>
 		public string GetGwRsIp(string resourceId, int ip)
-		{
-			string gw = GetGwRsHost(resourceId);
+		{          
+            string gw = GetGwRsHost(resourceId);
 			if (gw != null)
 			{
                 string[] host = gw.Split(':');  // idHost:SipPort
@@ -375,7 +375,24 @@ namespace U5ki.Infrastructure
 
 			return new List<PlanRecursos>();
 		}
-	}
+
+        static public bool IsRadioNOED137(CfgRecursoEnlaceExterno rec)
+        {
+            bool ret = false;
+            //Hasta que no está implementado en la config, tomamos como recursos
+            //que no cumplen ED137 a los que su id empieza por NOED137
+            if (rec.IdRecurso.StartsWith("NOED137"))
+            {
+                ret = true;
+            }
+            return ret;
+        }
+
+        static public string GetUriRadioNOED137(CfgRecursoEnlaceExterno rec)
+        {
+            return $"<sip:{rec.IdRecurso}@{SipAgent.IP}:{SipAgent.Port}>";
+        }
+    }
     /// <summary>
     /// Prefijos utilizados en el sistema de dos dígitos
     /// </summary>

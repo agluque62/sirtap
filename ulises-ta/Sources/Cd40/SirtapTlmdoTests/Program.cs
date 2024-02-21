@@ -107,7 +107,8 @@ namespace TlmdoSirtapTest
             try
             {
                 if (change.Type == Identifiers.TypeId(typeof(Cd40Cfg)))
-                {                    
+                {
+                    string freq = "none";
                     Cd40Cfg cfg = Deserialize<Cd40Cfg>(Tools.Decompress(change.Content));
                     foreach (ConfiguracionUsuario confuser in cfg.ConfiguracionUsuarios)
                     {
@@ -115,14 +116,16 @@ namespace TlmdoSirtapTest
                         {
                             foreach (CfgRecursoEnlaceExterno rec in enl.ListaRecursos)
                             {
-                                if (rec.IdRecurso == Identifiers.SimulSirtapGRS)
+                                if (ConfiguracionSistema.IsRadioNOED137(rec))
                                 {
                                     IdFrecuencyToTest = enl.Literal;
+                                    freq = enl.DescDestino;
+                                    break;
                                 }
                             }
                         }
                     }
-                    Console.WriteLine("--CFG received--");
+                    Console.WriteLine($"--CFG received-- IdFrecuencyToTest {IdFrecuencyToTest} {freq}");
                 }                
             }
             catch

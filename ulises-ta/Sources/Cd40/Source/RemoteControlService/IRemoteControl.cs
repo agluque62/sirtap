@@ -57,7 +57,7 @@ namespace u5ki.RemoteControlService
         //Funcion de establecimiento de la frecuencia con parametro si es transmisor cuando se requiere.
         GearOperationStatus SNMPFrecuencySet(String targetIp, String frecuency, bool isEmitter, Boolean openSession = true);
 
-        TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true);
+        TlmdoRsp.CodeTypes Tlmdo(TlmdoAsk msg, String targetIp, bool isEmitter, ref TlmdoRsp response, Boolean openSession = true, bool historic_report = true);
 
         // ----------------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------------

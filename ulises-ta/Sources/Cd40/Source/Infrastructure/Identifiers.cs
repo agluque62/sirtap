@@ -52,6 +52,8 @@ namespace U5ki.Infrastructure
         public const string ConferenceMasterTopic = "UkiConfSrv";
         public const string SirTapAudAlmTopic = "AudAlm";
         public const string SirTapAudAlmMasterTopic = "AudAlmSrv";
+        public const string GatewayTopic = "Gateway";
+        public const string GatewayMasterTopic = "GatewaySrv";
         /// <summary>
         /// 
         /// </summary>

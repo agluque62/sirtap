@@ -26,6 +26,8 @@ using U5ki.Enums;
 using System.Runtime.CompilerServices;
 using U5ki.RdService;
 using Translate;
+using U5ki.Gateway;
+
 
 namespace U5ki.RdService
 {
@@ -2237,11 +2239,14 @@ namespace U5ki.RdService
             SipAgent.KaTimeout -= OnKaTimeout;
             SipAgent.RdInfo -= OnRdInfo;
             SipAgent.CallState -= OnCallState;
+            SipAgent.CallIncoming -= OnCallIncoming;
+            //SipAgent.CallIncoming -= 
             /** 20171130. Para el ping a los TX HF por Options... */
             SipAgent.OptionsReceive -= OnOptionsResponse;
 
             SipAgent.KaTimeout += OnKaTimeout;
             SipAgent.RdInfo += OnRdInfo;
+            SipAgent.CallIncoming += OnCallIncoming;
             SipAgent.CallState += OnCallState;
             /** 20171130. Para el ping a los TX HF por Options... */
             SipAgent.OptionsReceive += OnOptionsResponse;
@@ -2304,20 +2309,24 @@ namespace U5ki.RdService
 
             _EventQueue.Enqueue(call.ToString() + "_KaTimeout", delegate()
             {
-                foreach (RdFrecuency rdFr in Frecuencies.Values)
+                bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnKaTimeout(call);
+                if (!found_in_NOED137_GRS_Gateway)
                 {
-                    /** 20170126. AGL. Identifico el Recurso para poder generar el Historico. */
-                    RdResource rdRes;
-                    if (rdFr.HandleKaTimeout(call, out rdRes))
+                    foreach (RdFrecuency rdFr in Frecuencies.Values)
                     {
-                        /** 20170126. AGL. Generar Historico KEEP-ALIVE TIMEOUT */
-                        LogInfo<RdService>(String.Format("KeepAlive Timeout. IdDestino {0} Frecuencia {1}, Equipo {2}", rdFr.IdDestino, rdFr.Frecuency, rdRes.ID),
-                            U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
-                            rdFr.Frecuency,
-                            "Recurso: " + rdRes.ID + " KeepAlive Timeout.");
-                        break;
+                        /** 20170126. AGL. Identifico el Recurso para poder generar el Historico. */
+                        RdResource rdRes;
+                        if (rdFr.HandleKaTimeout(call, out rdRes))
+                        {
+                            /** 20170126. AGL. Generar Historico KEEP-ALIVE TIMEOUT */
+                            LogInfo<RdService>(String.Format("KeepAlive Timeout. IdDestino {0} Frecuencia {1}, Equipo {2}", rdFr.IdDestino, rdFr.Frecuency, rdRes.ID),
+                                U5kiIncidencias.U5kiIncidencia.IGRL_U5KI_NBX_ERROR,
+                                rdFr.Frecuency,
+                                "Recurso: " + rdRes.ID + " KeepAlive Timeout.");
+                            break;
+                        }
                     }
-                }               
+                }
             });
         }
         /// <summary>
@@ -2331,12 +2340,16 @@ namespace U5ki.RdService
             {
                 if (_Master)
                 {
-                    foreach (RdFrecuency rdFr in Frecuencies.Values)
+                    bool found_in_NOED137_GRS_Gateway = Gateway.Gateway.NOED137OnRdInfo(call, info);
+                    if (!found_in_NOED137_GRS_Gateway)
                     {
-                        rdFr.SupervisionPortadora = ConfirmaSupervisionPortadora(rdFr.PttSrc, rdFr.Frecuency);
-                        if (rdFr.HandleRdInfo(call, info))
+                        foreach (RdFrecuency rdFr in Frecuencies.Values)
                         {
-                            break;
+                            rdFr.SupervisionPortadora = ConfirmaSupervisionPortadora(rdFr.PttSrc, rdFr.Frecuency);
+                            if (rdFr.HandleRdInfo(call, info))
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -2401,6 +2414,20 @@ namespace U5ki.RdService
             }
         }
 
+        private void OnCallIncoming(int call, int call2replace, CORESIP_CallInfo info, CORESIP_CallInInfo inInfo)
+        {
+            if (info.Type == CORESIP_CallType.CORESIP_CALL_RD)
+            {
+                _EventQueue.Enqueue(call.ToString() + "_IncommingGRS", delegate ()
+                {
+                    if (_Master)
+                    {
+                        Gateway.Gateway.NOED137OnCallIncoming(call, call2replace, info, inInfo);
+                    }
+                });
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -2409,7 +2436,17 @@ namespace U5ki.RdService
         /// <param name="stateInfo"></param>
         private void OnCallState(int call, CORESIP_CallInfo info, CORESIP_CallStateInfo stateInfo)
         {
-            if ((stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED) ||
+            if (info.Type == CORESIP_CallType.CORESIP_CALL_RD && stateInfo.Role == CORESIP_CallRole.CORESIP_CALL_ROLE_UAS)
+            {
+                _EventQueue.Enqueue(call.ToString() + "_StateGRS", delegate ()
+                {
+                    if (_Master)
+                    {                        
+                        Gateway.Gateway.NOED137OnCallState(call, info, stateInfo);                        
+                    }
+                });
+            }                        
+            else if ((stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_CONFIRMED) ||
                 (stateInfo.State == CORESIP_CallState.CORESIP_CALL_STATE_DISCONNECTED))
             {
                 _EventQueue.Enqueue(call.ToString() + "_State", delegate()

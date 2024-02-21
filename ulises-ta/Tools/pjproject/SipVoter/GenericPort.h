@@ -30,7 +30,7 @@ public:
 	static void DestroyGenericPort(int gen_port_id);
 	static void PutInGenericPort(int gen_port_id, short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
 	static void GetFromGenericPort(int gen_port_id, short* buffer, int buffer_length_in_bytes, pj_bool_t blocking);
-	static void GetJitterStatusGenericPort(int gen_port_id, unsigned int* size);
+	static void GetJitterStatusGenericPort(int gen_port_id, unsigned int* size);	
 	
 	GenericPort();
 	~GenericPort();	

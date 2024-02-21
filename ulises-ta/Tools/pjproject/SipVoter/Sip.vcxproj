@@ -244,6 +244,7 @@
     <ClCompile Include="PresenceManag.cpp" />
     <ClCompile Include="PresSubs.cpp" />
     <ClCompile Include="RdRxPort.cpp" />
+    <ClCompile Include="RTPport.cpp" />
     <ClCompile Include="SipCall_Rd.cpp" />
     <ClCompile Include="RecordPort.cpp" />
     <ClCompile Include="SDPUtils.cpp" />
@@ -254,6 +255,7 @@
     <ClCompile Include="SoundPort.cpp" />
     <ClCompile Include="SoundRxPort.cpp" />
     <ClCompile Include="SubscriptionServer.cpp" />
+    <ClCompile Include="CUtils.cpp" />
     <ClCompile Include="WavPlayer.cpp" />
     <ClCompile Include="WavPlayerToRemote.cpp" />
     <ClCompile Include="WavRecorder.cpp" />
@@ -284,6 +286,7 @@
     <ClInclude Include="PresSubs.h" />
     <ClInclude Include="RdRxPort.h" />
     <ClInclude Include="RecordPort.h" />
+    <ClInclude Include="RTPport.h" />
     <ClInclude Include="SDPUtils.h" />
     <ClInclude Include="SignalGen.h" />
     <ClInclude Include="SipAgent.h" />
@@ -293,6 +296,7 @@
     <ClInclude Include="SoundRxPort.h" />
     <ClInclude Include="ClientSubscriptionManager.h" />
     <ClInclude Include="SubscriptionServer.h" />
+    <ClInclude Include="CUtils.h" />
     <ClInclude Include="WavPlayer.h" />
     <ClInclude Include="WavPlayerToRemote.h" />
     <ClInclude Include="WavRecorder.h" />

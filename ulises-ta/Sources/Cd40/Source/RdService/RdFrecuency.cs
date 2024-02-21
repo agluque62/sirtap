@@ -413,7 +413,7 @@ namespace U5ki.RdService
                 if (selectedRs.ContainsKey(rsCfg.IdRecurso))
                 {
                     RdResourcePair foundPair = newPairs.FirstOrDefault(x => x.ID.Equals(rsCfg.RedundanciaIdPareja));
-                    string[] rdUri = RsUri(rsCfg.IdRecurso, sysCfg);
+                    string[] rdUri = RsUri(rsCfg.IdRecurso, sysCfg, rsCfg);
                     RdResource res = new RdResource(rsCfg.IdRecurso, rdUri[0], rdUri[1], (RdRsType)rsCfg.Tipo, 
                         sysCfg.IsResoureInTIFX(rsCfg.IdRecurso), _IdDestino, _Frecuency, rsCfg.IdEmplazamiento, 
                         selectedRs[rsCfg.IdRecurso], new_params, rsCfg, false);
@@ -507,7 +507,7 @@ namespace U5ki.RdService
                     if (selectedRs.ContainsKey(rsCfg.IdRecurso))
                     {
                         IRdResource rdRs = null;
-                        string[] rdUri = RsUri(rsCfg.IdRecurso, sysCfg);
+                        string[] rdUri = RsUri(rsCfg.IdRecurso, sysCfg, rsCfg);
 
                         if (rdUri.Length == 0)
                         {
@@ -2560,15 +2560,23 @@ namespace U5ki.RdService
         /// <param name="rsId"></param>
         /// <param name="sysCfg"></param>
         /// <returns></returns>
-        private string[] RsUri(string rsId, ConfiguracionSistema sysCfg)
+        private string[] RsUri(string rsId, ConfiguracionSistema sysCfg, CfgRecursoEnlaceExterno rsCfg)
         {
             string[] rsUri = new string[2];
 
-            string ip1 = sysCfg.GetGwRsIp(rsId, 1);
-            string ip2 = sysCfg.GetGwRsIp(rsId, 2);
+            if (ConfiguracionSistema.IsRadioNOED137(rsCfg))
+            {
+                rsUri[0] = ConfiguracionSistema.GetUriRadioNOED137(rsCfg);
+                rsUri[1] = ConfiguracionSistema.GetUriRadioNOED137(rsCfg);
+            }
+            else
+            {
+                string ip1 = sysCfg.GetGwRsIp(rsId, 1);
+                string ip2 = sysCfg.GetGwRsIp(rsId, 2);
 
-            rsUri[0] = (ip1 != null) ? string.Format("<sip:{0}@{1}>", rsId, ip1) : null;
-            rsUri[1] = (ip2 != null) ? string.Format("<sip:{0}@{1}>", rsId, ip2) : null;
+                rsUri[0] = (ip1 != null) ? string.Format("<sip:{0}@{1}>", rsId, ip1) : null;
+                rsUri[1] = (ip2 != null) ? string.Format("<sip:{0}@{1}>", rsId, ip2) : null;
+            }
 
             return rsUri;
         }

@@ -42,6 +42,7 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_RDRX_PORTS				128
 #define CORESIP_MAX_SOUND_RX_PORTS			128
 #define CORESIP_MAX_GENERIC_PORTS			16
+#define CORESIP_MAX_RTP_PORTS				16
 #define CORESIP_MAX_RS_LENGTH				128
 #define CORESIP_MAX_REASON_LENGTH			128
 #define CORESIP_MAX_WG67_SUBSCRIBERS		25
@@ -64,6 +65,8 @@ typedef int		pj_bool_t;
 #define CORESIP_MAX_SOUND_NAMES				16
 #define CORESIP_MAX_DTMF_DIGITS				128
 #define CORESIP_AUD_PACKET_LEN				160
+#define CORESIP_MAX_RESOURCEID_LENGTH		256
+#define CORESIP_MAX_HMI_RESOURCES			1024
 
 #ifdef _ED137_
 // PlugTest FAA 05/2011
@@ -255,6 +258,28 @@ typedef enum CORESIP_REDIRECT_OP
 	CORESIP_REDIRECT_REJECT,
 	CORESIP_REDIRECT_ACCEPT
 } CORESIP_REDIRECT_OP;
+
+typedef enum CORESIP_RTP_port_actions
+{
+	CORESIP_CREATE_ENCODING,
+	CORESIP_CREATE_DECODING,
+	CORESIP_CREATE_ENCODING_DECODING,
+	CORESIP_PAUSE_ENCODING,
+	CORESIP_PAUSE_DECODING,
+	CORESIP_PAUSE_ENCODING_DECODING,
+	CORESIP_RESUME_ENCODING,
+	CORESIP_RESUME_DECODING,
+	CORESIP_RESUME_ENCODING_DECODING,
+	CORESIP_STOP,
+	CORESIP_DESTROY
+} CORESIP_RTP_port_actions;
+
+typedef enum CORESIP_Agent_Type
+{
+	ULISES = 0,
+	SIRTAP_HMI = 1,
+	SIRTAP_NBX = 2
+} CORESIP_Agent_Type;
 
 typedef struct CORESIP_Error
 {
@@ -456,6 +481,11 @@ typedef struct CORESIP_RdInfo
 
 } CORESIP_RdInfo;
 
+typedef struct CORESIP_RTPport_info
+{
+	pj_bool_t receiving;				//Indica si se esta recibiendo RTP
+} CORESIP_RTPport_info;
+
 #ifdef _ED137_
 // PlugTest FAA 05/2011
 typedef enum CORESIP_TypeCrdInfo
@@ -624,6 +654,28 @@ typedef struct CORESIP_GenericPortBuffer
 	short buffer[CORESIP_AUD_PACKET_LEN];		//Paquete audio. 
 } CORESIP_GenericPortBuffer;
 
+typedef enum CORESIP_Resource_Type
+{
+	Rd,
+	Tlf,
+	IA
+} CORESIP_Resource_Type;
+
+typedef struct CORESIP_HMI_Resources_Info
+{
+	int NumResources;	//Numero de recursos
+
+	struct
+	{
+		char Id[CORESIP_MAX_RESOURCEID_LENGTH];		//Identificador del recurso.
+		//En caso de radio, es el identificador del destino de radio. 
+		//En la aplicacion web aparede como Id. En el SOAP es DescDestino
+		//En el caso de telefonia y IA, es el numero del llamado, es decir, es el user de la URI del destino
+		CORESIP_Resource_Type Type;					//Tipo de recurso
+		pj_bool_t Secure;								//Establece si es seguro
+	} HMIResources[CORESIP_MAX_HMI_RESOURCES];
+} CORESIP_HMI_Resources_Info;
+
 typedef struct CORESIP_Callbacks
 {
 	void (*LogCb)(int level, const char * data, int len);
@@ -711,6 +763,16 @@ typedef struct CORESIP_Callbacks
 	*/
 	void (*MovedTemporallyCb)(int call, const char *dstUri);
 
+	/**
+	* RTPport_infoCb:
+	* Esta funcion se llama desde un objeto RTP port para informar a la aplicacion sobre eventos
+	* @param	rtpport_id		Identificador del RTPport
+	* @param    info			Estructora de datos que se reporta
+	* @return
+	*
+	*/
+	void (*RTPport_infoCb)(int rtpport_id, CORESIP_RTPport_info* info);
+
 	 
 #ifdef _ED137_
 	// PlugTest FAA 05/2011
@@ -764,6 +826,8 @@ typedef struct CORESIP_Config
 	unsigned DIA_TxAttenuation_dB;					//Atenuacion de las llamadas DIA en Tx (Antes de transmistir por RTP). En dB
 	unsigned IA_TxAttenuation_dB;					//Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En dB
 	unsigned RD_TxAttenuation_dB;					//Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En dB
+
+	CORESIP_Agent_Type AgentType;		//Es el tipo de agente.
 
 } CORESIP_Config;
 
@@ -1734,6 +1798,46 @@ extern "C" {
 	@param volume. Valor entre MinVolume y MaxVolume de HMI.exe.config
 	*/
 	CORESIP_API int CORESIP_GetVolumeOutputDevice(CORESIP_SndDevType dev, unsigned int *volume, CORESIP_Error* error);
+
+	/*
+	Funcion que Crea un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto que se retorna.	
+	@param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
+	@param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
+	@param dst_port. Puerto de destino del flujo RTP.
+	@param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
+	@param payload_type. Valor 0: PCMU, valor 8: PCMA
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas.
+	@param record_reception. Establece si se graba la recepcion RTP como ED137.
+	@param frequencyLiteral. Literal de la frecuencia sintonizada en la radio. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	@param resourceId. Es el identificador del recurso de radio, de la herramienta de configuracion. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	*/
+	CORESIP_API int CORESIP_CreateRTPport(int* rtpport_id, char* dst_ip, int src_port, int dst_port, char* local_multicast_ip, int payload_type, CORESIP_RTP_port_actions action,
+		pj_bool_t record_reception, char* frequencyLiteral, char* resourceId, CORESIP_Error* error);
+
+	/*
+	Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP
+	@param rtpport_id. Manejador del puerto.
+	@param action. Indica el puerto RTP enconde, decode o las dos cosas
+	*/
+	CORESIP_API int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, CORESIP_RTP_port_actions action, CORESIP_Error* error);
+
+	/*
+	Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
+	@param rtpport_id. Manejador del puerto.
+	*/
+	CORESIP_API int CORESIP_AskRTPport_info(int rtpport_id, CORESIP_Error* error);	
+
+	/*
+	Funcion para para pasar la informacion de los recursos configurados en el HMI. 
+	Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+	necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+	@param Resources_Info. Estructura con la informacion.
+	* @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+	* @return	CORESIP_OK OK, CORESIP_ERROR  error.
+	*/
+	CORESIP_API int CORESIP_Set_HMI_Resources_Info(CORESIP_HMI_Resources_Info* Resources_Info, CORESIP_Error* error);
+
 
 
 #ifdef __cplusplus

@@ -7,6 +7,9 @@ using U5ki.Infrastructure;
 using U5ki.RdService.Properties;
 using U5ki.RdService.NM; //20180323 CONTROL M+N FORBIDDEN 
 using NLog;
+using static U5ki.Infrastructure.SipAgent;
+using System.Runtime.InteropServices;
+
 namespace U5ki.RdService
 {
     /// <summary>
@@ -315,7 +318,7 @@ namespace U5ki.RdService
         public RdResource(string id, string uri1, string uri2, RdRsType type, bool isTIFX, string idDestino, string frecuency, string site, bool selected,
             RdFrecuency.NewRdFrequencyParams newFreqParams, CfgRecursoEnlaceExterno rs, bool connect = true)
         {
-            _Id = id;
+            _Id = id;         
             _Uri1 = seturi(uri1);
             _Uri2 = seturi(uri2);
             _Type = type;
@@ -634,7 +637,9 @@ namespace U5ki.RdService
         public void PttOff ()
         {
             if (Connected)
+            {
                 SipAgent.PttOff(SipCallId);
+            }
         }
         /// <summary>
         /// Sends Ptt on to SipAgent
@@ -642,7 +647,9 @@ namespace U5ki.RdService
         public void PttOn(CORESIP_PttType srcPtt)
         {
             if (Connected && TunedFrequencyOK)
+            {
                 SipAgent.PttOn(SipCallId, PttId, srcPtt, PttMute);
+            }
         }
         /// <summary>
         /// 

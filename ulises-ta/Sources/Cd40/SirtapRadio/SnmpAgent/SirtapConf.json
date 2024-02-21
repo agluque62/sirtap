@@ -1,0 +1,14 @@
+﻿{
+    "FORCE_ERROR": 0,
+    "numChannels": 2,
+    "ChannelSelected": 1,
+    "FrequencyMin": 30000,
+    "FrequencyMax": 511975,
+    "FrequencyCh1": 100000,
+    "FrequencyCh2": 100000,
+    "PowerLevelCh1": 25,
+    "PowerLevelCh2": 25,
+    "TxInhibit": 0,
+    "WFCh1": "W",
+    "WFCh2": "W"
+}

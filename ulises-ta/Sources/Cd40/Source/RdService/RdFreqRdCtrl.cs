@@ -896,11 +896,10 @@ namespace U5ki.RdService
             bool isEmitter = res.isTx;
             TlmdoRsp.CodeTypes output = TlmdoRsp.CodeTypes.TLMDO_CODE_ERROR;
             TelemandoTypes telemandoType = res.TelemandoType;
-            if (res.ID == Identifiers.SimulSirtapGRS)
+
+            if (res.ID.StartsWith("NOED137"))
             {
-                //Si el recurso es el de un simulador de radio Sirtap para los test entonces forzamos 
-                //El tipo de telemando como de sirtap, ya que en la configuracion todavia no llega ese
-                //tipo de dato.
+                //De momento esta es la unica forma de saber si es un recuros que no es ED137
                 telemandoType = TelemandoTypes.Sirtap;
             }
 

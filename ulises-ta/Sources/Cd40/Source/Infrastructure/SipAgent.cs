@@ -235,6 +235,14 @@ namespace U5ki.Infrastructure
             add {/*_Cb.*/OnSubPres += value; }
             remove {/*_Cb.*/OnSubPres -= value; }
         }
+
+        public static RTPport_infoCb OnRTPport_info;
+        public static event RTPport_infoCb RTPport_info
+        {
+            add {/*_Cb.*/OnRTPport_info += value; }
+            remove {/*_Cb.*/OnRTPport_info -= value; }
+        }        
+
         /// <summary>
         /// 
         /// </summary>
@@ -2481,11 +2489,28 @@ namespace U5ki.Infrastructure
             }
         }
 
-#region Private Members
+        public static void SetTipoGRS(string accId, uint Flag, int on)
+        {
+#if _TRACEAGENT_
+            _Logger.Debug("Entrando en SipAgent.CORESIP_SetTipoGRS");
+#endif
+            CORESIP_Error err;
+
+            if (CORESIP_SetTipoGRS(_Accounts[accId], Flag, on, out err) != 0)
+            {
+                throw new Exception(err.Info);
+            }
+            
+#if _TRACEAGENT_
+            _Logger.Debug("Saliendo de SipAgent.CORESIP_SetTipoGRS");
+#endif
+        }
+
+        #region Private Members
         /// <summary>
         /// 
         /// </summary>
-		private static Logger _Logger = LogManager.GetCurrentClassLogger();
+        private static Logger _Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// 
         /// </summary>
@@ -2494,10 +2519,14 @@ namespace U5ki.Infrastructure
         /// 
         /// </summary>
 		private static Dictionary<string, int> _Accounts = new Dictionary<string, int>();
+        public static Dictionary<string, int> Accounts
+        {
+            get { return _Accounts; }
+        }
         /// <summary>
         /// 
         /// </summary>
-		private static string _Ip = null;
+        private static string _Ip = null;
         public static string IP
         {
             get { return _Ip; }
@@ -2506,11 +2535,15 @@ namespace U5ki.Infrastructure
         /// 
         /// </summary>
 		private static uint _Port = 0;
+        public static uint Port
+        {
+            get { return _Port; }
+        }
 
         /// <summary>
         /// Guarda el ultimo estado el ECHandsFree pedido a CORESIP, para evitar llamadas innecesarias
         /// Por defecto tiene el mismo valor que la CORESIP (false)
-       /// </summary>
+        /// </summary>
         private static bool ECHandsFreeState = false;
         /// <summary>
         /// 
@@ -2662,6 +2695,12 @@ namespace U5ki.Infrastructure
                     OnSubPres(p1, p2, p3);
             });
             _Cb.OnFinWavCb = null;
+
+            _Cb.OnRTPport_info = new RTPport_infoCb((p1, p2) =>
+            {
+                if (OnRTPport_info != null)
+                    OnRTPport_info(p1, p2);
+            });
         }
 #endregion
 	}

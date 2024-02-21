@@ -264,6 +264,8 @@ struct pjmedia_stream
 	
 	IMPAIREDATA ImpDat;
 	pj_lock_t* p_latency_lock;
+
+	pj_bool_t is_for_coresip_RTPport;			//Si es true indica que es un stream para un objeto RTPport, no es de una sesion SIP normal.
 };
 
 typedef struct _MYDATA {
@@ -2442,6 +2444,7 @@ static void on_rx_rtp( void *data,
     }
 
 	/* Hemos recibido un paquete v�lido */
+
 	 if (stream->rtp_ext_enabled || rtp_ext_length != 0)
 	 {
 		 stream->rtp_ext_received = PJ_TRUE;
@@ -2704,6 +2707,12 @@ static void on_rx_rtp( void *data,
 			if (stream->rtp_ext_enabled && pj_app_cbs.on_stream_rtp)
 			{
 				 pj_app_cbs.on_stream_rtp(stream, &frames[i], stream->codec, ext_seq, rtp_ext_info_1st);
+			}
+
+			if (stream->is_for_coresip_RTPport && pj_app_cbs.on_stream_rtp_RTPport)
+			{
+				//Llamamos a la callback del RTPport, por si necesita analizar RTP
+				pj_app_cbs.on_stream_rtp_RTPport(stream, &frames[i], stream->codec, ext_seq, rtp_ext_info_1st);
 			}
 		}
     }
@@ -3390,27 +3399,30 @@ PJ_DEF(pj_status_t) pjmedia_stream_create( pjmedia_endpt *endpt,
 				}
 			}
 
-			QoSFlowId_rtcp = 0;
-			QoSResult = QOSAddSocketToFlow(stream->QoSHandle, tpinfo.sock_info.rtcp_sock, (PSOCKADDR)&info->rem_addr, QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId_rtcp);
-			if (QoSResult != TRUE)
+			if (tpinfo.sock_info.rtcp_sock != PJ_INVALID_SOCKET)
 			{
-				int werror = WSAGetLastError();
-				PJ_LOG(3, (__FILE__, "ERROR: pjmedia_stream_create: RTCP Changing DSCP mark QOSAddSocketToFlow failed. Error %d", werror));
-			}
-			else
-			{
-				DWORD DSCPValue = PJSIP_RTCP_PROTOCOL_DSCP;
-				QoSResult = QOSSetFlow(stream->QoSHandle, QoSFlowId_rtcp, QOSSetOutgoingDSCPValue, sizeof(DSCPValue), &DSCPValue, 0, NULL);
+				QoSFlowId_rtcp = 0;
+				QoSResult = QOSAddSocketToFlow(stream->QoSHandle, tpinfo.sock_info.rtcp_sock, (PSOCKADDR)&info->rem_addr, QOSTrafficTypeVoice, QOS_NON_ADAPTIVE_FLOW, &QoSFlowId_rtcp);
 				if (QoSResult != TRUE)
 				{
 					int werror = WSAGetLastError();
-					if (werror == ERROR_ACCESS_DENIED)
+					PJ_LOG(3, (__FILE__, "ERROR: pjmedia_stream_create: RTCP Changing DSCP mark QOSAddSocketToFlow failed. Error %d", werror));
+				}
+				else
+				{
+					DWORD DSCPValue = PJSIP_RTCP_PROTOCOL_DSCP;
+					QoSResult = QOSSetFlow(stream->QoSHandle, QoSFlowId_rtcp, QOSSetOutgoingDSCPValue, sizeof(DSCPValue), &DSCPValue, 0, NULL);
+					if (QoSResult != TRUE)
 					{
-						PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed. Error %d. Changing DSCP requires the calling application be a member of the Administrators or the Network Configuration Operators group", werror));
-					}
-					else
-					{
-						PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed Changing DSCP mark. Error %d", werror));
+						int werror = WSAGetLastError();
+						if (werror == ERROR_ACCESS_DENIED)
+						{
+							PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed. Error %d. Changing DSCP requires the calling application be a member of the Administrators or the Network Configuration Operators group", werror));
+						}
+						else
+						{
+							PJ_LOG(3, (__FILE__, "ERROR:  pjmedia_stream_create: RTCP QOSSetFlow failed Changing DSCP mark. Error %d", werror));
+						}
 					}
 				}
 			}
@@ -3697,6 +3709,11 @@ PJ_DEF(void) pjmedia_stream_set_ED137version(pjmedia_stream* stream, char ED137v
 PJ_DEF(void) pjmedia_stream_set_SelCalInProgress(pjmedia_stream* stream, pj_bool_t SelCalInProgress)
 {
 	stream->SelCalInProgress = SelCalInProgress;
+}
+
+PJ_DEF(void) pjmedia_stream_set_is_for_coresip_RTPport(pjmedia_stream* stream, pj_bool_t is_for_coresip_RTPport)
+{
+	stream->is_for_coresip_RTPport = is_for_coresip_RTPport;
 }
 
 /*

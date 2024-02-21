@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using U5ki.Infrastructure;
+using static U5ki.Infrastructure.CORESIP_tone_digit_map;
 
 #if !_AMPER_ULISES_
 namespace Amper.Etm.SipServices.CoreSip;
@@ -233,6 +235,17 @@ namespace U5ki.Infrastructure
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void FinWavCb(int Code);
 
+    /**
+	* RTPport_infoCb:
+	* Esta funcion se llama desde un objeto RTP port para informar a la aplicacion sobre eventos
+	* @param	rtpport_id		Identificador del RTPport
+	* @param    info			Estructora de datos que se reporta
+	* @return
+	*
+	*/
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate void RTPport_infoCb(int rtpport_id, CORESIP_RTPport_info info);
+
     /// <summary>
     /// 
     /// </summary>
@@ -323,7 +336,7 @@ namespace U5ki.Infrastructure
     public enum CORESIP_CallRole
     {
         CORESIP_CALL_ROLE_UAC,
-        CORESIP_CALL_ROLE_UCS
+        CORESIP_CALL_ROLE_UAS
     }
 
     public enum CORESIP_SDPSendRecvAttrForced
@@ -422,6 +435,28 @@ namespace U5ki.Infrastructure
     {
         CORESIP_REDIRECT_REJECT,
         CORESIP_REDIRECT_ACCEPT
+    }
+
+    public enum CORESIP_RTP_port_actions
+    {
+        CORESIP_CREATE_ENCODING,
+        CORESIP_CREATE_DECODING,
+        CORESIP_CREATE_ENCODING_DECODING,
+        CORESIP_PAUSE_ENCODING,
+        CORESIP_PAUSE_DECODING,
+        CORESIP_PAUSE_ENCODING_DECODING,
+        CORESIP_RESUME_ENCODING,
+        CORESIP_RESUME_DECODING,
+        CORESIP_RESUME_ENCODING_DECODING,
+        CORESIP_STOP,
+        CORESIP_DESTROY
+    }
+
+    public enum CORESIP_Agent_Type
+    {
+        ULISES = 0,
+        SIRTAP_HMI = 1,
+        SIRTAP_NBX = 2
     }
 
     /// <summary>
@@ -667,6 +702,13 @@ namespace U5ki.Infrastructure
         public uint Tsd_ms;                //Tsd en ms calculado del MAM recibido
         public int Ts2_ms;                 //Ts2 en ms calculado del MAM recibido. Un valor negativo indica que no se ha recibido.
     }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public class CORESIP_RTPport_info
+    {
+        public bool receiving;             //Indica si se esta recibiendo RTP por un RTPport
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -734,6 +776,32 @@ namespace U5ki.Infrastructure
         public short[] buffer;
     }
 
+    public enum CORESIP_Resource_Type
+    {
+        Rd,
+        Tlf,
+        IA
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public class CORESIP_HMI_Resources_Info
+    {
+        public int NumResources;   //Numero de recursos
+
+        public struct coresip_hmi_res
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SipAgent.CORESIP_MAX_RESOURCEID_LENGTH)]
+            public string Id;                       //Identificador del recurso.
+                                                    //En caso de radio, es el identificador del destino de radio. 
+                                                    //En la aplicacion web aparede como Id. En el SOAP es DescDestino
+                                                    //En el caso de telefonia y IA, es el numero del llamado, es decir, es el user de la URI del destino
+            CORESIP_Resource_Type Type;             //Tipo de recurso
+            bool Secure;                            //Establece si es seguro
+        }
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = SipAgent.CORESIP_MAX_HMI_RESOURCES)]
+        public coresip_hmi_res[] HMIResources;
+    }
 
     /// <summary>
     /// 
@@ -762,6 +830,7 @@ namespace U5ki.Infrastructure
         public CfwrOptReceivedCb OnCfwrOptReceived;
         public CfwrOptResponseCb OnCfwrOptResponse;
         public MovedTemporallyCb OnMovedTemporally;
+        public RTPport_infoCb OnRTPport_info;
 
     }
 
@@ -906,6 +975,7 @@ namespace U5ki.Infrastructure
         public const int CORESIP_MAX_RDRX_PORTS = 128;
         public const int CORESIP_MAX_SOUND_RX_PORTS = 128;
         public const int CORESIP_MAX_GENERIC_PORTS = 16;
+        public const int CORESIP_MAX_RTP_PORTS = 16;
         public const int CORESIP_MAX_RS_LENGTH = 128;
         public const int CORESIP_MAX_REASON_LENGTH = 128;
         public const int CORESIP_MAX_WG67_SUBSCRIBERS = 25;
@@ -927,6 +997,8 @@ namespace U5ki.Infrastructure
         public const int CORESIP_MAX_SELCAL_LENGTH = 4;
         public const int CORESIP_MAX_DTMF_DIGITS = 128;
         public const int CORESIP_AUD_PACKET_LEN = 160;
+        public const int CORESIP_MAX_RESOURCEID_LENGTH = 256;
+        public const int CORESIP_MAX_HMI_RESOURCES = 1024;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct CORESIP_Error
@@ -1015,6 +1087,8 @@ namespace U5ki.Infrastructure
             public uint DIA_TxAttenuation_dB;       //Atenuacion de las llamadas DIA en Tx (Antes de transmistir por RTP). En dB
             public uint IA_TxAttenuation_dB;        //Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En dB
             public uint RD_TxAttenuation_dB;        //Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En dB
+
+            public CORESIP_Agent_Type AgentType;	//Es el tipo de agente.
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -2063,6 +2137,50 @@ namespace U5ki.Infrastructure
         */
         [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
         public static extern int CORESIP_GetJitterStatusGenericPort(int gen_port_id, out uint size, out CORESIP_Error error);
+
+        /*
+	    Funcion que Crea un puerto de media para enviar y recibir por RTP
+	    @param rtpport_id. Manejador del puerto que se retorna.
+	    @param dst_ip. IP de destino del flujo RTP. Puede ser unicast o multicast.
+	    @param src_port. Puerto source del flujo RTP. Puede ser cero para que coja cualquiera.
+	    @param dst_port. Puerto de destino del flujo RTP.
+	    @param local_multicast_ip. Si no es NULL, es la direccion del grupo multicas al que se agrega para recibir rtp
+	    @param payload_type. Valor 0: PCMU, valor 8: PCMA
+	    @param action. Indica el puerto RTP enconde, decode o las dos cosas.
+        @param record_reception. Establece si se graba la recepcion RTP como ED137.
+	    @param frequencyLiteral. Literal de la frecuencia sintonizada en la radio. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	    @param resourceId. Es el identificador del recurso de radio, de la herramienta de configuracion. Es requerido si record_reception es true. Puede ser NULL si no se requiere.
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_CreateRTPport(out int rtpport_id, string dst_ip, int src_port, int dst_port, string local_multicast_ip, int payload_type, [In] CORESIP_RTP_port_actions action,
+            bool record_reception, string frequencyLiteral, string resourceId, out CORESIP_Error error);
+
+        /*
+	    Funcion que pausar, reanudar y destruir un puerto de media para enviar y recibir por RTP
+	    @param rtpport_id. Manejador del puerto.
+	    @param action. Indica el puerto RTP enconde, decode o las dos cosas
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_PauseResumeDestroyRTPport(int rtpport_id, [In] CORESIP_RTP_port_actions action, out CORESIP_Error error);
+
+        /*
+	    Funcion para solicitar que se genere la callback RTPport_infoCb para actualizar el estado
+	    @param rtpport_id. Manejador del puerto.
+	    */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_AskRTPport_info(int rtpport_id, out CORESIP_Error error);
+
+        /*
+        Funcion para para pasar la informacion de los recursos configurados en el HMI. 
+        Se necesita para que la Coresip tenga la informacion de que recursos son seguros o no,
+        necesario para que en la grabacion el audio sea enviado al grabador seguro o al otro.
+        @param Resources_Info. Estructura con la informacion.
+        * @param	error		Puntero @ref CORESIP_Error a la Estructura de error
+        * @return	CORESIP_OK OK, CORESIP_ERROR  error.
+        */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_Set_HMI_Resources_Info([In] CORESIP_HMI_Resources_Info Resources_Info, out CORESIP_Error error);
+
 
         #endregion
 

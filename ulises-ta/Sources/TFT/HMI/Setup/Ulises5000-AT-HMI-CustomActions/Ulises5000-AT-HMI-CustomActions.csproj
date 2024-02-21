@@ -67,7 +67,6 @@
   <Import Project="$(WixCATargetsPath)" />
   <PropertyGroup>
     <PreBuildEvent>copy $(ProjectDir)\..\..\..\..\Cd40\Lib\coresip-voter.dll $(ProjectDir)
-
 </PreBuildEvent>
   </PropertyGroup>
 </Project>

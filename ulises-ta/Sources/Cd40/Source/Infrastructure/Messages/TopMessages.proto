@@ -134,18 +134,19 @@ message TlmdoAsk
 		TLMDO_GET_CHANNELS = 1;		//Pide numero de canales de la radio
         TLMDO_SET_CHANNEL = 2;		//Seleccion del canal de radio
 		TLMDO_SET_FREQUENCY = 3;	//Selecciona la frecuencia del canal
-        TLMDO_SET_TXPWR = 4;		//Potencia de transmision
-        TLMDO_SET_TXINHIBIT = 5;	//Inhibicion de TX
-        TLMDO_SET_WFALLOC = 6;		//Waveform allocation. TBD
-        TLMDO_ERASE_CRYPT_KEYS = 7;	//Borra claves de encriptacion
-		TLMDO_LOAD_CRYPT_KEYS = 8;	//Carga claves de encriptacion
+		TLMDO_GET_FREQUENCY = 4;	//Retorna la frecuencia del canal
+        TLMDO_SET_TXPWR = 5;		//Potencia de transmision
+        TLMDO_SET_TXINHIBIT = 6;	//Inhibicion de TX
+        TLMDO_SET_WFALLOC = 7;		//Waveform allocation. TBD
+        TLMDO_ERASE_CRYPT_KEYS = 8;	//Borra claves de encriptacion
+		TLMDO_LOAD_CRYPT_KEYS = 9;	//Carga claves de encriptacion
 	}
 
 	required MsgType msgType = 1;
 	required string HostId = 2;
 	required string IdFrecuency = 3;    //Corresponde al identificador unico que llamamos Literal
 	required string IdRecurso = 4;		//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
-	optional int32 Channel = 5;			//Valor 0-9. Canal seleccionado en el caso del mensaje TLMDO_SET_CHANNEL, 
+	optional int32 Channel = 5;			//Valor 0-9. Canal seleccionado en el caso del mensaje TLMDO_SET_CHANNEL
 	optional string Frequency = 6;		//Frecuencia a la que se configura el canal. Mensaje TLMDO_SET_FREQUENCY. En el mensaje hay que especificar el Channel
 	optional string PowerW = 7;			//Potencia en watios del canal. 0.25 a 50. Mensaje TLMDO_SET_TXPWR. En el mensaje hay que especificar el Channel.
 	optional bool TxInhibit = 8;		//Si true se inhibe la transmision al transmisor independientemente del canal. Mensaje TLMDO_SET_TXINHIBIT. 
@@ -169,6 +170,7 @@ message TlmdoRsp
 	required string IdFrecuency = 3;			//Corresponde al identificador unico que llamamos Literal
 	required string IdRecurso = 4;				//Identificador del recurso. Si el mensaje se aplica a toda la frecuencia entonces es un string de longitud cero.
 	optional int32 NumChannels = 5;				//Numero de canales de la radio. Mensaje TLMDO_GET_CHANNELS.
-	optional CodeTypes Code = 6;
+	optional int32 Frequecy = 6;				//Frecuencia sintonizada en la radio. Mensaje TLMDO_GET_FREQUENCY.
+	optional CodeTypes Code = 7;
 }
 
