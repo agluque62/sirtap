@@ -1309,28 +1309,6 @@ public partial class Controladores : System.Web.UI.Page, System.Web.UI.ICallback
             logDebugView.Error("(RecuperaNucleosAutorizados-Controladores): ", ex);
         }
     }
-
-    // 20210317 #4749
-    public bool SistemaConDependenciasATS()
-    {
-        const string CONF_KEY_CON_DEPATS = "DependenciasATS";
-        bool bConDepATS = false;
-
-        Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-        KeyValueConfigurationElement objConf = null;
-
-        //Se obtiene el parametro que indica si se debe o no visualizar las Dependencias ATS
-        objConf = config.AppSettings.Settings[CONF_KEY_CON_DEPATS];
-
-        if ((objConf != null) && (!string.IsNullOrEmpty(objConf.Value) && string.Compare(objConf.Value, "SI", true) == 0))
-        {
-            //El sistema está configurado con gestión de dependencias ATS
-            bConDepATS = true;
-        }
-
-        return bConDepATS;
-    }
-
     private void Traduce()
     {
 

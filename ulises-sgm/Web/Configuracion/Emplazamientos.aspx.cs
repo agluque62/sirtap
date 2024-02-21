@@ -16,7 +16,7 @@ using log4net.Config;
 public partial class Emplazamientos : PageBaseCD40.PageCD40		//System.Web.UI.Page
 {
 	static bool PermisoSegunPerfil;
-    private Mensajes.msgBox cMsg;
+//    private Mensajes.msgBox cMsg;
     private static ILog _logDebugView;
 	private static ServiciosCD40.ServiciosCD40 ServicioCD40 = new ServiciosCD40.ServiciosCD40();
     
@@ -279,24 +279,6 @@ public partial class Emplazamientos : PageBaseCD40.PageCD40		//System.Web.UI.Pag
             }
             else
             {
-                Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-                KeyValueConfigurationElement sincronizar = config.AppSettings.Settings["SincronizaCD30"];
-                if ((sincronizar != null) && (Int32.Parse(sincronizar.Value) == 1))
-                {
-                    SincronizaCD30.SincronizaCD30 sincro = new SincronizaCD30.SincronizaCD30();
-                    switch (sincro.AltaEmplazamiento(n.IdEmplazamiento))
-                    {
-                        case 108:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod108"), n.IdEmplazamiento));
-                            break;
-                        case 109:
-                            cMsg.alert(String.Format((string)GetGlobalResourceObject("Espaniol", "Cod109"), n.IdEmplazamiento));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
 				ActualizaWebPadre(true);
 			}
 

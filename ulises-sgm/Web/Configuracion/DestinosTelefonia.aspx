@@ -25,7 +25,7 @@
             meta:resourcekey="TBDestinoResource1"></asp:TextBox>
 
         <asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 361px; position: absolute;
-            top: 22px" Text="Seguro: " TextAlign="Left" Enabled="False" 
+            top: 22px" Text="Seguro: " TextAlign="Left" Enabled="False" Visible ="false"
             AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px" Font-Names="Arial"
             meta:resourcekey="LSeguroResource1"/>
 

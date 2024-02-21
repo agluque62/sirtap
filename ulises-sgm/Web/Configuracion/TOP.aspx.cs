@@ -20,7 +20,7 @@ public partial class TOP :	PageBaseCD40.PageCD40	// System.Web.UI.Page
     /// <summary>
     /// 
     /// </summary>
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
     /// <summary>
     /// 
     /// </summary>
@@ -141,15 +141,8 @@ public partial class TOP :	PageBaseCD40.PageCD40	// System.Web.UI.Page
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
             KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
             Session["idsistema"] = s.Value;
-
             CargaDDLGrabadores();
-
-            // 20210317 #4749
-            //ControlDependenciasATS = SistemaConDependenciasATS();
-            // RQF-4
-            ControlDependenciasATS = false; 
             CargaDependenciasATSNucleo();
-
             BtNuevo.Visible = PermisoSegunPerfil;
 			MuestraDatos(DameDatos());
 		}
@@ -339,17 +332,8 @@ public partial class TOP :	PageBaseCD40.PageCD40	// System.Web.UI.Page
                     }
 
 
-                    if (((ServiciosCD40.Top)datos[i]).GrabacionAnalogica == null)
-                        CBGrabacionAnalogica.Checked = false;
-                    else
-                        CBGrabacionAnalogica.Checked = (((ServiciosCD40.Top)datos[i]).GrabacionAnalogica == 1);
-
-                    if (((ServiciosCD40.Top)datos[i]).GrabacionED137 == null)
-                        CBGrabacionED137.Checked = false;
-                    else
-                    {
-                        CBGrabacionED137.Checked = (((ServiciosCD40.Top)datos[i]).GrabacionED137 == 1);
-                    }
+                    CBGrabacionAnalogica.Checked = (((ServiciosCD40.Top)datos[i]).GrabacionAnalogica == 1);
+                    CBGrabacionED137.Checked = (((ServiciosCD40.Top)datos[i]).GrabacionED137 == 1);
                     // Salva los valores presentados...
                     old_index_rec1 = DDLRecorder1.SelectedIndex;
                     old_rstp_rec1 = TBRtspPort.Text;
@@ -364,16 +348,8 @@ public partial class TOP :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
                     try
                     {
-                        if (CBGrabacionAnalogica.Checked)
-                        {
-                            if (((ServiciosCD40.Top)datos[i]).TipoGrabacionAnalogica == null)
-                                DListTipoGrabacionAnalogica.SelectedIndex = 0;
-                            else
-                            {
-                                DListTipoGrabacionAnalogica.SelectedIndex = ((ServiciosCD40.Top)datos[i]).TipoGrabacionAnalogica;
-                            }
-                        }
-
+                        if (CBGrabacionAnalogica.Checked)                     
+                            DListTipoGrabacionAnalogica.SelectedIndex = ((ServiciosCD40.Top)datos[i]).TipoGrabacionAnalogica;
                         // Guarda valor presentado
                         old_tipo_grab = DListTipoGrabacionAnalogica.SelectedIndex;
 

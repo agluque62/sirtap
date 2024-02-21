@@ -24,7 +24,7 @@ public partial class Configuracion_EquiposExternos : PageBaseCD40.PageCD40	// Sy
     const string TIPO_EQUIPO_TLF = "3";
     const string TIPO_EQUIPO_GRABADOR = "5";
 
-	private Mensajes.msgBox cMsg;
+	//private Mensajes.msgBox cMsg;
 	private static ILog _logDebugView;
 	public static ILog logDebugView
 	{

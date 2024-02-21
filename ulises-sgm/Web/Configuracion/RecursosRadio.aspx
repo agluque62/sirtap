@@ -171,7 +171,7 @@ CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Recursos Radio" Enab
                     </asp:DropDownList>
 
   				<asp:CheckBox ID="CBSeguro" runat="server" Style="z-index: 105; left: 209px; position: absolute; width: 100px;
-					  top: 13px" Text="Seguro: " TextAlign="Left" Enabled="False"
+					  top: 13px" Text="Seguro: " TextAlign="Left" Enabled="False"  Visible ="false"
 					AutoPostBack="True" oncheckedchanged="CBSeguro_OnCheckedChanged" Font-Size="Medium" Height="14px"  Font-Names="Arial" 
 					meta:resourcekey="LSeguroResource1"/>
                    

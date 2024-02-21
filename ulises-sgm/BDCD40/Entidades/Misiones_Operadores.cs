@@ -41,7 +41,7 @@ namespace CD40.BD.Entidades
         {
             Consulta.Remove(0, Consulta.Length);
             if (IdMision != 0)
-                Consulta.Append("SELECT * FROM Misiones_Operadores WHERE IdMision=" + IdMision);
+                Consulta.Append("SELECT * FROM Misiones_Operadores WHERE IdMision=" + IdMision + " ORDER BY IdOperador");
             else 
                 Consulta.Append("SELECT * FROM Misiones_Operadores");
             return Consulta.ToString();

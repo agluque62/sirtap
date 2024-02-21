@@ -48,8 +48,6 @@ namespace CD40.BD.Entidades
                 Consulta.Append("SELECT * FROM Agrupaciones WHERE IdSistema='" + IdSistema + "'");
             else if (IdAgrupacion != null)
                 Consulta.Append("SELECT * FROM Agrupaciones WHERE IdAgrupacion='" + IdAgrupacion + "'");
-            else if (AgrupacionEspecial != null)
-                Consulta.Append("SELECT * FROM Agrupaciones WHERE AgrupacionEspecial=" + AgrupacionEspecial + " ");
             else
                 Consulta.Append("SELECT * FROM Agrupaciones");
 

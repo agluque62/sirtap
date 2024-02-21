@@ -1011,4 +1011,16 @@
   <data name="ErrorEliminarConferencia" xml:space="preserve">
     <value>Une erreur s'est produite : la conférence "{0}" n'a pas été supprimée.</value>
   </data>
+  <data name="AvisoOperadoresAsignadosAMision" xml:space="preserve">
+    <value>Operadores asignados a misión. No es posible modificación.</value>
+  </data>
+  <data name="EliminarMision" xml:space="preserve">
+    <value>Voulez-vous supprimer la mission : "{0}" ?</value>
+  </data>
+  <data name="ErrorEliminarMision" xml:space="preserve">
+    <value>Une erreur s'est produite : La mission "{0}" n'a pas été supprimée.</value>
+  </data>
+  <data name="AvisoNoExistenMisiones" xml:space="preserve">
+    <value>Il n'y a pas de missions. Vous devez créer une mission.</value>
+  </data>
 </root>

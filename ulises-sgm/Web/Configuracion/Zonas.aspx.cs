@@ -20,7 +20,7 @@ public partial class Zonas : PageBaseCD40.PageCD40		//System.Web.UI.Page
     static bool Modificar = false;
 
     
-    private Mensajes.msgBox cMsg;
+    //private Mensajes.msgBox cMsg;
     private static ILog _logDebugView;
 	private static ServiciosCD40.ServiciosCD40 ServicioCD40 = new ServiciosCD40.ServiciosCD40();
     
