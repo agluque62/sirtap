@@ -26,6 +26,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +51,9 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.13.0\lib\net45\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\..\..\Cd40\Lib\protobuf-net.dll</HintPath>
     </Reference>
@@ -57,6 +61,7 @@
     <Reference Include="System.Threading.Tasks.Extensions">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -78,6 +83,7 @@
     <Compile Include="ForwardUnitTest.cs" />
     <Compile Include="FormatStrings.cs" />
     <Compile Include="NicMonitorTest.cs" />
+    <Compile Include="SirtapAudioManagerTests.cs" />
     <Compile Include="UnitTestMDConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -106,6 +112,9 @@
       <Project>{4e7fbf3d-731c-4ecb-97a3-9714f7d60cb6}</Project>
       <Name>Model.Module</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

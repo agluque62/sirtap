@@ -1,5 +1,6 @@
 ﻿using HMI.Model.Module.Messages;
 using System;
+using System.IO.Ports;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,9 @@ using System.Threading.Tasks;
 
 using U5ki.Infrastructure;
 using Utilities;
+using System.Web.Services.Description;
+using static U5ki.Infrastructure.SipAgent;
+using System.Diagnostics;
 
 namespace HMI.CD40.Module.BusinessEntities
 {
@@ -16,6 +20,10 @@ namespace HMI.CD40.Module.BusinessEntities
     {
         public int input { get; set; } = -1;
         public int output { get; set; } = -1;
+        public override string ToString()
+        {
+            return $"Asio IDS => input: {input}, output: {output}";
+        }
     }
     public interface ISingleAudioDevice
     {
@@ -32,13 +40,21 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             public AsioIds GetIds(string asioName, CORESIP_SndDevType tp)
             {
-                AsioChannels.Init();
-                var asioIds = new AsioIds()
+                try
                 {
-                    input = AsioChannels.InChannels.FindIndex(name => name == asioName),
-                    output = AsioChannels.OutChannels.FindIndex((name) => name == asioName)
-                };
-                return asioIds;
+                    AsioChannels.Init();
+                    var asioIds = new AsioIds()
+                    {
+                        input = AsioChannels.InChannels.FindIndex(name => name == asioName),
+                        output = AsioChannels.OutChannels.FindIndex((name) => name == asioName)
+                    };
+                    return asioIds;
+                }
+                catch(Exception ex)
+                {
+                    // TODO Logger...
+                    return new AsioIds();
+                }
             }
         }
         public VersionDetails.VersionDataFileItem Version => throw new NotImplementedException("TODO");
@@ -78,32 +94,102 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         private bool IstheDevicePresent()
         {
-            // TODO.
-            return false;
+            CORESIP_Error err;
+            CORESIP_SndWindowsDevices Devices;
+            if (CORESIP_GetWindowsSoundDeviceNames(0, out Devices, out err) == 0)
+            {
+                string[] separatingStrings = { "<###>" };
+                string[] DevWinName = Devices.DeviceNames.Split(separatingStrings, System.StringSplitOptions.RemoveEmptyEntries);
+                return DevWinName.Contains(WindowsName);
+            }
+            else
+            {
+                return false;
+            }
         }
         ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
         Task statusSupervisor;
     }
-    public interface ISingleHidDevice
+    public interface ISingleIODevice
     {
         event GenericEventHandler<bool> StatusChanged;
-        event GenericEventHandler<int, bool> InputChanged;
+        event GenericEventHandler<bool> InputChanged;
     }
-    public class SirtapPttDevice : IDisposable, ISingleHidDevice
+    public class SirtapPttDevice : IDisposable, ISingleIODevice
     {
         public event GenericEventHandler<bool> StatusChanged;
-        public event GenericEventHandler<int, bool> InputChanged;
+        public event GenericEventHandler<bool> InputChanged;
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            statusSupervisorEvent.Set();
+            statusSupervisor.Wait();
+            sPort?.Dispose();
         }
+        public SirtapPttDevice(string commName)
+        {
+            usedComm = commName;
+            statusSupervisor = Task.Run(() =>
+            {
+                bool? commPresent = null;
+                while (statusSupervisorEvent.WaitOne(TimeSpan.FromSeconds(1))==false) 
+                {
+                    // Supervisa si el COMM está presente
+                    PresenceCheck(commPresent, (change) =>
+                    {
+                        General.SafeLaunchEvent(StatusChanged, this, change);
+                        ResetPort(change);
+                        commPresent = change;
+                    });
+                    // Supervisa que está conectado
+                    if (commPresent == true)
+                    {
+                        if (!sPort.IsOpen)
+                        {
+                            sPort.Open();
+                        }
+                    }
+                }
+            });
+        }
+
+        private void SPort_PinChanged(object sender, SerialPinChangedEventArgs e)
+        {
+            if (e.EventType == SerialPinChange.CtsChanged)
+            {
+                General.SafeLaunchEvent(InputChanged, this, sPort?.CtsHolding ?? false);
+            }
+        }
+        void SetupPort()
+        {
+            sPort = new SerialPort(usedComm);
+            sPort.PinChanged += SPort_PinChanged;
+        }
+        void ResetPort(bool present)
+        {
+           sPort?.Dispose();
+           if (present == true)
+               SetupPort();
+        }
+        void PresenceCheck(bool? actual, Action<bool> notifyChange)
+        {
+            var current = IsPresent;
+            if (current != actual)
+            {
+                notifyChange(current);
+            }
+        }
+        bool IsPresent => SerialPort.GetPortNames().Contains(usedComm);
+        string usedComm = null;
+        SerialPort sPort = null;
+        ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
+        Task statusSupervisor;
     }
     public interface IHwAudioManager
     {
         event GenericEventHandler<JacksStateMsg> JacksChanged;
         event GenericEventHandler<bool> PttPulsed;
-        event GenericEventHandler<ISingleHidDevice> DeviceStatusChanged;
+        event GenericEventHandler<ISingleIODevice> DeviceStatusChanged;
         event GenericEventHandler<SnmpIntMsg<string, int>> SetSnmpInt;
 
         ISingleAudioDevice ExecutiveHeadPhone { get; set; }
@@ -112,8 +198,8 @@ namespace HMI.CD40.Module.BusinessEntities
         ISingleAudioDevice PhoneSpeaker { get; set; }
         ISingleAudioDevice AuxiliarRadioSpeaker { get; set; }
         ISingleAudioDevice AuralAlarmsSpeaker { get; set; }
-        ISingleHidDevice ExecutivePtt { get; set; }
-        ISingleHidDevice AssistantPtt { get; set; }
+        ISingleIODevice ExecutivePtt { get; set; }
+        ISingleIODevice AssistantPtt { get; set; }
         List<VersionDetails.VersionDataFileItem> Version { get; set; } 
         void Init();
         void Start();
@@ -127,13 +213,13 @@ namespace HMI.CD40.Module.BusinessEntities
         public ISingleAudioDevice PhoneSpeaker { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public ISingleAudioDevice AuxiliarRadioSpeaker { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public ISingleAudioDevice AuralAlarmsSpeaker { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ISingleHidDevice ExecutivePtt { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ISingleHidDevice AssistantPtt { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ISingleIODevice ExecutivePtt { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ISingleIODevice AssistantPtt { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public List<VersionDetails.VersionDataFileItem> Version { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event GenericEventHandler<JacksStateMsg> JacksChanged;
         public event GenericEventHandler<bool> PttPulsed;
-        public event GenericEventHandler<ISingleHidDevice> DeviceStatusChanged;
+        public event GenericEventHandler<ISingleIODevice> DeviceStatusChanged;
         public event GenericEventHandler<SnmpIntMsg<string, int>> SetSnmpInt;
 
         public void Dispose()
@@ -168,13 +254,13 @@ namespace HMI.CD40.Module.BusinessEntities
             throw new NotImplementedException();
         }
 
-        public SirtapAudioManager(ISingleAudioDevice headphone = null, ISingleHidDevice ptt = null, ISingleAudioDevice speaker = null)
+        public SirtapAudioManager(ISingleAudioDevice headphone = null, ISingleIODevice ptt = null, ISingleAudioDevice speaker = null)
         {
             ExecutiveHeadPhone = headphone ?? new SirtapAudioDevice(
                 Properties.Settings.Default.CasAlumnoId, 
                 Properties.Settings.Default.CasAsioId,
                 CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
-            ExecutivePtt = ptt ?? new SirtapPttDevice(); ;
+            ExecutivePtt = ptt ?? new SirtapPttDevice("COM1");
             AuralAlarmsSpeaker = speaker ?? new SirtapAudioDevice(
                 Properties.Settings.Default.RdSpkWindowsId, 
                 Properties.Settings.Default.RdSpkAsioId, 
@@ -205,7 +291,7 @@ namespace HMI.CD40.Module.BusinessEntities
         {
         }
 
-        private void OnPttDeviceInputChanged(object from, int input, bool actualStatus)
+        private void OnPttDeviceInputChanged(object from, bool actualStatus)
         {
         }
 
@@ -216,7 +302,6 @@ namespace HMI.CD40.Module.BusinessEntities
         private void OnAuralSpeakerStatusChanged(object from, bool actualStatus)
         {
         }
-
 
     }
 }
