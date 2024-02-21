@@ -48,7 +48,6 @@ namespace HMI.Presentation.Sirtap.Views
             this.txtContrasena = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this._ClearBT = new HMI.Model.Module.UI.HMIButton();
-            this.hmiButtonModo = new HMI.Model.Module.UI.HMIButton();
             _KeypadTLP = new System.Windows.Forms.TableLayoutPanel();
             _KeypadTLP.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -291,7 +290,7 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             this.txtUsuario.Location = new System.Drawing.Point(64, 3);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(242, 20);
+            this.txtUsuario.Size = new System.Drawing.Size(241, 20);
             this.txtUsuario.TabIndex = 7;
             // 
             // txtContrasena
@@ -300,7 +299,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.txtContrasena.Location = new System.Drawing.Point(64, 33);
             this.txtContrasena.Name = "txtContrasena";
             this.txtContrasena.PasswordChar = '*';
-            this.txtContrasena.Size = new System.Drawing.Size(242, 20);
+            this.txtContrasena.Size = new System.Drawing.Size(241, 20);
             this.txtContrasena.TabIndex = 8;
             // 
             // tableLayoutPanel1
@@ -308,7 +307,7 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.93865F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80.06135F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 98F));
             this.tableLayoutPanel1.Controls.Add(this.txtUsuario, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtContrasena, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
@@ -331,35 +330,21 @@ namespace HMI.Presentation.Sirtap.Views
             this._ClearBT.Font = new System.Drawing.Font("Arial Black", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._ClearBT.IsButtonTlf = false;
             this._ClearBT.IsConferencePreprogramada = false;
-            this._ClearBT.Location = new System.Drawing.Point(309, 1);
+            this._ClearBT.Location = new System.Drawing.Point(308, 1);
             this._ClearBT.Margin = new System.Windows.Forms.Padding(0, 1, 3, 3);
             this._ClearBT.Name = "_ClearBT";
             this._ClearBT.Permitted = true;
             this.tableLayoutPanel1.SetRowSpan(this._ClearBT, 2);
-            this._ClearBT.Size = new System.Drawing.Size(95, 57);
+            this._ClearBT.Size = new System.Drawing.Size(96, 57);
             this._ClearBT.TabIndex = 16;
             this._ClearBT.Text = "<--";
             this._ClearBT.Click += new System.EventHandler(this._ClearBT_Click);
-            // 
-            // hmiButtonModo
-            // 
-            this.hmiButtonModo.DrawX = false;
-            this.hmiButtonModo.IsButtonTlf = false;
-            this.hmiButtonModo.IsConferencePreprogramada = false;
-            this.hmiButtonModo.Location = new System.Drawing.Point(21, 456);
-            this.hmiButtonModo.Name = "hmiButtonModo";
-            this.hmiButtonModo.Permitted = true;
-            this.hmiButtonModo.Size = new System.Drawing.Size(407, 57);
-            this.hmiButtonModo.TabIndex = 13;
-            this.hmiButtonModo.Text = "Modo";
-            this.hmiButtonModo.MouseUp += new System.Windows.Forms.MouseEventHandler(this.hmiButtonModo_MouseUp);
             // 
             // loginform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 534);
-            this.Controls.Add(this.hmiButtonModo);
+            this.ClientSize = new System.Drawing.Size(449, 461);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(_KeypadTLP);
             this.Name = "loginform";
@@ -392,6 +377,5 @@ namespace HMI.Presentation.Sirtap.Views
         private Model.Module.UI.HMIButton _LogClv;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Model.Module.UI.HMIButton _ClearBT;
-        private Model.Module.UI.HMIButton hmiButtonModo;
     }
 }

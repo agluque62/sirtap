@@ -15,8 +15,8 @@ namespace HMI.Model.Module.BusinessEntities
         private bool _Login = false;
         private string _LoginName = "";
         private string _LastLogin = "";
-        
-        private bool _ModoNocturno = !(DateTime.Now.Hour >= 6 && DateTime.Now.Hour< 18);
+
+        private bool _ModoNocturno = false;
 
         private bool _Briefing = false;
         private bool _Playing = false;

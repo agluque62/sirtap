@@ -581,7 +581,9 @@ namespace HMI.CD40.Module.BusinessEntities
 
             AsioChannels.Init();//Aqui obtenemos todos los dispositivos asio, si tenemos 2 dispositivos binaurales y 2 dispositivos en una IAO
             //seran 8 dispositivos
-            foreach (String name in AsioChannels.InChannels)
+            // Filtrar y quitar los canales que finalizan en "2"
+            List<string> InChannels = AsioChannels.InChannels.Where(canal => !canal.EndsWith("2")).ToList();
+            foreach (String name in InChannels)
             {
                 CORESIP_SndDevType tipo = GetTipoIn(name);
                 _input_channels[_nchannel++] = new DevData { TipoDev = tipo, AsioName = name };
