@@ -103,8 +103,9 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             this.MisionText.Location = new System.Drawing.Point(10, 67);
             this.MisionText.Name = "MisionText";
-            this.MisionText.Size = new System.Drawing.Size(100, 20);
+            this.MisionText.Size = new System.Drawing.Size(100, 26);
             this.MisionText.TabIndex = 6;
+            this.MisionText.Visible = false;
             // 
             // _AltavozAlarmasUDB
             // 
@@ -114,7 +115,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._AltavozAlarmasUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.SpeakerDown;
             this._AltavozAlarmasUDB.DrawX = false;
             this._AltavozAlarmasUDB.Location = new System.Drawing.Point(325, 1);
-            this._AltavozAlarmasUDB.Name = "upDownButtonAltavozAlarmas";
+            this._AltavozAlarmasUDB.Name = "_AltavozAlarmasUDB";
             this._AltavozAlarmasUDB.Size = new System.Drawing.Size(85, 80);
             this._AltavozAlarmasUDB.TabIndex = 7;
             this._AltavozAlarmasUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.SpeakerUp;
