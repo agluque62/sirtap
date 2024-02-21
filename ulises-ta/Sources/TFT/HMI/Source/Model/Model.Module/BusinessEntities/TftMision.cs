@@ -114,9 +114,9 @@ namespace HMI.Model.Module.BusinessEntities
 					}
 					else if (_Mision == "MISION 7")
 					{
-						SetPagRadio(new List<(int, bool)> { (4, true) });
-						SetPagTlf(new List<(int, bool)> { (4, true) });
-						SetPagLc(new List<(bool, bool)> { (false, true), //1
+						SetPagRadio(new List<(int, bool)> { (0, true), (1, true), (2, true), (3, true), (4, true), });
+						SetPagTlf(new List<(int, bool)> { (0, true), (1, true), (2, true), (3, true), (4, true) });
+						SetPagLc(new List<(bool, bool)> { (true, true), //1
 														  (true, true), //2
 														  (true, true), //3
 														  (true, true), //4

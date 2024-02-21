@@ -7,6 +7,7 @@ using HMI.CD40.Module.BusinessEntities;
 using System.Threading;
 using NAudio.CoreAudioApi;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Ulises5000_AT_HMI_CustomActions
 {
@@ -280,6 +281,9 @@ namespace Ulises5000_AT_HMI_CustomActions
                 PopulateComboBox(session, "STD_ASIO_ALUMN_DEV", AsioChannels.OutChannels);
                 PopulateComboBox(session, "STD_ASIO_RD_DEV", AsioChannels.OutChannels);
                 PopulateComboBox(session, "STD_ASIO_LC_DEV", AsioChannels.OutChannels);
+                // Filtrar y quitar los canales que finalizan en "2"
+                List<string> InChannels = AsioChannels.InChannels.Where(canal => !canal.EndsWith("2")).ToList();
+                PopulateComboBox(session, "STD_ASIO_MIC_DEV", InChannels);
 
             }
             catch (Exception x)
@@ -343,7 +347,7 @@ namespace Ulises5000_AT_HMI_CustomActions
             if (session["STD_WIN_INSTRUCTOR_DEV"] == _none &&
                 session["STD_WIN_ALUMN_DEV"] == _none &&
                 session["STD_WIN_RD_DEV"] == _none &&
-                session["STD_WIN_LC_DEV"] == _none)
+                session["STD_WIN_LC_DEV"] == _none) 
             {
                 System.Windows.Forms.MessageBox.Show(String.Format("ERROR: Debe seleccionar los dispositivos de Windows"));
                 session["NEXT_BUTTON_DIALOG3"] = "False";
@@ -353,7 +357,8 @@ namespace Ulises5000_AT_HMI_CustomActions
             if (session["STD_ASIO_INSTRUCTOR_DEV"] == _none &&
                 session["STD_ASIO_ALUMN_DEV"] == _none &&
                 session["STD_ASIO_RD_DEV"] == _none &&
-                session["STD_ASIO_LC_DEV"] == _none)
+                session["STD_ASIO_LC_DEV"] == _none &&
+                session["STD_ASIO_MIC_DEV"] == _none)
             {
                 System.Windows.Forms.MessageBox.Show(String.Format("ERROR: Debe seleccionar los dispositivos de ASIO"));
                 session["NEXT_BUTTON_DIALOG3"] = "False";
