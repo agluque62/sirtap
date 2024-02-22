@@ -190,21 +190,9 @@ namespace HMI.Model.Module.Services
 			{
 				if (response == NotifMsgResponse.Ok)
 				{
-					//if ((bool)msg.Info==true)
-                    {
-						_StateManager.TftMisionInstance.Mision =null;// adelanto esto.
-
-						_StateManager.Tft.Login = false;
-					}
-					//else
-					//	General.SafeLaunchEvent(CambioPaginaRadioDown, this);
-					//_StateManager.Radio.pagina_confirmada = true;
+					_StateManager.TftMisionInstance.Mision =null;// adelanto esto.
+					_StateManager.Tft.Login = false;
 				}
-				//else
-				//{
-				//	_StateManager.Radio.pagina_confirmada = false;
-				//	// se queda igual
-				//}
 			}
 		}
 

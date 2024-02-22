@@ -220,7 +220,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
             else
             {
-                MostrarDialogoLogin();
+                ;// MostrarDialogoLogin();
             }
             if (_StateManager.Tft.Login)
             {
@@ -233,7 +233,7 @@ namespace HMI.Presentation.Sirtap.Views
 
         private void hmiButtonlogin_Click(object sender, EventArgs e)
         {
-            NotifMsg message = new NotifMsg("IdLogout", "LOGOUT", "Desea Salir del la Mision ? ", 10000, MessageType.Information, MessageButtons.OkCancel);
+            NotifMsg message = new NotifMsg("IdLogout", "LOGOUT", "Desea Salir del la Misión ? ", 10000, MessageType.Information, MessageButtons.OkCancel);
             _StateManager.ShowUIMessage(message);
             return;
             //confirmalogout();
