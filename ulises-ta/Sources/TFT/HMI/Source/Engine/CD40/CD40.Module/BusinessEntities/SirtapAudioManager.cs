@@ -61,8 +61,14 @@ namespace HMI.CD40.Module.BusinessEntities
             public AsioIds GetIds(KeyValuePair<string, List<MMDevice>>? SoundCard)
             {
                 // TODO
+                logger.Info<AsioManagement>("GetIds");
                 return new AsioIds();
             }
+            public AsioManagement(ILogger logger = null)
+            {
+                this.logger = logger ?? new NLogLogger();
+            }
+            ILogger logger;
         }
         public VersionDetails.VersionDataFileItem Version => throw new NotImplementedException("TODO");
         public AsioIds AsioIds => new AsioManagement().GetIds(SoundCard);
@@ -77,8 +83,11 @@ namespace HMI.CD40.Module.BusinessEntities
         public void Dispose()
         {
         }
-        public SirtapAudioDevice(KeyValuePair<string, List<MMDevice>>? soundCard, CORESIP_SndDevType coresipId)
+        public SirtapAudioDevice(ILogger logger=null, 
+            KeyValuePair<string, List<MMDevice>>? soundCard = null, 
+            CORESIP_SndDevType coresipId = CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP)
         {
+            this.logger = logger ?? new NLogLogger();
             SoundCard = soundCard;
             Type = coresipId;
         }
@@ -86,6 +95,7 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             return $"{SoundCard?.Key}, {AsioIds}";
         }
+        ILogger logger;
     }
     public interface ISingleIODevice
     {
@@ -104,8 +114,9 @@ namespace HMI.CD40.Module.BusinessEntities
             statusSupervisor.Wait();
             sPort?.Dispose();
         }
-        public SirtapPttDevice(string commName)
+        public SirtapPttDevice(ILogger logger = null, string commName="COM1")
         {
+            this.logger = logger ?? new NLogLogger();
             usedComm = commName;
             statusSupervisor = Task.Run(() =>
             {
@@ -168,6 +179,7 @@ namespace HMI.CD40.Module.BusinessEntities
         SerialPort sPort = null;
         ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
         Task statusSupervisor;
+        ILogger logger;
     }
     public interface IHwAudioManager
     {
@@ -221,12 +233,13 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             statusSupervisor = Task.Run(SupervisorTask);
         }
-        public SirtapAudioManager(ISingleIODevice ptt = null, EventQueue workingThread = null)
+        public SirtapAudioManager(ILogger logger = null, ISingleIODevice ptt = null, EventQueue workingThread = null)
         {
+            this.logger = logger ?? new NLogLogger();
             BackwardQueue = workingThread;
-            HeadSet = new SirtapAudioDevice(null, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
-            Ptt = ptt ?? new SirtapPttDevice("COM1");
-            AuralAlarmsSpeaker = new SirtapAudioDevice(null, CORESIP_SndDevType.CORESIP_SND_RD_SPEAKER);
+            HeadSet = new SirtapAudioDevice(this.logger, null, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
+            Ptt = ptt ?? new SirtapPttDevice(null, "COM1");
+            AuralAlarmsSpeaker = new SirtapAudioDevice(this.logger, null, CORESIP_SndDevType.CORESIP_SND_RD_SPEAKER);
             if (Ptt != null)
             {
                 Ptt.StatusChanged += OnPttDeviceStatusChanged;
@@ -318,5 +331,6 @@ namespace HMI.CD40.Module.BusinessEntities
         ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
         Task statusSupervisor;
         EventQueue BackwardQueue = null;
+        ILogger logger = null;
     }
 }

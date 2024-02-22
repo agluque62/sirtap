@@ -92,7 +92,7 @@ namespace UnitTestProject1
         {
             var ptt = new Mock<ISingleIODevice>();
             ptt.Setup(o => o.IsConnected).Returns(true);
-            var ham = new SirtapAudioManager(ptt.Object);
+            var ham = new SirtapAudioManager(null, ptt.Object);
             ham.HeadSetStatusChanged += (from, device, status) =>
             {
                 Debug.WriteLine($"HeadSetStatusChanged => {status}, {device}");
