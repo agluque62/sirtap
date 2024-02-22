@@ -16,6 +16,7 @@ using NLog;
 
 using Translate;
 using Newtonsoft.Json;
+using U5ki.CfgService.SoapCfg;
 
 namespace U5ki.CfgService
 {
@@ -736,7 +737,7 @@ namespace U5ki.CfgService
                     /** Nueva configuracion en formato 'nodebox' */
                     Cd40Cfg cfg = new Cd40Cfg();
                     cfg.Version = soapVersion;
-                    cfg.ConfiguracionGeneral = new ConfiguracionSistema();
+                    cfg.ConfiguracionGeneral = new U5ki.Infrastructure.ConfiguracionSistema();
 
                     /** Carga la configuracion 'nodebox' desde la configuracion SOAP. */
                     CfgTranslators.Translate(cfg.ConfiguracionGeneral, soapSysCfg);
@@ -800,6 +801,22 @@ namespace U5ki.CfgService
                         CfgTranslators.Translate(cfg, conferences);
                     }
 
+                    //Añade las misiones Sirtap programadas
+                    SoapCfg.MisionesProgramadas misionesProgramadas = null;
+                    try
+                    {
+                        misionesProgramadas = soapSrv.GetMisiones();
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionManage<CfgService>("TryGetSoapCfg", ex, "En TryGetSoapCfg Excepcion: " + ex.Message);
+                        misionesProgramadas = null;
+                    }
+                    if (misionesProgramadas != null)
+                    {
+                        CfgTranslators.Translate(cfg, misionesProgramadas);
+                    }
+                
                     try
                     {
                         /**

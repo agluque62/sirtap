@@ -23,7 +23,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="InterfazSOAPConfiguracionSoap", Namespace="http://CD40.es/")]
@@ -33,6 +33,8 @@ namespace U5ki.CfgService.SoapCfg {
         private System.Threading.SendOrPostCallback GetVersionConfiguracion_XMLOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetVersionConfiguracionOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback GetMisionAsignadaOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetScvActivoOperationCompleted;
         
@@ -78,6 +80,8 @@ namespace U5ki.CfgService.SoapCfg {
         
         private System.Threading.SendOrPostCallback GetConferenciasPreprogramadasOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetMisionesOperationCompleted;
+        
         private bool useDefaultCredentialsSetExplicitly;
         
         /// <remarks/>
@@ -121,6 +125,9 @@ namespace U5ki.CfgService.SoapCfg {
         
         /// <remarks/>
         public event GetVersionConfiguracionCompletedEventHandler GetVersionConfiguracionCompleted;
+        
+        /// <remarks/>
+        public event GetMisionAsignadaCompletedEventHandler GetMisionAsignadaCompleted;
         
         /// <remarks/>
         public event GetScvActivoCompletedEventHandler GetScvActivoCompleted;
@@ -189,6 +196,9 @@ namespace U5ki.CfgService.SoapCfg {
         public event GetConferenciasPreprogramadasCompletedEventHandler GetConferenciasPreprogramadasCompleted;
         
         /// <remarks/>
+        public event GetMisionesCompletedEventHandler GetMisionesCompleted;
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetVersionConfiguracion_XML", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void GetVersionConfiguracion_XML(string id_sistema) {
             this.Invoke("GetVersionConfiguracion_XML", new object[] {
@@ -242,6 +252,37 @@ namespace U5ki.CfgService.SoapCfg {
             if ((this.GetVersionConfiguracionCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetVersionConfiguracionCompleted(this, new GetVersionConfiguracionCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetMisionAsignada", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GetMisionAsignada(string Id_Operador, string Id_Clave) {
+            object[] results = this.Invoke("GetMisionAsignada", new object[] {
+                        Id_Operador,
+                        Id_Clave});
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetMisionAsignadaAsync(string Id_Operador, string Id_Clave) {
+            this.GetMisionAsignadaAsync(Id_Operador, Id_Clave, null);
+        }
+        
+        /// <remarks/>
+        public void GetMisionAsignadaAsync(string Id_Operador, string Id_Clave, object userState) {
+            if ((this.GetMisionAsignadaOperationCompleted == null)) {
+                this.GetMisionAsignadaOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetMisionAsignadaOperationCompleted);
+            }
+            this.InvokeAsync("GetMisionAsignada", new object[] {
+                        Id_Operador,
+                        Id_Clave}, this.GetMisionAsignadaOperationCompleted, userState);
+        }
+        
+        private void OnGetMisionAsignadaOperationCompleted(object arg) {
+            if ((this.GetMisionAsignadaCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetMisionAsignadaCompleted(this, new GetMisionAsignadaCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -898,6 +939,33 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://CD40.es/GetMisiones", RequestNamespace="http://CD40.es/", ResponseNamespace="http://CD40.es/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public MisionesProgramadas GetMisiones() {
+            object[] results = this.Invoke("GetMisiones", new object[0]);
+            return ((MisionesProgramadas)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetMisionesAsync() {
+            this.GetMisionesAsync(null);
+        }
+        
+        /// <remarks/>
+        public void GetMisionesAsync(object userState) {
+            if ((this.GetMisionesOperationCompleted == null)) {
+                this.GetMisionesOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetMisionesOperationCompleted);
+            }
+            this.InvokeAsync("GetMisiones", new object[0], this.GetMisionesOperationCompleted, userState);
+        }
+        
+        private void OnGetMisionesOperationCompleted(object arg) {
+            if ((this.GetMisionesCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetMisionesCompleted(this, new GetMisionesCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -917,7 +985,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -950,7 +1018,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -995,7 +1063,229 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class MisionAlarmasAcusticas {
+        
+        private string idAlarmaField;
+        
+        private string categoriaField;
+        
+        /// <remarks/>
+        public string IdAlarma {
+            get {
+                return this.idAlarmaField;
+            }
+            set {
+                this.idAlarmaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Categoria {
+            get {
+                return this.categoriaField;
+            }
+            set {
+                this.categoriaField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class MisionLC {
+        
+        private string misionPosicionField;
+        
+        private string misionHmiField;
+        
+        private string seguraField;
+        
+        /// <remarks/>
+        public string MisionPosicion {
+            get {
+                return this.misionPosicionField;
+            }
+            set {
+                this.misionPosicionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string MisionHmi {
+            get {
+                return this.misionHmiField;
+            }
+            set {
+                this.misionHmiField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Segura {
+            get {
+                return this.seguraField;
+            }
+            set {
+                this.seguraField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class MisionTelefonia {
+        
+        private string idPaginaField;
+        
+        /// <remarks/>
+        public string IdPagina {
+            get {
+                return this.idPaginaField;
+            }
+            set {
+                this.idPaginaField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class MisionRadio {
+        
+        private string idPaginaField;
+        
+        /// <remarks/>
+        public string IdPagina {
+            get {
+                return this.idPaginaField;
+            }
+            set {
+                this.idPaginaField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class Mision {
+        
+        private string descripcionField;
+        
+        private string tipoField;
+        
+        private MisionRadio[] mSRField;
+        
+        private MisionTelefonia[] mSTField;
+        
+        private MisionLC[] mLCField;
+        
+        private MisionAlarmasAcusticas[] mAAField;
+        
+        /// <remarks/>
+        public string Descripcion {
+            get {
+                return this.descripcionField;
+            }
+            set {
+                this.descripcionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Tipo {
+            get {
+                return this.tipoField;
+            }
+            set {
+                this.tipoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public MisionRadio[] MSR {
+            get {
+                return this.mSRField;
+            }
+            set {
+                this.mSRField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public MisionTelefonia[] MST {
+            get {
+                return this.mSTField;
+            }
+            set {
+                this.mSTField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public MisionLC[] MLC {
+            get {
+                return this.mLCField;
+            }
+            set {
+                this.mLCField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public MisionAlarmasAcusticas[] MAA {
+            get {
+                return this.mAAField;
+            }
+            set {
+                this.mAAField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class MisionesProgramadas {
+        
+        private Mision[] misionesProgField;
+        
+        /// <remarks/>
+        public Mision[] MisionesProg {
+            get {
+                return this.misionesProgField;
+            }
+            set {
+                this.misionesProgField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1028,7 +1318,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1097,7 +1387,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1118,7 +1408,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1152,7 +1442,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Node))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1221,7 +1511,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1412,7 +1702,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_Frecuencia {
@@ -1431,7 +1721,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_Canal {
@@ -1447,7 +1737,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_Formato_Trabajo {
@@ -1463,7 +1753,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum GearCarrierOffStatus {
@@ -1512,7 +1802,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum GearChannelSpacings {
@@ -1531,7 +1821,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum GearModulations {
@@ -1553,7 +1843,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum GearPowerLevels {
@@ -1569,7 +1859,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_Formato_Frecuencia {
@@ -1582,7 +1872,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1615,7 +1905,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1660,7 +1950,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1694,7 +1984,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1739,7 +2029,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1856,7 +2146,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1901,7 +2191,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1934,7 +2224,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum TipoInterface {
@@ -1989,7 +2279,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2034,7 +2324,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2187,7 +2477,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_Elemento_HW {
@@ -2212,7 +2502,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2245,7 +2535,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2339,7 +2629,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Rangos))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2396,7 +2686,6 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TifX))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Top))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Sistema))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Operadores))]
@@ -2436,9 +2725,9 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadio))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Externos))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TifX))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternosSector))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternosSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadioSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(EstadosRecursos))]
@@ -2446,6 +2735,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(NivelesSCV))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Niveles))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Altavoces))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(GruposTelefonia))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresSector))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TroncalesRuta))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TeclasSectorSCV))]
@@ -2457,12 +2747,12 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFParams))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(HFRangoFrecuencias))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosMultiFrecuencia))]
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Internos))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(Externos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Agrupaciones))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresAgrupacion))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(SectoresSCV))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Sectores))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2483,244 +2773,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class TifX : Tablas {
-        
-        private string idSistemaField;
-        
-        private string idTifxField;
-        
-        private string modoArranqueField;
-        
-        private uint modoSincronizacionField;
-        
-        private string masterField;
-        
-        private uint sNMPPortLocalField;
-        
-        private uint sNMPPortRemotoField;
-        
-        private uint sNMPTrapsField;
-        
-        private uint sIPPortLocalField;
-        
-        private uint timeSupervisionField;
-        
-        private string ipRed1Field;
-        
-        private string ipRed2Field;
-        
-        private string grabador1Field;
-        
-        private string grabador2Field;
-        
-        private byte iSupervLanGWField;
-        
-        private byte itmmaxSupervLanGWField;
-        
-        private int grabacionED137Field;
-        
-        private int rtspGrabador1Field;
-        
-        private int rtspGrabador2Field;
-        
-        /// <remarks/>
-        public string IdSistema {
-            get {
-                return this.idSistemaField;
-            }
-            set {
-                this.idSistemaField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IdTifx {
-            get {
-                return this.idTifxField;
-            }
-            set {
-                this.idTifxField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string ModoArranque {
-            get {
-                return this.modoArranqueField;
-            }
-            set {
-                this.modoArranqueField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint ModoSincronizacion {
-            get {
-                return this.modoSincronizacionField;
-            }
-            set {
-                this.modoSincronizacionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string Master {
-            get {
-                return this.masterField;
-            }
-            set {
-                this.masterField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint SNMPPortLocal {
-            get {
-                return this.sNMPPortLocalField;
-            }
-            set {
-                this.sNMPPortLocalField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint SNMPPortRemoto {
-            get {
-                return this.sNMPPortRemotoField;
-            }
-            set {
-                this.sNMPPortRemotoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint SNMPTraps {
-            get {
-                return this.sNMPTrapsField;
-            }
-            set {
-                this.sNMPTrapsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint SIPPortLocal {
-            get {
-                return this.sIPPortLocalField;
-            }
-            set {
-                this.sIPPortLocalField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public uint TimeSupervision {
-            get {
-                return this.timeSupervisionField;
-            }
-            set {
-                this.timeSupervisionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IpRed1 {
-            get {
-                return this.ipRed1Field;
-            }
-            set {
-                this.ipRed1Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string IpRed2 {
-            get {
-                return this.ipRed2Field;
-            }
-            set {
-                this.ipRed2Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string Grabador1 {
-            get {
-                return this.grabador1Field;
-            }
-            set {
-                this.grabador1Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string Grabador2 {
-            get {
-                return this.grabador2Field;
-            }
-            set {
-                this.grabador2Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public byte iSupervLanGW {
-            get {
-                return this.iSupervLanGWField;
-            }
-            set {
-                this.iSupervLanGWField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public byte itmmaxSupervLanGW {
-            get {
-                return this.itmmaxSupervLanGWField;
-            }
-            set {
-                this.itmmaxSupervLanGWField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public int GrabacionED137 {
-            get {
-                return this.grabacionED137Field;
-            }
-            set {
-                this.grabacionED137Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public int RtspGrabador1 {
-            get {
-                return this.rtspGrabador1Field;
-            }
-            set {
-                this.rtspGrabador1Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        public int RtspGrabador2 {
-            get {
-                return this.rtspGrabador2Field;
-            }
-            set {
-                this.rtspGrabador2Field = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2933,7 +2986,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3254,7 +3307,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3284,6 +3337,8 @@ namespace U5ki.CfgService.SoapCfg {
         private int sesionActivaField;
         
         private int sesionEstadoField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public string IdOperador {
@@ -3404,10 +3459,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.sesionEstadoField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3440,7 +3505,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3473,7 +3538,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3506,7 +3571,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3563,7 +3628,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3609,7 +3674,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(PermisosRedes))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3654,7 +3719,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3699,7 +3764,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3744,7 +3809,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3813,7 +3878,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3894,7 +3959,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3977,7 +4042,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosLCENSCV))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosRecursoLCEN))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosLCEN))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3991,7 +4056,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosRecursosRadioKASiccip))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadioForGateway))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4301,7 +4366,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4362,7 +4427,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosRecursosRadioKASiccip))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadioForGateway))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4494,7 +4559,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosRecursosRadioKASiccip))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadioForGateway))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4529,7 +4594,7 @@ namespace U5ki.CfgService.SoapCfg {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadio))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadioForGateway))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4551,7 +4616,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosRadioForGateway))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4601,6 +4666,8 @@ namespace U5ki.CfgService.SoapCfg {
         private string descDestinoField;
         
         private int telemandoField;
+        
+        private int grsDelayRxField;
         
         /// <remarks/>
         public string IdRecurso {
@@ -4821,10 +4888,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.telemandoField = value;
             }
         }
+        
+        /// <remarks/>
+        public int GrsDelayRx {
+            get {
+                return this.grsDelayRxField;
+            }
+            set {
+                this.grsDelayRxField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4849,7 +4926,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosEM))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosGrabacionTf))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosTF))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4897,7 +4974,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosEM))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosGrabacionTf))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosTF))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5136,7 +5213,7 @@ namespace U5ki.CfgService.SoapCfg {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosGrabacionTf))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosTF))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5157,7 +5234,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
     public enum Tipo_EM {
@@ -5180,7 +5257,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosTF))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5201,7 +5278,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5404,7 +5481,7 @@ namespace U5ki.CfgService.SoapCfg {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosRecursoLCEN))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosLCEN))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5750,7 +5827,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(RecursosLCEN))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5879,7 +5956,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5973,7 +6050,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Recursos))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6066,7 +6143,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6084,6 +6161,8 @@ namespace U5ki.CfgService.SoapCfg {
         private uint puertoSipField;
         
         private string ipRed1Field;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public string IdSistema {
@@ -6144,10 +6223,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.ipRed1Field = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6220,7 +6309,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosRadio))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6267,7 +6356,7 @@ namespace U5ki.CfgService.SoapCfg {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosExternos))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(DestinosInternos))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6277,6 +6366,8 @@ namespace U5ki.CfgService.SoapCfg {
         private uint idPrefijoField;
         
         private string idGrupoField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public uint IdPrefijo {
@@ -6297,10 +6388,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.idGrupoField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6321,7 +6422,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6354,7 +6455,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6412,6 +6513,8 @@ namespace U5ki.CfgService.SoapCfg {
         private bool pasivoRetransmisionField;
         
         private bool multiFrecuenciaField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public int Fk_Metodosbss {
@@ -6673,10 +6776,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.multiFrecuenciaField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6709,38 +6822,50 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Externos : Tablas {
+    public partial class TifX : Tablas {
         
         private string idSistemaField;
         
-        private string idSectorizacionField;
+        private string idTifxField;
         
-        private string idNucleoField;
+        private string modoArranqueField;
         
-        private string idSectorField;
+        private uint modoSincronizacionField;
         
-        private string idDestinoField;
+        private string masterField;
         
-        private uint idPrefijoField;
+        private uint sNMPPortLocalField;
         
-        private uint posHMIField;
+        private uint sNMPPortRemotoField;
         
-        private uint prioridadField;
+        private uint sNMPTrapsField;
         
-        private string origenR2Field;
+        private uint sIPPortLocalField;
         
-        private uint prioridadSIPField;
+        private uint timeSupervisionField;
         
-        private string tipoAccesoField;
+        private string ipRed1Field;
         
-        private string literalField;
+        private string ipRed2Field;
         
-        private string grupoField;
+        private string grabador1Field;
+        
+        private string grabador2Field;
+        
+        private byte iSupervLanGWField;
+        
+        private byte itmmaxSupervLanGWField;
+        
+        private int grabacionED137Field;
+        
+        private int rtspGrabador1Field;
+        
+        private int rtspGrabador2Field;
         
         /// <remarks/>
         public string IdSistema {
@@ -6753,128 +6878,188 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdSectorizacion {
+        public string IdTifx {
             get {
-                return this.idSectorizacionField;
+                return this.idTifxField;
             }
             set {
-                this.idSectorizacionField = value;
+                this.idTifxField = value;
             }
         }
         
         /// <remarks/>
-        public string IdNucleo {
+        public string ModoArranque {
             get {
-                return this.idNucleoField;
+                return this.modoArranqueField;
             }
             set {
-                this.idNucleoField = value;
+                this.modoArranqueField = value;
             }
         }
         
         /// <remarks/>
-        public string IdSector {
+        public uint ModoSincronizacion {
             get {
-                return this.idSectorField;
+                return this.modoSincronizacionField;
             }
             set {
-                this.idSectorField = value;
+                this.modoSincronizacionField = value;
             }
         }
         
         /// <remarks/>
-        public string IdDestino {
+        public string Master {
             get {
-                return this.idDestinoField;
+                return this.masterField;
             }
             set {
-                this.idDestinoField = value;
+                this.masterField = value;
             }
         }
         
         /// <remarks/>
-        public uint IdPrefijo {
+        public uint SNMPPortLocal {
             get {
-                return this.idPrefijoField;
+                return this.sNMPPortLocalField;
             }
             set {
-                this.idPrefijoField = value;
+                this.sNMPPortLocalField = value;
             }
         }
         
         /// <remarks/>
-        public uint PosHMI {
+        public uint SNMPPortRemoto {
             get {
-                return this.posHMIField;
+                return this.sNMPPortRemotoField;
             }
             set {
-                this.posHMIField = value;
+                this.sNMPPortRemotoField = value;
             }
         }
         
         /// <remarks/>
-        public uint Prioridad {
+        public uint SNMPTraps {
             get {
-                return this.prioridadField;
+                return this.sNMPTrapsField;
             }
             set {
-                this.prioridadField = value;
+                this.sNMPTrapsField = value;
             }
         }
         
         /// <remarks/>
-        public string OrigenR2 {
+        public uint SIPPortLocal {
             get {
-                return this.origenR2Field;
+                return this.sIPPortLocalField;
             }
             set {
-                this.origenR2Field = value;
+                this.sIPPortLocalField = value;
             }
         }
         
         /// <remarks/>
-        public uint PrioridadSIP {
+        public uint TimeSupervision {
             get {
-                return this.prioridadSIPField;
+                return this.timeSupervisionField;
             }
             set {
-                this.prioridadSIPField = value;
+                this.timeSupervisionField = value;
             }
         }
         
         /// <remarks/>
-        public string TipoAcceso {
+        public string IpRed1 {
             get {
-                return this.tipoAccesoField;
+                return this.ipRed1Field;
             }
             set {
-                this.tipoAccesoField = value;
+                this.ipRed1Field = value;
             }
         }
         
         /// <remarks/>
-        public string Literal {
+        public string IpRed2 {
             get {
-                return this.literalField;
+                return this.ipRed2Field;
             }
             set {
-                this.literalField = value;
+                this.ipRed2Field = value;
             }
         }
         
         /// <remarks/>
-        public string Grupo {
+        public string Grabador1 {
             get {
-                return this.grupoField;
+                return this.grabador1Field;
             }
             set {
-                this.grupoField = value;
+                this.grabador1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Grabador2 {
+            get {
+                return this.grabador2Field;
+            }
+            set {
+                this.grabador2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public byte iSupervLanGW {
+            get {
+                return this.iSupervLanGWField;
+            }
+            set {
+                this.iSupervLanGWField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public byte itmmaxSupervLanGW {
+            get {
+                return this.itmmaxSupervLanGWField;
+            }
+            set {
+                this.itmmaxSupervLanGWField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int GrabacionED137 {
+            get {
+                return this.grabacionED137Field;
+            }
+            set {
+                this.grabacionED137Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int RtspGrabador1 {
+            get {
+                return this.rtspGrabador1Field;
+            }
+            set {
+                this.rtspGrabador1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public int RtspGrabador2 {
+            get {
+                return this.rtspGrabador2Field;
+            }
+            set {
+                this.rtspGrabador2Field = value;
             }
         }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6908,6 +7093,8 @@ namespace U5ki.CfgService.SoapCfg {
         private System.Nullable<uint> idPrefijoDestinoLCENField;
         
         private string idDestinoLCENField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public string IdSistema {
@@ -7049,19 +7236,49 @@ namespace U5ki.CfgService.SoapCfg {
                 this.idDestinoLCENField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class GruposTelefonia : Tablas {
+    public partial class Internos : Tablas {
         
         private string idSistemaField;
         
-        private string idGrupoField;
+        private string idSectorizacionField;
+        
+        private string idNucleoField;
+        
+        private string idSectorField;
+        
+        private string idDestinoField;
+        
+        private uint idPrefijoField;
+        
+        private uint posHMIField;
+        
+        private uint prioridadField;
+        
+        private string origenR2Field;
+        
+        private uint prioridadSIPField;
+        
+        private string tipoAccesoField;
+        
+        private string literalField;
         
         /// <remarks/>
         public string IdSistema {
@@ -7074,18 +7291,118 @@ namespace U5ki.CfgService.SoapCfg {
         }
         
         /// <remarks/>
-        public string IdGrupo {
+        public string IdSectorizacion {
             get {
-                return this.idGrupoField;
+                return this.idSectorizacionField;
             }
             set {
-                this.idGrupoField = value;
+                this.idSectorizacionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdNucleo {
+            get {
+                return this.idNucleoField;
+            }
+            set {
+                this.idNucleoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdSector {
+            get {
+                return this.idSectorField;
+            }
+            set {
+                this.idSectorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdDestino {
+            get {
+                return this.idDestinoField;
+            }
+            set {
+                this.idDestinoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint IdPrefijo {
+            get {
+                return this.idPrefijoField;
+            }
+            set {
+                this.idPrefijoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint PosHMI {
+            get {
+                return this.posHMIField;
+            }
+            set {
+                this.posHMIField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint Prioridad {
+            get {
+                return this.prioridadField;
+            }
+            set {
+                this.prioridadField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string OrigenR2 {
+            get {
+                return this.origenR2Field;
+            }
+            set {
+                this.origenR2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public uint PrioridadSIP {
+            get {
+                return this.prioridadSIPField;
+            }
+            set {
+                this.prioridadSIPField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string TipoAcceso {
+            get {
+                return this.tipoAccesoField;
+            }
+            set {
+                this.tipoAccesoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Literal {
+            get {
+                return this.literalField;
+            }
+            set {
+                this.literalField = value;
             }
         }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7115,6 +7432,8 @@ namespace U5ki.CfgService.SoapCfg {
         private string tipoAccesoField;
         
         private string literalField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public string IdSistema {
@@ -7235,10 +7554,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.literalField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7270,6 +7599,8 @@ namespace U5ki.CfgService.SoapCfg {
         private bool supervisionPortadoraField;
         
         private string descDestinoField;
+        
+        private bool seguroField;
         
         /// <remarks/>
         public string IdSistema {
@@ -7400,10 +7731,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.descDestinoField = value;
             }
         }
+        
+        /// <remarks/>
+        public bool Seguro {
+            get {
+                return this.seguroField;
+            }
+            set {
+                this.seguroField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7532,7 +7873,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7710,7 +8051,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Niveles))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7767,7 +8108,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7812,7 +8153,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7917,7 +8258,40 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
+    public partial class GruposTelefonia : Tablas {
+        
+        private string idSistemaField;
+        
+        private string idGrupoField;
+        
+        /// <remarks/>
+        public string IdSistema {
+            get {
+                return this.idSistemaField;
+            }
+            set {
+                this.idSistemaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string IdGrupo {
+            get {
+                return this.idGrupoField;
+            }
+            set {
+                this.idGrupoField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -7986,7 +8360,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8044,7 +8418,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(TeclasSector))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8329,7 +8703,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8377,7 +8751,7 @@ namespace U5ki.CfgService.SoapCfg {
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSectorSCVKeepAlive))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSectorRecording))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSector))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8496,7 +8870,7 @@ namespace U5ki.CfgService.SoapCfg {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSectorRecording))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSector))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8530,7 +8904,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ParametrosSector))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8551,7 +8925,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8620,7 +8994,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8857,7 +9231,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8914,7 +9288,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8971,12 +9345,12 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://CD40.es/")]
-    public partial class Internos : Tablas {
+    public partial class Externos : Tablas {
         
         private string idSistemaField;
         
@@ -9001,6 +9375,8 @@ namespace U5ki.CfgService.SoapCfg {
         private string tipoAccesoField;
         
         private string literalField;
+        
+        private string grupoField;
         
         /// <remarks/>
         public string IdSistema {
@@ -9121,10 +9497,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.literalField = value;
             }
         }
+        
+        /// <remarks/>
+        public string Grupo {
+            get {
+                return this.grupoField;
+            }
+            set {
+                this.grupoField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9169,7 +9555,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9227,7 +9613,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Sectores))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9284,7 +9670,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9413,7 +9799,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9458,7 +9844,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9563,7 +9949,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9668,7 +10054,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9881,7 +10267,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9914,7 +10300,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10043,7 +10429,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10077,7 +10463,7 @@ namespace U5ki.CfgService.SoapCfg {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(CfgRecursoEnlaceInternoConInterface))]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10122,7 +10508,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10155,7 +10541,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10260,7 +10646,7 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10300,6 +10686,8 @@ namespace U5ki.CfgService.SoapCfg {
         private string redundanciaRolField;
         
         private int telemandoField;
+        
+        private int grsDelayRxField;
         
         /// <remarks/>
         public string IdRecurso {
@@ -10470,10 +10858,20 @@ namespace U5ki.CfgService.SoapCfg {
                 this.telemandoField = value;
             }
         }
+        
+        /// <remarks/>
+        public int GrsDelayRx {
+            get {
+                return this.grsDelayRxField;
+            }
+            set {
+                this.grsDelayRxField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -10830,15 +11228,15 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetVersionConfiguracion_XMLCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetVersionConfiguracionCompletedEventHandler(object sender, GetVersionConfiguracionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetVersionConfiguracionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10860,11 +11258,37 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    public delegate void GetMisionAsignadaCompletedEventHandler(object sender, GetMisionAsignadaCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetMisionAsignadaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetMisionAsignadaCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetScvActivoCompletedEventHandler(object sender, GetScvActivoCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetScvActivoCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10886,11 +11310,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetEstadoClusterCompletedEventHandler(object sender, GetEstadoClusterCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetEstadoClusterCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10912,11 +11336,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetListaEnlacesExternosCompletedEventHandler(object sender, GetListaEnlacesExternosCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetListaEnlacesExternosCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10938,11 +11362,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetListaEnlacesInternosCompletedEventHandler(object sender, GetListaEnlacesInternosCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetListaEnlacesInternosCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10964,11 +11388,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void LoginTopCompletedEventHandler(object sender, LoginTopCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class LoginTopCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -10990,11 +11414,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetCfgUsuarioCompletedEventHandler(object sender, GetCfgUsuarioCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetCfgUsuarioCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11016,11 +11440,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetCfgPasarelaCompletedEventHandler(object sender, GetCfgPasarelaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetCfgPasarelaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11042,11 +11466,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetParametrosRecursoByIdCompletedEventHandler(object sender, GetParametrosRecursoByIdCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetParametrosRecursoByIdCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11068,11 +11492,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetParametrosRecursoCompletedEventHandler(object sender, GetParametrosRecursoCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetParametrosRecursoCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11094,11 +11518,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetConfigSistemaCompletedEventHandler(object sender, GetConfigSistemaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetConfigSistemaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11120,11 +11544,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetParametrosGeneralesCompletedEventHandler(object sender, GetParametrosGeneralesCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetParametrosGeneralesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11146,11 +11570,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanNumeracionATSCompletedEventHandler(object sender, GetPlanNumeracionATSCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanNumeracionATSCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11172,11 +11596,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanDireccionamientoIPCompletedEventHandler(object sender, GetPlanDireccionamientoIPCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanDireccionamientoIPCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11198,11 +11622,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanTroncalesCompletedEventHandler(object sender, GetPlanTroncalesCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanTroncalesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11224,11 +11648,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanRedesCompletedEventHandler(object sender, GetPlanRedesCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanRedesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11250,11 +11674,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanAsignacionUsuariosCompletedEventHandler(object sender, GetPlanAsignacionUsuariosCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanAsignacionUsuariosCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11276,11 +11700,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanAsignacionRecursosCompletedEventHandler(object sender, GetPlanAsignacionRecursosCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanAsignacionRecursosCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11302,11 +11726,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPlanDireccionamientoSIPCompletedEventHandler(object sender, GetPlanDireccionamientoSIPCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPlanDireccionamientoSIPCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11328,11 +11752,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetParametrosMulticastCompletedEventHandler(object sender, GetParametrosMulticastCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetParametrosMulticastCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11354,11 +11778,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPoolHfElementCompletedEventHandler(object sender, GetPoolHfElementCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPoolHfElementCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11380,11 +11804,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetPoolNMElementsCompletedEventHandler(object sender, GetPoolNMElementsCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetPoolNMElementsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11406,11 +11830,11 @@ namespace U5ki.CfgService.SoapCfg {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     public delegate void GetConferenciasPreprogramadasCompletedEventHandler(object sender, GetConferenciasPreprogramadasCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4084.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetConferenciasPreprogramadasCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -11427,6 +11851,32 @@ namespace U5ki.CfgService.SoapCfg {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ConferenciasPreprogramadas)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    public delegate void GetMisionesCompletedEventHandler(object sender, GetMisionesCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetMisionesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetMisionesCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public MisionesProgramadas Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((MisionesProgramadas)(this.results[0]));
             }
         }
     }

@@ -6,8 +6,12 @@
 			Actualizará las clases de referencia SOAP.
 
 		1.1 Se obtiene el fichero WSDL y el Reference.cs 
-			Dentro del Proyecto u5ki.CfgService/Web References está SoapCfg. En sus Propiedades se pone:			
+			Dentro del Proyecto u5ki.CfgService/Web References está SoapCfg. En sus Propiedades se pone
+			en "Direccion URL de referencia Web":			
 			http://192.168.1.4/ulisesv5000/u5kcfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx
+
+			También se puede poder la ruta completa de un fichero. Por ejemplo:
+			C:\Users\eduardo.pascual\OneDrive - GRUPO AMPER\Proyectos\SIRTAP\ficheros_config_misiones\InterfazSOAPConfiguracion.wsdl
 			
 			Después con botón derecho del ratón sobre SoapCfg se actualiza la referencia Web.
 
