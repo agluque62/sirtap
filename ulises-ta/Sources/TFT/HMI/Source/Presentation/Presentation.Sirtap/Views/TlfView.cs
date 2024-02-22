@@ -205,14 +205,12 @@ namespace HMI.Presentation.Sirtap.Views
             }
 
         }
-
-
-        private void hmiButtonlogin_Click(object sender, EventArgs e)
+        public void confirmalogout()
         {
             _CmdManager.CancelTlfClick();//Cuelga telefonia
             _CmdManager.CancelTlfClick();//Quita memorizadas.
             _CmdManager.RdSwitchRxState(2, true);
-            
+
             if (_StateManager.Tft.Login)
             {
                 _StateManager.TftMisionInstance.Mision =null;// adelanto esto.
@@ -230,15 +228,15 @@ namespace HMI.Presentation.Sirtap.Views
                 hmiButtonLogin.Update();
 
             }
-            else
-            {
-                MostrarDialogoLogin();
-                MostrarModo(sender);
-            }
-            // De mometo para refrescar la pagina
-            // paso a la siguiente.
-            //_TlfPageBT_UpClick(sender);
-            //_CmdManager.RdLoadPageSirtap(0, 0, 6);
+
+        }
+
+        private void hmiButtonlogin_Click(object sender, EventArgs e)
+        {
+            NotifMsg message = new NotifMsg("IdLogout", "LOGOUT", "Desea Salir del la Mision ? ", 10000, MessageType.Information, MessageButtons.OkCancel);
+            _StateManager.ShowUIMessage(message);
+            return;
+            //confirmalogout();
         }
 
         [EventSubscription(EventTopicNames.ActiveViewChanging, ThreadOption.Publisher)]
@@ -283,6 +281,7 @@ namespace HMI.Presentation.Sirtap.Views
             }
             if ((_StateManager.Tft.Login==false) || (_StateManager.TftMisionInstance.Mision == ""))
             {
+                confirmalogout();
                 _StateManager.TftMisionInstance.Mision = null;
                 MostrarDialogoLogin();
             }

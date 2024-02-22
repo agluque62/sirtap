@@ -186,7 +186,27 @@ namespace HMI.Model.Module.Services
                     // voy a intentar llegar al otro reset
                 }
             }
-        }
+			else if (msg.Id == "IdLogout")
+			{
+				if (response == NotifMsgResponse.Ok)
+				{
+					//if ((bool)msg.Info==true)
+                    {
+						_StateManager.TftMisionInstance.Mision =null;// adelanto esto.
+
+						_StateManager.Tft.Login = false;
+					}
+					//else
+					//	General.SafeLaunchEvent(CambioPaginaRadioDown, this);
+					//_StateManager.Radio.pagina_confirmada = true;
+				}
+				//else
+				//{
+				//	_StateManager.Radio.pagina_confirmada = false;
+				//	// se queda igual
+				//}
+			}
+		}
 
 		public void ShowSplitModeSelection()
 		{
@@ -1514,6 +1534,11 @@ namespace HMI.Model.Module.Services
 		public void SetToneporllamadaModel(string llamda,string tono, string tonoprio)
 		{
 			_EngineCmdManager.SetToneporllamadaEngine(llamda,tono, tonoprio);
+        }
+
+		public void SalirDeMision()
+        {
+			_EngineCmdManager.ConfirmRdTx(0);
         }
 	}
 }
