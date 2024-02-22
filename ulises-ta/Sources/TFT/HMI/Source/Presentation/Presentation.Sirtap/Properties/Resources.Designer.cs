@@ -109,9 +109,9 @@ namespace HMI.Presentation.Sirtap.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap airbus2 {
+        internal static System.Drawing.Bitmap airbus {
             get {
-                object obj = ResourceManager.GetObject("airbus2", resourceCulture);
+                object obj = ResourceManager.GetObject("airbus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -142,16 +142,6 @@ namespace HMI.Presentation.Sirtap.Properties {
         internal static System.Drawing.Bitmap AnularPeq {
             get {
                 object obj = ResourceManager.GetObject("AnularPeq", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap aurbus {
-            get {
-                object obj = ResourceManager.GetObject("aurbus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

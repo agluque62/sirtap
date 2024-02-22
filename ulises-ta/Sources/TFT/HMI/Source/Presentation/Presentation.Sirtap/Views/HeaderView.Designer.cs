@@ -102,7 +102,7 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::HMI.Presentation.Sirtap.Properties.Resources.airbus3;
+            this.pictureBox1.Image = global::HMI.Presentation.Sirtap.Properties.Resources.airbus;
             this.pictureBox1.Location = new System.Drawing.Point(46, 14);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(140, 115);

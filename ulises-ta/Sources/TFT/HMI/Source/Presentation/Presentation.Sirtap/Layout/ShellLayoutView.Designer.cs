@@ -1,4 +1,6 @@
-﻿namespace HMI.Presentation.Sirtap.Layout
+﻿using System.Windows.Forms;
+
+namespace HMI.Presentation.Sirtap.Layout
 {
     partial class ShellLayoutView
     {
@@ -55,9 +57,22 @@
             this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 36.30475F));
             this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 39.78699F));
             this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.09667F));
-            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            //this._MainTLP.Size = new System.Drawing.Size(600, 800);
+            //this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this._MainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+
+
+
             this._MainTLP.Size = new System.Drawing.Size(800, 1280);//240221
+
+            Screen primaryScreen = Screen.PrimaryScreen;
+            int screenWidth = primaryScreen.Bounds.Width;
+            int screenHeight = primaryScreen.Bounds.Height;
+            //if (screenHeight<screenWidth)
+            //{
+            //    this._MainTLP.Size = new System.Drawing.Size(screenWidth, screenHeight-300);
+            //    this._MainTLP.Size = new System.Drawing.Size(600, 800);
+            //}
+
             this._MainTLP.TabIndex = 0;
             this._MainTLP.Paint += new System.Windows.Forms.PaintEventHandler(this._MainTLP_Paint);
             // 
@@ -69,7 +84,7 @@
             this._MainToolsWS.Margin = new System.Windows.Forms.Padding(0);
             this._MainToolsWS.Name = "_MainToolsWS";
             //this._MainToolsWS.Size = new System.Drawing.Size(598, 62);
-            this._MainToolsWS.Size = new System.Drawing.Size(800-2, 62);//240221
+            this._MainToolsWS.Size = new System.Drawing.Size(screenWidth-2, 62);//240221
             this._MainToolsWS.TabIndex = 0;
             this._MainToolsWS.Text = "deckWorkspace1";
             // 
@@ -81,7 +96,7 @@
             this._TlfWS.Margin = new System.Windows.Forms.Padding(0);
             this._TlfWS.Name = "_TlfWS";
             //this._TlfWS.Size = new System.Drawing.Size(598, 332);
-            this._TlfWS.Size = new System.Drawing.Size(800-2, 332);//240221
+            this._TlfWS.Size = new System.Drawing.Size(screenWidth-2, 332);//240221
             this._TlfWS.TabIndex = 2;
             this._TlfWS.Text = "deckWorkspace3";
             this._TlfWS.Click += new System.EventHandler(this._TlfWS_Click);
@@ -94,8 +109,8 @@
             this._RdWS.Margin = new System.Windows.Forms.Padding(0);
             this._RdWS.Name = "_RdWS";
             //this._RdWS.Size = new System.Drawing.Size(598, 304);
-            this._RdWS.Size = new System.Drawing.Size(800-2, 304);//240221
-            this._RdWS.Size = new System.Drawing.Size(800-2, 304);//240221
+            this._RdWS.Size = new System.Drawing.Size(screenWidth-2, 304);//240221
+            this._RdWS.Size = new System.Drawing.Size(screenWidth-2, 304);//240221
             this._RdWS.TabIndex = 1;
             this._RdWS.Text = "deckWorkspace2";
             // 
@@ -107,7 +122,7 @@
             this._LcWS.Margin = new System.Windows.Forms.Padding(0);
             this._LcWS.Name = "_LcWS";
             //this._LcWS.Size = new System.Drawing.Size(598, 97);
-            this._LcWS.Size = new System.Drawing.Size(800-2, 97);//240221
+            this._LcWS.Size = new System.Drawing.Size(screenWidth-2, 97);//240221
             this._LcWS.TabIndex = 3;
             this._LcWS.Text = "deckWorkspace4";
             // 
@@ -118,7 +133,7 @@
             this.Controls.Add(this._MainTLP);
             this.Name = "ShellLayoutView";
             //this.Size = new System.Drawing.Size(600, 800);
-            this.Size = new System.Drawing.Size(800,1280);//240221
+            this.Size = new System.Drawing.Size(screenWidth, screenHeight);//240221
             this._MainTLP.ResumeLayout(false);
             this.ResumeLayout(false);
 

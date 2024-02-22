@@ -552,7 +552,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\aurbus.jpg" />
-    <None Include="Resources\airbus2.png" />
     <None Include="Resources\airbus3.png" />
     <Content Include="Resources\play_no_disponibeN.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
