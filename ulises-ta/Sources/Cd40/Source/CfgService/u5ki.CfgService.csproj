@@ -192,6 +192,9 @@
     <None Include="Web References\SoapCfg\CfgUsuario1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\SoapCfg\ConferenciasPreprogramadas.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\SoapCfg\ConferenciasPreprogramadas1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
@@ -207,7 +210,6 @@
     <None Include="Web References\SoapCfg\EstadoCluster.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\SoapCfg\InterfazSoapConfiguracion.disco" />
     <None Include="Web References\SoapCfg\InterfazSoapConfiguracion.wsdl" />
     <None Include="Web References\SoapCfg\ListaRedes1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
@@ -216,6 +218,9 @@
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\SoapCfg\LoginTerminalVoz1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SoapCfg\MisionesProgramadas.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\SoapCfg\Node.datasource">

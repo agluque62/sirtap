@@ -26,6 +26,21 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetMisionAsignada">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Id_Operador" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Id_Clave" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetMisionAsignadaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMisionAsignadaResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetScvActivo">
         <s:complexType>
           <s:sequence>
@@ -145,6 +160,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="RedundanciaIdPareja" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="RedundanciaRol" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="Telemando" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfInt">
@@ -332,7 +348,7 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="Internos">
+      <s:complexType name="Externos">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
@@ -348,6 +364,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="PrioridadSIP" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="TipoAcceso" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Grupo" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -519,6 +536,16 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="GruposTelefonia">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:Tablas">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdGrupo" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="Altavoces">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
@@ -615,6 +642,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="SupervisionPortadora" type="s:boolean" />
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -635,16 +663,27 @@
               <s:element minOccurs="1" maxOccurs="1" name="PrioridadSIP" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="TipoAcceso" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="GruposTelefonia">
+      <s:complexType name="Internos">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdGrupo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdSectorizacion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdDestino" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IdPrefijo" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="PosHMI" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="Prioridad" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="OrigenR2" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="PrioridadSIP" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="TipoAcceso" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -667,27 +706,34 @@
               <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="IdPrefijoDestinoLCEN" nillable="true" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="IdDestinoLCEN" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="Externos">
+      <s:complexType name="TifX">
         <s:complexContent mixed="false">
           <s:extension base="tns:Tablas">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdSectorizacion" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdNucleo" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdSector" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdDestino" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="IdPrefijo" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="PosHMI" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="Prioridad" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="OrigenR2" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="PrioridadSIP" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="TipoAcceso" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Literal" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Grupo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IdTifx" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ModoArranque" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="ModoSincronizacion" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="Master" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="SNMPPortLocal" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="SNMPPortRemoto" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="SNMPTraps" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="SIPPortLocal" type="s:unsignedInt" />
+              <s:element minOccurs="1" maxOccurs="1" name="TimeSupervision" type="s:unsignedInt" />
+              <s:element minOccurs="0" maxOccurs="1" name="IpRed1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IpRed2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Grabador1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Grabador2" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="iSupervLanGW" type="s:unsignedByte" />
+              <s:element minOccurs="1" maxOccurs="1" name="itmmaxSupervLanGW" type="s:unsignedByte" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrabacionED137" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador1" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador2" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -733,6 +779,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="PasivoRetransmision" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="MultiFrecuencia" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -754,6 +801,7 @@
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="IdPrefijo" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="IdGrupo" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -815,6 +863,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="IdTifX" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="PuertoSip" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="IpRed1" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1091,6 +1140,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="DestRad_tipoFrec" type="s:unsignedInt" />
               <s:element minOccurs="0" maxOccurs="1" name="DescDestino" type="s:string" />
               <s:element minOccurs="1" maxOccurs="1" name="Telemando" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GrsDelayRx" type="s:int" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1269,6 +1319,7 @@
               <s:element minOccurs="1" maxOccurs="1" name="TimeoutSesion" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="SesionActiva" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="SesionEstado" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Seguro" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1326,33 +1377,6 @@
               <s:element minOccurs="1" maxOccurs="1" name="GrabacionAnalogica" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="GrabacionED137" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="TipoGrabacionAnalogica" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador1" type="s:int" />
-              <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador2" type="s:int" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="TifX">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:Tablas">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="IdSistema" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IdTifx" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="ModoArranque" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="ModoSincronizacion" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="Master" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="SNMPPortLocal" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="SNMPPortRemoto" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="SNMPTraps" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="SIPPortLocal" type="s:unsignedInt" />
-              <s:element minOccurs="1" maxOccurs="1" name="TimeSupervision" type="s:unsignedInt" />
-              <s:element minOccurs="0" maxOccurs="1" name="IpRed1" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="IpRed2" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Grabador1" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="Grabador2" type="s:string" />
-              <s:element minOccurs="1" maxOccurs="1" name="iSupervLanGW" type="s:unsignedByte" />
-              <s:element minOccurs="1" maxOccurs="1" name="itmmaxSupervLanGW" type="s:unsignedByte" />
-              <s:element minOccurs="1" maxOccurs="1" name="GrabacionED137" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador1" type="s:int" />
               <s:element minOccurs="1" maxOccurs="1" name="RtspGrabador2" type="s:int" />
             </s:sequence>
@@ -1970,6 +1994,79 @@
           <s:element minOccurs="0" maxOccurs="1" name="Descripcion" type="s:string" />
         </s:sequence>
       </s:complexType>
+      <s:element name="GetMisiones">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetMisionesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMisionesResult" type="tns:MisionesProgramadas" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="MisionesProgramadas">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MisionesProg" type="tns:ArrayOfMision" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfMision">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Mision" nillable="true" type="tns:Mision" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Mision">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Descripcion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Tipo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MSR" type="tns:ArrayOfMisionRadio" />
+          <s:element minOccurs="0" maxOccurs="1" name="MST" type="tns:ArrayOfMisionTelefonia" />
+          <s:element minOccurs="0" maxOccurs="1" name="MLC" type="tns:ArrayOfMisionLC" />
+          <s:element minOccurs="0" maxOccurs="1" name="MAA" type="tns:ArrayOfMisionAlarmasAcusticas" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfMisionRadio">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MisionRadio" nillable="true" type="tns:MisionRadio" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MisionRadio">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="IdPagina" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfMisionTelefonia">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MisionTelefonia" nillable="true" type="tns:MisionTelefonia" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MisionTelefonia">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="IdPagina" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfMisionLC">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MisionLC" nillable="true" type="tns:MisionLC" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MisionLC">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MisionPosicion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MisionHmi" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Segura" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfMisionAlarmasAcusticas">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MisionAlarmasAcusticas" nillable="true" type="tns:MisionAlarmasAcusticas" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MisionAlarmasAcusticas">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="IdAlarma" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Categoria" type="s:string" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="string" nillable="true" type="s:string" />
       <s:element name="EstadoCluster" type="tns:EstadoCluster" />
       <s:element name="ArrayOfCfgEnlaceExterno" nillable="true" type="tns:ArrayOfCfgEnlaceExterno" />
@@ -1991,6 +2088,7 @@
       <s:element name="ArrayOfPoolHfElement" nillable="true" type="tns:ArrayOfPoolHfElement" />
       <s:element name="ArrayOfNode" nillable="true" type="tns:ArrayOfNode" />
       <s:element name="ConferenciasPreprogramadas" nillable="true" type="tns:ConferenciasPreprogramadas" />
+      <s:element name="MisionesProgramadas" nillable="true" type="tns:MisionesProgramadas" />
     </s:schema>
   </wsdl:types>
   <wsdl:message name="GetVersionConfiguracion_XMLSoapIn">
@@ -2004,6 +2102,12 @@
   </wsdl:message>
   <wsdl:message name="GetVersionConfiguracionSoapOut">
     <wsdl:part name="parameters" element="tns:GetVersionConfiguracionResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMisionAsignada" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMisionAsignadaResponse" />
   </wsdl:message>
   <wsdl:message name="GetScvActivoSoapIn">
     <wsdl:part name="parameters" element="tns:GetScvActivo" />
@@ -2137,6 +2241,12 @@
   <wsdl:message name="GetConferenciasPreprogramadasSoapOut">
     <wsdl:part name="parameters" element="tns:GetConferenciasPreprogramadasResponse" />
   </wsdl:message>
+  <wsdl:message name="GetMisionesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMisiones" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMisionesResponse" />
+  </wsdl:message>
   <wsdl:message name="GetVersionConfiguracion_XMLHttpPostIn">
     <wsdl:part name="id_sistema" type="s:string" />
   </wsdl:message>
@@ -2145,6 +2255,13 @@
     <wsdl:part name="id_sistema" type="s:string" />
   </wsdl:message>
   <wsdl:message name="GetVersionConfiguracionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaHttpPostIn">
+    <wsdl:part name="Id_Operador" type="s:string" />
+    <wsdl:part name="Id_Clave" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetMisionAsignadaHttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="GetScvActivoHttpPostIn">
@@ -2279,6 +2396,10 @@
   <wsdl:message name="GetConferenciasPreprogramadasHttpPostOut">
     <wsdl:part name="Body" element="tns:ConferenciasPreprogramadas" />
   </wsdl:message>
+  <wsdl:message name="GetMisionesHttpPostIn" />
+  <wsdl:message name="GetMisionesHttpPostOut">
+    <wsdl:part name="Body" element="tns:MisionesProgramadas" />
+  </wsdl:message>
   <wsdl:portType name="InterfazSOAPConfiguracionSoap">
     <wsdl:operation name="GetVersionConfiguracion_XML">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
@@ -2289,6 +2410,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
       <wsdl:input message="tns:GetVersionConfiguracionSoapIn" />
       <wsdl:output message="tns:GetVersionConfiguracionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
+      <wsdl:input message="tns:GetMisionAsignadaSoapIn" />
+      <wsdl:output message="tns:GetMisionAsignadaSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetScvActivo">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve el Scv [1|2] activo. 0 si error</wsdl:documentation>
@@ -2400,6 +2526,11 @@
       <wsdl:input message="tns:GetConferenciasPreprogramadasSoapIn" />
       <wsdl:output message="tns:GetConferenciasPreprogramadasSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetMisiones">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve las misiones programadas</wsdl:documentation>
+      <wsdl:input message="tns:GetMisionesSoapIn" />
+      <wsdl:output message="tns:GetMisionesSoapOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="InterfazSOAPConfiguracionHttpPost">
     <wsdl:operation name="GetVersionConfiguracion_XML">
@@ -2411,6 +2542,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
       <wsdl:input message="tns:GetVersionConfiguracionHttpPostIn" />
       <wsdl:output message="tns:GetVersionConfiguracionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve la versión de la configuración activa registrada en la base de datos</wsdl:documentation>
+      <wsdl:input message="tns:GetMisionAsignadaHttpPostIn" />
+      <wsdl:output message="tns:GetMisionAsignadaHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="GetScvActivo">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Pasándole el identificador de sistema, devuelve el Scv [1|2] activo. 0 si error</wsdl:documentation>
@@ -2517,6 +2653,11 @@
       <wsdl:input message="tns:GetConferenciasPreprogramadasHttpPostIn" />
       <wsdl:output message="tns:GetConferenciasPreprogramadasHttpPostOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetMisiones">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Devuelve las misiones programadas</wsdl:documentation>
+      <wsdl:input message="tns:GetMisionesHttpPostIn" />
+      <wsdl:output message="tns:GetMisionesHttpPostOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="InterfazSOAPConfiguracionSoap" type="tns:InterfazSOAPConfiguracionSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -2531,6 +2672,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetVersionConfiguracion">
       <soap:operation soapAction="http://CD40.es/GetVersionConfiguracion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <soap:operation soapAction="http://CD40.es/GetMisionAsignada" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -2736,6 +2886,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMisiones">
+      <soap:operation soapAction="http://CD40.es/GetMisiones" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="InterfazSOAPConfiguracionSoap12" type="tns:InterfazSOAPConfiguracionSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -2750,6 +2909,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetVersionConfiguracion">
       <soap12:operation soapAction="http://CD40.es/GetVersionConfiguracion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <soap12:operation soapAction="http://CD40.es/GetMisionAsignada" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -2955,6 +3123,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMisiones">
+      <soap12:operation soapAction="http://CD40.es/GetMisiones" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="InterfazSOAPConfiguracionHttpPost" type="tns:InterfazSOAPConfiguracionHttpPost">
     <http:binding verb="POST" />
@@ -2967,6 +3144,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetVersionConfiguracion">
       <http:operation location="/GetVersionConfiguracion" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMisionAsignada">
+      <http:operation location="/GetMisionAsignada" />
       <wsdl:input>
         <mime:content type="application/x-www-form-urlencoded" />
       </wsdl:input>
@@ -3163,16 +3349,25 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMisiones">
+      <http:operation location="/GetMisiones" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="InterfazSOAPConfiguracion">
     <wsdl:port name="InterfazSOAPConfiguracionSoap" binding="tns:InterfazSOAPConfiguracionSoap">
-      <soap:address location="http://192.168.1.4/ulisesv5000/u5kcfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
+      <soap:address location="http://localhost:50751/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
     </wsdl:port>
     <wsdl:port name="InterfazSOAPConfiguracionSoap12" binding="tns:InterfazSOAPConfiguracionSoap12">
-      <soap12:address location="http://192.168.1.4/ulisesv5000/u5kcfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
+      <soap12:address location="http://localhost:50751/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
     </wsdl:port>
     <wsdl:port name="InterfazSOAPConfiguracionHttpPost" binding="tns:InterfazSOAPConfiguracionHttpPost">
-      <http:address location="http://192.168.1.4/ulisesv5000/u5kcfg/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
+      <http:address location="http://localhost:50751/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

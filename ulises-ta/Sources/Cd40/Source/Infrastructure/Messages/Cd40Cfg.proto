@@ -473,6 +473,43 @@ message Conferencia
 	repeated Participantes participantesConferencia = 5;
 }
 
+/*DEFINICION DE MENSAJES DE MISIONES SIRTAP*/
+
+message MisionRadio 
+{        
+	required string IdPagina = 1;
+}
+
+message MisionTelefonia 
+{        
+	required string IdPagina = 1;
+}
+
+message MisionLC 
+{
+	required string MisionPosicion = 1;
+    required string MisionHmi = 2;
+    required string Segura = 3;
+}
+
+message MisionAlarmasAcusticas
+{        
+	required string IdAlarma = 1;
+    required string Categoria = 2;	
+}
+
+message Mision
+{
+	required string Descripcion = 1;
+	required string Tipo = 2;
+	repeated MisionRadio MSR = 3;
+	repeated MisionTelefonia MST = 4;
+	repeated MisionLC MLC = 5;
+	repeated MisionAlarmasAcusticas MAA = 6;
+}
+
+/* Cd40Cfg */
+
 message Cd40Cfg
 {
 	optional string Version = 1;
@@ -482,4 +519,5 @@ message Cd40Cfg
 	repeated Node NodesMN = 5;
 	repeated Node NodesEE = 6;
 	repeated Conferencia ConferenciasPreprogramadas = 7;
+	repeated Mision MisionesProgramadas = 8;
 }
