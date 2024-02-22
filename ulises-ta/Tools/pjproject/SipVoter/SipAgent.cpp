@@ -223,6 +223,11 @@ float SipAgent::DIA_TxAttenuation = 1.0f;				//Atenuacion de las llamadas DIA en
 float SipAgent::IA_TxAttenuation = 1.0f;				//Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En atenuacion de voltage
 float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En atenuacion de voltage
 
+unsigned SipAgent::volume_prev = 0;
+unsigned SipAgent::subio = 0;
+unsigned SipAgent::volume_nuevo_anterior = 0;
+unsigned SipAgent::volume_nuevo = 0;
+
 /**
  * Init. Inicializacion de la clase:
  * - Incializa las Variables de la Clase, tanto locales como de librería.
@@ -3430,6 +3435,42 @@ void SipAgent::ReceiveFromRemote(const char * localIp, const char * mcastIp, uns
  */
 void SipAgent::SetVolume(int idType, int id, unsigned volume)
 {
+	//unsigned SipAgent::volume_prev = 0;
+	//unsigned SipAgent::subio = 0;
+	//unsigned SipAgent::volume_nuevo_anterior = 0;
+
+	if (volume > volume_prev)
+	{
+		volume_nuevo = volume_nuevo_anterior + 1;
+		volume_prev = volume;
+		subio = 1;
+	}
+	else if (volume < volume_prev)
+	{
+		if (volume_nuevo > 0) volume_nuevo = volume_nuevo_anterior - 1;
+		volume_prev = volume;
+		subio = 0;
+	}
+	else
+	{
+		if (subio)
+		{
+			volume_nuevo = volume_nuevo_anterior + 1;
+			volume_prev = volume;
+			subio = 1;
+		}
+		else
+		{
+			if (volume_nuevo > 0) volume_nuevo = volume_nuevo_anterior - 1;
+			volume_prev = volume;
+			subio = 0;
+		}
+	}
+
+	SetRxStreamVolume(idType, id, volume_nuevo);
+	return;
+
+
 	pjsua_conf_port_id conf_id = PJSUA_INVALID_ID;
 
 	if (id < 0)
@@ -3583,6 +3624,90 @@ unsigned SipAgent::GetVolume(int idType, int id)
 	PJ_CHECK_STATUS(st, ("GetVolume:", "ERROR tomando volumen idType=%d, id=%d", idType, id));
 
 	return (int)((info.rx_adj_level + 128) / 2,56);
+}
+
+/**
+ * SetRxStreamVolume: 
+ *	Ajusta el volumen del streaming que se recibe. Por ejemplo, si el identificador se refiere 
+ *  al un puerto del tipo RdRxPort por el que se recibe el audio de una frecuencia de radio desde el Nodebox,
+ *  se ajusta el nivel de las muestras recibidas.
+ * @param	idType		Tipo de PORT.
+ *							- CORESIP_CALL_ID: Un flujo RTP
+ *							- CORESIP_SNDDEV_ID: Un dispositivo de Audio.
+ *							- CORESIP_WAVPLAYER_ID: Reproductor de Fichero Wav.
+ *							- CORESIP_RDRXPORT_ID:
+ *							- CORESIP_SNDRXPORT_ID:
+ *							.........
+ * @param	id			Identificador del PORT.
+ * @param	volume		Es un porcentaje del nivel original del stream de audio. 
+						Es decir, 0% es mute, 50% es la mitad del nivel original, 100% es el nivel original, 
+						200% es el doble, 300% el triple que seria el maximo valor.
+ * @return	Nada
+ *
+ * INFO: http://www.pjsip.org/pjmedia/docs/html/group__PJMEDIA__CONF.htm#ga8895228fdc9b7d6892320aa03b198574
+ */
+void SipAgent::SetRxStreamVolume(int idType, int id, unsigned volume)
+{
+	pjsua_conf_port_id conf_id = PJSUA_INVALID_ID;
+
+	if (id < 0)
+	{
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("SetRxStreamVolume:", "Segundo parametro (id=%d) debe ser mayor o igual a 0", id);
+	}
+
+	/**
+	 * Obtiene el Puerto de Conferencia asociado al origen.
+	 */
+
+	switch (idType)
+	{
+	case CORESIP_CALL_ID:
+		conf_id = pjsua_call_get_conf_port(id);		
+		break;
+	case CORESIP_SNDDEV_ID:
+		if (id >= CORESIP_MAX_SOUND_DEVICES) break;
+		if (_SndPorts[id] == NULL) break;
+		if (!IsSlotValid(_SndPorts[id]->Slot)) break;
+		conf_id = _SndPorts[id]->Slot;		
+		break;
+	case CORESIP_WAVPLAYER_ID:
+		if (id >= CORESIP_MAX_WAV_PLAYERS) break;
+		if (_WavPlayers[id] == NULL) break;
+		if (!IsSlotValid(_WavPlayers[id]->Slot)) break;
+		conf_id = _WavPlayers[id]->Slot;
+		break;
+	case CORESIP_RDRXPORT_ID:
+		if (id >= CORESIP_MAX_RDRX_PORTS) break;
+		if (_RdRxPorts[id] == NULL) break;
+		if (!IsSlotValid(_RdRxPorts[id]->Slot)) break;
+		conf_id = _RdRxPorts[id]->Slot;
+		break;
+	case CORESIP_SNDRXPORT_ID:
+		if ((id & 0x0000FFFF) >= CORESIP_MAX_SOUND_RX_PORTS) break;
+		if (_SndRxPorts[id & 0x0000FFFF] == NULL) break;
+		if (!IsSlotValid(_SndRxPorts[id & 0x0000FFFF]->Slots[id >> 16])) break;
+		conf_id = _SndRxPorts[id & 0x0000FFFF]->Slots[id >> 16];
+		break;
+	default:
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("SetRxStreamVolume:", "Primer parametro (Tipo dispositivo 0x%08x) no valido", idType);
+	}
+
+	if (conf_id == PJSUA_INVALID_ID)
+	{
+		throw PJLibException(__FILE__, PJ_EINVAL).Msg("SetRxStreamVolume:", "Segundo parametro (id=%d) no valido", id);
+	}
+
+	/**
+	 * Si no hay error ajusta el volumen.
+	 */
+	if (conf_id != PJSUA_INVALID_ID)
+	{
+		int vol = (int)volume * (int)128;
+		vol -= (int)100 * (int)128;
+		vol /= 100;
+		pj_status_t st = pjmedia_conf_adjust_rx_level(pjsua_var.mconf, conf_id, vol);
+		PJ_CHECK_STATUS(st, ("SetRxStreamVolume:", "ERROR ajustando volumen idType=%d, id=%d, volume=%u", idType, id, volume));
+	}
 }
 
 /**

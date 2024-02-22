@@ -72,6 +72,13 @@ class SipAgent
 	friend class SoundDevHw;
 
 public:
+
+	static unsigned volume_prev;
+	static unsigned subio;
+	static unsigned volume_nuevo_anterior;
+	static unsigned volume_nuevo;
+
+
 	static pj_bool_t SIP_AGENT_INITIALIZED_AND_STARTED;
 	static pj_bool_t ETM;				//Si es true entonces indica que el agente es un ETM
 	static UINT timePeriodApplied;
@@ -204,6 +211,7 @@ public:
 
 	static void SetVolume(int idType, int id, unsigned volume);
 	static unsigned GetVolume(int idType, int id);
+	static void SetRxStreamVolume(int idType, int id, unsigned volume);
 
 	static pj_bool_t OnRxRequest(pjsip_rx_data *rdata);
 	static pj_bool_t OnRxResponse(pjsip_rx_data *rdata);

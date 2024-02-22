@@ -1458,13 +1458,13 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * err
 }
 
 /**
- *	CORESIP_GetVolume
+ *	CORESIP_SetRxStreamVolume
  */
-CORESIP_API int CORESIP_GetVolume(int id, unsigned* volume, CORESIP_Error* error)
+CORESIP_API int	CORESIP_SetRxStreamVolume(int id, unsigned volume, CORESIP_Error* error)
 {
 	int ret = CORESIP_OK;
 
-	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetVolume id %d", id));
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetRxStreamVolume volume %u", id));
 	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
 
 	Try
@@ -1476,18 +1476,18 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned* volume, CORESIP_Error* error
 			{
 				error->Code = ret;
 				strcpy(error->File, __FILE__);
-				sprintf(error->Info, "ERROR CORESIP_GetVolume: CORESIP NO INICIALIZADA");
+				sprintf(error->Info, "ERROR CORESIP_SetRxStreamVolume: CORESIP NO INICIALIZADA");
 			}
 		}
 		else
 		{
-			*volume = SipAgent::GetVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK);
+			SipAgent::SetRxStreamVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK, volume);
 		}
 	}
 	catch_all;
 
 	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
-	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_GetVolume result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetRxStreamVolume result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
 
 	return ret;
 }
