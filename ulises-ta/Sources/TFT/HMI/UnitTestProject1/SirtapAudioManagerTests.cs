@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 
 using NAudio;
 using NAudio.CoreAudioApi;
+using Moq;
 using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 using U5ki.Infrastructure;
 using static U5ki.Infrastructure.SipAgent;
@@ -16,12 +18,39 @@ namespace UnitTestProject1
     [TestClass]
     public class SirtapAudioManagerTests
     {
+        string Devicetype(List<MMDevice> devices)
+        {
+            if (devices.Count == 1)
+            {
+                return devices.ElementAt(0).DataFlow == DataFlow.Render ? "1 Altavoz" : "1 Microfono";
+            }
+            else if (devices.Count > 1) 
+            { 
+                var altavoces = devices.Where(dev => dev.DataFlow == DataFlow.Render).Count();
+                var microfonos= devices.Where(dev => dev.DataFlow== DataFlow.Capture).Count();
+                return $"Mixto ({altavoces} altavoz, {microfonos} microfono)";
+            }
+            return "No input/output";
+        }
+        [TestMethod]
+        public void EnumerateActiveAudioDevices()
+        {
+            var activeDevices = new MMDeviceEnumerator()
+                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
+                //.Select(dev => $"{dev.FriendlyName}, {dev.DataFlow}")
+                .GroupBy(dev => dev.DeviceFriendlyName)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            foreach (var item in activeDevices)
+            {
+                Debug.WriteLine($"Device {item.Key}, {Devicetype(item.Value)}");
+            }
+        }
         [TestMethod]
         public void TestMethod1()
         {
             var activeDevices = new MMDeviceEnumerator()
                 .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
-                .Select(dev => $"{dev.FriendlyName}")
+                .Select(dev => $"{dev.FriendlyName}, {dev.DataFlow}")
                 .ToList();
             foreach (var item in activeDevices)
             {
@@ -41,21 +70,33 @@ namespace UnitTestProject1
             }
         }
         [TestMethod]
-        public void AudioDeviceTest1()
+        public void SirtapAudioManagerTest1()
         {
-            var winDeviceName = "2- USB Headset a";
-            var asioDevicename = "2- USB Headset";
-            var device = new SirtapAudioDevice(winDeviceName, asioDevicename, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
-            device.StatusChanged += (from, status) =>
+            PrepareTests((manager) =>
             {
-                Debug.WriteLine($"Audio device: <<{winDeviceName}>> status changed => {status}");
-                if (status == true)
-                {
-                    Debug.WriteLine($"Asio Channels => {device.AsioIds}");
-                }
+                manager.Init();
+                manager.Start();
+
+                Task.Delay(TimeSpan.FromMinutes(2)).Wait();
+
+                manager.End();
+            });
+        }
+
+        private void PrepareTests(Action<IHwAudioManager> executeTest)
+        {
+            var ptt = new Mock<ISingleIODevice>();
+            var ham = new SirtapAudioManager(ptt.Object);
+            ham.HeadSetStatusChanged += (from, device, status) =>
+            {
+                Debug.WriteLine($"HeadSetStatusChanged => {status}, {device}");
             };
-            Task.Delay(TimeSpan.FromSeconds(60)).Wait();
-            device.Dispose();
+            ham.SpeakerStatusChanged += (from, device, status) =>
+            {
+                Debug.WriteLine($"SpeakerStatusChanged => {status}, {device}");
+            };
+            executeTest(ham);
+            ham.Dispose();
         }
     }
 }
