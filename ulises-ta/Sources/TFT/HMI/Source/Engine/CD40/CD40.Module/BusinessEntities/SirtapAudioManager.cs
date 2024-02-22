@@ -52,7 +52,7 @@ namespace HMI.CD40.Module.BusinessEntities
                     };
                     return asioIds;
                 }
-                catch(Exception ex)
+                catch(Exception x)
                 {
                     // TODO Logger...
                     return new AsioIds();
@@ -91,12 +91,13 @@ namespace HMI.CD40.Module.BusinessEntities
     {
         event GenericEventHandler<bool> StatusChanged;
         event GenericEventHandler<bool> InputChanged;
+        bool IsConnected { get; }
     }
     public class SirtapPttDevice : IDisposable, ISingleIODevice
     {
         public event GenericEventHandler<bool> StatusChanged;
         public event GenericEventHandler<bool> InputChanged;
-
+        public bool IsConnected {get; private set; } = false;
         public void Dispose()
         {
             statusSupervisorEvent.Set();
@@ -114,9 +115,13 @@ namespace HMI.CD40.Module.BusinessEntities
                     // Supervisa si el COMM está presente
                     PresenceCheck(commPresent, (change) =>
                     {
-                        General.SafeLaunchEvent(StatusChanged, this, change);
                         ResetPort(change);
                         commPresent = change;
+                        if (change == false)
+                        {
+                            IsConnected = false;
+                            General.SafeLaunchEvent(StatusChanged, this, IsConnected);
+                        }
                     });
                     // Supervisa que está conectado
                     if (commPresent == true)
@@ -124,6 +129,8 @@ namespace HMI.CD40.Module.BusinessEntities
                         if (!sPort.IsOpen)
                         {
                             sPort.Open();
+                            IsConnected = sPort.IsOpen;
+                            General.SafeLaunchEvent(StatusChanged, this, IsConnected);
                         }
                     }
                 }
@@ -164,7 +171,7 @@ namespace HMI.CD40.Module.BusinessEntities
     }
     public interface IHwAudioManager
     {
-        event GenericEventHandler<ISingleIODevice, bool> DeviceStatusChanged;
+        event GenericEventHandler<ISingleIODevice, bool> PttDeviceStatusChanged;
         event GenericEventHandler<ISingleAudioDevice, bool> HeadSetStatusChanged;
         event GenericEventHandler<ISingleAudioDevice, bool> SpeakerStatusChanged;
         event GenericEventHandler<JacksStateMsg> JacksChanged;
@@ -188,7 +195,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
         public event GenericEventHandler<ISingleAudioDevice, bool> HeadSetStatusChanged;
         public event GenericEventHandler<ISingleAudioDevice, bool> SpeakerStatusChanged;
-        public event GenericEventHandler<ISingleIODevice, bool> DeviceStatusChanged;
+        public event GenericEventHandler<ISingleIODevice, bool> PttDeviceStatusChanged;
         public event GenericEventHandler<JacksStateMsg> JacksChanged;
         public event GenericEventHandler<bool> PttPulsed;
         public event GenericEventHandler<SnmpIntMsg<string, int>> SetSnmpInt;
@@ -214,9 +221,9 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             statusSupervisor = Task.Run(SupervisorTask);
         }
-
-        public SirtapAudioManager(ISingleIODevice ptt = null)
+        public SirtapAudioManager(ISingleIODevice ptt = null, EventQueue workingThread = null)
         {
+            BackwardQueue = workingThread;
             HeadSet = new SirtapAudioDevice(null, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
             Ptt = ptt ?? new SirtapPttDevice("COM1");
             AuralAlarmsSpeaker = new SirtapAudioDevice(null, CORESIP_SndDevType.CORESIP_SND_RD_SPEAKER);
@@ -228,25 +235,30 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         private void OnPttDeviceStatusChanged(object from, bool actualStatus)
         {
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(PttDeviceStatusChanged, this, Ptt, actualStatus));
+            NotifyJackChanged(HeadSet.SoundCard != null, actualStatus);
         }
         private void OnPttDeviceInputChanged(object from, bool actualStatus)
         {
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(PttPulsed, this, actualStatus));
         }
         private void SupervisorTask()
         {
             while (statusSupervisorEvent.WaitOne(TimeSpan.FromSeconds(2)) == false)
             {
+                // Supervisa la presencia de los dispositivos de Audio.
                 FindHeadSetAndSpeaker((headset, speaker) =>
                 {
                     ManageSoundCarSatus(HeadSet.SoundCard, headset, (change) =>
                     {
                         HeadSet.SetSoundCard(change==true ? headset : null);
-                        General.SafeLaunchEvent(HeadSetStatusChanged, this, HeadSet, change);
+                        BackwardLaunchEvent(() => General.SafeLaunchEvent(HeadSetStatusChanged, this, HeadSet, change));
+                        NotifyJackChanged(change, Ptt.IsConnected);
                     });
                     ManageSoundCarSatus(AuralAlarmsSpeaker.SoundCard, speaker, (change) =>
                     {
                         AuralAlarmsSpeaker.SetSoundCard(change == true ? speaker : null);
-                        General.SafeLaunchEvent(SpeakerStatusChanged, this, AuralAlarmsSpeaker, change);
+                        BackwardLaunchEvent(() => General.SafeLaunchEvent(SpeakerStatusChanged, this, AuralAlarmsSpeaker, change));
                     });
                 });
             }
@@ -290,7 +302,21 @@ namespace HMI.CD40.Module.BusinessEntities
                 }
             }
         }
+        void NotifyJackChanged(bool audioDevice, bool pttdevice)
+        {
+            var jackstate = audioDevice && pttdevice;
+            var msg = new JacksStateMsg(jackstate, jackstate);
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(JacksChanged, this, msg));
+        }
+        void BackwardLaunchEvent(Action launch)
+        {
+            if (BackwardQueue == null) launch();
+            else 
+                BackwardQueue.Enqueue("SirtapAudioManagerEvent", () => launch());
+        }
+        bool IsAvailble = false;
         ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
         Task statusSupervisor;
+        EventQueue BackwardQueue = null;
     }
 }

@@ -72,20 +72,26 @@ namespace UnitTestProject1
         [TestMethod]
         public void SirtapAudioManagerTest1()
         {
-            PrepareTests((manager) =>
+            PrepareTests((manager, ptt) =>
             {
                 manager.Init();
                 manager.Start();
 
+                ProgramEvent(TimeSpan.FromMilliseconds(500), () =>
+                {
+                    ptt.Raise(dev => dev.StatusChanged += null, this, true);
+                    ProgramEvent(TimeSpan.FromSeconds(10), () => ptt.Raise(dev => dev.InputChanged += null, this, true));
+                    ProgramEvent(TimeSpan.FromSeconds(15), () => ptt.Raise(dev => dev.InputChanged += null, this, false));
+                });
                 Task.Delay(TimeSpan.FromMinutes(2)).Wait();
 
                 manager.End();
             });
         }
-
-        private void PrepareTests(Action<IHwAudioManager> executeTest)
+        private void PrepareTests(Action<IHwAudioManager, Mock<ISingleIODevice>> executeTest)
         {
             var ptt = new Mock<ISingleIODevice>();
+            ptt.Setup(o => o.IsConnected).Returns(true);
             var ham = new SirtapAudioManager(ptt.Object);
             ham.HeadSetStatusChanged += (from, device, status) =>
             {
@@ -95,8 +101,28 @@ namespace UnitTestProject1
             {
                 Debug.WriteLine($"SpeakerStatusChanged => {status}, {device}");
             };
-            executeTest(ham);
+            ham.PttDeviceStatusChanged += (from, device, status) =>
+            {
+                Debug.WriteLine($"PTTDeviceStatusChanged => {status}, {device}");
+            };
+            ham.PttPulsed += (from, status) =>
+            {
+                Debug.WriteLine($"PTT => {status}");
+            };
+            ham.JacksChanged += (from, jacks) =>
+            {
+                Debug.WriteLine($"JACKs => {jacks}");
+            };
+            executeTest(ham, ptt);
             ham.Dispose();
+        }
+        private void ProgramEvent(TimeSpan delay, Action action)
+        {
+            Task.Run(() =>
+            {
+                Task.Delay(delay).Wait();
+                action();
+            });
         }
     }
 }
