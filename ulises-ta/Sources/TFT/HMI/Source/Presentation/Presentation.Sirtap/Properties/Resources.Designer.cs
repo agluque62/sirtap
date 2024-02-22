@@ -119,16 +119,6 @@ namespace HMI.Presentation.Sirtap.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap airbus3 {
-            get {
-                object obj = ResourceManager.GetObject("airbus3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Anular {
             get {
                 object obj = ResourceManager.GetObject("Anular", resourceCulture);
