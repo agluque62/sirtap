@@ -1458,6 +1458,41 @@ CORESIP_API int CORESIP_GetVolume(int id, unsigned * volume, CORESIP_Error * err
 }
 
 /**
+ *	CORESIP_SetRxStreamVolume
+ */
+CORESIP_API int	CORESIP_SetRxStreamVolume(int id, unsigned volume, CORESIP_Error* error)
+{
+	int ret = CORESIP_OK;
+
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetRxStreamVolume volume %u", id));
+	if (SipAgent::ghMutex != NULL) WaitForSingleObject(SipAgent::ghMutex, 5000);
+
+	Try
+	{
+		if (SipAgent::ESTADO_INICIALIZACION != SipAgent::INICIALIZADO)
+		{
+			ret = CORESIP_ERROR;
+			if (error != NULL)
+			{
+				error->Code = ret;
+				strcpy(error->File, __FILE__);
+				sprintf(error->Info, "ERROR CORESIP_SetRxStreamVolume: CORESIP NO INICIALIZADA");
+			}
+		}
+		else
+		{
+			SipAgent::SetRxStreamVolume(id & CORESIP_ID_TYPE_MASK, id & CORESIP_ID_MASK, volume);
+		}
+	}
+	catch_all;
+
+	if (SipAgent::ghMutex != NULL) ReleaseMutex(SipAgent::ghMutex);
+	if (TRACE_ALL_CALLS) PJ_LOG(3, (__FILE__, "CORESIP_SetRxStreamVolume result %d, %s", ret, (error && ret != CORESIP_OK) ? error->Info : ""));
+
+	return ret;
+}
+
+/**
  *	CORESIP_CallMake
  */
 CORESIP_API int CORESIP_CallMake(const CORESIP_CallInfo * info, const CORESIP_CallOutInfo * outInfo, int * call, CORESIP_Error * error)

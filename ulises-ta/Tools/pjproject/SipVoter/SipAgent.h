@@ -204,6 +204,7 @@ public:
 
 	static void SetVolume(int idType, int id, unsigned volume);
 	static unsigned GetVolume(int idType, int id);
+	static void SetRxStreamVolume(int idType, int id, unsigned volume);
 
 	static pj_bool_t OnRxRequest(pjsip_rx_data *rdata);
 	static pj_bool_t OnRxResponse(pjsip_rx_data *rdata);
