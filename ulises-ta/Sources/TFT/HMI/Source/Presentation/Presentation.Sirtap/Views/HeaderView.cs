@@ -270,15 +270,14 @@ namespace HMI.Presentation.Sirtap.Views
             if (_StateManager.Tft.Login)
             {
 
-                MisionText.Text = _StateManager.TftMisionInstance.Mision;
-                _TitleBT.Text = MisionText.Text;
+                //MisionText.Text = _StateManager.TftMisionInstance.Mision;
+                _TitleBT.Text = _StateManager.TftMisionInstance.Mision;
             }
             else
             {
-                MisionText.Text = "-----";
                 _TitleBT.Text = _StateManager.Title.Id;
                 _TitleBT.Text = GenIdAgrupacion(_StateManager.Title.Id);
-
+                _TitleBT.Text="___";
             }
         }
 

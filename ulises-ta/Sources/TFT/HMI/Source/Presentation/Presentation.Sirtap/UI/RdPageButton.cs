@@ -250,10 +250,11 @@ namespace HMI.Presentation.Sirtap.UI
 
             _BtnInfo.Rect = ClientRectangle;
 
-            int width = (int)(Width / 3.0);
+            int width1 = (int)(Width / 11.0) * 5;
+            int width2 = (int)(Width / 11.0);
 
-            _UpBtnInfo.Rect = new Rectangle(0, 0, width, Height);
-            _DownBtnInfo.Rect = new Rectangle(Width - width, 0, width, Height);
+            _UpBtnInfo.Rect = new Rectangle(0, 0, width1, Height);
+            _DownBtnInfo.Rect = new Rectangle(Width - width1, 0, width1, Height);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
