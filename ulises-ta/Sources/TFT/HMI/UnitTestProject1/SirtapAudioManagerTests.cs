@@ -84,7 +84,6 @@ namespace UnitTestProject1
                     ProgramEvent(TimeSpan.FromSeconds(15), () => ptt.Raise(dev => dev.InputChanged += null, this, false));
                 });
                 Task.Delay(TimeSpan.FromMinutes(2)).Wait();
-
                 manager.End();
             });
         }

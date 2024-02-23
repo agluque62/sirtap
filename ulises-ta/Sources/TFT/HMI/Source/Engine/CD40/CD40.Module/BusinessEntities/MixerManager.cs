@@ -491,15 +491,25 @@ namespace HMI.CD40.Module.BusinessEntities
 #endif
 		{
 #if _AUDIOGENERIC_
+
+#if !OLD_HWMANAGER
+            Top.Hw.JacksChanged -= OnJacksChanged;
+#else
             Top.Hw.JacksChangedHw -= OnJacksChanged;
+#endif
             Top.Tlf.ActivityChanged -= OnTlfActivityChanged;
             _UnlinkGlpRadioTimer.Elapsed -= OnUnlinkGlpRadioTimerElapsed;
 #endif
 
+#if !OLD_HWMANAGER
+            Top.Hw.JacksChanged += OnJacksChanged;
+            Top.Hw.SpeakerStatusChanged += (origin, device, status) => { };        // SIRTAP-TODO.
+#else
             Top.Hw.JacksChangedHw += OnJacksChanged;
-			Top.Tlf.ActivityChanged += OnTlfActivityChanged;
             Top.Hw.SpeakerExtChangedHw += OnHwChanged;
             Top.Hw.SpeakerChangedHw += OnHwChanged;
+#endif
+            Top.Tlf.ActivityChanged += OnTlfActivityChanged;
             Top.Tlf.Listen.ListenChanged += OnListenChanged;
             Top.Tlf.HangToneChanged += OnTlfToneChanged;
             Top.Tlf.UnhangToneChanged += OnTlfToneChanged;
@@ -1273,7 +1283,7 @@ namespace HMI.CD40.Module.BusinessEntities
                                     Top.Recorder.SessionGlp(id, FuentesGlp.RxRadio, false, finalizar);
                                     Top.Recorder.SessionGlp(id, FuentesGlp.RxRadio, true, finalizar);
                                     _UnlinkGlpRadioTimer.Enabled = true;
-#endif                          
+#endif
                                 }
                                 else
                                     Top.Recorder.SetIdSession(id, FuentesGlp.RxRadio);

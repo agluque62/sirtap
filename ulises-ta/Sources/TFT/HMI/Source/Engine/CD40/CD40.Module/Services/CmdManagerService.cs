@@ -36,6 +36,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 using static U5ki.Infrastructure.ConferenceStatus;
+using System.Threading.Tasks;
 /*
 * Fin de la Modificacion */
 
@@ -265,9 +266,17 @@ namespace HMI.CD40.Module.Services
 
                 if (Top.Hw != null)
                 {
+#if !OLD_HWMANAGER
+                    Top.Hw.JacksChanged += OnJacksChanged;
+                    // TODO
+                    Top.Hw.HeadSetStatusChanged += null;        // SIRTAP-TODO
+                    Top.Hw.PttDeviceStatusChanged += null;
+                    Top.Hw.SpeakerStatusChanged += null;
+#else
                     Top.Hw.JacksChangedHw += OnJacksChanged;
                     Top.Hw.SpeakerChangedHw += OnSpeakerChanged;
                     Top.Hw.SpeakerExtChangedHw += OnSpeakerExtChanged;
+#endif
                 }
 
                 if (Top.Mixer != null) Top.Mixer.SplitModeChanged += OnSplitModeChanged;
@@ -347,7 +356,6 @@ namespace HMI.CD40.Module.Services
                 if (Top.Replay != null) Top.Replay.PlayingChanged += OnPlayingChanged;
 
                 Top.Start();
-
                 Top.PublisherThread.Enqueue(EventTopicNames.ConnectionStateEngine, delegate ()
                 {
                     General.SafeLaunchEvent(ConnectionStateEngine, this, new EngineConnectionStateMsg(true));
@@ -423,7 +431,7 @@ namespace HMI.CD40.Module.Services
 					});
 				}
 #endif
-            }
+                }
             catch (Exception ex)
             {
                 _Logger.Fatal("ERROR inicializando ULISES-TA: \n{0}", ex.Message);

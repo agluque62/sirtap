@@ -51,7 +51,11 @@ namespace HMI.CD40.Module.BusinessEntities
 			Top.Cfg.ConfigChanged += OnConfigChanged;
 			Top.Sip.LcCallStateChanged += OnCallStateChanged;
 			Top.Sip.IncomingLcCall += OnIncomingCall;
+#if !OLD_HWMANAGER
+			Top.Hw.JacksChanged += OnJacksChanged;
+#else
 			Top.Hw.JacksChangedHw += OnJacksChanged;
+#endif
 
 
 			for (int i = 0, to = _LcPositions.Length; i < to; i++)
@@ -69,7 +73,11 @@ namespace HMI.CD40.Module.BusinessEntities
 				//Top.Cfg.ConfigChanged += OnConfigChanged;
 				Top.Sip.LcCallStateChanged += OnCallStateChanged;
 				Top.Sip.IncomingLcCall += OnIncomingCall;
+#if !OLD_HWMANAGER
+				Top.Hw.JacksChanged += OnJacksChanged;
+#else
 				Top.Hw.JacksChangedHw += OnJacksChanged;
+#endif
 				for (int i = 0, to = _LcPositions.Length; i < to; i++)
 				{
 					_LcPositions[i].StateChanged += OnLcStateChanged;
@@ -80,7 +88,11 @@ namespace HMI.CD40.Module.BusinessEntities
 				//Top.Cfg.ConfigChanged += OnConfigChanged;
 				Top.Sip.LcCallStateChanged -= OnCallStateChanged;
 				Top.Sip.IncomingLcCall -= OnIncomingCall;
+#if !OLD_HWMANAGER
+				Top.Hw.JacksChanged -= OnJacksChanged;
+#else
 				Top.Hw.JacksChangedHw -= OnJacksChanged;
+#endif
 				for (int i = 0, to = _LcPositions.Length; i < to; i++)
 				{
 					_LcPositions[i].StateChanged -= OnLcStateChanged;

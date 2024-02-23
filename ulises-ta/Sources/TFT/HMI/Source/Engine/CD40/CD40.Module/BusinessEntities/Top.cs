@@ -111,11 +111,16 @@ namespace HMI.CD40.Module.BusinessEntities
         /// <summary>
         /// 
         /// </summary>
-		public static HwManager Hw
+#if !OLD_HWMANAGER
+        private static IHwAudioManager _HwManager;
+        public static IHwAudioManager Hw => _HwManager;
+#else
+        private static HwManager _HwManager;
+        public static HwManager Hw
 		{
 			get { return _HwManager; }
 		}
-
+#endif
         /// <summary>
         /// 
         /// </summary>
@@ -283,6 +288,9 @@ namespace HMI.CD40.Module.BusinessEntities
                 {
 #if _AUDIOGENERIC_
                     // switch (Properties.Settings.Default.TipoAudioUsb)
+#if !OLD_HWMANAGER
+                    _HwManager = new SirtapAudioManager();
+#else
                     switch (HwManager.AudioDeviceType)
                     {
                         case eAudioDeviceTypes.MICRONAS:
@@ -308,6 +316,7 @@ namespace HMI.CD40.Module.BusinessEntities
                         default:
                             throw new Exception("Dispositivos de Audio no Conocidos...");
                     }
+#endif
 #else
                     _HwManager = new HwManager();
 #endif
@@ -480,23 +489,31 @@ namespace HMI.CD40.Module.BusinessEntities
             /** AGL.START Controlado */
             var StartList = new List<VoidDelegate>
             {
-                SnmpAgent.Start,
                 delegate() { if (_WorkingThread != null) _WorkingThread.Start("working",Settings.Default.OverloadQueueWarning);},
                 delegate() { if (_PublisherThread != null) _PublisherThread.Start("publisher", Settings.Default.OverloadQueueWarning);},
+                SnmpAgent.Start,
                 delegate() { if (_RdManager != null) _RdManager.Start();},
                 delegate() { if (_LcManager != null) _LcManager.Start();},
                 delegate() { if (_TlfManager != null) _TlfManager.Start();},
                 delegate() { if (_SipManager != null) _SipManager.Start();},
                 delegate() { if (_RecorderManager != null) _RecorderManager.Start();},
+#if !OLD_HWMANAGER
+                delegate() { if (_HwManager != null) {_HwManager.Start(_WorkingThread); SetCurrentSwVersion();}; },
+#else
                 delegate() { if (_HwManager != null) {_HwManager.Start(); SetCurrentSwVersion();}; },
+#endif
                 delegate() { if (_MixerManager != null) _MixerManager.Start();},
                 delegate() { if (_CfgManager != null) _CfgManager.Start();},
                 delegate() { if (_Registry != null) _Registry.Start();}
                 /** 20190107. Incluir en las versiones el componente CMEDIA */
             };
 
-            int n = 0;
+#if !OLD_HWMANAGER
+            _RecorderManager.LstDispositivos = new Dictionary<CORESIP_SndDevType, ISndDevIO>();
+#else
             _RecorderManager.LstDispositivos = _HwManager.ListaSndDev;
+#endif
+            int n = 0;
             foreach (VoidDelegate _start in StartList)
             {
                 try
@@ -534,7 +551,7 @@ namespace HMI.CD40.Module.BusinessEntities
             _MixerManager.Start();
             /** */
 #endif
-        }
+            }
 
         /// <summary>
         /// 
@@ -640,7 +657,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
 		private static EventQueue _WorkingThread;
 		private static EventQueue _PublisherThread;
-		private static HwManager _HwManager;
+		//private static HwManager _HwManager;
 		private static TopRegistry _Registry;
 		private static CfgManager _CfgManager;
 		private static SipManager _SipManager;
@@ -722,8 +739,11 @@ namespace HMI.CD40.Module.BusinessEntities
                     version.version.Components.Add(new VersionDetails.VersionDataComponent()
                     {
                         Name = "Hardware de Audio",
+#if !OLD_HWMANAGER
+                        // SIRTAP-TODO
+#else
                         Files = new List<VersionDetails.VersionDataFileItem>()
-                    {
+                        {
                         new   VersionDetails.VersionDataFileItem() 
                         {
                             Path=_HwManager.HwManagerType + " #1",
@@ -753,6 +773,7 @@ namespace HMI.CD40.Module.BusinessEntities
                             MD5=""
                         }                 
                     }
+#endif
                     });
                     /** Se actualiza el string de version */
                     SnmpStringObject.Get(Settings.Default.CurrentSwVersionOid).Value = version.ToString();
@@ -816,7 +837,7 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         /*************/
 
-        #endregion
+#endregion
 
 
         #region pruebas

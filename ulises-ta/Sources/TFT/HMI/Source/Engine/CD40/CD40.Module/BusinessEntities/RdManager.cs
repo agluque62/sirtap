@@ -163,9 +163,14 @@ namespace HMI.CD40.Module.BusinessEntities
 
             Top.Cfg.ConfigChanged += OnConfigChanged;
             Top.Hw.PttPulsed += OnPttPulsed;
+#if !OLD_HWMANAGER
+            Top.Hw.JacksChanged += OnHwChanged;
+            Top.Hw.SpeakerStatusChanged += (origin, device, status) => { };    // SIRTAP-TODO
+#else
             Top.Hw.JacksChangedHw += OnHwChanged;
             Top.Hw.SpeakerExtChangedHw += OnHwChanged;
             Top.Hw.SpeakerChangedHw += OnHwChanged;
+#endif
             Top.Lc.ActivityChanged += OnLcActivityChanged;
             Top.Mixer.SplitModeChanged += OnSplitModeChanged;
             for (int i = 0, to = _RdPositions.Length; i < to; i++)
