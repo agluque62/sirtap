@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace HMI.Presentation.Sirtap
 {
@@ -207,8 +208,30 @@ namespace HMI.Presentation.Sirtap
 
             // Add window workspace to be used for modal windows
             //231124
-            _shellLayout.ParentForm.Size = new System.Drawing.Size(600, 800);
+            //_shellLayout.ParentForm.Size = new System.Drawing.Size(600, 800);
             _shellLayout.ParentForm.Size = new System.Drawing.Size(800, 1280);//240221
+
+
+            // para que se vea correctamente en monitor estandar.horizontal
+            {
+                Screen primaryScreen = Screen.PrimaryScreen;
+                int screenWidth = primaryScreen.Bounds.Width;
+                int screenHeight = primaryScreen.Bounds.Height;
+                if (screenHeight<screenWidth)
+                {
+                    int h= 1280;
+                    int w = 800;
+                    if (h>screenHeight)
+                        h = screenHeight-40;
+                    if (w>screenWidth)
+                        w = screenWidth;
+                    _shellLayout.ParentForm.Size = new System.Drawing.Size(w, h);
+
+                }
+            }
+
+
+
             WindowWorkspace wsp = new WindowWorkspace(_shellLayout.ParentForm);
             _rootWorkItem.Workspaces.Add(wsp, WorkspaceNames.ModalWindows);
 

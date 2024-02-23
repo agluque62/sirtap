@@ -469,7 +469,7 @@ namespace HMI.CD40.Module.BusinessEntities
                  (audioVia == RdRxAudioVia.HeadPhones &&
                  (Top.Hw.InstructorJack || Top.Hw.AlumnJack) && !Top.Mixer.ModoSoloAltavoces)))
             {
-                if (InhiboMiAudio(_Ptt, _AssociateFrRs.Info) == false)
+                if (InhiboMiAudio(_Ptt, _AssociateFrRs?.Info) == false)
                 {
                     foreach (int port in _RxPorts.Values)
                     {

@@ -44,9 +44,9 @@ namespace HMI.Presentation.Sirtap.Views
         {
             System.Windows.Forms.TableLayoutPanel _TlfTLP;
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this.hmiButtonLogin = new HMI.Model.Module.UI.HMIButton();
             this._TlfPageBT = new HMI.Presentation.Sirtap.UI.TlfPageButton();
+            this._TlfHeadPhonesUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._TlfFunctionsWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
             this._TlfNumbersWS = new Microsoft.Practices.CompositeUI.WinForms.DeckWorkspace();
             this.hmiButton1 = new HMI.Model.Module.UI.HMIButton();
@@ -71,7 +71,7 @@ namespace HMI.Presentation.Sirtap.Views
             _TlfTLP.Name = "_TlfTLP";
             _TlfTLP.RowCount = 2;
             _TlfTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            _TlfTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 104F));
+            _TlfTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 191F));
             _TlfTLP.Size = new System.Drawing.Size(839, 519);
             _TlfTLP.TabIndex = 5;
             _TlfTLP.Paint += new System.Windows.Forms.PaintEventHandler(this._TlfTLP_Paint);
@@ -81,47 +81,33 @@ namespace HMI.Presentation.Sirtap.Views
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this._TlfPageBT, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this._TlfHeadPhonesUDB, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.hmiButtonLogin, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this._TlfPageBT, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(622, 3);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(628, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
             _TlfTLP.SetRowSpan(this.tableLayoutPanel1, 2);
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 145F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 107F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 155F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 185F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(214, 513);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(208, 513);
             this.tableLayoutPanel1.TabIndex = 5;
-            // 
-            // _TlfHeadPhonesUDB
-            // 
-            this._TlfHeadPhonesUDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._TlfHeadPhonesUDB.BackColor = System.Drawing.Color.Transparent;
-            this._TlfHeadPhonesUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesDown;
-            this._TlfHeadPhonesUDB.DrawX = false;
-            this._TlfHeadPhonesUDB.Location = new System.Drawing.Point(44, 168);
-            this._TlfHeadPhonesUDB.Name = "_TlfHeadPhonesUDB";
-            this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(147, 98);
-            this._TlfHeadPhonesUDB.TabIndex = 9;
-            this._TlfHeadPhonesUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesUp;
-            this._TlfHeadPhonesUDB.LevelDown += new System.EventHandler(this._TlfHeadPhonesUDB_LevelDown);
-            this._TlfHeadPhonesUDB.LevelUp += new System.EventHandler(this._TlfHeadPhonesUDB_LevelUp);
             // 
             // hmiButtonLogin
             // 
-            this.hmiButtonLogin.Dock = System.Windows.Forms.DockStyle.Right;
+            this.hmiButtonLogin.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.hmiButtonLogin.DrawX = false;
             this.hmiButtonLogin.IsButtonTlf = false;
             this.hmiButtonLogin.IsConferencePreprogramada = false;
-            this.hmiButtonLogin.Location = new System.Drawing.Point(44, 275);
+            this.hmiButtonLogin.Location = new System.Drawing.Point(3, 362);
             this.hmiButtonLogin.Name = "hmiButtonLogin";
             this.hmiButtonLogin.Permitted = true;
-            this.hmiButtonLogin.Size = new System.Drawing.Size(147, 41);
+            this.hmiButtonLogin.Size = new System.Drawing.Size(182, 100);
             this.hmiButtonLogin.TabIndex = 11;
             this.hmiButtonLogin.Text = "LOGOUT";
             this.hmiButtonLogin.Click += new System.EventHandler(this.hmiButtonlogin_Click);
@@ -134,32 +120,47 @@ namespace HMI.Presentation.Sirtap.Views
             this._TlfPageBT.DownDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDownDisabled;
             this._TlfPageBT.DownEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageDown;
             this._TlfPageBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._TlfPageBT.Location = new System.Drawing.Point(44, 23);
+            this._TlfPageBT.Location = new System.Drawing.Point(3, 23);
             this._TlfPageBT.Name = "_TlfPageBT";
             this._TlfPageBT.Page = 0;
-            this._TlfPageBT.Size = new System.Drawing.Size(147, 139);
+            this._TlfPageBT.Size = new System.Drawing.Size(182, 139);
             this._TlfPageBT.TabIndex = 8;
             this._TlfPageBT.UpDisabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUpDisabled;
             this._TlfPageBT.UpEnabledImage = global::HMI.Presentation.Sirtap.Properties.Resources.RdPageUp;
             this._TlfPageBT.UpClick += new Utilities.GenericEventHandler(this._TlfPageBT_UpClick);
             this._TlfPageBT.DownClick += new Utilities.GenericEventHandler(this._TlfPageBT_DownClick);
             // 
+            // _TlfHeadPhonesUDB
+            // 
+            this._TlfHeadPhonesUDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._TlfHeadPhonesUDB.BackColor = System.Drawing.Color.Transparent;
+            this._TlfHeadPhonesUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesDown;
+            this._TlfHeadPhonesUDB.DrawX = false;
+            this._TlfHeadPhonesUDB.Location = new System.Drawing.Point(3, 168);
+            this._TlfHeadPhonesUDB.Name = "_TlfHeadPhonesUDB";
+            this._TlfHeadPhonesUDB.Size = new System.Drawing.Size(182, 140);
+            this._TlfHeadPhonesUDB.TabIndex = 9;
+            this._TlfHeadPhonesUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.HeadPhonesUp;
+            this._TlfHeadPhonesUDB.LevelDown += new System.EventHandler(this._TlfHeadPhonesUDB_LevelDown);
+            this._TlfHeadPhonesUDB.LevelUp += new System.EventHandler(this._TlfHeadPhonesUDB_LevelUp);
+            // 
             // _TlfFunctionsWS
             // 
-            this._TlfFunctionsWS.Location = new System.Drawing.Point(0, 415);
+            this._TlfFunctionsWS.Dock = System.Windows.Forms.DockStyle.Left;
+            this._TlfFunctionsWS.Location = new System.Drawing.Point(0, 328);
             this._TlfFunctionsWS.Margin = new System.Windows.Forms.Padding(0);
             this._TlfFunctionsWS.Name = "_TlfFunctionsWS";
-            this._TlfFunctionsWS.Size = new System.Drawing.Size(619, 104);
+            this._TlfFunctionsWS.Size = new System.Drawing.Size(625, 191);
             this._TlfFunctionsWS.TabIndex = 4;
             this._TlfFunctionsWS.Text = "deckWorkspace3";
             // 
             // _TlfNumbersWS
             // 
             this._TlfNumbersWS.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this._TlfNumbersWS.Location = new System.Drawing.Point(0, 97);
+            this._TlfNumbersWS.Location = new System.Drawing.Point(0, 5);
             this._TlfNumbersWS.Margin = new System.Windows.Forms.Padding(0);
             this._TlfNumbersWS.Name = "_TlfNumbersWS";
-            this._TlfNumbersWS.Size = new System.Drawing.Size(619, 221);
+            this._TlfNumbersWS.Size = new System.Drawing.Size(614, 318);
             this._TlfNumbersWS.TabIndex = 3;
             this._TlfNumbersWS.Text = "deckWorkspace3";
             // 
