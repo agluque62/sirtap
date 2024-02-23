@@ -56,8 +56,7 @@ namespace U5ki.CfgService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://192.168.1.4/ulisesv5000/u5kcfg/InterfazSOAPConfiguracion/InterfazSOAPConfi" +
-            "guracion.asmx")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:50751/InterfazSOAPConfiguracion/InterfazSOAPConfiguracion.asmx")]
         public string Cd40_CfgService_SoapCfg_InterfazSOAPConfiguracion {
             get {
                 return ((string)(this["Cd40_CfgService_SoapCfg_InterfazSOAPConfiguracion"]));
