@@ -2245,6 +2245,147 @@ namespace U5ki.Infrastructure
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"MisionRadio")]
+  public partial class MisionRadio : global::ProtoBuf.IExtensible
+  {
+    public MisionRadio() {}
+    
+    private string _IdPagina;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"IdPagina", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdPagina
+    {
+      get { return _IdPagina; }
+      set { _IdPagina = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"MisionTelefonia")]
+  public partial class MisionTelefonia : global::ProtoBuf.IExtensible
+  {
+    public MisionTelefonia() {}
+    
+    private string _IdPagina;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"IdPagina", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdPagina
+    {
+      get { return _IdPagina; }
+      set { _IdPagina = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"MisionLC")]
+  public partial class MisionLC : global::ProtoBuf.IExtensible
+  {
+    public MisionLC() {}
+    
+    private string _MisionPosicion;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"MisionPosicion", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string MisionPosicion
+    {
+      get { return _MisionPosicion; }
+      set { _MisionPosicion = value; }
+    }
+    private string _MisionHmi;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"MisionHmi", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string MisionHmi
+    {
+      get { return _MisionHmi; }
+      set { _MisionHmi = value; }
+    }
+    private string _Segura;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"Segura", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Segura
+    {
+      get { return _Segura; }
+      set { _Segura = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"MisionAlarmasAcusticas")]
+  public partial class MisionAlarmasAcusticas : global::ProtoBuf.IExtensible
+  {
+    public MisionAlarmasAcusticas() {}
+    
+    private string _IdAlarma;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"IdAlarma", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string IdAlarma
+    {
+      get { return _IdAlarma; }
+      set { _IdAlarma = value; }
+    }
+    private string _Categoria;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"Categoria", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Categoria
+    {
+      get { return _Categoria; }
+      set { _Categoria = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"Mision")]
+  public partial class Mision : global::ProtoBuf.IExtensible
+  {
+    public Mision() {}
+    
+    private string _Descripcion;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"Descripcion", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Descripcion
+    {
+      get { return _Descripcion; }
+      set { _Descripcion = value; }
+    }
+    private string _Tipo;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"Tipo", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string Tipo
+    {
+      get { return _Tipo; }
+      set { _Tipo = value; }
+    }
+    private readonly global::System.Collections.Generic.List<U5ki.Infrastructure.MisionRadio> _MSR = new global::System.Collections.Generic.List<U5ki.Infrastructure.MisionRadio>();
+    [global::ProtoBuf.ProtoMember(3, Name=@"MSR", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<U5ki.Infrastructure.MisionRadio> MSR
+    {
+      get { return _MSR; }
+    }
+  
+    private readonly global::System.Collections.Generic.List<U5ki.Infrastructure.MisionTelefonia> _MST = new global::System.Collections.Generic.List<U5ki.Infrastructure.MisionTelefonia>();
+    [global::ProtoBuf.ProtoMember(4, Name=@"MST", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<U5ki.Infrastructure.MisionTelefonia> MST
+    {
+      get { return _MST; }
+    }
+  
+    private readonly global::System.Collections.Generic.List<U5ki.Infrastructure.MisionLC> _MLC = new global::System.Collections.Generic.List<U5ki.Infrastructure.MisionLC>();
+    [global::ProtoBuf.ProtoMember(5, Name=@"MLC", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<U5ki.Infrastructure.MisionLC> MLC
+    {
+      get { return _MLC; }
+    }
+  
+    private readonly global::System.Collections.Generic.List<U5ki.Infrastructure.MisionAlarmasAcusticas> _MAA = new global::System.Collections.Generic.List<U5ki.Infrastructure.MisionAlarmasAcusticas>();
+    [global::ProtoBuf.ProtoMember(6, Name=@"MAA", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<U5ki.Infrastructure.MisionAlarmasAcusticas> MAA
+    {
+      get { return _MAA; }
+    }
+  
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
   [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"Cd40Cfg")]
   public partial class Cd40Cfg : global::ProtoBuf.IExtensible
   {
@@ -2301,6 +2442,13 @@ namespace U5ki.Infrastructure
     public global::System.Collections.Generic.List<U5ki.Infrastructure.Conferencia> ConferenciasPreprogramadas
     {
       get { return _ConferenciasPreprogramadas; }
+    }
+  
+    private readonly global::System.Collections.Generic.List<U5ki.Infrastructure.Mision> _MisionesProgramadas = new global::System.Collections.Generic.List<U5ki.Infrastructure.Mision>();
+    [global::ProtoBuf.ProtoMember(8, Name=@"MisionesProgramadas", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<U5ki.Infrastructure.Mision> MisionesProgramadas
+    {
+      get { return _MisionesProgramadas; }
     }
   
     private global::ProtoBuf.IExtension extensionObject;

@@ -45,11 +45,12 @@ namespace HMI.Presentation.Sirtap.Views
             this._InfoBT = new HMI.Model.Module.UI.HMIButton();
             this._TitleBT = new HMI.Model.Module.UI.HMIButton();
             this._MsgLB = new System.Windows.Forms.TextBox();
-            this.MisionText = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this._AltavozAlarmasUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._SplitUC = new HMI.Presentation.Sirtap.UI.SplitUC();
             this._BrightnessUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
             this._BuzzerUDB = new HMI.Presentation.Sirtap.UI.UpDownButton();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // _InfoBT
@@ -60,10 +61,10 @@ namespace HMI.Presentation.Sirtap.Views
             this._InfoBT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._InfoBT.IsButtonTlf = false;
             this._InfoBT.IsConferencePreprogramada = false;
-            this._InfoBT.Location = new System.Drawing.Point(275, 17);
+            this._InfoBT.Location = new System.Drawing.Point(272, 31);
             this._InfoBT.Name = "_InfoBT";
             this._InfoBT.Permitted = true;
-            this._InfoBT.Size = new System.Drawing.Size(54, 54);
+            this._InfoBT.Size = new System.Drawing.Size(26, 113);
             this._InfoBT.TabIndex = 2;
             this._InfoBT.Text = "INFO";
             this._InfoBT.Visible = false;
@@ -80,7 +81,7 @@ namespace HMI.Presentation.Sirtap.Views
             this._TitleBT.Location = new System.Drawing.Point(10, 3);
             this._TitleBT.Name = "_TitleBT";
             this._TitleBT.Permitted = true;
-            this._TitleBT.Size = new System.Drawing.Size(218, 80);
+            this._TitleBT.Size = new System.Drawing.Size(218, 171);
             this._TitleBT.TabIndex = 4;
             this._TitleBT.Text = "PuestoPuesto0123";
             this._TitleBT.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -95,17 +96,18 @@ namespace HMI.Presentation.Sirtap.Views
             this._MsgLB.Multiline = true;
             this._MsgLB.Name = "_MsgLB";
             this._MsgLB.ReadOnly = true;
-            this._MsgLB.Size = new System.Drawing.Size(78, 66);
+            this._MsgLB.Size = new System.Drawing.Size(78, 21);
             this._MsgLB.TabIndex = 5;
             this._MsgLB.Visible = false;
             // 
-            // MisionText
+            // pictureBox1
             // 
-            this.MisionText.Location = new System.Drawing.Point(10, 67);
-            this.MisionText.Name = "MisionText";
-            this.MisionText.Size = new System.Drawing.Size(100, 26);
-            this.MisionText.TabIndex = 6;
-            this.MisionText.Visible = false;
+            this.pictureBox1.Image = global::HMI.Presentation.Sirtap.Properties.Resources.airbus;
+            this.pictureBox1.Location = new System.Drawing.Point(46, 14);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(140, 102);
+            this.pictureBox1.TabIndex = 8;
+            this.pictureBox1.TabStop = false;
             // 
             // _AltavozAlarmasUDB
             // 
@@ -114,9 +116,9 @@ namespace HMI.Presentation.Sirtap.Views
             this._AltavozAlarmasUDB.BackColor = System.Drawing.Color.Transparent;
             this._AltavozAlarmasUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.SpeakerDown;
             this._AltavozAlarmasUDB.DrawX = false;
-            this._AltavozAlarmasUDB.Location = new System.Drawing.Point(325, 1);
+            this._AltavozAlarmasUDB.Location = new System.Drawing.Point(287, 3);
             this._AltavozAlarmasUDB.Name = "_AltavozAlarmasUDB";
-            this._AltavozAlarmasUDB.Size = new System.Drawing.Size(85, 80);
+            this._AltavozAlarmasUDB.Size = new System.Drawing.Size(150, 150);
             this._AltavozAlarmasUDB.TabIndex = 7;
             this._AltavozAlarmasUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.SpeakerUp;
             this._AltavozAlarmasUDB.LevelDown += new System.EventHandler(this._AltavozAlarmasUDB_LevelDown);
@@ -131,10 +133,10 @@ namespace HMI.Presentation.Sirtap.Views
             this._SplitUC.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._SplitUC.JackOff = global::HMI.Presentation.Sirtap.Properties.Resources.JackOffTwr;
             this._SplitUC.JackOn = global::HMI.Presentation.Sirtap.Properties.Resources.JackOnTwr;
-            this._SplitUC.Location = new System.Drawing.Point(196, 4);
+            this._SplitUC.Location = new System.Drawing.Point(234, 31);
             this._SplitUC.Margin = new System.Windows.Forms.Padding(5);
             this._SplitUC.Name = "_SplitUC";
-            this._SplitUC.Size = new System.Drawing.Size(147, 77);
+            this._SplitUC.Size = new System.Drawing.Size(30, 112);
             this._SplitUC.TabIndex = 3;
             this._SplitUC.Visible = false;
             this._SplitUC.SplitSelectionClick += new System.EventHandler(this._SplitUC_SplitSelectionClick);
@@ -147,9 +149,9 @@ namespace HMI.Presentation.Sirtap.Views
             this._BrightnessUDB.BackColor = System.Drawing.Color.Transparent;
             this._BrightnessUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.BrightnessDown;
             this._BrightnessUDB.DrawX = false;
-            this._BrightnessUDB.Location = new System.Drawing.Point(416, 4);
+            this._BrightnessUDB.Location = new System.Drawing.Point(443, 3);
             this._BrightnessUDB.Name = "_BrightnessUDB";
-            this._BrightnessUDB.Size = new System.Drawing.Size(85, 80);
+            this._BrightnessUDB.Size = new System.Drawing.Size(150, 150);
             this._BrightnessUDB.TabIndex = 0;
             this._BrightnessUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.BrightnessUp;
             this._BrightnessUDB.LevelDown += new System.EventHandler(this._BrightnessUDB_LevelDown);
@@ -162,9 +164,9 @@ namespace HMI.Presentation.Sirtap.Views
             this._BuzzerUDB.BackColor = System.Drawing.Color.Transparent;
             this._BuzzerUDB.DownImage = global::HMI.Presentation.Sirtap.Properties.Resources.BuzzerDown;
             this._BuzzerUDB.DrawX = false;
-            this._BuzzerUDB.Location = new System.Drawing.Point(507, 4);
+            this._BuzzerUDB.Location = new System.Drawing.Point(599, 0);
             this._BuzzerUDB.Name = "_BuzzerUDB";
-            this._BuzzerUDB.Size = new System.Drawing.Size(85, 80);
+            this._BuzzerUDB.Size = new System.Drawing.Size(150, 150);
             this._BuzzerUDB.TabIndex = 1;
             this._BuzzerUDB.UpImage = global::HMI.Presentation.Sirtap.Properties.Resources.BuzzerUp;
             this._BuzzerUDB.LevelDown += new System.EventHandler(this._BuzzerUDB_LevelDown);
@@ -175,8 +177,8 @@ namespace HMI.Presentation.Sirtap.Views
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this._AltavozAlarmasUDB);
-            this.Controls.Add(this.MisionText);
             this.Controls.Add(this._MsgLB);
             this.Controls.Add(this._SplitUC);
             this.Controls.Add(this._BrightnessUDB);
@@ -184,7 +186,8 @@ namespace HMI.Presentation.Sirtap.Views
             this.Controls.Add(this._InfoBT);
             this.Controls.Add(this._TitleBT);
             this.Name = "HeaderView";
-            this.Size = new System.Drawing.Size(595, 87);
+            this.Size = new System.Drawing.Size(782, 178);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -198,8 +201,8 @@ namespace HMI.Presentation.Sirtap.Views
         private HMI.Presentation.Sirtap.UI.UpDownButton _BuzzerUDB;
         private HMI.Presentation.Sirtap.UI.SplitUC _SplitUC;
         private System.Windows.Forms.TextBox _MsgLB;
-        private System.Windows.Forms.TextBox MisionText;
         private UI.UpDownButton _AltavozAlarmasUDB;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

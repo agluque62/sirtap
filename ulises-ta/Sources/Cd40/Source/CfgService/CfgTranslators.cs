@@ -769,6 +769,55 @@ namespace U5ki.CfgService
 			{
 			}
 		}
-	}
+
+		public static void Translate(Cd40Cfg cfg, SoapCfg.MisionesProgramadas misiones)
+		{
+			try
+			{
+				if (misiones == null) return;
+				if (misiones.MisionesProg != null)
+				{
+					foreach (SoapCfg.Mision mision in misiones.MisionesProg)
+					{
+						U5ki.Infrastructure.Mision cfg_mision = new U5ki.Infrastructure.Mision();
+						cfg_mision.Descripcion = mision.Descripcion;
+						cfg_mision.Tipo = mision.Tipo;
+						foreach (SoapCfg.MisionRadio misionMSR in mision.MSR)
+						{
+							U5ki.Infrastructure.MisionRadio misionrd = new MisionRadio();
+							misionrd.IdPagina = misionMSR.IdPagina;
+							cfg_mision.MSR.Add(misionrd);
+						}
+						foreach (SoapCfg.MisionTelefonia misionMST in mision.MST)
+						{
+							U5ki.Infrastructure.MisionTelefonia misiontlf = new MisionTelefonia();
+							misiontlf.IdPagina = misionMST.IdPagina;
+							cfg_mision.MST.Add(misiontlf);
+						}
+						foreach (SoapCfg.MisionLC misionMLC in mision.MLC)
+						{
+							U5ki.Infrastructure.MisionLC misionlc = new MisionLC();
+							misionlc.MisionPosicion = misionMLC.MisionPosicion;
+							misionlc.MisionHmi = misionMLC.MisionHmi;
+							misionlc.Segura = misionMLC.Segura;
+							cfg_mision.MLC.Add(misionlc);
+						}
+						foreach (SoapCfg.MisionAlarmasAcusticas misionMAA in mision.MAA)
+						{
+							U5ki.Infrastructure.MisionAlarmasAcusticas misionmaa = new MisionAlarmasAcusticas();
+							misionmaa.IdAlarma = misionMAA.IdAlarma;
+							misionmaa.Categoria = misionMAA.Categoria;
+							cfg_mision.MAA.Add(misionmaa);
+						}
+
+						cfg.MisionesProgramadas.Add(cfg_mision);
+					}
+				}
+			}
+			catch (Exception)
+			{
+			}
+		}
+    }
 }
     
