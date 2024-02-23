@@ -1160,7 +1160,10 @@ extern "C" {
 	 *  al un puerto del tipo RdRxPort por el que se recibe el audio de una frecuencia de radio desde el Nodebox,
 	 *  se ajusta el nivel de las muestras recibidas.
 	 *	@param	id			Identificador del puerto de audio
-	 *	@param	volume		Es el porcentaje del nivel maximo para cada dispoisitivo, segun winaudio.ini
+	 *	@param	volume		Es un porcentaje del nivel original del stream de audio. 
+							Es decir, 0% es mute, 50% es la mitad del nivel original, 100% es el nivel original, 
+							200% es el doble, 300% el triple que seria el maximo valor. 
+							No es recomendable que el valor sea superior a 200 porque se pueden producir distorsiones.
 	 *	@param	error		Puntero a la Estructura de error
 	 *	@return				Codigo de Error
 	 */

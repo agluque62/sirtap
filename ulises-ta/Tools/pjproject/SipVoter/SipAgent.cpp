@@ -223,11 +223,6 @@ float SipAgent::DIA_TxAttenuation = 1.0f;				//Atenuacion de las llamadas DIA en
 float SipAgent::IA_TxAttenuation = 1.0f;				//Atenuacion de las llamadas IA en Tx (Antes de transmistir por RTP). En atenuacion de voltage
 float SipAgent::RD_TxAttenuation = 1.0f;				//Atenuacion del Audio que se transmite hacia el multicas al hacer PTT en el HMI. En atenuacion de voltage
 
-unsigned SipAgent::volume_prev = 0;
-unsigned SipAgent::subio = 0;
-unsigned SipAgent::volume_nuevo_anterior = 0;
-unsigned SipAgent::volume_nuevo = 0;
-
 /**
  * Init. Inicializacion de la clase:
  * - Incializa las Variables de la Clase, tanto locales como de librería.
@@ -3435,42 +3430,6 @@ void SipAgent::ReceiveFromRemote(const char * localIp, const char * mcastIp, uns
  */
 void SipAgent::SetVolume(int idType, int id, unsigned volume)
 {
-	//unsigned SipAgent::volume_prev = 0;
-	//unsigned SipAgent::subio = 0;
-	//unsigned SipAgent::volume_nuevo_anterior = 0;
-
-	if (volume > volume_prev)
-	{
-		volume_nuevo = volume_nuevo_anterior + 1;
-		volume_prev = volume;
-		subio = 1;
-	}
-	else if (volume < volume_prev)
-	{
-		if (volume_nuevo > 0) volume_nuevo = volume_nuevo_anterior - 1;
-		volume_prev = volume;
-		subio = 0;
-	}
-	else
-	{
-		if (subio)
-		{
-			volume_nuevo = volume_nuevo_anterior + 1;
-			volume_prev = volume;
-			subio = 1;
-		}
-		else
-		{
-			if (volume_nuevo > 0) volume_nuevo = volume_nuevo_anterior - 1;
-			volume_prev = volume;
-			subio = 0;
-		}
-	}
-
-	SetRxStreamVolume(idType, id, volume_nuevo);
-	return;
-
-
 	pjsua_conf_port_id conf_id = PJSUA_INVALID_ID;
 
 	if (id < 0)
