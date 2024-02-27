@@ -1414,6 +1414,22 @@ namespace U5ki.Infrastructure
         public static extern int CORESIP_GetVolume(int dev, out int volume, out CORESIP_Error error);
 
         /**
+	     *	CORESIP_SetRxStreamVolume
+	     *	Ajusta el volumen del streaming que se recibe. Por ejemplo, si el identificador se refiere 
+	     *  al un puerto del tipo RdRxPort por el que se recibe el audio de una frecuencia de radio desde el Nodebox,
+	     *  se ajusta el nivel de las muestras recibidas.
+	     *	@param	id			Identificador del puerto de audio
+	     *	@param	volume		Es un porcentaje del nivel original del stream de audio. 
+							    Es decir, 0% es mute, 50% es la mitad del nivel original, 100% es el nivel original, 
+							    200% es el doble, 300% el triple que seria el maximo valor. 
+							    No es recomendable que el valor sea superior a 200 porque se pueden producir distorsiones.
+	     *	@param	error		Puntero a la Estructura de error
+	     *	@return				Codigo de Error
+	     */
+        [DllImport(coresip, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, ExactSpelling = true)]
+        public static extern int CORESIP_SetRxStreamVolume(int dev, out int volume, out CORESIP_Error error);
+
+        /**
                 *	CORESIP_CallMake
                 *	@param	info		Puntero a la informacion de llamada
                 *	@param	outInfo
