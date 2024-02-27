@@ -40,29 +40,32 @@ namespace HMI.CD40.Module.BusinessEntities
     {
         class AsioManagement
         {
-            public AsioIds GetIds(string asioName, CORESIP_SndDevType tp)
-            {
-                try
-                {
-                    AsioChannels.Init();
-                    var asioIds = new AsioIds()
-                    {
-                        input = AsioChannels.InChannels.FindIndex(name => name == asioName),
-                        output = AsioChannels.OutChannels.FindIndex((name) => name == asioName)
-                    };
-                    return asioIds;
-                }
-                catch(Exception x)
-                {
-                    // TODO Logger...
-                    return new AsioIds();
-                }
-            }
             public AsioIds GetIds(KeyValuePair<string, List<MMDevice>>? SoundCard)
             {
-                // TODO
                 logger.Info<AsioManagement>("GetIds");
-                return new AsioIds();
+                var ids = new AsioIds();
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var aproxName = SoundCard?.Key;
+                        //AsioChannels.Refresh();
+                        logger.Info<AsioManagement>($"Asio channels => {Channels()}");
+                        // TODO. 
+                        ids = new AsioIds() { input = 0, output = 0 };
+                    }
+                    catch (Exception x)
+                    {
+                        logger.Exception<AsioManagement>(x);
+                    }
+
+                }).Wait();
+                return ids;
+            }
+            private string Channels()
+            {
+                var str = $"Inputs ({AsioChannels.InChannels.Count()}: {string.Join("##", AsioChannels.InChannels)}\nOutputs ({AsioChannels.OutChannels.Count()}): {string.Join("##", AsioChannels.OutChannels)}";
+                return str;
             }
             public AsioManagement(ILogger logger = null)
             {
@@ -265,7 +268,7 @@ namespace HMI.CD40.Module.BusinessEntities
         private void OnPttDeviceStatusChanged(object from, bool actualStatus)
         {
             BackwardLaunchEvent(() => General.SafeLaunchEvent(PttDeviceStatusChanged, this, Ptt, actualStatus));
-            NotifyJackChanged(HeadSet.SoundCard != null, actualStatus);
+            // NotifyJackChanged(HeadSet.SoundCard != null, actualStatus);
         }
         private void OnPttDeviceInputChanged(object from, bool actualStatus)
         {

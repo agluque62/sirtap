@@ -23,9 +23,9 @@ namespace HMI.CD40.Module.BusinessEntities
         {
             _disp = new List<Disp>();
         }
-        public void AddDisp(string device,string name)
+        public void AddDisp(string device, string name)
         {
-            foreach(Disp item in _disp)
+            foreach (Disp item in _disp)
             {
                 if (item.name == name)
                     return;
@@ -38,7 +38,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
         public string getname(string device)
         {
-            foreach(Disp d in _disp)
+            foreach (Disp d in _disp)
                 if (d.device == device)
                     return d.name;
             return null;
@@ -46,7 +46,7 @@ namespace HMI.CD40.Module.BusinessEntities
 
         public string getdevice(string name)
         {
-            foreach(Disp d in _disp)
+            foreach (Disp d in _disp)
                 if (d.name == name)
                     return d.device;
             return null;
@@ -74,7 +74,7 @@ namespace HMI.CD40.Module.BusinessEntities
                     List<InstalledDriver> _instalados = new List<InstalledDriver>();
                     RegistryKey localMachine = Registry.LocalMachine;
                     RegistryKey asioRoot = localMachine.OpenSubKey("SOFTWARE\\ASIO");
-                    String [] subkeyNames = asioRoot.GetSubKeyNames();
+                    String[] subkeyNames = asioRoot.GetSubKeyNames();
 
 
                     for (int index = 0; index < subkeyNames.Length; index++)
@@ -84,9 +84,9 @@ namespace HMI.CD40.Module.BusinessEntities
                         String name = (String)(driverKey.GetValue("Description"));
                         String clsid = (String)(driverKey.GetValue("CLSID"));
 
-                        if (name==null)
-						    name = subkeyNames[index];
-					
+                        if (name == null)
+                            name = subkeyNames[index];
+
                         driverKey.Close();
                         _instalados.Add(new InstalledDriver(name, clsid));
                     }
@@ -674,17 +674,17 @@ namespace HMI.CD40.Module.BusinessEntities
                out IntPtr rReturnedComObject);
         }
 
-    #region IMPORT
+        #region IMPORT
 
-    #endregion
+        #endregion
 
 
-    #region PRIVATE
+        #region PRIVATE
 
-    /// <summary>
-    /// 
-    /// </summary>
-    static List<InstalledDriver> _drivers=null;
+        /// <summary>
+        /// 
+        /// </summary>
+        static List<InstalledDriver> _drivers = null;
         static ASIODriver SelectDriver(InstalledDriver _drvinf)
         {
             ASIODriver _drv = ASIODriver.GetASIODriverByGuid(new Guid(_drvinf.ClsId));
@@ -716,7 +716,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 ASIODriver _drv = SelectDriver(_drivers[0]);
                 if (_drv != null)
                 {
-                    int nInChannels,nOutChannels;
+                    int nInChannels, nOutChannels;
 
                     _drv.init(IntPtr.Zero);
                     SampleRate = _drv.getSampleRate();
@@ -732,15 +732,17 @@ namespace HMI.CD40.Module.BusinessEntities
                     for (int i = 0; i < nOutChannels; i++)
                     {
                         _outchannels.Add((_drv.getChannelInfo(i, false)).name);
-                     }
+                    }
+
 
                     _drv.ReleaseComASIODriver();
-
+                    //SelectedDriver = _drv;
                 }
             }
         }
 
-        static public void Check()
+        static ASIODriver SelectedDriver = null;
+        static public void Start()
         {
             _drivers = InstalledDriver.Installed;
             if (_drivers.Count > 0)
@@ -748,31 +750,64 @@ namespace HMI.CD40.Module.BusinessEntities
                 ASIODriver _drv = SelectDriver(_drivers[0]);
                 if (_drv != null)
                 {
+                    //int nInChannels, nOutChannels;
+
+                    //_drv.init(IntPtr.Zero);
+                    //SampleRate = _drv.getSampleRate();
+                    //_drv.getChannels(out nInChannels, out nOutChannels);
+
+                    //_inchannels.Clear();
+                    //for (int i = 0; i < nInChannels; i++)
+                    //{
+                    //    _inchannels.Add((_drv.getChannelInfo(i, true)).name);
+                    //}
+
+                    //_outchannels.Clear();
+                    //for (int i = 0; i < nOutChannels; i++)
+                    //{
+                    //    _outchannels.Add((_drv.getChannelInfo(i, false)).name);
+                    //}
+
+
+                    //_drv.ReleaseComASIODriver();
+                    SelectedDriver = _drv;
+                }
+            }
+        }
+        static public void Refresh()
+        {
+                if (SelectedDriver != null)
+                {
                     int nInChannels, nOutChannels;
 
-                    _drv.getChannels(out nInChannels, out nOutChannels);
-                    string message = _drv.getErrorMessage();
+                    SelectedDriver.getChannels(out nInChannels, out nOutChannels);
+                    string message = SelectedDriver.getErrorMessage();
 
                     _inInfoChannels.Clear();
                     _inchannels.Clear();
                     for (int i = 0; i < nInChannels; i++)
                     {
-                        _inInfoChannels.Add((_drv.getChannelInfo(i, true)));
-                        _inchannels.Add((_drv.getChannelInfo(i, true)).name);
-                        
+                        _inInfoChannels.Add((SelectedDriver.getChannelInfo(i, true)));
+                        _inchannels.Add((SelectedDriver.getChannelInfo(i, true)).name);
+
                     }
 
                     _outInfoChannels.Clear();
                     _outchannels.Clear();
                     for (int i = 0; i < nOutChannels; i++)
                     {
-                        _outInfoChannels.Add((_drv.getChannelInfo(i, false)));
-                        _outchannels.Add((_drv.getChannelInfo(i, false)).name);
+                        _outInfoChannels.Add((SelectedDriver.getChannelInfo(i, false)));
+                        _outchannels.Add((SelectedDriver.getChannelInfo(i, false)).name);
                     }
 
-                    _drv.ReleaseComASIODriver();
-
                 }
+        }
+        public static void End()
+        {
+            if (SelectedDriver != null)
+            {
+                SelectedDriver.ReleaseComASIODriver();
+                SelectedDriver = null;
             }
         }
 

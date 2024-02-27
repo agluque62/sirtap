@@ -502,8 +502,24 @@ namespace HMI.CD40.Module.BusinessEntities
 #endif
 
 #if !OLD_HWMANAGER
-            Top.Hw.JacksChanged += OnJacksChanged;
-            Top.Hw.SpeakerStatusChanged += (origin, device, status) => { };        // SIRTAP-TODO.
+            // SIRTAP-TODO.
+            Top.Hw.JacksChanged += (origin, jacks) =>
+            {
+                OnJacksChanged(origin, jacks);
+            };
+            Top.Hw.SpeakerStatusChanged += (origin, device, status) => 
+            {
+                _RdSpeakerDev = status && device != null ? device.AsioIds.output : -1;
+            };
+            Top.Hw.HeadSetStatusChanged += (origin, device, status) =>
+            {
+                _AlumnDev = status && device != null ? device.AsioIds.input : -1;
+                _RingDev = status && device != null ? MixerDev.MhpTlf : MixerDev.Invalid;
+                _BuzzerEnabled = _RingDev == MixerDev.MhpTlf;
+            };
+            Top.Hw.PttDeviceStatusChanged += (origin, device, status) =>
+            {
+            };
 #else
             Top.Hw.JacksChangedHw += OnJacksChanged;
             Top.Hw.SpeakerExtChangedHw += OnHwChanged;
@@ -524,10 +540,11 @@ namespace HMI.CD40.Module.BusinessEntities
 
             /** AGL */
 #if _AUDIOGENERIC_
-
+#if !OLD_HWMANAGER
+#else
+            eAudioDeviceTypes tipoAudio = HwManager.AudioDeviceType;
             //RQF20
             AsignacionAudioVolumen();
-            eAudioDeviceTypes tipoAudio = HwManager.AudioDeviceType;
             if (tipoAudio==eAudioDeviceTypes.GENERIC || tipoAudio==eAudioDeviceTypes.GENERIC_PTT)     // Microcascos y altavoces USB comerciales...
             {
                 HidGenericHwManager.LoadChannels();
@@ -554,7 +571,7 @@ namespace HMI.CD40.Module.BusinessEntities
                 _InstructorRecorderDevOut = _AlumnRecorderDevOut = _IntRecorderDevOut = -1;
             }
             else if (tipoAudio == eAudioDeviceTypes.CMEDIA)    // IAU-CMEDIA
-                    {
+            {
                         bool hayiao = false;
                 //RQF-20
                 // Lo saco de .config
@@ -619,19 +636,8 @@ namespace HMI.CD40.Module.BusinessEntities
 
                     SetTipoOutWindows(CORESIP_SndDevType.CORESIP_SND_LC_RECORDER, "CWP USB Device # 04 1");
                 }
-
-
-
                 //#3267 RQF22
                 LoadDevices();
-#if FALSE //CORESIP_SND_ALUMNO_BINAURAL 
-                if (tipoAudio == eAudioDeviceTypes.BINAURAL)
-                {
-                    HidCBinauralHwManager.LoadChannels();
-                    _InstructorBinauralDev = HidCBinauralHwManager.AddDevice(true, CORESIP_SndDevType.CORESIP_SND_INSTRUCTOR_BINAURAL, CBinauralDevMode.Output);
-                    _AlumnoBinauralDev = HidCBinauralHwManager.AddDevice(true, CORESIP_SndDevType.CORESIP_SND_ALUMNO_BINAURAL, CBinauralDevMode.Bidirectional);//bidireccional
-                }
-#endif
                 //220920 se cambia la asignacionhw al inicio, solo se debe llamar una vez.
                 RecordModeHw();
                 //Top.Mixer.Start();//221003
@@ -661,8 +667,8 @@ namespace HMI.CD40.Module.BusinessEntities
             }
             else if (tipoAudio == eAudioDeviceTypes.MICRONAS)    // IAU-MICRONAS. 
             {
-#endif
-                if (Settings.Default.InstructorMHP)
+//#endif
+            if (Settings.Default.InstructorMHP)
                 {
                     _InstructorDev = SipAgent.AddSndDevice(CORESIP_SndDevType.CORESIP_SND_INSTRUCTOR_MHP, Settings.Default.InstructorInChannel, Settings.Default.InstructorOutChannel);
                     if (_InstructorDev >= 0)
@@ -722,7 +728,7 @@ namespace HMI.CD40.Module.BusinessEntities
                     if (_RadioRecorderDevIn >= 0)
                         _Logger.Info("Canal In {0}. Canal Out {1} asignados al dispositivo de sonido tipo {2}", Settings.Default.RadioInSpeakerChannel, Settings.Default.RadioOutRecorderChannel, CORESIP_SndDevType.CORESIP_SND_RADIO_RECORDER);
                 }
-#if _AUDIOGENERIC_
+//#if _AUDIOGENERIC_
             }
             else if (tipoAudio == eAudioDeviceTypes.SIMUL)
             {
@@ -734,12 +740,17 @@ namespace HMI.CD40.Module.BusinessEntities
                 //_RdSpeakerDev = 0;
                 //_LcSpeakerDev = 0;
             }
-            else
+            else 
             {
                 throw new Exception("Dispositivos de audio desconocidos");
             }
 #endif
-			switch (Settings.Default.RingDevice)
+
+#endif
+
+#if !OLD_HWMANAGER
+#else
+            switch (Settings.Default.RingDevice)
 			{
 				case 0:
                     if ((_InstructorDev >= 0) || (_AlumnDev >= 0))
@@ -798,11 +809,11 @@ namespace HMI.CD40.Module.BusinessEntities
 					}
 					break;
 			}
-
 			if (_RingDev != MixerDev.Invalid)
 			{
 				_BuzzerEnabled = true;
 			}
+#endif
 		}
 
         /// <summary>

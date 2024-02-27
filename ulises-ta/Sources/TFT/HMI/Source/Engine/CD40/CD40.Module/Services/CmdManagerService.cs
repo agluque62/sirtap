@@ -268,10 +268,15 @@ namespace HMI.CD40.Module.Services
                 {
 #if !OLD_HWMANAGER
                     Top.Hw.JacksChanged += OnJacksChanged;
-                    // TODO
-                    Top.Hw.HeadSetStatusChanged += null;        // SIRTAP-TODO
-                    Top.Hw.PttDeviceStatusChanged += null;
-                    Top.Hw.SpeakerStatusChanged += null;
+                    // SIRTAP-TODO
+                    Top.Hw.HeadSetStatusChanged += (origin, device, status) => 
+                    {
+                    };
+                    Top.Hw.PttDeviceStatusChanged += (origin, device, status) => { };
+                    Top.Hw.SpeakerStatusChanged += (origin, device, status) => 
+                    {
+                        OnSpeakerChanged(origin, new JacksStateMsg(status, status));
+                    };
 #else
                     Top.Hw.JacksChangedHw += OnJacksChanged;
                     Top.Hw.SpeakerChangedHw += OnSpeakerChanged;
