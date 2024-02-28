@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using System.IO.Ports;
+
 
 using NAudio.Wave.Asio;
 using NAudio.CoreAudioApi;
@@ -19,6 +21,34 @@ namespace UnitTestProject1
     [TestClass]
     public class SirtapAudioManagerTests
     {
+        class SimulatePtt
+        {
+            public SimulatePtt(string COM)
+            {
+                port = new SerialPort(COM);
+            }
+            public void Start()
+            {
+                port.Open();
+            }
+            public bool Ptt(TimeSpan time)
+            {
+                if (port.IsOpen)
+                {
+                    port.RtsEnable = true;
+                    Task.Delay(time).Wait();
+                    port.RtsEnable = false;
+                    return true;
+                }
+                return false;
+            }
+            public void Stop()
+            {
+                if (port.IsOpen)
+                    port.Close();
+            }
+            SerialPort port;
+        }
         string Devicetype(List<MMDevice> devices)
         {
             if (devices.Count == 1)
@@ -70,6 +100,28 @@ namespace UnitTestProject1
                     Debug.WriteLine(item);
                 }
             }
+        }
+        [TestMethod]
+        public void TestPttDevice()
+        {
+            var pttDevice = new SirtapPttDevice(null, "COM1");
+            pttDevice.StatusChanged += (origin, present) =>
+            {
+                Debug.WriteLine($"PTT Device => {present}");
+            };
+            pttDevice.InputChanged += (origin, active) =>
+            {
+                Debug.WriteLine($"PTT => {active}");
+            };
+            ProgramEvent(TimeSpan.FromSeconds(10), () =>
+            {
+                var simulatedPtt = new SimulatePtt("COM2");
+                simulatedPtt.Start();
+                simulatedPtt.Ptt(TimeSpan.FromSeconds(10));
+                simulatedPtt.Stop();
+            });
+            Task.Delay(TimeSpan.FromMinutes(1)).Wait();
+            pttDevice.Dispose();
         }
         [TestMethod]
         public void SirtapAudioManagerTest1()
