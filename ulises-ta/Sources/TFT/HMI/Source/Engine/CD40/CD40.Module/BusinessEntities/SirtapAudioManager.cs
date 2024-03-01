@@ -19,7 +19,7 @@ using System.Web;
 namespace HMI.CD40.Module.BusinessEntities
 {
     public enum eAudioModes { NONE, SIMUL, SIRTAP }
-    public class AsioIds
+    public class AudioIds
     {
         public int input { get; set; } = -1;
         public int output { get; set; } = -1;
@@ -28,22 +28,37 @@ namespace HMI.CD40.Module.BusinessEntities
             return $"Asio IDS => input: {input}, output: {output}";
         }
     }
+    public interface IWindowsAudioDevice
+    {
+        string Name { get; }
+        MMDevice MMDevice { get; }
+    }
+    public class WindowsMMDevice : IWindowsAudioDevice
+    {
+        public string Name { get; }
+        public MMDevice MMDevice { get; }
+        public WindowsMMDevice(string name, MMDevice mMDevice)
+        {
+            Name = name;
+            MMDevice = mMDevice;
+        }
+    }
     public interface ISingleAudioDevice
     {
         VersionDetails.VersionDataFileItem Version { get; }
-        AsioIds AsioIds { get; }
-        KeyValuePair<string, List<MMDevice>>? SoundCard { get; }
+        AudioIds AsioIds { get; }
+        KeyValuePair<string, List<IWindowsAudioDevice>>? SoundCard { get; }
         CORESIP_SndDevType Type { get; set; }
-        void SetSoundCard(KeyValuePair<string, List<MMDevice>>? card);
+        void SetSoundCard(KeyValuePair<string, List<IWindowsAudioDevice>>? card);
     }
     public class SirtapAudioDevice : IDisposable, ISingleAudioDevice
     {
         class AsioManagement
         {
-            public AsioIds GetIds(KeyValuePair<string, List<MMDevice>>? SoundCard)
+            public AudioIds GetIds(KeyValuePair<string, List<IWindowsAudioDevice>>? SoundCard)
             {
                 logger.Info<AsioManagement>("GetIds");
-                var ids = new AsioIds();
+                var ids = new AudioIds();
                 Task.Run(() =>
                 {
                     try
@@ -52,7 +67,7 @@ namespace HMI.CD40.Module.BusinessEntities
                         //AsioChannels.Refresh();
                         logger.Info<AsioManagement>($"Asio channels => {Channels()}");
                         // TODO. 
-                        ids = new AsioIds() { input = 0, output = 0 };
+                        ids = new AudioIds() { input = 0, output = 0 };
                     }
                     catch (Exception x)
                     {
@@ -74,10 +89,10 @@ namespace HMI.CD40.Module.BusinessEntities
             ILogger logger;
         }
         public VersionDetails.VersionDataFileItem Version => throw new NotImplementedException("TODO");
-        public AsioIds AsioIds => new AsioManagement().GetIds(SoundCard);
+        public AudioIds AsioIds => new AsioManagement().GetIds(SoundCard);
         public CORESIP_SndDevType Type { get; set; }
-        public KeyValuePair<string, List<MMDevice>>? SoundCard { get; private set; }
-        public void SetSoundCard(KeyValuePair<string, List<MMDevice>>? card)
+        public KeyValuePair<string, List<IWindowsAudioDevice>>? SoundCard { get; private set; }
+        public void SetSoundCard(KeyValuePair<string, List<IWindowsAudioDevice>>? card)
         {
             SoundCard = card;
             // todo
@@ -87,7 +102,7 @@ namespace HMI.CD40.Module.BusinessEntities
         {
         }
         public SirtapAudioDevice(ILogger logger=null, 
-            KeyValuePair<string, List<MMDevice>>? soundCard = null, 
+            KeyValuePair<string, List<IWindowsAudioDevice>>? soundCard = null, 
             CORESIP_SndDevType coresipId = CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP)
         {
             this.logger = logger ?? new NLogLogger();
@@ -212,7 +227,7 @@ namespace HMI.CD40.Module.BusinessEntities
         void Start(EventQueue workingThread = null);
         void End();
     }
-    public class SirtapAudioManager : IDisposable, IHwAudioManager
+    public class SirtapAudioManagerWithASIO : IDisposable, IHwAudioManager
     {
         #region IHwAudioManager
         public ISingleAudioDevice HeadSet { get; set ; }
@@ -253,7 +268,7 @@ namespace HMI.CD40.Module.BusinessEntities
         }
         #endregion
 
-        public SirtapAudioManager(ILogger logger = null, ISingleIODevice ptt = null)
+        public SirtapAudioManagerWithASIO(ILogger logger = null, ISingleIODevice ptt = null)
         {
             this.logger = logger ?? new NLogLogger();
             HeadSet = new SirtapAudioDevice(this.logger, null, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
@@ -295,25 +310,26 @@ namespace HMI.CD40.Module.BusinessEntities
                 });
             } while (statusSupervisorEvent.WaitOne(TimeSpan.FromSeconds(2)) == false);
         }
-        void FindHeadSetAndSpeaker(Action<KeyValuePair<string, List<MMDevice>>?, KeyValuePair<string, List<MMDevice>>?> notify)
+        void FindHeadSetAndSpeaker(Action<KeyValuePair<string, List<IWindowsAudioDevice>>?, KeyValuePair<string, List<IWindowsAudioDevice>>?> notify)
         {
             var activeDevices = new MMDeviceEnumerator()
                 .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
-                .GroupBy(dev => dev.DeviceFriendlyName)
+                .Select(d => new WindowsMMDevice(d.FriendlyName, d) as IWindowsAudioDevice)
+                .GroupBy(dev => dev.Name)
                 .ToDictionary(g => g.Key, g => g.ToList());
             var HeadSetCandidate = activeDevices.Where(c => MeetIOPattern(c, true, true)).FirstOrDefault();
             var SpeakerCandidate = activeDevices.Where(c => MeetIOPattern(c, false, true)).FirstOrDefault();
             notify(HeadSetCandidate, SpeakerCandidate);
         }
-        bool MeetIOPattern(KeyValuePair<string, List<MMDevice>> candidate, bool withInputs, bool withOutputs)
+        bool MeetIOPattern(KeyValuePair<string, List<IWindowsAudioDevice>> candidate, bool withInputs, bool withOutputs)
         {
-            var inputs = candidate.Value.Where(d => d.DataFlow== DataFlow.Capture ).Count();
-            var outputs = candidate.Value.Where(d => d.DataFlow== DataFlow.Render).Count();
+            var inputs = candidate.Value.Where(d => d.MMDevice.DataFlow== DataFlow.Capture ).Count();
+            var outputs = candidate.Value.Where(d => d.MMDevice.DataFlow== DataFlow.Render).Count();
             var patternInputs = withInputs ? inputs > 0 : inputs <= 0;
             var patternOutput = withOutputs ? outputs > 0 : outputs <= 0;  
             return patternInputs && patternOutput;
         }
-        void ManageSoundCarSatus(KeyValuePair<string, List<MMDevice>>? actual, KeyValuePair<string, List<MMDevice>>? candidate, Action<bool> notifychange)
+        void ManageSoundCarSatus(KeyValuePair<string, List<IWindowsAudioDevice>>? actual, KeyValuePair<string, List<IWindowsAudioDevice>>? candidate, Action<bool> notifychange)
         {
             bool candidateNull = candidate == null || candidate?.Key == null;
             if (actual == null) 
@@ -362,9 +378,164 @@ namespace HMI.CD40.Module.BusinessEntities
         public List<object> ListaDispositivos => new List<object>();
         public void OnOffLed(CORESIP_SndDevType tipo, byte val) 
         {
-            logger.Error<SirtapAudioManager>("OnOffLed => Rutina obsoleta");
+            logger.Error<SirtapAudioManagerWithASIO>("OnOffLed => Rutina obsoleta");
         }
-
         #endregion
     }
+    public class SirtapAudioManagerWithoutASIO : IDisposable, IHwAudioManager
+    {
+        #region IHwAudioManager
+        public ISingleAudioDevice HeadSet { get; set; }
+        public ISingleAudioDevice AuralAlarmsSpeaker { get; set; }
+        public ISingleIODevice Ptt { get; set; }
+        public List<VersionDetails.VersionDataFileItem> Version { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public event GenericEventHandler<ISingleAudioDevice, bool> HeadSetStatusChanged;
+        public event GenericEventHandler<ISingleAudioDevice, bool> SpeakerStatusChanged;
+        public event GenericEventHandler<ISingleIODevice, bool> PttDeviceStatusChanged;
+        public event GenericEventHandler<JacksStateMsg> JacksChanged;
+        public event GenericEventHandler<bool> PttPulsed;
+        public event GenericEventHandler<SnmpIntMsg<string, int>> SetSnmpInt;
+
+        public void Dispose()
+        {
+            if (Ptt != null)
+            {
+                Ptt.StatusChanged -= OnPttDeviceStatusChanged;
+                Ptt.InputChanged -= OnPttDeviceInputChanged;
+            }
+            statusSupervisorEvent.Set();
+            statusSupervisor.Wait();
+        }
+        public void End()
+        {
+            Dispose();
+        }
+        public void Init()
+        {
+        }
+        public void Start(EventQueue workingThread = null)
+        {
+            BackwardQueue = workingThread ?? new EventQueue();
+            if (workingThread == null)
+                BackwardQueue.Start();
+            statusSupervisor = Task.Run(SupervisorTask);
+        }
+        #endregion
+
+        public SirtapAudioManagerWithoutASIO(ILogger logger = null, ISingleIODevice ptt = null)
+        {
+            this.logger = logger ?? new NLogLogger();
+            HeadSet = new SirtapAudioDevice(this.logger, null, CORESIP_SndDevType.CORESIP_SND_ALUMN_MHP);
+            Ptt = ptt ?? new SirtapPttDevice(null, "COM1");
+            AuralAlarmsSpeaker = new SirtapAudioDevice(this.logger, null, CORESIP_SndDevType.CORESIP_SND_RD_SPEAKER);
+            if (Ptt != null)
+            {
+                Ptt.StatusChanged += OnPttDeviceStatusChanged;
+                Ptt.InputChanged += OnPttDeviceInputChanged;
+            }
+        }
+        private void OnPttDeviceStatusChanged(object from, bool actualStatus)
+        {
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(PttDeviceStatusChanged, this, Ptt, actualStatus));
+            // NotifyJackChanged(HeadSet.SoundCard != null, actualStatus);
+        }
+        private void OnPttDeviceInputChanged(object from, bool actualStatus)
+        {
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(PttPulsed, this, actualStatus));
+        }
+        private void SupervisorTask()
+        {
+            do
+            {
+                // Supervisa la presencia de los dispositivos de Audio.
+                FindHeadSetAndSpeaker((headset, speaker) =>
+                {
+                    ManageSoundCarSatus(HeadSet.SoundCard, headset, (change) =>
+                    {
+                        HeadSet.SetSoundCard(change == true ? headset : null);
+                        BackwardLaunchEvent(() => General.SafeLaunchEvent(HeadSetStatusChanged, this, HeadSet, change));
+                        NotifyJackChanged(change, /*Ptt.IsConnected*/true);
+                    });
+                    ManageSoundCarSatus(AuralAlarmsSpeaker.SoundCard, speaker, (change) =>
+                    {
+                        AuralAlarmsSpeaker.SetSoundCard(change == true ? speaker : null);
+                        BackwardLaunchEvent(() => General.SafeLaunchEvent(SpeakerStatusChanged, this, AuralAlarmsSpeaker, change));
+                    });
+                });
+            } while (statusSupervisorEvent.WaitOne(TimeSpan.FromSeconds(2)) == false);
+        }
+        void FindHeadSetAndSpeaker(Action<KeyValuePair<string, List<IWindowsAudioDevice>>?, KeyValuePair<string, List<IWindowsAudioDevice>>?> notify)
+        {
+            var activeDevices = new MMDeviceEnumerator()
+                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
+                .Select(d => new WindowsMMDevice(d.FriendlyName, d) as IWindowsAudioDevice)
+                .GroupBy(dev => dev.Name)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            var HeadSetCandidate = activeDevices.Where(c => MeetIOPattern(c, true, true)).FirstOrDefault();
+            var SpeakerCandidate = activeDevices.Where(c => MeetIOPattern(c, false, true)).FirstOrDefault();
+            notify(HeadSetCandidate, SpeakerCandidate);
+        }
+        bool MeetIOPattern(KeyValuePair<string, List<IWindowsAudioDevice>> candidate, bool withInputs, bool withOutputs)
+        {
+            var inputs = candidate.Value.Where(d => d.MMDevice.DataFlow == DataFlow.Capture).Count();
+            var outputs = candidate.Value.Where(d => d.MMDevice.DataFlow == DataFlow.Render).Count();
+            var patternInputs = withInputs ? inputs > 0 : inputs <= 0;
+            var patternOutput = withOutputs ? outputs > 0 : outputs <= 0;
+            return patternInputs && patternOutput;
+        }
+        void ManageSoundCarSatus(KeyValuePair<string, List<IWindowsAudioDevice>>? actual, KeyValuePair<string, List<IWindowsAudioDevice>>? candidate, Action<bool> notifychange)
+        {
+            bool candidateNull = candidate == null || candidate?.Key == null;
+            if (actual == null)
+            {
+                if (candidateNull == false)
+                    notifychange(true);
+            }
+            else
+            {
+                if (candidateNull == true)
+                    notifychange(false);
+                else
+                {
+                    if (actual?.Key != candidate?.Key)
+                    {
+                        notifychange(false);
+                    }
+                }
+            }
+        }
+        void NotifyJackChanged(bool audioDevice, bool pttdevice)
+        {
+            var jackstate = audioDevice && pttdevice;
+            var msg = new JacksStateMsg(jackstate, jackstate);
+            BackwardLaunchEvent(() => General.SafeLaunchEvent(JacksChanged, this, msg));
+        }
+        void BackwardLaunchEvent(Action launch)
+        {
+            if (BackwardQueue == null) launch();
+            else
+                BackwardQueue.Enqueue("SirtapAudioManagerEvent", () => launch());
+        }
+        bool IsAvailble = false;
+        ManualResetEvent statusSupervisorEvent = new ManualResetEvent(false);
+        Task statusSupervisor;
+        EventQueue BackwardQueue = null;
+        ILogger logger = null;
+
+        #region IOldHwManager
+        public bool InstructorJack => false;
+        public bool AlumnJack => false;         // TODO.
+        public bool LCSpeaker => false;
+        public bool RdSpeaker => false;
+        public bool HfSpeaker => false;
+        public bool HwPtt_Activated => false;   // TODO.
+        public List<object> ListaDispositivos => new List<object>();
+        public void OnOffLed(CORESIP_SndDevType tipo, byte val)
+        {
+            logger.Error<SirtapAudioManagerWithASIO>("OnOffLed => Rutina obsoleta");
+        }
+        #endregion
+    }
+
 }

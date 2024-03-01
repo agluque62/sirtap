@@ -2,10 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using System.IO.Ports;
-
-
-using NAudio.Wave.Asio;
-using NAudio.CoreAudioApi;
 using Moq;
 using System.Linq;
 using System.Diagnostics;
@@ -15,6 +11,8 @@ using U5ki.Infrastructure;
 using static U5ki.Infrastructure.SipAgent;
 using HMI.CD40.Module.BusinessEntities;
 using NAudio.Wave;
+using NAudio.Wave.Asio;
+using NAudio.CoreAudioApi;
 
 namespace UnitTestProject1
 {
@@ -29,7 +27,9 @@ namespace UnitTestProject1
             }
             public void Start()
             {
-                port.Open();
+                var ExistingPorts = SerialPort.GetPortNames();
+                if (ExistingPorts.Contains(port.PortName)==true)
+                    port.Open();
             }
             public bool Ptt(TimeSpan time)
             {
@@ -160,31 +160,35 @@ namespace UnitTestProject1
             }
         }
         [TestMethod]
-        public void NAudioAsioTest_outputs()
+        public void NAudioAsioTest()
         {
             var drivers = AsioOut.GetDriverNames();
             var asio4allDriver = AsioDriver.GetAsioDriverByName(drivers[0]);
             asio4allDriver.ControlPanel();
             for (int a = 0; a < 10; a++)
             {
-
-                asio4allDriver.GetChannels(out int inputs, out int outputs);
-                var asioInputs = new List<AsioChannelInfo>();
-                var asioOutputs = new List<AsioChannelInfo>();
-                for (int i = 0; i < inputs; i++)
-                    asioInputs.Add(asio4allDriver.GetChannelInfo(i, true));
-                for (int i = 0; i < outputs; i++)
-                    asioOutputs.Add(asio4allDriver.GetChannelInfo((int)i, false));
-
-                Debug.WriteLine($"Asio channels => {Channels(asioInputs, asioOutputs)}");
+                Task.Run(() =>
+                {
+                    asio4allDriver.Init(IntPtr.Zero);
+                    asio4allDriver.GetChannels(out int inputs, out int outputs);
+                    var asioInputs = new List<AsioChannelInfo>();
+                    var asioOutputs = new List<AsioChannelInfo>();
+                    for (int i = 0; i < inputs; i++)
+                        asioInputs.Add(asio4allDriver.GetChannelInfo(i, true));
+                    for (int i = 0; i < outputs; i++)
+                        asioOutputs.Add(asio4allDriver.GetChannelInfo((int)i, false));
+                    
+                    Debug.WriteLine($"Asio channels => {Channels(asioInputs, asioOutputs)}");
+                }).Wait();
                 Task.Delay(TimeSpan.FromSeconds(5)).Wait();
             }
+            asio4allDriver.ReleaseComAsioDriver();
         }
         private void PrepareTests(Action<IHwAudioManager, Mock<ISingleIODevice>> executeTest)
         {
             var ptt = new Mock<ISingleIODevice>();
             ptt.Setup(o => o.IsConnected).Returns(true);
-            var ham = new SirtapAudioManager(null, ptt.Object);
+            var ham = new SirtapAudioManagerWithASIO(null, ptt.Object);
             ham.HeadSetStatusChanged += (from, device, status) =>
             {
                 Debug.WriteLine($"HeadSetStatusChanged => {status}, {device}");

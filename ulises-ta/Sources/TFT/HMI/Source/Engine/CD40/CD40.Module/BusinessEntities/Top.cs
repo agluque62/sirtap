@@ -289,7 +289,7 @@ namespace HMI.CD40.Module.BusinessEntities
 #if _AUDIOGENERIC_
                     // switch (Properties.Settings.Default.TipoAudioUsb)
 #if !OLD_HWMANAGER
-                    _HwManager = new SirtapAudioManager();
+                    _HwManager = new SirtapAudioManagerWithASIO();
 #else
                     switch (HwManager.AudioDeviceType)
                     {

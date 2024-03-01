@@ -111,7 +111,7 @@
     <Compile Include="BusinessEntities\AsioChannels.cs" />
     <Compile Include="BusinessEntities\CBinauralHwManager.cs" />
     <Compile Include="BusinessEntities\CfgManager.cs" />
-    <Compile Include="BusinessEntities\SirtapAudioManager.cs" />
+    <Compile Include="BusinessEntities\SirtapAudioManagerWithASIO.cs" />
     <Compile Include="BusinessEntities\TlfConferencePrepro.cs" />
     <Compile Include="BusinessEntities\TlfForward.cs" />
     <Compile Include="BusinessEntities\TlfPickUp.cs" />
