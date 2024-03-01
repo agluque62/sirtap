@@ -41,6 +41,12 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
     const int MAX_NUCLEOS = 4;
     const int MAX_SECTORES_NUCLEOS = 32;
 
+    private string STR_SECTOR_FS = "**FS**";
+    private string STR_SECTOR_SERVICIOS = "SERVICIOS_SIRTAP";
+    private string STR_SECTOR_TOSIRTAP1 = "TOSIRTAP1";
+    private string STR_SECTOR_TOSIRTAP2 = "TOSIRTAP2";
+    private string STR_SECTOR_TOSIRTAP3 = "TOSIRTAP3";
+
 	private static ILog _logDebugView;
     public static ILog logDebugView
     {
@@ -55,11 +61,6 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     protected new void Page_Load(object sender, EventArgs e)
     {
 		base.Page_Load(sender, e);
@@ -93,7 +94,8 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 			{
 				NumPaginaActiva = 0;
                 IndexListBox1 = -1;
-
+                // 20240221 Omitido
+                /*
 				if (!MuestraNucleos())
 				{
 					MultiView1.Visible = false;
@@ -101,26 +103,29 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 					cMsg.alert((string)GetGlobalResourceObject("Espaniol","SinNucleo"));
 					return;
 				}
-
+                */
                 switch (UlisesToolsVersion.Version)
                 {
                     case 0:
                         PanelAsecna.Visible = PanelComunes.Visible = PanelNoImplementadas.Visible = PanelTwr.Visible = true;
                         //20200911 #4591
-                        CheckSeleccionadoFS.Visible = true;
+                        //20240221 Omitido 
+                        // CheckSeleccionadoFS.Visible = true;
                         break;
                     case 1:
                     case 2:
                         PanelComunes.Visible = PanelAsecna.Visible = true;
                         PanelTwr.Visible = PanelNoImplementadas.Visible = false;
                         //20200911 #4591
-                        CheckSeleccionadoFS.Visible = false;
+                        //20240221 Omitido 
+                        // CheckSeleccionadoFS.Visible = false;
                         break;
                     case 3:
                         PanelComunes.Visible = PanelTwr.Visible = true;
                         PanelAsecna.Visible = PanelNoImplementadas.Visible = false;
                         // 20200911 #4591
-                        CheckSeleccionadoFS.Visible = true;
+                        //20240221 Omitido 
+                        // CheckSeleccionadoFS.Visible = true;
                         break;
                 }
 
@@ -132,16 +137,18 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
                 BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
                 BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");
-                
-                CargarIdSacta();
+                // 20240221 Omitido
+                // CargarIdSacta();
 
                 if (Session["NombreSector"] != null && !string.IsNullOrEmpty((string)Session["NombreSector"]))
                 {
                     NewItem = (string)Session["NombreSector"];
                     Session["NombreSector"] = null;
                 }
-
-                ObtenerNumeroMaximoSectores();
+               
+                // 20240221 Omitido
+                // ObtenerNumeroMaximoSectores();
+                NumMaxSectores = 1; // SERVICIOS
 
 				MuestraDatos(DameDatos());
 				CargarPrefijos();
@@ -158,28 +165,8 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                     return;
                 }
 
-				//CargaTipoSector();
-
 				MultiView1.ActiveViewIndex = NumPaginaActiva;
 
-                //if (Request.Form["eliminaelemento"] == "1")//El usuario elige eliminar el elemento 
-                //{
-                //    Request.Form["eliminaelemento"].Replace("1", "0");
-
-                //    EliminarElemento();
-                //}
-                //if (Request.Form["cancelparam"] == "1")    //El usuario elige no guardar los cambios 
-                //{
-                //    Request.Form["cancelparam"].Replace("1", "0");
-
-                //    CancelarCambios();
-                //}
-                //if (Request.Form["aceptparam"] == "1")     //El usuario elige guardar los cambios
-                //{
-                //    Request.Form["aceptparam"].Replace("1", "0");
-
-                //    GuardarCambios();
-                //}
 				if (Request.Form["IrAEncaminamientos"] == "1")	// El usuario desea ir a dar de alta una Central Propia
 				{
 					Request.Form["IrAEncaminamientos"].Replace("1", "0");
@@ -350,12 +337,13 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 					DListIdSacta.SelectedValue = (((ServiciosCD40.Sectores)datos[i]).NumSacta).ToString();
                     //TxtSacta.Text = (((ServiciosCD40.Sectores)datos[i]).NumSacta).ToString();
                     //TxtSacta.Visible = true;
-					DListIdSacta.Visible = Label17.Visible = true;
+                    //20240221 Omitido
+					// DListIdSacta.Visible = Label17.Visible = true;
                 }
 				else
 				{
-				    DListIdSacta.Visible = false;
-				    Label17.Visible = false;
+				    DListIdSacta.Visible = false; 
+                    Label17.Visible = false;
 				}
                 
                 DListTipoSector.SelectedValue = ((ServiciosCD40.Sectores)datos[i]).Tipo;
@@ -384,8 +372,9 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                 ObtenerPermisosRedes(((ServiciosCD40.Sectores)datos[i]).IdSistema,
                                     ((ServiciosCD40.Sectores)datos[i]).IdSector);
                 //20200911 JOI #4591
-                CheckSeleccionadoFS.Checked = OldSeleccionadoFS = ((ServiciosCD40.Sectores)datos[i]).SeleccionadoFS;
-                CheckSeleccionadoFS.Enabled = false;
+                //20240221 Omitido 
+                //CheckSeleccionadoFS.Checked = OldSeleccionadoFS = ((ServiciosCD40.Sectores)datos[i]).SeleccionadoFS;
+                //CheckSeleccionadoFS.Enabled = false;
                 #region ControlDependenciasATS
                 /*
                 try
@@ -510,11 +499,12 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         CheckSayAgain.Enabled = habilita;
         CheckTransPre.Enabled = habilita;
         CheckIntrusion.Enabled = habilita;
-        Panel2.Enabled = habilita;
+        Panel2.Enabled = false;// 20240222 habilita;
         //CheckIntruido.Enabled = habilita;
         CheckRecording.Enabled = habilita;
         //20200911 JOI #4591
-        CheckSeleccionadoFS.Enabled = habilita;
+        //20240221 Omitido 
+        //CheckSeleccionadoFS.Enabled = habilita;
         //20200911 JOI #4591 FIN
         DListTipoPosicion.Enabled = habilita;
         DListTipoSector.Enabled = habilita;
@@ -538,10 +528,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 		DDLCpicl.Enabled = habilita;
 		DDLCpipcl.Enabled = habilita;
 
-		//LimpiarMenu();
-
-//		LBoxAbonados.Enabled = habilita;
-		PanelAbonado.Enabled = habilita;
+		//PanelAbonado.Enabled = habilita;
 
 		ListBox1.Enabled = !habilita;
 		BtAceptar.Visible = habilita;
@@ -616,7 +603,8 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         CheckIntruido.Checked = false;
         CheckRecording.Checked = false;
         //20200911 JOI #4591
-        CheckSeleccionadoFS.Checked = false;
+        //20240221 Omitido 
+        //CheckSeleccionadoFS.Checked = false;
     }
 
     /// <summary>
@@ -792,7 +780,10 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
             for (int i = 0; i < nu.Length; i++)
             {
                 // Eliminar el sector **FS** si lo hubiera
-                if (((ServiciosCD40.Sectores)nu[i]).IdSector!="**FS**")
+                // 20240221 Omitido
+                //if (((ServiciosCD40.Sectores)nu[i]).IdSector!="**FS**")
+                //    ListBox1.Items.Add(((ServiciosCD40.Sectores)nu[i]).IdSector);
+                if (((ServiciosCD40.Sectores)nu[i]).IdSector == STR_SECTOR_SERVICIOS)
                     ListBox1.Items.Add(((ServiciosCD40.Sectores)nu[i]).IdSector);
             }
 
@@ -810,17 +801,21 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
                 ListBox1.SelectedIndex = IndexListBox1 != -1 && IndexListBox1 < ListBox1.Items.Count ? IndexListBox1 : 0;
             
             MostrarElemento();
-			BtNuevo.Visible = BtModificar.Visible = BtEliminar.Visible = PermisoSegunPerfil;
-
+            BloqueaSirtap();
+			BtModificar.Visible = PermisoSegunPerfil;
 		}
 		else
 		{
 			LimpiarMenu();
-			BtNuevo.Visible = PermisoSegunPerfil;
-			BtModificar.Visible = BtEliminar.Visible = false;
+            BloqueaSirtap();
 		}
 	}
 
+    private void BloqueaSirtap()
+    {
+        BtNuevo.Visible = BtEliminar.Visible = false;
+        BtNuevo.Enabled = BtEliminar.Enabled = false;
+    }
 
 
     /// <summary>
@@ -860,7 +855,7 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
 		//RegeneraSectorizacionPorAgenda = false;
 
         HabilitaElementos(false);
-        BtNuevo.Enabled = true;
+        BloqueaSirtap();
         EsconderValidacion();
         ListBox1.Enabled = true;
 
@@ -932,8 +927,8 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
             n.TipoPosicion = "C";
             n.IdNucleo = DListNucleo.SelectedValue;
             // 20200911 #4591
-
-            n.SeleccionadoFS = CheckSeleccionadoFS.Checked;
+            //20240221 Omitido 
+            //n.SeleccionadoFS = CheckSeleccionadoFS.Checked;
             // 20210317 #4749
             // RQF-34
             // if (ControlDependenciasATS)
@@ -1145,7 +1140,10 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
             // RQF-4
             DListNucleoSel.Enabled = false;
             DListNucleo.Enabled = false;
-			BtEliminar.Visible = BtNuevo.Visible = BtModificar.Visible = false;
+            //20240221 Omitido
+			//BtEliminar.Visible = BtNuevo.Visible = BtModificar.Visible = false;
+            BloqueaSirtap();
+            BtModificar.Visible = false;
 			BtAceptar.Visible = BtCancelar.Visible = true;
 
 			if (DListTipoSector.SelectedValue != "M")
@@ -1998,7 +1996,8 @@ public partial class Sector :	PageBaseCD40.PageCD40	//	System.Web.UI.Page
         BtLC.Visible = true;
         BtTelefonia.Visible = true;
         BtRadio.Visible = true;
-        BtNuevo.Visible = BtModificar.Visible = BtEliminar.Visible = PermisoSegunPerfil;
+        BloqueaSirtap();
+        BtModificar.Visible = PermisoSegunPerfil;
         ListBox1.Enabled = true;
     }
 

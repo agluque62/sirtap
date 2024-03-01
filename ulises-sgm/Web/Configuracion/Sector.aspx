@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/CD40.master" AutoEventWireup="true" CodeFile="Sector.aspx.cs" Inherits="Sector" 
-	CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Gestión de Sectores" EnableEventValidation="false" StylesheetTheme="TemaPaginasConfiguracion" meta:resourcekey="PageResource1" %>
+	CodeFileBaseClass="PageBaseCD40.PageCD40"	Title="Configuración de Servicios" EnableEventValidation="false" StylesheetTheme="TemaPaginasConfiguracion" meta:resourcekey="PageResource1" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
     <script type="text/javascript">
@@ -11,11 +11,11 @@
     <asp:Label ID="Label15" runat="server" Text="CONFIGURACIÓN DE SERVICIOS" 
 		  CssClass="labelPagina" meta:resourcekey="Label15Resource1"></asp:Label>
 
-    <asp:ListBox ID="ListBox1" runat="server" OnSelectedIndexChanged="ListBox1_SelectedIndexChanged" 
-			SkinID="MascaraListaElementos" AutoPostBack="True" 
+    <asp:ListBox ID="ListBox1" runat="server"  Height="100px" Style="z-index: 105; left: 14px; position: absolute; top: 50px"
+            Width="171px" Enabled="True" Visible="true" AutoPostBack="false"
 		  meta:resourcekey="ListBox1Resource1"></asp:ListBox>
 
-     <asp:DropDownList ID="FiltroBusquedaNucleo" runat="server" AutoPostBack="True" Style="z-index: 100; left: 21px; width:172px; 
+     <asp:DropDownList ID="FiltroBusquedaNucleo" runat="server" Enabled="false" Visible="false" AutoPostBack  ="True" Style="z-index: 100; left: 21px; width:172px; 
         position: absolute; top: 475px"
             OnSelectedIndexChanged="FiltroBusquedaNucleo_SelectedIndexChanged" SkinID="MascaraFiltroBusqueda" 
             meta:resourcekey="FiltroBusquedaNucleoResource">
@@ -27,7 +27,7 @@
     </asp:DropDownList>
     
 	<asp:DropDownList ID="DListNucleoSel" runat="server" Style="z-index: 111; left: 50px;
-		position: absolute; top: 520px" Width="110px" Enabled="False"  class="select" Visible="false"
+		position: absolute; top: 520px" Width="110px" Enabled="False"   Visible="false"
 		meta:resourcekey="DListNucleoResource1">
 	</asp:DropDownList>
 
@@ -77,10 +77,11 @@
 					ValidationExpression="^[\w-]*$" 
 					meta:resourcekey="RequiredFieldValidator2Resource1">*</asp:RegularExpressionValidator>
 
-				 <asp:Label ID="Label6" runat="server" Style="z-index: 112; left: 16px; position: absolute;
+				 <asp:Label ID="Label6" runat="server" Visible="false"  Style="z-index: 112; left: 16px; position: absolute;
 					  top: 64px" Text="Tipo:" meta:resourcekey="Label6Resource1"></asp:Label>
-				 <asp:DropDownList ID="DListTipoSector" runat="server" Style="z-index: 113; left: 16px;
-					  position: absolute; top: 84px"  Enabled="False" AutoPostBack="True"  class="select"
+
+				 <asp:DropDownList ID="DListTipoSector" runat="server" Visible="false" Style="z-index: 113; left: 16px;
+					  position: absolute; top: 84px"  Enabled="False" AutoPostBack="True"
 					 OnSelectedIndexChanged="DListTipoSector_SelectedIndexChanged" 
 					 meta:resourcekey="DListTipoSectorResource1">
 					  <asp:ListItem Value="R" meta:resourcekey="ListItemTipoSectorReal">Real</asp:ListItem>
@@ -88,10 +89,10 @@
 					  <asp:ListItem Value="M" meta:resourcekey="ListItemTipoSectorMto">Mantenimiento</asp:ListItem>
 				 </asp:DropDownList>
 
-				 <asp:Label ID="Label2" runat="server" Style="z-index: 105; left: 16px; position: absolute;
+				 <asp:Label ID="Label2" runat="server" Visible="false"  Style="z-index: 105; left: 16px; position: absolute;
 					  top: 119px" Text="Tipo de Posición:" meta:resourcekey="Label2Resource1"></asp:Label>
-				 <asp:DropDownList ID="DListTipoPosicion" runat="server" Style="z-index: 114; left: 16px;
-					  position: absolute; top: 139px" Width="110px" Enabled="False"  class="select"
+				 <asp:DropDownList ID="DListTipoPosicion" runat="server" Visible="false"  Style="z-index: 114; left: 16px;
+					  position: absolute; top: 139px" Width="110px" Enabled="False"
 					 meta:resourcekey="DListTipoPosicionResource1">
 					  <asp:ListItem Value="C" meta:resourcekey="ListItemResource8">Controlador</asp:ListItem>
 				 </asp:DropDownList>
@@ -100,17 +101,17 @@
                     <asp:ListItem Value="P" meta:resourcekey="ListItemResource9">Planificador</asp:ListItem>
                     -->
 
-				 <asp:Label ID="Label17" runat="server" Style="z-index: 108; left: 16px; position: absolute;
+				 <asp:Label ID="Label17" runat="server"  Visible="false"  Style="z-index: 108; left: 16px; position: absolute;
 					  top: 174px" Text="Id. Sacta:" meta:resourcekey="Label17Resource1"></asp:Label>
-			    <asp:DropDownList ID="DListIdSacta" runat="server"  class="select"
+			    <asp:DropDownList ID="DListIdSacta" runat="server" Visible="false"
 					 Style="left: 16px; position: absolute;top: 194px; z-index: 109;" 
 					 Enabled="False" meta:resourcekey="DListIdSactaResource1">
 			    </asp:DropDownList>
 
-                <asp:Label ID="Label13" runat="server" Style="z-index: 106; left: 16px; position: absolute; top: 229px"
+                <asp:Label ID="Label13" runat="server" Visible="false" Style="z-index: 106; left: 16px; position: absolute; top: 229px"
                     Text="Prioridad R2:" meta:resourcekey="Label13Resource1"></asp:Label>
-                <asp:DropDownList ID="DDLPrioridadR2" runat="server" Style="z-index: 107; left: 16px; position: absolute; top: 249px"
-                    Enabled="False" class="select"
+                <asp:DropDownList ID="DDLPrioridadR2" runat="server" Visible="false" Style="z-index: 107; left: 16px; position: absolute; top: 249px"
+                    Enabled="False"
                     meta:resourcekey="DDLPrioridadR2Resource1">
                     <asp:ListItem Value="4" meta:resourcekey="ListItemResource1">No Urgente</asp:ListItem>
                     <asp:ListItem Value="3" meta:resourcekey="ListItemResource2">Normal</asp:ListItem>
@@ -118,22 +119,22 @@
                     <asp:ListItem Value="1" meta:resourcekey="ListItemResource4">Emergencia</asp:ListItem>
                 </asp:DropDownList>
 
-				 <asp:Label ID="Label16" runat="server" Style="z-index: 110; left: 16px; position: absolute;
+				 <asp:Label ID="Label16" runat="server" Visible="false" Style="z-index: 110; left: 16px; position: absolute;
 					  top: 284px" Text="Núcleo:" meta:resourcekey="Label16Resource1"></asp:Label>
-				 <asp:DropDownList ID="DListNucleo" runat="server" Style="z-index: 111; left: 16px;
-					  position: absolute; top: 304px" Width="110px" Enabled="False"  class="select"
+				 <asp:DropDownList ID="DListNucleo" runat="server" Visible="false" Style="z-index: 111; left: 16px;
+					  position: absolute; top: 304px" Width="110px" Enabled="False"  
 					 meta:resourcekey="DListNucleoResource1">
 				 </asp:DropDownList>
 
-                <asp:Label ID="LabelDepATS" runat="server" Style="z-index: 160; left: 160px; position: absolute;
-                    top: 284px" Text="Dependencia ATS" Visible="False"   Enabled="False"
+                <asp:Label ID="LabelDepATS" runat="server" Visible="false" Style="z-index: 160; left: 160px; position: absolute;
+                    top: 284px" Text="Dependencia ATS"    Enabled="False"
 		              meta:resourcekey="Label21Resource1"></asp:Label>
 
-				 <asp:TextBox ID="TBDepATS" runat="server" Style="z-index: 101; left: 160px; position: absolute;
-					  top: 304px" Width="110px" Enabled="False"  Visible="False" meta:resourcekey="TBDepATSResource1"></asp:TextBox>
+				 <asp:TextBox ID="TBDepATS" runat="server" Visible="false" Style="z-index: 101; left: 160px; position: absolute;
+					  top: 304px" Width="110px" Enabled="False"  meta:resourcekey="TBDepATSResource1"></asp:TextBox>
 
                 <asp:Panel ID="Panel2" runat="server" BorderStyle="Inset" Height="100px" Style="z-index: 115; left: 335px; position: absolute; top: 240px"
-                    Width="412px" Enabled="False">
+                    Width="412px" Enabled="False" Visible="false">
                     <asp:Label ID="LblPanelCaracteristicas" runat="server" Style="z-index: 110; left: 22px; position: absolute;
 					  top: 5px" Text="Características" meta:resourcekey="LblPanelCaracteristicasResource1"></asp:Label>
                     <asp:CheckBox ID="CheckIntrusion" runat="server" Checked="True" Style="z-index: 103; left: 22px; position: absolute; top: 40px"
@@ -143,12 +144,12 @@
                         Text="   Intruido"
                         meta:resourcekey="CheckIntruidoResource1" />
                 <% //20200911 JOI #4591 %>
-                 <asp:CheckBox ID="CheckSeleccionadoFS" runat="server" Checked="False" Style="z-index: 106; left: 152px; position: absolute; top: 70px" 
+                 <asp:CheckBox ID="CheckSeleccionadoFS" runat="server" Visible="false" Enabled="false" Checked="False" Style="z-index: 106; left: 152px; position: absolute; top: 70px" 
                      Text="Panel Radio **FS**"  meta:resourcekey="CheckSeleccionadoFSResource1"/>
                 </asp:Panel>
 
                 <asp:Panel ID="PanelAbonado" runat="server" BorderStyle="Inset" Height="222px" Style="z-index: 115;
-							left: 335px; position: absolute; top: 5px" Width="412px" Enabled="False" 
+							left: 335px; position: absolute; top: 5px" Width="412px" Enabled="False" Visible="false"
 					 meta:resourcekey="PanelAbonadoResource1">
 					 <asp:Button ID="BtAceptarAbonado" runat="server" CausesValidation="False" OnClick="BtAceptarAbonado_Click"
 						  Style="z-index: 115; left: 265px; position: absolute; top: 195px" Text="Aceptar"
@@ -166,7 +167,7 @@
 					 <asp:Label ID="Label20" runat="server" Style="z-index: 120; left: 273px; position: absolute;
 						  top: 82px" Text="Red:" Visible="False" meta:resourcekey="Label20Resource1"></asp:Label>
 					 <asp:DropDownList ID="DListPrefijos" runat="server" Style="z-index: 121; left: 273px;
-						  position: absolute; top: 105px" Visible="False" Enabled="False"  class="select"
+						  position: absolute; top: 105px" Visible="False" Enabled="False"  
 						 OnSelectedIndexChanged="DListPrefijos_SelectedIndexChange" AutoPostBack="True" 
 						 meta:resourcekey="DListPrefijosResource1">
 					 </asp:DropDownList>
@@ -237,13 +238,13 @@
 				     <asp:CheckBox ID="CheckRedireccion" runat="server" Style="z-index: 132; position: absolute;
 					      top: 74px" Text="Desvío"  Enabled="False"  Width="190px"
 					     meta:resourcekey="CheckRedireccionResource1"/>
-				     <asp:CheckBox ID="CheckRepUltLlamada" runat="server" Checked="True" Style="z-index: 133; 
+				     <asp:CheckBox ID="CheckRepUltLlamada" runat="server" Visible="false" Checked="True" Style="z-index: 133; 
 					      position: absolute; top: 104px" Text="Repetición última llamada RX radio"   Width="400px"
 					     Enabled="False" meta:resourcekey="CheckRepUltLlamadaResource1"/>
-				     <asp:CheckBox ID="CheckPermisoRTXSQ" runat="server" Checked="False" Style="z-index: 133; 
+				     <asp:CheckBox ID="CheckPermisoRTXSQ" runat="server" Visible="false" Checked="False" Style="z-index: 133; 
 					      position: absolute; top: 134px" Text="Permitido quitar RTX con Squelch en canal"   Width="400px"
 					     Enabled="False" meta:resourcekey="CheckPermisoRTXSQResource1"/>
-                    <asp:CheckBox ID="CheckPermisoRTXSect" runat="server" Checked="False" Style="z-index: 133; 
+                    <asp:CheckBox ID="CheckPermisoRTXSect" runat="server" Visible="false" Checked="False" Style="z-index: 133; 
 					      position: absolute; top: 164px" Text="Permitido mantener RTX en sectorización"   Width="400px"
 					     Enabled="False" meta:resourcekey="CheckPermisoRTXSectResource1"/>
 
@@ -477,7 +478,7 @@
 				<asp:Label ID="LblPrefijo" runat="server" 
 					style="position: absolute; top: 164px; left: 478px; z-index: 2; height: 17px; width: 50px" 
 					Text="Prefijo" Visible="False" meta:resourcekey="LblPrefijoResource1"></asp:Label>
-				<asp:DropDownList ID="DDLPrefijoAgenda" runat="server"  class="select"
+				<asp:DropDownList ID="DDLPrefijoAgenda" runat="server" 
 					style="z-index: 1; left: 537px; top: 163px; width: 100px; position: absolute" 
 						Visible="False" meta:resourcekey="DDLPrefijoAgendaResource1">
 				</asp:DropDownList>
@@ -496,7 +497,7 @@
 				 <asp:Label ID="Label1" runat="server" Style="z-index: 100; left: 43px; position: absolute;
 					  top: 24px" Text="CICL:" meta:resourcekey="Label1Resource1"></asp:Label>
 					<asp:DropDownList ID="DDLCicl" runat="server" Style="z-index: 117; left: 113px;
-						position: absolute; top: 21px" Enabled="False" meta:resourcekey="DDLCiclResource1" class="select">
+						position: absolute; top: 21px" Enabled="False" meta:resourcekey="DDLCiclResource1" >
 						<asp:ListItem Value="0" meta:resourcekey="ListItemResource10">No Urgente</asp:ListItem>
 						<asp:ListItem Value="1" meta:resourcekey="ListItemResource11">Normal</asp:ListItem>
 						<asp:ListItem Value="2" meta:resourcekey="ListItemResource12">Urgente</asp:ListItem>
@@ -506,7 +507,7 @@
 				 <asp:Label ID="Label4" runat="server" Style="z-index: 104; left: 43px; position: absolute;
 					  top: 194px" Text="CPIPCL:" meta:resourcekey="Label4Resource1"></asp:Label>
 					<asp:DropDownList ID="DDLCpipcl" runat="server" Style="z-index: 117; left: 113px;
-						position: absolute; top: 193px" Enabled="False" meta:resourcekey="DDLCpipclResource1" class="select">
+						position: absolute; top: 193px" Enabled="False" meta:resourcekey="DDLCpipclResource1">
 						<asp:ListItem Value="0" meta:resourcekey="ListItemResource14">No Urgente</asp:ListItem>
 						<asp:ListItem Value="1" meta:resourcekey="ListItemResource15">Normal</asp:ListItem>
 						<asp:ListItem Value="2" meta:resourcekey="ListItemResource16">Urgente</asp:ListItem>
@@ -516,7 +517,7 @@
 				 <asp:Label ID="Label3" runat="server" Style="z-index: 108; left: 43px; position: absolute;
 					  top: 135px" Text="CIPL:" meta:resourcekey="Label3Resource1"></asp:Label>
 					<asp:DropDownList ID="DDLCipl" runat="server" Style="z-index: 117; left: 113px;
-						position: absolute; top: 135px" Enabled="False" meta:resourcekey="DDLCiplResource1" class="select">
+						position: absolute; top: 135px" Enabled="False" meta:resourcekey="DDLCiplResource1" >
 						<asp:ListItem Value="0" meta:resourcekey="ListItemResource18">No Urgente</asp:ListItem>
 						<asp:ListItem Value="1" meta:resourcekey="ListItemResource19">Normal</asp:ListItem>
 						<asp:ListItem Value="2" meta:resourcekey="ListItemResource20">Urgente</asp:ListItem>
@@ -526,7 +527,7 @@
 				 <asp:Label ID="Label7" runat="server" Style="z-index: 112; left: 43px; position: absolute;
 					  top: 79px" Text="CPICL:" meta:resourcekey="Label7Resource1"></asp:Label>
  					<asp:DropDownList ID="DDLCpicl" runat="server" Style="z-index: 117; left: 113px;
-						position: absolute; top: 78px" Enabled="False" meta:resourcekey="DDLCpiclResource1" class="select">
+						position: absolute; top: 78px" Enabled="False" meta:resourcekey="DDLCpiclResource1">
 						<asp:ListItem Value="0" meta:resourcekey="ListItemResource22">No Urgente</asp:ListItem>
 						<asp:ListItem Value="1" meta:resourcekey="ListItemResource23">Normal</asp:ListItem>
 						<asp:ListItem Value="2" meta:resourcekey="ListItemResource24">Urgente</asp:ListItem>
@@ -539,7 +540,7 @@
         </asp:MultiView>
 	</asp:Panel>
 		<asp:Panel ID="PanelBorrarSector" runat="server" CssClass="modalBox" BackColor="Transparent"
-			BorderColor="#E6E2D8" BorderPadding="4"
+			BorderColor="#E6E2D8"
 			 BorderStyle="Solid" BorderWidth="1px" Height="132px" Width="450px"
 		     Visible="false" Style="position:absolute; top:100px; left: 233px">
 		 <asp:Label ID="LBEliminarSectorTemp" runat="server" Width="450px" 

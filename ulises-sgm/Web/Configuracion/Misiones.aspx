@@ -232,18 +232,6 @@
                         OnClick="CeldaEnlaceRadio_OnClick" CausesValidation="false" />
                 </div>
             </asp:TableCell>
-            <asp:TableCell ID="TableCell10" runat="server" Visible="false" Width="103px"
-                BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
-                <div id="Div18" runat="server" style="height: 30px; width: 103px">
-                    <asp:TextBox ID="TextBox10" runat="server" ReadOnly="True" Rows="3"
-                        MaxLength="32" SkinID="LiteralTeclaPanelRadio"></asp:TextBox>
-                </div>
-                <div id="Div21" runat="server" style="height: 50px; width: 103px">
-                    <asp:Button ID="Button10" runat="server"
-                        SkinId="BotonPanelRadio" Text="Tx Rx"
-                        OnClick="CeldaEnlaceRadio_OnClick" CausesValidation="false" />
-                </div>
-            </asp:TableCell>
         </asp:TableRow>
     </asp:Table>
             <asp:ImageButton ID="IButRDAsignar" runat="server" OnClick="IButRDAsignar_Click" Style="z-index: 102; left: 62px; position: absolute; top: 101px;"
@@ -496,7 +484,7 @@
                 top: 486px" Text="LÍNEA CALIENTE:" Visible="true" 
 		        meta:resourcekey="LabelTelefoniaResource1"></asp:Label>
 
-	    <asp:Panel ID="PanelLCEN" runat="server" BorderStyle="Inset" Height="197px" Style="z-index: 123;
+	    <asp:Panel ID="PanelLCEN" runat="server" BorderStyle="Inset" Height="213px" Style="z-index: 123;
 		        left: 480px; position: absolute; top: 500px" Width="536px" Enabled="False" Visible="true" 
 		         meta:resourcekey="PanelLCENResource1"> 
 
@@ -506,57 +494,71 @@
                    <asp:TableCell ID="TableCellLC1" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC1" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc" 
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
 
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC2" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC2" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc" 
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
 
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC3" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC3" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
 
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC4" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC4" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
 
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC5" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC5" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
 
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC6" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px">
                        <asp:Button ID="ButtonLC6" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
-
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
                    </asp:TableCell>
                    <asp:TableCell ID="TableCellLC7" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
                        <asp:Button ID="ButtonLC7" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
                    </asp:TableCell>
 
                    <asp:TableCell ID="TableCellLC8" runat="server" BorderStyle="Solid" BorderColor="#eeb44f" BorderWidth="1px" Visible="false" Enabled="false">
                        <asp:Button ID="ButtonLC8" runat="server" Visible="true" Enabled="false"
                            SkinId="BotonPanelLc"
-                           OnClick="CeldaEnlaceLineaCaliente_OnClick" />
+                           OnClick="PulsaEnlaceLineaCaliente_OnClick" />
                         </asp:TableCell>
                </asp:TableRow>
            </asp:Table> 
-
+           <asp:ListBox ID="LBLCExistentes" runat="server" Visible="true" Height="70px" Style="z-index: 101; left: 337px;
+                position: absolute; top: 134px" Width="195px" 
+		         meta:resourcekey="LBLCExistentesResource1"></asp:ListBox>
+            <asp:Label ID="LabelLCExistentes" runat="server" Visible="true" Style="z-index: 102; left: 337px; position: absolute;
+                top: 117px" Text="Líneas Calientes Existentes" meta:resourcekey="LabelLCExistentesResource1"></asp:Label>
+            <asp:Panel ID="PanelSelLC" runat="server" BackColor="White" BorderColor="Black" BorderStyle="Groove"
+                BorderWidth="1px" Height="30px" Style="z-index: 106; left: 37px; position: absolute;
+                top: 134px" Visible="False" Width="264px" 
+		         meta:resourcekey="PanelSelLCResource1">
+                <asp:Button ID="BtLiberarLC" runat="server" Style="z-index: 100; left: 93px; position: absolute;
+                    top: 4px" Text="Liberar" Width="80px" OnClick="BtLiberarLC_Click" 
+			          meta:resourcekey="BtLiberarPanelSelLCResource1" />
+                <asp:Button ID="BtCancelarLC" runat="server" Style="z-index: 101; left: 178px; position: absolute;
+                    top: 4px" Text="Cancelar" Width="80px" OnClick="BtCancelarLC_Click" 
+			          meta:resourcekey="BtCancelarPanelSelLCResource1" />
+                <asp:Button ID="BtAsignarLC" runat="server" Style="z-index: 103; left: 7px; position: absolute;
+                    top: 4px" Text="Asignar" Width="80px" OnClick="BtAsignarLC_Click" 
+			          meta:resourcekey="BtAsignarPanelSelLCResource1" />
+            </asp:Panel> 
        </asp:Panel>
-
-
-
 
     <asp:Button ID="BtAceptar" runat="server" Style="z-index: 113; left: 99px; position: absolute; top: 688px"
         Text="Aceptar" Width="80px" Visible="True" UseSubmitBehavior="true"

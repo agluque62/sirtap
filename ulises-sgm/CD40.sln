@@ -132,7 +132,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InterfazSOAPConfiguracion",
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "50751"
+		VWDPort = "61016"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesCD40", "Utilities\UtilitiesCD40.csproj", "{D9D5B865-733E-4FC9-9A1D-8319E1380ADE}"

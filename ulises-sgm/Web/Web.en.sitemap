@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
     <siteMapNode url="~/Configuracion/ParamGenerales.aspx" title="ULISES V 5000 I System"  description="CD40 System">
+      <!--
       <siteMapNode url="" title="Reports"  description="Configuration Reports">
         <siteMapNode url="javascript:window.open('../Informes/InformeOperadores.aspx');" title="Operators"  description="Operators Report" identificador="InfOperadores"/>
         <siteMapNode url="" title="Logical Elements"  description=" Logical Elements Configuration Report">
@@ -14,7 +15,7 @@
         <siteMapNode url="~/Informes/InformeSectorizaciones.aspx" title="Sectorizations"  description="Sectorizations Report">
           <siteMapNode url="javascript:window.open('../Informes/InformeSectores.aspx');" title="Sectors"  description="Sectors Report"/>
         </siteMapNode>
-      </siteMapNode>
+      </siteMapNode>  -->
       <siteMapNode url="~/Configuracion/Operadores.aspx" title="Operators"  description="Operators management"/>
       <siteMapNode url="" title="Logical Elements"  description="Logical elements management">
           <siteMapNode url="~/Configuracion/Nucleos.aspx" title="Cores"  description="Cores management" />
@@ -45,11 +46,12 @@
           <siteMapNode url="~/Configuracion/TIFX.aspx" title="Gateways"  description="Gateways management" />
           <siteMapNode url="~/Configuracion/EquiposExternos.aspx" title="External Units"  description="Units management" />
         </siteMapNode>
-        <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Sectorizations"  description="Sectorizations management">
-          <siteMapNode url="~/Configuracion/Sector.aspx" title="Sectors"  description="Sectors management" />
-          <siteMapNode url="~/Configuracion/Agrupacion.aspx" title="Sectors' Groupings"  description="Management of sectors grouping" />
+      <siteMapNode url="" title="Misiones"  description="Misiones">
+        <siteMapNode url="~/Configuracion/Sector.aspx" title="Service Management"  description="Service Management" />
+        <siteMapNode url="~/Configuracion/Misiones.aspx" title="Mission management"  description="Mission management" />
+        <siteMapNode url="~/Configuracion/MisionesAsignacion.aspx" title="Mission Assignment"  description="Mission Assignment" />
+        <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Mission activation"  description="Mission activation"/>
         </siteMapNode>
-          <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Database Backup Restore" identificador="BackupRestore"/>
-
+       <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Database Backup Restore" identificador="BackupRestore"/>
     </siteMapNode>
 </siteMap>

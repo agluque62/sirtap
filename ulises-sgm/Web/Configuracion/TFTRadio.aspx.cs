@@ -64,7 +64,6 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
                 Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO");
 				return;
 			}
-
             PermisoSegunPerfil = LBoxDestinos.Enabled = (perfil == "3" || perfil == "2");
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
             Ulises5000Configuration.ToolsUlises5000Section UlisesTools = Ulises5000Configuration.ToolsUlises5000Section.Instance;
@@ -399,12 +398,16 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
                 uint posicion = CalculatePosHmi(UInt16.Parse(id.Replace("Button", "")));
 				ServiciosCD40.DestinosRadioSector elemento = (ServiciosCD40.DestinosRadioSector)Array.Find(datosRadio,
 																delegate(object d) { return ((ServiciosCD40.DestinosRadioSector)d).PosHMI == posicion; });
-
 				if (elemento != null)
 				{
-					if (ServicioCD40.DeleteSQL(elemento) < 0) 
-						logDebugView.Warn("(TFTRadio-DesasignarDestino): No se ha podido desasignar el destino");
+                    for (int ind = TFTRadio.SectoresSirtap.Count() - 1; ind >= 0; ind--)
+                    {
+                       elemento.IdSector = TFTRadio.SectoresSirtap[ind];
+                        if (ServicioCD40.DeleteSQL(elemento) < 0)
+                            logDebugView.Warn("(TFTRadio-DesasignarDestino): No se ha podido desasignar el destino");
+                    }
 				}
+
 			}
         }
         catch (Exception ex)
@@ -743,9 +746,14 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
             {
                 if (!Modificando)
                 {
-                    GuardarNuevaPosicionEnBD((string)ViewState["IdDestino"], TBoxLiteral.Text,
-                            UInt16.Parse(DListPrioridadTecla.SelectedValue), UInt16.Parse(DListPrioridadSIP.SelectedValue),
-                            DListCascos.SelectedValue, DListModoOpe.SelectedValue, CBSupervisionPortadora.Checked, (string)ViewState["DescDestino"], CBSeguro.Checked);
+                    for (int ind = TFTRadio.SectoresSirtap.Count() - 1 ; ind >= 0 ; ind--)
+                    {
+                        Session["NombreSector"] = TFTRadio.SectoresSirtap[ind];
+                        GuardarNuevaPosicionEnBD((string)ViewState["IdDestino"], TBoxLiteral.Text,
+                                UInt16.Parse(DListPrioridadTecla.SelectedValue), UInt16.Parse(DListPrioridadSIP.SelectedValue),
+                                DListCascos.SelectedValue, DListModoOpe.SelectedValue, CBSupervisionPortadora.Checked, (string)ViewState["DescDestino"], CBSeguro.Checked);
+                    }
+
                     Panel2.Visible = false;
                     EsconderPanelOpciones();
                     CargarPanelDestinos();
@@ -767,17 +775,17 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
                     uint posicion = CalculatePosHmi(UInt16.Parse(id.Replace("Button", "")));
                     ServiciosCD40.DestinosRadioSector elemento = (ServiciosCD40.DestinosRadioSector)Array.Find(datosRadio,
                                                                     delegate(object d) { return ((ServiciosCD40.DestinosRadioSector)d).PosHMI == posicion; });
-
-                    //TextBox tbox = (TextBox)TEnlacesRadio.FindControl("TextBox" + id.Replace("Button", ""));
-
-
                     if (elemento != null)
                     {
-                        Session["DescDestino"] = elemento.DescDestino; // JOI 20220928
-                        destinoModificar = elemento.IdDestino;
-                        ActualizaDatosPosicion(elemento.IdDestino);
-                        ActualizaDatosEstadoRecursos(elemento.IdDestino);
-                        ActualizaParametrosFrecuencia(elemento.IdDestino);
+                        for (int ind = TFTRadio.SectoresSirtap.Count() - 1; ind >= 0; ind--)
+                        {
+                            Session["NombreSector"] = TFTRadio.SectoresSirtap[ind];
+                            Session["DescDestino"] = elemento.DescDestino;
+                            destinoModificar = elemento.IdDestino;
+                            ActualizaDatosPosicion(elemento.IdDestino);
+                            ActualizaDatosEstadoRecursos(elemento.IdDestino);
+                            ActualizaParametrosFrecuencia(elemento.IdDestino);
+                    }
                         ActualizarPosicionesPanel();
                     }
                     Panel2.Visible = false;
@@ -802,6 +810,7 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
         else
             cMsg.alert((string)GetGlobalResourceObject("Espaniol", "SeleccionarAlgunRecurso"));
 	}
+
     /// VMG 13/03/2019
     /// <summary>
     /// Distribuye el alias a todos los sectores que tengan asignado dicho destino
@@ -902,6 +911,7 @@ public partial class TFTRadio :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
 	private void GuardaEstado()
 	{
+
 		ServiciosCD40.EstadosRecursos eRecurso = new ServiciosCD40.EstadosRecursos();
         ServiciosCD40.EstadosRecursos oneRecurso = new ServiciosCD40.EstadosRecursos();
 
