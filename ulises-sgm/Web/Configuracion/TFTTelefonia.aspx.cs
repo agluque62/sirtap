@@ -10,6 +10,9 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using System.Web.Configuration;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Linq;
 using log4net;
 using log4net.Config;
 
@@ -122,7 +125,6 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 		}
 	}
 
-
     protected void IButPagArriba_Click(object sender, ImageClickEventArgs e)
     {
         if (numPagActual<NumPaginas)
@@ -171,8 +173,12 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
             LBoxDestinos.Items.Clear();
             for (int i = 0; i < destinos.Length; i++)
             {
-                LBoxDestinos.Items.Add(new ListItem(((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino,
-                                                  ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino + ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo.ToString()));
+                // 20240222 SIRTAP
+                if (((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo > 2)
+                {
+                    LBoxDestinos.Items.Add(new ListItem(((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino,
+                                                      ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino + ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo.ToString()));
+                }
             }
         }
         catch (Exception ex)
@@ -276,6 +282,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
         return fila * NumColumnasVisibles + columna + 1 + ((numPagActual-1) * NumPosicionesPag);
     }
+
     private uint CalculatePosButton(uint posHmi)
     {
         //pos HMI 1...NumPosicionesPag*Num pag
@@ -284,6 +291,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
         return fila * NUM_COLUMNAS_FIJAS + columna + 1;
     }
+
     private void LimpiarPanel()
     {
         uint numFilas = (NumPosicionesPag / NumColumnasVisibles) +1;
@@ -347,30 +355,43 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
                         if ((((ServiciosCD40.DestinosInternosSector)datosInternos[i]).Literal == ibut.Text) &&
                             ((ServiciosCD40.DestinosInternosSector)datosInternos[i]).PosHMI == recalcPosHMI)
                         {
-						    if (ServicioCD40.DeleteSQL(datosInternos[i]) < 0) logDebugView.Warn("(TFTTelefonia-DesasignarDestino): Fallo en el delete enlace interno");
-						    else
-						    {
-							    ServiciosCD40.DestinosInternosSector s = new ServiciosCD40.DestinosInternosSector();
-							    s = (ServiciosCD40.DestinosInternosSector)datosInternos[i];
-							    ServicioCD40.EliminaColateralEnUsuarioReciproco(ref s);
-						    }
+                            for (int ind = TFTTelefonia.SectoresSirtap.Count() - 1; ind >= 0; ind--)
+                            {
+                                ((ServiciosCD40.DestinosExternosSector)datosExternos[i]).IdSector = TFTTelefonia.SectoresSirtap[ind];
+                                if (ServicioCD40.DeleteSQL(datosInternos[i]) < 0)
+                                {
+                                    logDebugView.Warn("(TFTTelefonia-DesasignarDestino): Fallo en el delete enlace interno");
+                                }
+                                else
+                                {
+                                    ServiciosCD40.DestinosInternosSector s = new ServiciosCD40.DestinosInternosSector();
+                                    s = (ServiciosCD40.DestinosInternosSector)datosInternos[i];
+                                    ServicioCD40.EliminaColateralEnUsuarioReciproco(ref s);
+                                }
+                            }
+
                             break;
                         }
                     }
                 }
-                else
-                    if (prefijo > 2)
+                else if (prefijo > 2)
+                {
+                    for (int i = 0; i < datosExternos.Length; i++)
                     {
-                        for (int i = 0; i < datosExternos.Length; i++)
+                        if ((((ServiciosCD40.DestinosExternosSector)datosExternos[i]).Literal == ibut.Text) &&
+                            ((ServiciosCD40.DestinosExternosSector)datosExternos[i]).PosHMI == recalcPosHMI)
                         {
-                            if ((((ServiciosCD40.DestinosExternosSector)datosExternos[i]).Literal == ibut.Text) &&
-                                ((ServiciosCD40.DestinosExternosSector)datosExternos[i]).PosHMI == recalcPosHMI)
+                            for (int ind = TFTTelefonia.SectoresSirtap.Count() - 1; ind >= 0; ind--)
                             {
-							    if (ServicioCD40.DeleteSQL(datosExternos[i]) < 0) logDebugView.Warn("(TFTTelefonia-DesasignarDestino): Fallo en el delete enlace externo");
-							    break;
+                                ((ServiciosCD40.DestinosExternosSector)datosExternos[i]).IdSector = TFTTelefonia.SectoresSirtap[ind];
+			                    if (ServicioCD40.DeleteSQL(datosExternos[i]) < 0) 
+                                    logDebugView.Warn("(TFTTelefonia-DesasignarDestino): Fallo en el delete enlace externo");
                             }
+			                break;
+
                         }
                     }
+                }
 			}
         }
         catch (Exception ex)
@@ -539,9 +560,12 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
 
     protected void BtAceptar_Click(object sender, EventArgs e)
     {
-		GuardarNuevaPosicionEnBD((string)ViewState["IdDestino"], TBoxLiteral.Text, UInt16.Parse((string)ViewState["IdPrefijo"]),
-                UInt16.Parse(DListPrioridadTecla.SelectedValue), UInt16.Parse(DListPrioridadSIP.SelectedValue), CBSeguro.Checked);
-		
+        for (int ind = TFTTelefonia.SectoresSirtap.Count() - 1; ind >= 0; ind--)
+        {
+            Session["NombreSector"] = TFTTelefonia.SectoresSirtap[ind];
+            GuardarNuevaPosicionEnBD((string)ViewState["IdDestino"], TBoxLiteral.Text, UInt16.Parse((string)ViewState["IdPrefijo"]),
+                    UInt16.Parse(DListPrioridadTecla.SelectedValue), UInt16.Parse(DListPrioridadSIP.SelectedValue), CBSeguro.Checked);
+        }
 		Panel2.Visible = false;
         EsconderPanelOpciones();
         ActualizarPosicionesPanel();
@@ -667,6 +691,7 @@ public partial class TFTTelefonia :	PageBaseCD40.PageCD40	// System.Web.UI.Page
     {
         Response.Redirect("~/Configuracion/Sector.aspx");
     }
+
     protected void CBSeguro_OnCheckedChanged(object sender, EventArgs e)
     {
         CargarPanelDestinos();

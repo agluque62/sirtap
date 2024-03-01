@@ -1957,7 +1957,7 @@ public class InterfazSOAPConfiguracion : System.Web.Services.WebService
                         {
                             CfgMP.MisionesProg[ims].MAA[indmprtlc] = new MisionAlarmasAcusticas();
                             CfgMP.MisionesProg[ims].MAA[indmprtlc].IdAlarma = aa.IdAlarmaAcustica.ToString();
-                            CfgMP.MisionesProg[ims].MAA[indmprtlc].Tipo = "0"; // TPD
+                            CfgMP.MisionesProg[ims].MAA[indmprtlc].Categoria = "0"; // TPD
                             indmprtlc++;
                         }
                     }

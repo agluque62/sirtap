@@ -1068,3 +1068,1038 @@ GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin
 2024-02-01 19:13:19,682 [84] DEBUG File ComunicaSectorizacionActiva: commit OK
 2024-02-01 19:13:19,682 [84] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
 2024-02-01 19:13:19,684 [84] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 10:44:18,873 [7] DEBUG File Busca sector en sectorizaciones: sistema=departamento nucleo SIRTAP sector=SECTOR1
+2024-02-21 10:44:18,920 [7] DEBUG File Sector : sistema=departamento nucleo SIRTAP sector=SECTOR1, asignado 2
+2024-02-21 10:44:39,468 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:44:39,468 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:44:49,185 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:44:49,185 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:44:59,672 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:44:59,672 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:45:32,335 [14] DEBUG File Busca sector en sectorizaciones: sistema=departamento nucleo SIRTAP sector=SECTOR1
+2024-02-21 10:45:32,336 [14] DEBUG File Sector : sistema=departamento nucleo SIRTAP sector=SECTOR1, asignado 1
+2024-02-21 10:45:33,526 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:45:33,527 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:45:33,527 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:45:33,528 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:45:33,528 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:45:33,528 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:45:45,823 [14] DEBUG File Busca sector en sectorizaciones: sistema=departamento nucleo SIRTAP sector=SECTOR2
+2024-02-21 10:45:45,824 [14] DEBUG File Sector : sistema=departamento nucleo SIRTAP sector=SECTOR2, asignado 1
+2024-02-21 10:45:46,128 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:45:46,128 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:45:46,128 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:45:46,129 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:45:46,129 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:45:46,129 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:45:55,832 [14] DEBUG File Busca sector en sectorizaciones: sistema=departamento nucleo SIRTAP sector=SECTOR3
+2024-02-21 10:45:55,833 [14] DEBUG File Sector : sistema=departamento nucleo SIRTAP sector=SECTOR3, asignado 1
+2024-02-21 10:45:56,180 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:45:56,180 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:45:56,180 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:45:56,181 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:45:56,181 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:45:56,181 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:47:14,775 [13] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 10:47:17,125 [13] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 10:47:17,127 [13] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 10:47:17,128 [13] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 10:47:17
+2024-02-21 10:47:17,129 [13] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 10:47:17,130 [13] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 10:47:17,130 [13] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 10:47:17','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 10:47:17,132 [13] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 10:47:17,132 [13] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 10:47:17,133 [13] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 10:47:17
+2024-02-21 10:47:17,133 [13] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 10:47:17,133 [13] DEBUG File Sectorización insertada
+2024-02-21 10:47:17,133 [13] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 10:47:17,sactaPresente=False 
+2024-02-21 10:47:17,134 [13] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 10:47:17,136 [13] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 10:47:17,136 [13] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 10:47:17,136 [13] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 10:47:17,161 [13] DEBUG File Se libera la transaccion
+2024-02-21 10:47:17,161 [13] DEBUG File Transaccion liberada
+2024-02-21 10:47:17,161 [13] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 10:47:17,161 [13] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 10:47:25,825 [13] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 10:47:25,825 [13] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 10:47:25,831 [13] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 10:49:00,178 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:49:00,179 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:49:09,172 [14] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 10:49:09,178 [14] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 10:49:09,179 [14] DEBUG File ComunicaSectorizacionActiva: No están todos los sectores reales. Return false
+2024-02-21 10:49:56,369 [14] DEBUG File Busca sector en sectorizaciones: sistema=departamento nucleo SIRTAP sector=SECTOR_SIRTAP
+2024-02-21 10:49:56,370 [14] DEBUG File Sector : sistema=departamento nucleo SIRTAP sector=SECTOR_SIRTAP, asignado 1
+2024-02-21 10:49:56,499 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:49:56,499 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:49:56,499 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:49:56,500 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:49:56,500 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:49:56,501 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:50:07,060 [7] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 10:50:07,067 [7] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 10:50:07,068 [7] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 10:50:07,068 [7] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 10:50:07
+2024-02-21 10:50:07,068 [7] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 10:50:07,069 [7] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 10:50:07,069 [7] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 10:50:07','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 10:50:07,069 [7] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 10:50:07,069 [7] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 10:50:07,069 [7] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 10:50:07
+2024-02-21 10:50:07,069 [7] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 10:50:07,069 [7] DEBUG File Sectorización insertada
+2024-02-21 10:50:07,069 [7] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 10:50:07,sactaPresente=False 
+2024-02-21 10:50:07,070 [7] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 10:50:07,070 [7] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 10:50:07,070 [7] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 10:50:07,070 [7] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 10:50:07,083 [7] DEBUG File Se libera la transaccion
+2024-02-21 10:50:07,083 [7] DEBUG File Transaccion liberada
+2024-02-21 10:50:07,083 [7] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 10:50:07,083 [7] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 10:50:12,105 [7] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 10:50:12,105 [7] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 10:50:12,107 [7] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 10:51:16,043 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:51:16,044 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:51:16,044 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:51:16,044 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:51:16,044 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:51:16,045 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:51:41,057 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:51:41,058 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:51:41,058 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:51:41,059 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:51:41,059 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:51:41,059 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:51:48,792 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:51:48,793 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:51:48,793 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:51:48,793 [14] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:51:48,793 [14] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:51:48,793 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:51:56,312 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:51:56,313 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:51:56,313 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:51:56,313 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:51:56,313 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:51:56,314 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:52:10,446 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:52:10,446 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:52:10,446 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:52:10,447 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:52:10,447 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:52:10,447 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:52:26,002 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:52:26,002 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:52:26,002 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:52:26,003 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:52:26,003 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:52:26,003 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:52:34,993 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:52:34,994 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:52:34,994 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:52:35,315 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:52:35,315 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:52:35,315 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:52:46,804 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:52:46,805 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:52:46,805 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:52:46,805 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:52:46,805 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:52:46,805 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:52:56,033 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:52:56,035 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:52:56,035 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:52:56,035 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:52:56,035 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:52:56,035 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:53:03,446 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:53:03,448 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:53:03,448 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:53:03,449 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:53:03,449 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:53:03,449 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:53:09,128 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:53:09,128 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:53:09,128 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:53:09,129 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:53:09,129 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:53:09,129 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:53:33,236 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:53:33,236 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:53:33,236 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:53:33,921 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:53:33,921 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:53:33,921 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:53:42,889 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:53:42,889 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:53:42,889 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:53:42,890 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:53:42,890 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:53:42,890 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:53:51,832 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:53:51,832 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:53:51,833 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:53:52,315 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:53:52,315 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:53:52,315 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:55:55,046 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:55:55,046 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:55:55,046 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:55:55,047 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:55:55,047 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:55:55,047 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:08,929 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:08,929 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:08,929 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:08,930 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:08,930 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:08,930 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:16,755 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:16,755 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:16,756 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:16,756 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:16,756 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:16,756 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:21,654 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:21,655 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:21,655 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:21,655 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:21,655 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:21,655 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:28,762 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:28,763 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:28,763 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:28,763 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:28,763 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:28,764 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:47,655 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:47,656 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:47,656 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:47,656 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:47,656 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:47,656 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:55,359 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:55,360 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:55,360 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:56:55,360 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:56:55,360 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:56:55,361 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:56:59,624 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:56:59,624 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:56:59,624 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:00,238 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:00,238 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:00,238 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:05,222 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:05,223 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:05,223 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:05,223 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:05,224 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:05,224 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:12,540 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:12,541 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:12,541 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:12,541 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:12,541 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:12,541 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:17,959 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:17,959 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:17,959 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:18,713 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:18,714 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:18,717 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:29,027 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:29,027 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:29,027 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:29,028 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:29,028 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:29,028 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:33,303 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:33,303 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:33,303 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:33,304 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:33,304 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:33,304 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:57:38,667 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:57:38,668 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:57:38,668 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:57:39,330 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:57:39,330 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:57:39,330 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:58:21,139 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 10:58:21,139 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:58:21,139 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:58:21,140 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:58:21,140 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:58:21,140 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:58:38,648 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:58:38,649 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:58:38,649 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:58:38,649 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:58:38,649 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:58:38,649 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:58:48,036 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:58:48,037 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:58:48,037 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:58:48,037 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:58:48,037 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:58:48,038 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:58:55,590 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:58:55,590 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:58:55,590 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:58:55,590 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:58:55,590 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:58:55,590 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:00,403 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:00,403 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:00,403 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:00,404 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:00,404 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:00,404 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:11,367 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:11,367 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:11,368 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:11,368 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:11,368 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:11,368 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:17,110 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:17,110 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:17,110 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:17,111 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:17,111 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:17,111 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:22,166 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:22,167 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:22,167 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:22,167 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:22,168 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:22,168 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:29,659 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:29,660 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:29,660 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:29,870 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:29,870 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:29,870 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:37,135 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:37,136 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:37,136 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:37,136 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:37,136 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:37,136 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 10:59:43,667 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 10:59:43,668 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 10:59:43,668 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 10:59:43,668 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 10:59:43,668 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 10:59:43,669 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:00:24,608 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-21 11:00:24,609 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:00:24,609 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:00:24,610 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:00:24,610 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:00:24,610 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:00:42,562 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:00:42,563 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:00:42,563 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:00:42,563 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:00:42,563 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:00:42,564 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:00:48,210 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:00:48,211 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:00:48,211 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:00:48,211 [7] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:00:48,211 [7] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:00:48,212 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:00:53,410 [13] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:00:53,410 [13] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:00:53,410 [13] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:00:53,411 [13] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:00:53,411 [13] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:00:53,411 [13] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:00:59,399 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:00:59,400 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:00:59,400 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:00:59,400 [14] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:00:59,400 [14] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:00:59,401 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:01:13,561 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:01:13,561 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:01:13,561 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:01:13,562 [14] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:01:13,562 [14] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:01:13,562 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:31:42,992 [20] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:31:42,993 [20] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:31:42,993 [20] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:31:42,994 [20] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:31:42,994 [20] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:31:42,995 [20] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:31:50,422 [19] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:31:50,423 [19] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:31:50,423 [19] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:31:50,424 [19] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:31:50,424 [19] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:31:50,424 [19] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:31:59,301 [19] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:31:59,302 [19] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:31:59,302 [19] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:31:59,302 [19] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:31:59,302 [19] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:31:59,302 [19] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:32:05,577 [20] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:32:05,578 [20] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:32:05,578 [20] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:32:05,578 [20] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:32:05,578 [20] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:32:05,578 [20] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:32:14,207 [19] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:32:14,207 [19] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:32:14,207 [19] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:32:14,208 [19] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:32:14,208 [19] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:32:14,208 [19] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:32:26,056 [20] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:32:26,057 [20] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:32:26,057 [20] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:32:26,057 [20] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:32:26,057 [20] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:32:26,057 [20] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:32:32,511 [19] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:32:32,512 [19] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:32:32,512 [19] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:32:32,879 [19] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:32:32,879 [19] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:32:32,879 [19] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 11:32:40,941 [20] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 11:32:40,941 [20] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 11:32:40,942 [20] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 11:32:40,942 [20] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 11:32:40,942 [20] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 11:32:40,942 [20] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 17:49:35,142 [6] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 17:49:35,145 [6] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 17:49:35,149 [6] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 17:49:35,308 [6] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 17:49:35,308 [6] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 17:49:35,331 [6] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:07:14,208 [26] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:07:14,210 [26] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:07:14,210 [26] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:07:14,387 [26] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:07:14,387 [26] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:07:14,393 [26] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:23:39,038 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:23:39,040 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:23:39,041 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:23:39,523 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:23:39,523 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:23:39,526 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:24:51,577 [28] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:24:51,577 [28] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:24:51,577 [28] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:24:51,578 [28] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:24:51,578 [28] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:24:51,578 [28] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:25:38,158 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:25:38,160 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:25:38,160 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:25:38,161 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:25:38,161 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:25:38,161 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:26:37,542 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:26:37,543 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:26:37,543 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:26:37,543 [10] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:26:37,543 [10] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:26:37,543 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:32:58,563 [6] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:32:58,564 [6] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:32:58,564 [6] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:32:58,564 [6] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:32:58,564 [6] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectorización vacía
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2454
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:32:58,564 [6] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:35:14,294 [6] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:35:14,294 [6] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:35:41,282 [6] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:35:41,282 [6] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:36:08,605 [23] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:36:08,605 [23] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:37:48,732 [6] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-21 18:37:48,732 [6] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-21 18:38:11,405 [24] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 18:38:14,101 [24] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 18:38:14,102 [24] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 18:38:14,103 [24] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 18:38:14
+2024-02-21 18:38:14,103 [24] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 18:38:14,104 [24] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:38:14,105 [24] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 18:38:14','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:38:14,105 [24] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 18:38:14,105 [24] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 18:38:14,105 [24] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 18:38:14
+2024-02-21 18:38:14,105 [24] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 18:38:14,106 [24] DEBUG File Sectorización insertada
+2024-02-21 18:38:14,106 [24] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 18:38:14,sactaPresente=False 
+2024-02-21 18:38:14,107 [24] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 18:38:14,109 [24] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:38:14,109 [24] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:38:14,109 [24] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 18:38:14,133 [24] DEBUG File Se libera la transaccion
+2024-02-21 18:38:14,133 [24] DEBUG File Transaccion liberada
+2024-02-21 18:38:14,133 [24] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 18:38:14,133 [24] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 18:38:19,771 [24] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 18:38:19,771 [24] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 18:38:19,774 [24] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 18:40:09,854 [24] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:40:09,855 [24] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:40:09,855 [24] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:40:09,880 [24] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:40:18,835 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:40:18,836 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:40:18,836 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:40:18,899 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:40:24,892 [24] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:40:24,893 [24] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:40:24,893 [24] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:40:24,955 [24] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:40:30,202 [7] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-21 18:40:30,203 [7] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-21 18:40:30,203 [7] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-21 18:40:30,277 [7] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-21 18:40:41,299 [7] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 18:40:41,312 [7] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 18:40:41,312 [7] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 18:40:41,312 [7] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 18:40:41
+2024-02-21 18:40:41,313 [7] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 18:40:41,313 [7] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:40:41,313 [7] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 18:40:41','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:40:41,314 [7] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 18:40:41,314 [7] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 18:40:41,314 [7] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 18:40:41
+2024-02-21 18:40:41,314 [7] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 18:40:41,314 [7] DEBUG File Sectorización insertada
+2024-02-21 18:40:41,314 [7] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 18:40:41,sactaPresente=False 
+2024-02-21 18:40:41,314 [7] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 18:40:41,315 [7] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:40:41,315 [7] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:40:41,315 [7] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 18:40:41,319 [7] DEBUG File Se libera la transaccion
+2024-02-21 18:40:41,319 [7] DEBUG File Transaccion liberada
+2024-02-21 18:40:41,319 [7] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 18:40:41,319 [7] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 18:40:47,822 [7] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 18:40:47,822 [7] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 18:40:47,824 [7] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 18:49:17,814 [20] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 18:49:18,046 [20] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 18:49:18,048 [20] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 18:49:18,049 [20] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 18:49:18
+2024-02-21 18:49:18,049 [20] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 18:49:18,050 [20] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:49:18,051 [20] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 18:49:18','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:49:18,051 [20] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 18:49:18,051 [20] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 18:49:18,052 [20] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 18:49:18
+2024-02-21 18:49:18,052 [20] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 18:49:18,052 [20] DEBUG File Sectorización insertada
+2024-02-21 18:49:18,052 [20] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 18:49:18,sactaPresente=False 
+2024-02-21 18:49:18,054 [20] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 18:49:18,056 [20] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:49:18,056 [20] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:49:18,056 [20] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 18:49:18,068 [20] DEBUG File Se libera la transaccion
+2024-02-21 18:49:18,068 [20] DEBUG File Transaccion liberada
+2024-02-21 18:49:18,068 [20] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 18:49:18,068 [20] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 18:49:19,640 [20] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 18:49:19,640 [20] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 18:49:19,755 [20] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-21 18:49:55,388 [20] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-21 18:49:55,393 [20] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-21 18:49:55,393 [20] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-21 18:49:55,393 [20] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=21/02/2024 18:49:55
+2024-02-21 18:49:55,394 [20] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-21 18:49:55,394 [20] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:49:55,394 [20] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('21/02/2024 18:49:55','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-21 18:49:55,394 [20] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-21 18:49:55,395 [20] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-21 18:49:55,395 [20] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=21/02/2024 18:49:55
+2024-02-21 18:49:55,395 [20] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-21 18:49:55,395 [20] DEBUG File Sectorización insertada
+2024-02-21 18:49:55,395 [20] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=21/02/2024 18:49:55,sactaPresente=False 
+2024-02-21 18:49:55,395 [20] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-21 18:49:55,396 [20] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:49:55,396 [20] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-21 18:49:55,396 [20] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-21 18:49:55,402 [20] DEBUG File Se libera la transaccion
+2024-02-21 18:49:55,402 [20] DEBUG File Transaccion liberada
+2024-02-21 18:49:55,402 [20] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-21 18:49:55,402 [20] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-21 18:49:57,138 [20] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-21 18:49:57,138 [20] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-21 18:49:57,139 [20] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 07:46:09,690 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 07:46:09,692 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 07:46:09,701 [5] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 07:46:10,369 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 07:50:07,046 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 07:50:07,048 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 07:50:07,049 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 07:50:07,343 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 07:51:55,101 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 07:51:55,102 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 07:51:55,102 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 07:51:55,266 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:02:57,788 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:02:57,790 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:02:57,791 [9] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:02:58,067 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:03:46,753 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:03:46,753 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:03:46,753 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:03:46,822 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:03:51,802 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:03:51,803 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:03:51,803 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:03:51,832 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:03:56,523 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:03:56,524 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:03:56,524 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:03:56,647 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:04:09,685 [11] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-22 08:04:11,231 [11] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-22 08:04:11,235 [11] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-22 08:04:11,236 [11] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=22/02/2024 08:04:11
+2024-02-22 08:04:11,236 [11] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-22 08:04:11,238 [11] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-22 08:04:11,238 [11] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('22/02/2024 08:04:11','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-22 08:04:11,238 [11] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-22 08:04:11,238 [11] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-22 08:04:11,239 [11] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=22/02/2024 08:04:11
+2024-02-22 08:04:11,239 [11] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-22 08:04:11,239 [11] DEBUG File Sectorización insertada
+2024-02-22 08:04:11,239 [11] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=22/02/2024 08:04:11,sactaPresente=False 
+2024-02-22 08:04:11,242 [11] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-22 08:04:11,244 [11] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 08:04:11,244 [11] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 08:04:11,244 [11] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-22 08:04:11,245 [11] DEBUG File Se libera la transaccion
+2024-02-22 08:04:11,246 [11] DEBUG File Transaccion liberada
+2024-02-22 08:04:11,246 [11] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-22 08:04:11,246 [11] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-22 08:04:14,507 [11] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-22 08:04:14,507 [11] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-22 08:04:14,702 [11] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 08:08:14,688 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:08:14,884 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:08:14,884 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:08:14,907 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:08:34,464 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:08:34,465 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:08:34,465 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:08:34,715 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:08:55,553 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:08:55,553 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:08:55,553 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:08:55,614 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:09:06,872 [12] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=PRUEBA fechaActivacion=01/01/0001 00:00:00
+2024-02-22 08:09:06,881 [12] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-22 08:09:06,881 [12] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-22 08:09:06,881 [12] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= PRUEBA now=22/02/2024 08:09:06
+2024-02-22 08:09:06,882 [12] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-22 08:09:06,882 [12] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'PRUEBA' AND IdSistema='departamento'
+2024-02-22 08:09:06,882 [12] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('22/02/2024 08:09:06','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='PRUEBA' AND IdSistema='departamento'
+2024-02-22 08:09:06,882 [12] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-22 08:09:06,883 [12] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=PRUEBA sactaPresente=False
+2024-02-22 08:09:06,883 [12] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=PRUEBA now=22/02/2024 08:09:06
+2024-02-22 08:09:06,883 [12] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-22 08:09:06,883 [12] DEBUG File Sectorización insertada
+2024-02-22 08:09:06,883 [12] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=PRUEBA,idActiva=22/02/2024 08:09:06,sactaPresente=False 
+2024-02-22 08:09:06,883 [12] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-22 08:09:06,884 [12] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 08:09:06,884 [12] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 08:09:06,884 [12] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-22 08:09:06,896 [12] DEBUG File Se libera la transaccion
+2024-02-22 08:09:06,896 [12] DEBUG File Transaccion liberada
+2024-02-22 08:09:06,896 [12] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-22 08:09:06,896 [12] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-22 08:09:11,271 [12] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-22 08:09:11,271 [12] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-22 08:09:11,273 [12] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 08:09:40,803 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:09:40,888 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:09:40,888 [9] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:09:40,916 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:09:44,888 [12] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:09:44,888 [12] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:09:44,888 [12] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:09:44,911 [12] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:09:49,151 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:09:49,151 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:09:49,151 [9] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:09:49,180 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:14:26,049 [16] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:14:26,049 [16] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:14:26,049 [16] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:14:26,083 [16] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 08:18:05,268 [15] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 08:18:05,270 [15] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 08:18:05,271 [15] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 08:18:05,619 [15] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 09:17:32,060 [14] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 09:17:32,063 [14] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 09:17:32,063 [14] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,PRUEBA,Sectorizacion_Completa,false)
+2024-02-22 09:17:32,553 [14] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 09:32:17,457 [16] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-22 09:32:17,457 [16] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-22 09:32:29,996 [12] ERROR File Utilidades.GeneraSectorizacion--> SectorizationException
+2024-02-22 09:32:29,996 [12] ERROR File Error:
+GeneraSectorizacionDll.SectorizationException: Sectores de distintos núcleos sin agrupar
+   at GeneraSectorizacionDll.Sectorization..ctor(DbCommand cmd, String idSistema, String name, String data, Char extE, Char extP, Tipo_Sectorizacion tipoSectorizacion, DateTime fechaActivacion, Boolean comprobarTodosLosReales) in c:\Proyectos\Ulises Sirtap\ulises-sgm\Sectorizacion\Sectorization.cs:line 2552
+   at CD40.BD.Utilidades.GeneraSectorizacion(String idSistema, String idSectorizacion, Tipo_Sectorizacion tipoSectorizacion, Boolean comprobarSectoresReales, Boolean estadoSacta) in c:\Proyectos\Ulises Sirtap\ulises-sgm\BDCD40\Utilidades.cs:line 480
+2024-02-22 09:32:50,355 [12] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=SCV SIRTAP fechaActivacion=01/01/0001 00:00:00
+2024-02-22 09:32:51,457 [12] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-22 09:32:51,459 [12] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-22 09:32:51,459 [12] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= SCV SIRTAP now=22/02/2024 09:32:51
+2024-02-22 09:32:51,459 [12] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-22 09:32:51,460 [12] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 09:32:51,460 [12] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('22/02/2024 09:32:51','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 09:32:51,460 [12] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-22 09:32:51,460 [12] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=SCV SIRTAP sactaPresente=False
+2024-02-22 09:32:51,461 [12] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=SCV SIRTAP now=22/02/2024 09:32:51
+2024-02-22 09:32:51,461 [12] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-22 09:32:51,461 [12] DEBUG File Sectorización insertada
+2024-02-22 09:32:51,461 [12] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=SCV SIRTAP,idActiva=22/02/2024 09:32:51,sactaPresente=False 
+2024-02-22 09:32:51,462 [12] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-22 09:32:51,464 [12] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 09:32:51,464 [12] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 09:32:51,464 [12] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-22 09:32:51,467 [12] DEBUG File Se libera la transaccion
+2024-02-22 09:32:51,467 [12] DEBUG File Transaccion liberada
+2024-02-22 09:32:51,467 [12] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-22 09:32:51,467 [12] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-22 09:32:54,783 [12] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-22 09:32:54,783 [12] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-22 09:32:54,784 [12] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 11:44:27,296 [15] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=SCV SIRTAP fechaActivacion=01/01/0001 00:00:00
+2024-02-22 11:44:27,742 [15] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-22 11:44:27,744 [15] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-22 11:44:27,744 [15] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= SCV SIRTAP now=22/02/2024 11:44:27
+2024-02-22 11:44:27,745 [15] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-22 11:44:27,745 [15] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 11:44:27,746 [15] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('22/02/2024 11:44:27','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 11:44:27,746 [15] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-22 11:44:27,746 [15] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=SCV SIRTAP sactaPresente=False
+2024-02-22 11:44:27,746 [15] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=SCV SIRTAP now=22/02/2024 11:44:27
+2024-02-22 11:44:27,746 [15] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-22 11:44:27,747 [15] DEBUG File Sectorización insertada
+2024-02-22 11:44:27,747 [15] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=SCV SIRTAP,idActiva=22/02/2024 11:44:27,sactaPresente=False 
+2024-02-22 11:44:27,748 [15] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-22 11:44:27,751 [15] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 11:44:27,751 [15] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 11:44:27,751 [15] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-22 11:44:27,817 [15] DEBUG File Se libera la transaccion
+2024-02-22 11:44:27,817 [15] DEBUG File Transaccion liberada
+2024-02-22 11:44:27,817 [15] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-22 11:44:27,817 [15] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-22 11:44:29,127 [15] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-22 11:44:29,127 [15] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-22 11:44:29,249 [15] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 11:44:38,001 [17] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=SCV SIRTAP fechaActivacion=01/01/0001 00:00:00
+2024-02-22 11:44:38,006 [17] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-22 11:44:38,007 [17] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-22 11:44:38,007 [17] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= SCV SIRTAP now=22/02/2024 11:44:38
+2024-02-22 11:44:38,007 [17] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-22 11:44:38,008 [17] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 11:44:38,008 [17] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('22/02/2024 11:44:38','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='SCV SIRTAP' AND IdSistema='departamento'
+2024-02-22 11:44:38,082 [17] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-22 11:44:38,082 [17] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=SCV SIRTAP sactaPresente=False
+2024-02-22 11:44:38,082 [17] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=SCV SIRTAP now=22/02/2024 11:44:38
+2024-02-22 11:44:38,082 [17] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-22 11:44:38,083 [17] DEBUG File Sectorización insertada
+2024-02-22 11:44:38,083 [17] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=SCV SIRTAP,idActiva=22/02/2024 11:44:38,sactaPresente=False 
+2024-02-22 11:44:38,083 [17] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-22 11:44:38,084 [17] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 11:44:38,084 [17] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-22 11:44:38,084 [17] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-22 11:44:38,090 [17] DEBUG File Se libera la transaccion
+2024-02-22 11:44:38,090 [17] DEBUG File Transaccion liberada
+2024-02-22 11:44:38,090 [17] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-22 11:44:38,090 [17] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-22 11:44:39,358 [17] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-22 11:44:39,358 [17] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-22 11:44:39,359 [17] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True
+2024-02-22 13:21:00,242 [5] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=False telefonia=False
+2024-02-22 13:21:00,244 [5] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 13:21:00,244 [5] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-22 13:21:00,698 [5] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-22 15:09:06,393 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-22 15:09:06,395 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-22 15:09:06,396 [9] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-22 15:09:06,708 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-27 11:13:15,561 [18] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-27 11:13:15,579 [18] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-27 11:13:15,585 [18] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-27 11:13:16,748 [18] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-27 14:32:52,483 [19] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-27 14:32:52,486 [19] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-27 14:32:52,486 [19] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-27 14:32:52,882 [19] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-29 07:52:48,141 [10] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-29 07:52:48,184 [10] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-29 07:52:48,190 [10] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-29 07:52:49,881 [10] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-29 07:53:00,826 [9] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-29 07:53:00,826 [9] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-29 07:53:00,826 [9] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-29 07:53:00,855 [9] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-29 07:53:12,118 [11] DEBUG File Inicio RegeneraSectorizaciones: sistema=departamento completa=True  radio=True telefonia=True
+2024-02-29 07:53:12,118 [11] DEBUG File RegeneraSectorizaciones: Se regeneran todas las sectorizaciones excepto la activa en el SCV (IdSectorizacion==FechaActivacion).Tipo Sectorizacion=Sectorizacion_Completa Numero=2
+2024-02-29 07:53:12,118 [11] DEBUG File RegeneraSectorizaciones j=1: Se llama a utilidades.GeneraSectorizacion(departamento,SCV SIRTAP,Sectorizacion_Completa,false)
+2024-02-29 07:53:12,150 [11] DEBUG File Fin ejecución RegeneraSectorizaciones: iNumSectorizaciones=2
+2024-02-29 07:56:03,119 [9] DEBUG File Inicio ejecución ServiciosCD40.ComunicaSectorizacionActiva: listenIP=192.168.110.145 id_sistema=departamento id_sectorizacion=SCV SIRTAP fechaActivacion=01/01/0001 00:00:00
+2024-02-29 07:56:05,584 [9] DEBUG File ComunicaSectorizacionActiva: Se comprueba si están todos los sectores reales
+2024-02-29 07:56:05,589 [9] DEBUG File ComunicaSectorizacionActiva: se activa la sectorización en la BD. Se llama a Utilidades.ActualizaActiva(GestorBDCD40.ConexionMySql, id_sistema, id_sectorizacion, fechaActivacion, False)
+2024-02-29 07:56:05,589 [9] DEBUG File Inicio Utilidades.ActivaSectorizacion: id_sectorizacion= SCV SIRTAP now=29/02/2024 07:56:05
+2024-02-29 07:56:05,590 [9] DEBUG File Se elimina la sectorización activa para el sistema departamento
+2024-02-29 07:56:05,591 [9] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=false WHERE IdSectorizacion<>'SCV SIRTAP' AND IdSistema='departamento'
+2024-02-29 07:56:05,591 [9] DEBUG File Se ejecuta la sentencia UPDATE Sectorizaciones SET Activa=true,FechaActivacion=STR_TO_DATE('29/02/2024 07:56:05','%d/%m/%Y %H:%i:%s') WHERE IdSectorizacion='SCV SIRTAP' AND IdSistema='departamento'
+2024-02-29 07:56:05,591 [9] DEBUG File Se ejecuta la sentencia REPLACE INTO TablasModificadas (IdTabla) VALUES ('Sectorizaciones')
+2024-02-29 07:56:05,592 [9] DEBUG File Se invoca al procedimiento CrearSectorizacionActiva: sistema=departamento Sectorizacion=SCV SIRTAP sactaPresente=False
+2024-02-29 07:56:05,592 [9] DEBUG File Inicio ejecución CrearSectorizacionActiva: idSistema=departamento idSectorizacion=SCV SIRTAP now=29/02/2024 07:56:05
+2024-02-29 07:56:05,592 [9] DEBUG File Se inserta la sectorización: CD40.BD.Entidades.Sectorizaciones
+2024-02-29 07:56:05,592 [9] DEBUG File Sectorización insertada
+2024-02-29 07:56:05,592 [9] DEBUG File Se llama al procedimiento Procedimientos.CreaSectoresActiva: idSistema=departamento,idSectorizacion=SCV SIRTAP,idActiva=29/02/2024 07:56:05,sactaPresente=False 
+2024-02-29 07:56:05,594 [9] DEBUG File Se llama al procedimiento  Procedimientos.CreaPosicionesActiva
+2024-02-29 07:56:05,700 [9] DEBUG File Fin la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-29 07:56:05,700 [9] DEBUG File Se finaliza la ejecución del procedimiento CrearSectorizacionActiva
+2024-02-29 07:56:05,700 [9] DEBUG File Se ejecuta commit para finalizar la transaccion
+2024-02-29 07:56:05,704 [9] DEBUG File Se libera la transaccion
+2024-02-29 07:56:05,704 [9] DEBUG File Transaccion liberada
+2024-02-29 07:56:05,704 [9] DEBUG File Fin procedimiento Utilidades.ActivaSectorizacion
+2024-02-29 07:56:05,704 [9] DEBUG File ComunicaSectorizacionActiva: se hace commit en la BD
+2024-02-29 07:56:09,542 [9] DEBUG File ComunicaSectorizacionActiva: commit OK
+2024-02-29 07:56:09,542 [9] DEBUG File ComunicaSectorizacionActiva: Se notifica la sectorizacion
+2024-02-29 07:56:09,765 [9] DEBUG File ServiciosCD40.ComunicaSectorizacionActiva: Fin ejecución. Valor de retorno=True

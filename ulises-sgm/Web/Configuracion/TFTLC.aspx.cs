@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using log4net;
 using log4net.Config;
 
-public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
+public partial class TFTLC : PageBaseCD40.PageCD40
 {
     private static ILog _logDebugView;
     public static ILog logDebugView
@@ -137,8 +137,12 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
             {
                 for (int i = 0; i < destinos.Length; i++)
                 {
-                    LBoxDestinos.Items.Add(new ListItem(((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino,
-                                                        ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino + ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo.ToString()));
+                    // 20240222
+                    if (((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo > 2)
+                    {
+                        LBoxDestinos.Items.Add(new ListItem(((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino,
+                                                            ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdDestino + ((ServiciosCD40.DestinosTelefonia)destinos[i]).IdPrefijo.ToString()));
+                    }
                 }
             }
         }
@@ -315,7 +319,6 @@ public partial class TFTLC : PageBaseCD40.PageCD40	// System.Web.UI.Page
                 ibut.Text = "";
             }
         }
-
     }
 
     private void LimpiaChecksSeguro()

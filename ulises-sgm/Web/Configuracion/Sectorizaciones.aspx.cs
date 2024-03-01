@@ -197,8 +197,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
         {
             BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
             BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");
-
-            BtActivar.Visible = BtNuevo.Visible = PermisoSegunPerfil;
+            BtNuevo.Visible = false;// 20240222
+            BtActivar.Visible =  PermisoSegunPerfil;
             BtLiberar.Enabled = BtAsignar.Enabled = BtCambiar.Enabled = PermisoSegunPerfil;
             CreaListaUsuariosEnTop();
 
@@ -375,7 +375,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 
                 if (((ServiciosCD40.Sectorizaciones)nu[i]).Activa)
                 {
-                    BVerSectorizacionActiva.Enabled = true;
+                    // 20240222 BVerSectorizacionActiva.Enabled = true;
                     LFechaSectorizacion.Text = ((ServiciosCD40.Sectorizaciones)nu[i]).FechaActivacion.ToString("dd/MM/yyyy");
                     LHoraSectorizacion.Text = ((ServiciosCD40.Sectorizaciones)nu[i]).FechaActivacion.ToString("HH:mm:ss");
                     LIdSectorizacion.Text = strIdSectorizacion;
@@ -774,8 +774,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 		LblIdSectorizacion.Visible = false;
 		TBNuevo.Visible = false;
         RequiredFieldValidator1.Visible = false;
-        ListBox1.Enabled = true;
-        BtNuevo.Visible = PermisoSegunPerfil;
+        ListBox1.Enabled = false;   // true;
+        BtNuevo.Visible = false;    // PermisoSegunPerfil;
         //MVO: el botón eliminar será visible si la sectorización no está activa
         BtEliminar.Visible = PermisoSegunPerfil && ListBox1.Items.Count > 0 && ListBox1.SelectedValue != LIdSectorizacion.Text;
         BtActivar.Visible = PermisoSegunPerfil && ListBox1.SelectedIndex >= 0;
@@ -806,7 +806,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 		TBNuevo.Visible = false;
         RequiredFieldValidator1.Visible = false;
         ListBox1.Enabled = true;
-        BtNuevo.Visible = PermisoSegunPerfil;
+        BtNuevo.Visible = false;// 20240222  PermisoSegunPerfil;
         BtEliminar.Visible = PermisoSegunPerfil && ListBox1.Items.Count > 0 && ListBox1.SelectedValue != LIdSectorizacion.Text;
         BtActivar.Visible = PermisoSegunPerfil && ListBox1.SelectedIndex >= 0;
         DvMarcoTops.Visible = true;
@@ -827,7 +827,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
         RequiredFieldValidator1.Visible = true;
         TBNuevo.Visible = true;
         ListBox1.Enabled = false;
-        BtNuevo.Visible = false;
+        BtNuevo.Visible = false;// 20240222
         BtEliminar.Visible = false;
         BtActivar.Visible = false;
 		DvMarcoTops.Visible = false;
@@ -893,7 +893,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
 				LIdSectorizacion.Text = (string)Session["elemento"];
 				LFechaSectorizacion.Text = fechaActiva.ToString("dd/MM/yyyy");
 				LHoraSectorizacion.Text = fechaActiva.ToString("HH:mm:ss");
-				BVerSectorizacionActiva.Enabled = true;
+                // 20240222 BVerSectorizacionActiva.Enabled = true;
 
                 //if (comunicaAMantenimiento)
                 //    ServicioMantenimiento.CambioDeSectorizacion();
@@ -1250,14 +1250,14 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
     {
         bOnclikUCS = true;
         if (bVerActiva)
-            ListBox1.Enabled = true;
+            ListBox1.Enabled = false;// 20240222
         else
             ListBox1.Enabled = false;
         BtActivar.Visible = false;
-        BtNuevo.Visible = false;
+        BtNuevo.Visible = false;// 20240222
         BtEliminar.Visible = false;
-        if (!bVerActiva)  
-            BVerSectorizacionActiva.Visible = false;
+        //if (!bVerActiva)  
+                  // 20240222  BVerSectorizacionActiva.Visible = false;
     }
     /// <summary>
     /// 
@@ -1267,11 +1267,11 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
     protected void UCS_DesBloquea_Opciones()
     {
         bOnclikUCS = false;
-        ListBox1.Enabled = true;
+        ListBox1.Enabled = false;// 20240222
         BtActivar.Visible = true;
-        BtNuevo.Visible = true;
+        BtNuevo.Visible = false;// 20240222
         BtEliminar.Visible = true;
-        BVerSectorizacionActiva.Visible = true;
+       // 20240222 BVerSectorizacionActiva.Visible = true;
     }
 
     /// <summary>
@@ -1716,8 +1716,8 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
         MostrarRadio();
 
 		ListBox1.Visible = BtNuevo.Visible = BtActivar.Visible = BtEliminar.Visible = false;
-		TUCS.Enabled = true;
-		ListBox1.Enabled = true;
+        TUCS.Enabled = false;// 20240222 true;
+        ListBox1.Enabled = false;// 20240222 true;
 		BtNuevo.Visible = PermisoSegunPerfil;
         //MVO: el botón eliminar sólo es visible si la sectorización no está activa
         BtEliminar.Visible = PermisoSegunPerfil && ListBox1.Items.Count > 0 && ListBox1.SelectedValue != LIdSectorizacion.Text;
@@ -2488,7 +2488,7 @@ public partial class Sectorizaciones : PageBaseCD40.PageCD40//, System.Web.UI.IC
     /// </summary>
     private void HabilitarElementos()
     {
-        TUCS.Enabled = true;
+        TUCS.Enabled = false;// 20240222 true;
         ListBox1.Enabled = true;
         BtNuevo.Visible = PermisoSegunPerfil;
     }

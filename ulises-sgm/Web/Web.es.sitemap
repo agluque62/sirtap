@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
   <siteMapNode url="~/Configuracion/ParamGenerales.aspx" title="Sistema ULISES V 5000 I"  description="Sistema CD40">
+    <!--
     <siteMapNode url="" title="Informes"  description="Informes de Configuración">
-      <!--<siteMapNode url="~/Informes/InformeOperadores.aspx" title="Operadores"  description="Informe de Operadores"/> -->
+      <siteMapNode url="~/Informes/InformeOperadores.aspx" title="Operadores"  description="Informe de Operadores"/>
       <siteMapNode url="javascript:window.open('../Informes/InformeOperadores.aspx');" title="Operadores"  description="Informe de Operadores"  identificador="InfOperadores"/>
       <siteMapNode url="" title="Elementos Lógicos"  description="Informe de Configuración de Elementos Lógicos">
         <siteMapNode url="javascript:window.open('../Informes/InformeEltosLogRadio.aspx');" title="Radio"  description="Informe de Radio">
@@ -15,7 +16,7 @@
       <siteMapNode url="~/Informes/InformeSectorizaciones.aspx" title="Sectorizaciones"  description="Informes de Sectorizaciones">
         <siteMapNode url="javascript:window.open('../Informes/InformeSectores.aspx');" title="Sectores"  description="Informe de Sectores"/>
       </siteMapNode>
-    </siteMapNode>
+    </siteMapNode> -->
     <siteMapNode url="~/Configuracion/Operadores.aspx" title="Operadores"  description="Gestión de Operadores"/>
     <siteMapNode url="" title="Elementos Lógicos"  description="Gestión de Elementos Lógicos">
       <siteMapNode url="~/Configuracion/Nucleos.aspx" title="Núcleos"  description="Gestión de Núcleos" />
@@ -52,12 +53,14 @@
       <siteMapNode url="~/Configuracion/EquiposExternos.aspx" title="Equipos Externos"  description="Gestión de equipos externos" />
     </siteMapNode>
     <siteMapNode url="" title="Misiones"  description="Misiones">
+      <siteMapNode url="~/Configuracion/Sector.aspx" title="Gestión de Servicios"  description="Gestión de Servicios" />
       <siteMapNode url="~/Configuracion/Misiones.aspx" title="Gestión de Misiones"  description="Gestión de Misiones de Operador" />
       <siteMapNode url="~/Configuracion/MisionesAsignacion.aspx" title="Asignación de Misiones"  description="Asignación de Misiones a Operadores" />
+      <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Activación de Misiones"  description="Activación de Misiones/Servicios" >
     </siteMapNode>    
-    <siteMapNode url="~/Configuracion/Sectorizaciones.aspx" title="Sectorizaciones"  description="Gestión de Sectorizaciones">
-      <siteMapNode url="~/Configuracion/Sector.aspx" title="Sectores"  description="Gestión de Sectores" />
-      <siteMapNode url="~/Configuracion/Agrupacion.aspx" title="Agrupaciones"  description="Gestión de Agrupaciones" />
+   
+
+      <!-- <siteMapNode url="~/Configuracion/Agrupacion.aspx" title="Agrupaciones"  description="Gestión de Agrupaciones" /> // 20240222-->
     </siteMapNode>
       <siteMapNode url="~/Configuracion/GestionBR.aspx" title="Backup Restore"  description="Backup Restore Base de Datos" identificador="BackupRestore"/>  
   </siteMapNode>

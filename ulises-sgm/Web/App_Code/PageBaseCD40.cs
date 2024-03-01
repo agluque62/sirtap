@@ -29,7 +29,7 @@ namespace PageBaseCD40
 
         protected static bool bSactaActivoEnCnf; //Indica si por configuración, se ha activado la funcionalidad SACTA en la Web de Configuración
         protected static bool bVisualizandoActiva; //Almacena si el usuario está visualizando la sectorización activa
-
+        protected static string [] SectoresSirtap = { "SERVICIOS_SIRTAP", "TOSIRTAP1", "TOSIRTAP2", "TOSIRTAP3" };
 		//private static bool ContinuarConLaTransaccion = false;
 
 		private AsyncCallback CallbackCompletado;
