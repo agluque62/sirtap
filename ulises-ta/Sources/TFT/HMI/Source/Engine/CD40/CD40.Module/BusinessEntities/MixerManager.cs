@@ -509,11 +509,11 @@ namespace HMI.CD40.Module.BusinessEntities
             };
             Top.Hw.SpeakerStatusChanged += (origin, device, status) => 
             {
-                _RdSpeakerDev = status && device != null ? device.AsioIds.output : -1;
+                _RdSpeakerDev = status && device != null ? device.AudioIds.output : -1;
             };
             Top.Hw.HeadSetStatusChanged += (origin, device, status) =>
             {
-                _AlumnDev = status && device != null ? device.AsioIds.input : -1;
+                _AlumnDev = status && device != null ? device.AudioIds.input : -1;
                 _RingDev = status && device != null ? MixerDev.MhpTlf : MixerDev.Invalid;
                 _BuzzerEnabled = _RingDev == MixerDev.MhpTlf;
             };
