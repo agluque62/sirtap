@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/CD40.master" AutoEventWireup="true" CodeFile="Sectorizaciones.aspx.cs" CodeFileBaseClass=" PageBaseCD40.PageCD40"
-		Inherits="Sectorizaciones" Title="Gestión de Sectorizaciones" EnableEventValidation="false" StylesheetTheme="TemaPaginasConfiguracion" meta:resourcekey="PageResource1"%>
+		Inherits="Sectorizaciones" Title="Activación Misiones/Servicios" EnableEventValidation="false" StylesheetTheme="TemaPaginasConfiguracion" meta:resourcekey="PageResource1"%>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -236,7 +236,7 @@
 					<asp:ImageButton ID="IButton7" runat="server" ImageUrl="~/Configuracion/Images/TextoUCS.jpg"/>                    
             </asp:TableCell> 
 --%>
-	 <asp:Label ID="LblEnlaceSacta" runat="server" ForeColor="#666666" 
+	 <asp:Label ID="LblEnlaceSacta" runat="server" Visible="false" ForeColor="#666666" 
 		 style="position: absolute; z-index: 1; left: 661px; top: 10px; width: 104px; height: 18px" 
 		 Text="Enlace SACTA" meta:resourcekey="LblEnlaceSactaResource1"></asp:Label>
 	 <asp:ScriptManagerProxy ID="ScriptManagerProxy1" runat="server">
@@ -281,41 +281,45 @@
         </div> 
     </div>
 
-    <asp:Panel ID="PanelActiva" runat="server" ForeColor="#97D700"
-		 GroupingText="Sectorización activa" 
+               <asp:Image ID="ImagenSirtap" runat="server"   Style="z-index: 102;left: 350px; position: absolute; top: 126px;height: 100px; width: 345px"
+                 ImageUrl="~/Configuracion/Images/Sirtap.jpg" />
+
+    <asp:Panel ID="PanelActiva" runat="server"  ForeColor="Black" Font-Size="16px" Font-Bold="true"
+		 GroupingText="Fecha de última activación:" 
 		 
-		 Style="z-index: -1; left: 204px; position: absolute; top: 408px; height: 60px; width: 657px;" 
+		 Style="z-index: -1; left: 181px; position: absolute; top: 281px; height: 60px; width: 657px;" 
 		 meta:resourcekey="PanelActivaResource1">
 		 &nbsp;&nbsp;&nbsp;&nbsp;
 		<asp:Label ID="LFecha" runat="server" Style="z-index: 100; left: 14px; position: absolute;
 			top: 26px" Text="Fecha:" Width="47px" ForeColor="#4A7729" Font-Bold="true" 
 			 meta:resourcekey="LFechaResource1"></asp:Label>
-		<asp:Label ID="LHora" runat="server" Style="z-index: 106; left: 206px; position: absolute;
+		<asp:Label ID="LHora" runat="server" Style="z-index: 106; left: 255px; position: absolute;
 			top: 26px" Text="Hora:" ForeColor="#4A7729" Font-Bold="true" meta:resourcekey="LHoraResource1"></asp:Label>
-		<asp:Label ID="LId" runat="server" Style="z-index: 102; left: 377px; position: absolute;
+		<asp:Label ID="LId" runat="server" Style="z-index: 102; left: 448px; position: absolute;
 			top: 26px" Text="Nombre:" ForeColor="#4A7729" Font-Bold="true" meta:resourcekey="LIdResource1"></asp:Label>
 		<asp:Label ID="LFechaSectorizacion" runat="server" Style="z-index: 101; left: 64px; position: absolute;
 			top: 26px" Width="106px" ForeColor="Black" 
 			 meta:resourcekey="LFechaSectorizacionResource1"></asp:Label>
-		<asp:Label ID="LHoraSectorizacion" runat="server" Style="z-index: 104; left: 258px; position: absolute;
+		<asp:Label ID="LHoraSectorizacion" runat="server" Style="z-index: 104; left: 355px; position: absolute;
 			top: 26px" Width="103px" ForeColor="Black" 
 			 meta:resourcekey="LHoraSectorizacionResource1"></asp:Label>
-		<asp:Label ID="LIdSectorizacion" runat="server" Style="z-index: 107; left: 446px; position: absolute;
+		<asp:Label ID="LIdSectorizacion" runat="server" Style="z-index: 107; left: 516px; position: absolute;
 			top: 26px" Width="156px" ForeColor="Black" 
 			 meta:resourcekey="LIdSectorizacionResource1"></asp:Label>
-		<asp:Button ID="BVerSectorizacionActiva" runat="server" Style="z-index: 105; left: 587px; position: absolute;
+		<asp:Button ID="BVerSectorizacionActiva" runat="server" Visible="false" Style="z-index: 105; left: 587px; position: absolute;
 			top: 20px" Text="Ver" Width="56px" OnClick="BVerSectorizacionActiva_Click" 
 				Enabled="False" meta:resourcekey="BVerSectorizacionActivaResource1" />
 	</asp:Panel>
 
-    <asp:Label ID="Label6" runat="server" Text="GESTIÓN DE SECTORIZACIONES" 
+    <asp:Label ID="Label6" runat="server" Text="ACTIVACIÓN DE MISIONES/SERVICIOS" 
 		 CssClass="labelPagina" meta:resourcekey="Label6Resource1"></asp:Label>
-    <asp:ListBox ID="ListBox1" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ListBox1_SelectedIndexChanged"
-			SkinID="MascaraListaElementos" meta:resourcekey="ListBox1Resource1"></asp:ListBox>
+    <asp:ListBox ID="ListBox1" runat="server"  Height="100px" Style="z-index: 105; left: 14px; position: absolute; top: 50px"
+            Width="171px" Enabled="True" Visible="true" AutoPostBack="false"
+		  meta:resourcekey="ListBox1Resource1"></asp:ListBox>
 
 
-    <asp:Button ID="BtActivar" runat="server" OnClick="BtActivar_Click" Style="left: 208px;
-        position: absolute; top: 498px; z-index: 101;" Text="Activar" BackColor="#b6c8a9"
+    <asp:Button ID="BtActivar" runat="server" OnClick="BtActivar_Click" Style="left: 462px;
+        position: absolute; top: 375px; z-index: 101;" Text="Activar" BackColor="#b6c8a9"
 		    Width="100px" Enabled="False" Height="24px" 
 		    meta:resourcekey="BtActivarResource1" />
 
@@ -329,7 +333,7 @@
     <asp:ConfirmButtonExtender ID="BtEliminar_ConfirmButtonExtender" runat="server" 
         ConfirmText="" Enabled="True" TargetControlID="BtEliminar">
     </asp:ConfirmButtonExtender>
-    <asp:LinkButton ID="BtNuevo" runat="server"  OnClick="BtNuevo_Click" 
+    <asp:LinkButton ID="BtNuevo" runat="server"  Visible="false" OnClick="BtNuevo_Click" 
          style="position: absolute; left: 236px; top: 570px; "
 		 CausesValidation="False" Text="Nuevo" SkinID="MascaraBotonNuevo" 
 		 meta:resourcekey="BtNuevoResource1"/>
@@ -353,9 +357,9 @@
          Visible="true" meta:resourcekey="erroresResource1" />
 
     
-    <div runat="server" id="DvMarcoTops"
+    <div runat="server" id="DvMarcoTops"  Visible="false"
         style="position: absolute; top: 58px; width: 650px; left: 205px; height: 345px; border: inset 2px black; overflow: auto; margin-bottom: 9px; background-color: white">
-        <asp:Table ID="TUCS" runat="server" BorderStyle="None"
+        <asp:Table ID="TUCS" runat="server" BorderStyle="None" Visible="false"
             BackColor="Transparent" GridLines="Both" meta:resourcekey="TUCSResource1">
             <asp:TableRow ID="Row1" runat="server" BackColor="Transparent">
                 <asp:TableCell ID="Cell1" runat="server" Visible="false" ToolTip="">
@@ -4355,7 +4359,7 @@
         <asp:Label ID="Label1" runat="server" Style="left: 9px; position: absolute;
             top: 17px" Text="Núcleo:" meta:resourcekey="Label1Resource1"></asp:Label>
         <asp:DropDownList ID="DListNucleo" runat="server" Style="left: 70px;
-            position: absolute; top: 16px" Width="147px"  class="select"
+            position: absolute; top: 16px" Width="147px" 
 			  meta:resourcekey="DListNucleoResource1">
         </asp:DropDownList>
         <asp:Button ID="BtAceptarNucleo" runat="server" OnClick="BtAceptarNucleo_Click" 
@@ -4495,7 +4499,7 @@
                                                                     ID="Label19" runat="server" Text="Tipo:" meta:resourcekey="Label19Resource1"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell75" runat="server">
-                                                                <asp:DropDownList  class="select"
+                                                                <asp:DropDownList 
                                                                     ID="DListTipoSector" runat="server" Enabled="False" AutoPostBack="True">
                                                                     <asp:ListItem Value="R"
                                                                         meta:resourcekey="ListItemResource1">Real</asp:ListItem>
@@ -4525,7 +4529,7 @@
                                                                     meta:resourcekey="Label2Resource1"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell69" runat="server">
-                                                                <asp:DropDownList class="select"
+                                                                <asp:DropDownList 
                                                                     ID="DListTipoPosicion" runat="server" Width="110px" Enabled="False">
                                                                     <asp:ListItem Value="C"
                                                                         meta:resourcekey="ListItemResource4">Controlador</asp:ListItem>
@@ -4540,7 +4544,7 @@
                                                                     ID="Label13" runat="server" Text="Prioridad R2:" meta:resourcekey="Label13Resource1"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell72" runat="server">
-                                                                <asp:DropDownList class="select"
+                                                                <asp:DropDownList 
                                                                     ID="DDLPrioridadR2" runat="server" Enabled="False">
                                                                     <asp:ListItem Value="4"
                                                                         meta:resourcekey="ListItemResource6">No Urgente</asp:ListItem>
@@ -4824,7 +4828,7 @@
                                                                     ID="Label21" runat="server" Text="CICL:"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell112" runat="server" Width="200px">
-                                                                <asp:DropDownList class="select"
+                                                                <asp:DropDownList 
                                                                     ID="DDLCicl" runat="server" Enabled="False">
                                                                     <asp:ListItem
                                                                         Value="0" meta:resourcekey="ListItemResource10">No Urgente</asp:ListItem>
@@ -4838,7 +4842,7 @@
                                                                     runat="server" Text="CPIPCL:"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell114" runat="server" Width="200px">
-                                                                <asp:DropDownList class="select"
+                                                                <asp:DropDownList 
                                                                     ID="DDLCpipcl" runat="server" Enabled="False">
                                                                     <asp:ListItem Value="0"
                                                                         meta:resourcekey="ListItemResource14">No Urgente</asp:ListItem>
@@ -4855,7 +4859,7 @@
                                                                     ID="Label3" runat="server" Text="CIPL:"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell116" runat="server">
-                                                                <asp:DropDownList ID="DDLCipl" class="select"
+                                                                <asp:DropDownList ID="DDLCipl"
                                                                     runat="server" Enabled="False">
                                                                     <asp:ListItem
                                                                         Value="0" meta:resourcekey="ListItemResource18">No Urgente</asp:ListItem>
@@ -4869,7 +4873,7 @@
                                                                     runat="server" Text="CPICL:"></asp:Label>
                                                             </asp:TableCell>
                                                             <asp:TableCell ID="TableCell118" runat="server">
-                                                                <asp:DropDownList ID="DDLCpicl" class="select"
+                                                                <asp:DropDownList ID="DDLCpicl"
                                                                     runat="server" Enabled="False">
                                                                     <asp:ListItem
                                                                         Value="0" meta:resourcekey="ListItemResource22">No Urgente</asp:ListItem>

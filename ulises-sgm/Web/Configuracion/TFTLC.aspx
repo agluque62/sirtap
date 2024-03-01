@@ -220,7 +220,7 @@
              Text="Destino LCEN:" meta:resourcekey="LbDestinoLCENResource1"></asp:Label>
         
         <asp:DropDownList ID="DListDestinosLCEN" runat="server" Style="z-index: 105; left: 25px;
-            position: absolute; top: 165px" Width="190px"  class="select"
+            position: absolute; top: 165px" Width="190px"
                     AppendDataBoundItems="True" Enabled="True" 
                     meta:resourcekey="DListDestinosLCENResource1">
         </asp:DropDownList>
@@ -228,7 +228,7 @@
         <asp:Label ID="Label4" runat="server" Style="z-index: 107; left: 25px; position: absolute;
             top: 83px" Text="Prioridad SIP:" meta:resourcekey="Label4Resource1" Visible="false"></asp:Label>
         <asp:DropDownList ID="DListPrioridadSIP" runat="server" Style="z-index: 105; left: 25px;
-            position: absolute; top: 103px" Width="115px"  class="select"
+            position: absolute; top: 103px" Width="115px"
 			  meta:resourcekey="DListPrioridadSIPResource1" Visible="false">
             <asp:ListItem Value="4" meta:resourcekey="ListItemResource1">No urgente</asp:ListItem>
 			  <asp:ListItem Value="3" meta:resourcekey="ListItemResource2">Normal</asp:ListItem>
@@ -239,7 +239,7 @@
         <asp:Label ID="Label5" runat="server" Style="z-index: 108; left: 25px; position: absolute;
             top: 83px" Text="Prioridad de descarte en Sectorización:" meta:resourcekey="Label5Resource1"></asp:Label>
         <asp:DropDownList ID="DListPrioridadTecla" runat="server" Style="z-index: 106; left: 25px;
-            position: absolute; top: 103px" Width="275px"  class="select"
+            position: absolute; top: 103px" Width="275px"
 			  meta:resourcekey="DListPrioridadTeclaResource1">
             <asp:ListItem Value="1" meta:resourcekey="ListItemResource5">No descartable</asp:ListItem>
             <asp:ListItem Value="2" meta:resourcekey="ListItemResource6">Alta</asp:ListItem>

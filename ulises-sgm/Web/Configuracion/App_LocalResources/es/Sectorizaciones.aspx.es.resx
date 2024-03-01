@@ -2188,7 +2188,7 @@
     <value />
   </data>
   <data name="Label6Resource1.Text" xml:space="preserve">
-    <value>GESTIÓN DE SECTORIZACIONES</value>
+    <value>ACTIVACIÓN DE MISIONES/SERVICIOS</value>
   </data>
   <data name="Label6Resource1.ToolTip" xml:space="preserve">
     <value />
@@ -2470,7 +2470,7 @@
     <value>1</value>
   </data>
   <data name="PageResource1.Title" xml:space="preserve">
-    <value>Gestión de Sectorizaciones</value>
+    <value>Activación Misiones/Servicios</value>
   </data>
   <data name="Panel1Resource1.GroupingText" xml:space="preserve">
     <value />
@@ -2485,7 +2485,7 @@
     <value />
   </data>
   <data name="PanelActivaResource1.GroupingText" xml:space="preserve">
-    <value>Sectorización activa</value>
+    <value>Fecha de última activación</value>
   </data>
   <data name="PanelActivaResource1.ToolTip" xml:space="preserve">
     <value />

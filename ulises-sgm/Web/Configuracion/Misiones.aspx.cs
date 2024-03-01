@@ -21,16 +21,16 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     private static bool Editando = false;
     private static bool Modificando = false;
     static bool PermisoSegunPerfil = false;
-    static ServiciosCD40.ServiciosCD40 ServicioCD40 = new ServiciosCD40.ServiciosCD40();
+    private static KeyValueConfigurationElement s;
     private Ulises5000Configuration.ToolsUlises5000Section UlisesToolsVersion;
+    private static ServiciosCD40.ServiciosCD40 ServicioCD40 = new ServiciosCD40.ServiciosCD40();
     private static ServiciosCD40.Tablas[] datos; 
     private static ServiciosCD40.Tablas[] datosInternos;
     private static ServiciosCD40.Tablas[] datosExternos;
-
+    private static ServiciosCD40.Tablas[] datosLCext;
     private const int TIPO_RADIO = 0;
     private const int TIPO_TELEFONIA = 1;
     private const int TIPO_LCEN = 2;
-
     protected static uint _IdMision = 0;
     protected static bool _Seguro = false;
 
@@ -49,13 +49,13 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
             // retrieve user's identity from httpcontext user 
             FormsIdentity ident = (FormsIdentity)Context.User.Identity;
             string perfil = ident.Ticket.UserData;
-            if (perfil == "0")
+            if (perfil != "3")
             {
                 Response.Redirect("~/Configuracion/Inicio.aspx?Permiso=NO");
                 return;
             }
 
-            PermisoSegunPerfil = (perfil == "3" || perfil == "2");
+            PermisoSegunPerfil = (perfil == "3");
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
             Ulises5000Configuration.ToolsUlises5000Section UlisesTools = Ulises5000Configuration.ToolsUlises5000Section.Instance;
             UlisesToolsVersion = UlisesTools;
@@ -67,6 +67,9 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
             BtNuevo.Visible = PermisoSegunPerfil;
             BtAceptar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "AceptarCambios");
             BtCancelar_ConfirmButtonExtender.ConfirmText = (string)GetGlobalResourceObject("Espaniol", "CancelarCambios");
+            Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            s = config.AppSettings.Settings["Sistema"];
+            Session["idsistema"] = s.Value;
             if (Session["IdentificadorMision"] != null && !string.IsNullOrEmpty((string)Session["IdentificadorMision"]))
             {
                 NewItem = (string)Session["IdentificadorMision"];
@@ -78,6 +81,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
             MuestraPosicionesPanelTelefonia();
             MuestraDatos(DameDatos());
             GestionaOpcionesMenu("INICIO");
+            ActualizaWebPadre(true);
         }
         else
         {
@@ -97,6 +101,8 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         CargaParametrosPanel();
         PresentaInicioCabecerasPagina();
         CargaAlarmasAcusticasExistentes();
+        CargaLCExistentes();
+        MuestraLCExistentes();
     }
 
     private void PresentaInicioCabecerasPagina()
@@ -110,6 +116,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         Session["PaginaTF"] = 1;
         numPagActualT = 1;
         LabelPagT.Text = (string)GetGlobalResourceObject("Espaniol", "Pagina") + " " + numPagActualT.ToString();
+        PanelSelLC.Visible = false; // 20240227
     }
 
     private static ILog _logDebugView;
@@ -126,8 +133,6 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-
-
     #region GESTIÓN DE MISIONES
 
     private ServiciosCD40.Tablas[] DameDatos()
@@ -135,8 +140,6 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         try
         {
             ServiciosCD40.Misiones ms = new ServiciosCD40.Misiones();
-            Configuration config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
-            KeyValueConfigurationElement s = config.AppSettings.Settings["Sistema"];
             ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(ms);
             datos = d;
             return d;
@@ -220,7 +223,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
     private void PresentaBotonesLineaCalienteSeleccionados(uint IdMision)
     {
-
+        MuestraLCMision(IdMision);
     }
 
     protected void ActualizaMisionPaginasSeleccionadas()
@@ -293,8 +296,8 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
          * */
     }
 
-    #endregion GESTIÓN DE MISIONES
 
+    #endregion GESTIÓN DE MISIONES
 
     protected void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -357,11 +360,12 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-
     private void DesBloqueaSeleccionElementos(bool desbloquea)
     {
         PanelRadioActivaSeleccionPagina(desbloquea);
         PanelTelefoniaActivaSeleccionPagina(desbloquea);
+        PanelLineaCalienteActivaSeleccion(desbloquea);
+        ActivaSeleccionTeclasLC(desbloquea);
         PanelAlarmasAcusticasActivaSeleccion(desbloquea);
         ActivaSeleccionAlarmasAcusticas(desbloquea);
         DListTipo.Enabled = desbloquea;
@@ -369,7 +373,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         PanelTelefoniaActivaPasoPagina(true); 
     }
 
-    protected void NuevaMision()
+    private void NuevaMision()
     {
         InicializaDatosMision();
         DesBloqueaSeleccionElementos(true);
@@ -385,9 +389,10 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         TxtMision.Text = String.Empty;
         LabelMSAS.Visible = false;
         InicializaGestionPaginasSeleccionadas();
+        InicializaLCEN();
     }
 
-    protected void ModificaMision()
+    private void ModificaMision()
     {
             DesBloqueaSeleccionElementos(true);
             TxtMision.Enabled = false;
@@ -434,8 +439,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
     }
 
-
-    protected bool IdentificadorDuplicado()
+    private bool IdentificadorDuplicado()
     {
         bool existe = false;
         if (datos != null)
@@ -453,7 +457,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         return existe;
     }
 
-    protected bool IdentificadorNoValido()
+    private bool IdentificadorNoValido()
     {
         bool novalido = false;
         if (!Regex.IsMatch(TxtMision.Text, @"^[\w-._]{1,32}$"))
@@ -464,6 +468,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
         return novalido;
     }
+
     protected void BtAceptar_Click(object sender, EventArgs e)
     {
 
@@ -500,6 +505,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
                 }
             }
             ActualizaMisionPaginasSeleccionadas();
+            ActualizaMisionLCENSeleccionadas();
             ActualizaMisionAlarmasAlertasAcusticas();
             NewItem = TxtMision.Text;
             MuestraDatos(DameDatos());
@@ -517,7 +523,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         GestionaOpcionesMenu("INICIO");
         MuestraDatos(DameDatos());
         Editando = false;
-    } 
+    }
 
     protected void BtModificar_Click(object sender, EventArgs e)
     {
@@ -533,6 +539,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         GestionaOpcionesMenu("ALTA");
         NuevaMision();
     }
+
     protected void BtEliminar_Click(object sender, EventArgs e)
     {
         if (ListBox1.SelectedValue != "")
@@ -571,7 +578,6 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     }
     
 
-
     #region GESTION PÁGINAS RADIO
     private const uint NUM_COLUMNAS_FIJAS = 5;
     private const uint NUM_FILAS_FIJAS = 4;
@@ -584,7 +590,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     private const uint POS_INI_BOTON_PAGINA = 1;
     private const uint POS_FIN_BOTON_PAGINA_RD = 28;
 
-    protected void PanelRadioPresentaCheckPaginasSeleccionadas(bool seleccionado)
+    private void PanelRadioPresentaCheckPaginasSeleccionadas(bool seleccionado)
     {
         for (uint ind = POS_INI_BOTON_PAGINA; ind < POS_FIN_BOTON_PAGINA_RD + 1; ind++)
         {
@@ -597,7 +603,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-    protected void PanelRadioGestionaCheckPaginasSeleccionadas(int ind, bool seleccionado)
+    private void PanelRadioGestionaCheckPaginasSeleccionadas(int ind, bool seleccionado)
     {
         if (ind < POS_INI_BOTON_PAGINA || ind > POS_FIN_BOTON_PAGINA_RD)
             return;
@@ -610,13 +616,13 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-    protected void PanelRadioActivaPasoPagina(bool activa)
+    private void PanelRadioActivaPasoPagina(bool activa)
     {
         IButPagAbajo.Enabled = activa;
         IButPagArriba.Enabled = activa;
     }
 
-    protected void PanelRadioActivaSeleccionPagina(bool activa)
+    private void PanelRadioActivaSeleccionPagina(bool activa)
     {
         IButRDAsignar.Enabled = activa;
         IButRDDesAsignar.Enabled = activa;
@@ -626,6 +632,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
         PanelRadioGestionaCheckPaginasSeleccionadas((int)numPagActual, true);
     }
+
     protected void IButRDDesAsignar_Click(object sender, ImageClickEventArgs e)
     {
         PanelRadioGestionaCheckPaginasSeleccionadas((int)numPagActual, false);
@@ -702,7 +709,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
         try
         {
-            ServiciosCD40.Tablas[] radio = ServicioCD40.DestinosRadioAsignadosAlSector((string)Session["idsistema"], "SECTOR_SIRTAP"); 
+            ServiciosCD40.Tablas[] radio = ServicioCD40.DestinosRadioAsignadosAlSector((string)Session["idsistema"], Misiones.SectoresSirtap[0]); 
             datosRadio = radio;
         }
         catch (Exception ex)
@@ -748,6 +755,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
         return hayboton;
     }
+
     private uint CalculatePosHmi(uint buttonIndex)
     {
         uint fila = ((uint)buttonIndex - 1) / NUM_COLUMNAS_FIJAS; //0..NUM_COLUMNAS_FIJAS
@@ -755,6 +763,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
         return fila * NumColumnasVisibles + columna + 1 + ((numPagActual - 1) * NumPosicionesPag);
     }
+
     private uint CalculatePosButton(uint posHmi)
     {
         //pos HMI 1...NumPosicionesPag*Num pag
@@ -800,6 +809,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
                     NumFilasVisibles = 2;
                 }
             }
+            prefijosPosicionesLC = new uint[NumPosicionesPag + 1];	// Las posiciones empiezan en 1
         }
         catch (Exception ex)
         {
@@ -967,7 +977,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
         try
         {
-            ServiciosCD40.Tablas[] internos = ServicioCD40.DestinosTelefoniaAsignadosAlSector((string)Session["idsistema"], "SECTOR_SIRTAP", true, true); 
+            ServiciosCD40.Tablas[] internos = ServicioCD40.DestinosTelefoniaAsignadosAlSector((string)Session["idsistema"], Misiones.SectoresSirtap[0], true, true); 
             datosInternos = internos;
         }
         catch (Exception ex)
@@ -980,7 +990,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
         try
         {
-            ServiciosCD40.Tablas[] externos = ServicioCD40.DestinosTelefoniaAsignadosAlSector((string)Session["idsistema"], "SECTOR_SIRTAP", true, false);
+            ServiciosCD40.Tablas[] externos = ServicioCD40.DestinosTelefoniaAsignadosAlSector((string)Session["idsistema"], Misiones.SectoresSirtap[0], true, false);
             datosExternos = externos;
         }
         catch (Exception ex)
@@ -993,24 +1003,25 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
     {
         PanelTelefoniaGestionaCheckPaginasSeleccionadas((int)numPagActualT, true);
     }
+
     protected void IButTLFDesAsignar_Click(object sender, ImageClickEventArgs e)
     {
         PanelTelefoniaGestionaCheckPaginasSeleccionadas((int)numPagActualT, false);
     }
 
-    protected void PanelTelefoniaActivaPasoPagina(bool activa)
+    private void PanelTelefoniaActivaPasoPagina(bool activa)
     {
         IButPagTAbajo.Enabled = activa;
         IButPagTArriba.Enabled = activa;
     }
 
-    protected void PanelTelefoniaActivaSeleccionPagina(bool activa)
+    private void PanelTelefoniaActivaSeleccionPagina(bool activa)
     {
         IButTLFAsignar.Enabled = activa;
         IButTLFDesAsignar.Enabled = activa;
     }
 
-    protected void PanelTelefoniaPresentaCheckPaginasSeleccionadas(bool seleccionado)
+    private void PanelTelefoniaPresentaCheckPaginasSeleccionadas(bool seleccionado)
     {
         for (uint ind = POS_INI_BOTON_PAGINA; ind < POS_FIN_BOTON_PAGINA_TLF + 1; ind++)
         {
@@ -1023,7 +1034,7 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
         }
     }
 
-    protected void PanelTelefoniaGestionaCheckPaginasSeleccionadas(int ind, bool seleccionado)
+    private void PanelTelefoniaGestionaCheckPaginasSeleccionadas(int ind, bool seleccionado)
     {
         if (ind < POS_INI_BOTON_PAGINA || ind > POS_FIN_BOTON_PAGINA_TLF)
             return;
@@ -1045,57 +1056,297 @@ public partial class Misiones : PageBaseCD40.PageCD40	//	System.Web.UI.Page
 
         return fila * NUM_COLUMNAS_FIJAS_TELEFONIA + columna + 1;
     }
-
     #endregion
 
 
-/// <summary>
-/// //////////////////////////////////////////AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-/// </summary>
-/// <param name="sender"></param>
-/// <param name="e"></param>
-
     #region GESTIÓN DE LINEA CALIENTE
- 
+    private const int PREFIJO_DESTINO_LCI = 0;
+    private const int PREFIJO_DESTINO_LCE = 1;
+    private const int PREFIJO_DESTINO_ATS = 2;
+    private const int PREFIJO_DESTINO_ATS_BIS = 3;
+    private static uint[] prefijosPosicionesLC;
 
-
-    protected void CeldaEnlaceLineaCaliente_OnClick(object sender, EventArgs e)
+    protected void PulsaEnlaceLineaCaliente_OnClick(object sender, EventArgs e)
     {
         Button ibut = (Button)TEnlacesLC.FindControl(((Button)sender).ID);
-/*
+
         if (ibut.CssClass == "BtnPanelRadioLibre")
         {
-            BtLiberar.Enabled = false;
-            BModificar.Enabled = false;
+            BtLiberarLC.Enabled = false;
 
             //El botón Asignar sólo debe estar habilitado si el botón seleccionado del panel está libre y
             //se ha seleccionado algún destino de la lista
-            if (LBoxDestinos.SelectedIndex >= 0)
+            if (LBLCExistentes.SelectedIndex >= 0)
             {
-                BtAsignar.Enabled = PermisoSegunPerfil;
-                ViewState["IdDestino"] = LBoxDestinos.SelectedItem.Text;
-                ViewState["IdPrefijo"] = LBoxDestinos.SelectedValue.Replace(LBoxDestinos.SelectedItem.Text, "");
+               
+                BtAsignarLC.Enabled = PermisoSegunPerfil;
+                ViewState["IdDestino"] = LBLCExistentes.SelectedItem.Text;
+                ViewState["PosHMI"] = LBLCExistentes.SelectedItem.Value;
+                ViewState["IdBoton"] = ((Button)sender).ID;
+                LBLCExistentes.Enabled = false;
+                
             }
             else
-                BtAsignar.Enabled = false;
+                BtAsignarLC.Enabled = false;
         }
         else
-        {
-            BtLiberar.Enabled = PermisoSegunPerfil;
-            BModificar.Enabled = true;
-            BtAsignar.Enabled = false;
+        {         
+            BtLiberarLC.Enabled = PermisoSegunPerfil;
+            BtAsignarLC.Enabled = false;
+            ViewState["IdBoton"] = ((Button)sender).ID;
+            LBLCExistentes.Enabled = false;
         }
 
         if (ibut.Text != "" || PermisoSegunPerfil)
         {
             ViewState["IdBoton"] = ((Button)sender).ID;
-            TEnlacesLC.Enabled = false;
-            LBoxDestinos.Enabled = false;
-            Panel1.Visible = true;
+            PanelSelLC.Visible = true;
         }
-        else if (!PermisoSegunPerfil)
-            PanelNoPermissions.Visible = true;
- * */
+
+    }
+
+    private void MuestraLCMision(uint IdMision)
+    {
+        try
+        {
+            LimpiarPanelLC();
+            ServiciosCD40.Misiones_LCEN mlc = new ServiciosCD40.Misiones_LCEN();
+            mlc.IdMision = IdMision;
+            ServiciosCD40.Tablas[] d = ServicioCD40.ListSelectSQL(mlc);
+            if (d != null)
+            {
+                for (int i = 0; i < d.Length; i++)
+                {
+                    uint posHMI = ((ServiciosCD40.Misiones_LCEN)d[i]).PosHMI;
+                    uint posMision = ((ServiciosCD40.Misiones_LCEN)d[i]).PosMision;
+                    string textoBoton = DameLiteralLC(posHMI);
+                    CargaBotonMisionLC(posMision, posHMI, textoBoton);
+                }
+                ActualizaLCExistentes();
+            }
+        }
+        catch (Exception e)
+        {
+            logDebugView.Error("(Misiones-PresentaPaginasSeleccionadas):", e);
+        }
+
+    }
+
+    private void CargaBotonMisionLC(uint posicion, uint posicionHMI, string strEtiLCEN)
+    {
+        TableCell tCell = (TableCell)TEnlacesLC.FindControl("TableCellLC" + posicion.ToString());
+        if (tCell != null)
+        {
+            tCell.Visible = posicion <= NumPosicionesPag;
+            Button ibut = (Button)TEnlacesLC.FindControl("ButtonLC" + posicion.ToString());
+            ibut.CssClass = "BtnPanelTfAsignado";
+            ibut.Text = strEtiLCEN;
+            ibut.AccessKey = posicionHMI.ToString();
+        }
+    }
+
+    private void ActualizaLCExistentes()
+    {
+        MuestraLCExistentes();
+        for (int i = 1; i <= NumPosicionesPag; i++)
+        {
+            TableCell tCell = (TableCell)TEnlacesLC.FindControl("TableCellLC" + i.ToString());
+            if (tCell != null)
+            {
+                Button ibut = (Button)TEnlacesLC.FindControl("ButtonLC" + i.ToString());
+                if (ibut.CssClass == "BtnPanelTfAsignado")
+                {
+                    LBLCExistentes.Items.Remove(LBLCExistentes.Items.FindByText(ibut.Text));                 
+                }
+            }
+        }
+        LBLCExistentes.Enabled = true;
+    }
+
+    private void MuestraLCExistentes()
+    {
+        try
+        {
+            int idlbl = 0;
+            LBLCExistentes.Items.Clear();
+            if (datosLCext != null)
+            {
+                string strEtiLCEN = string.Empty;
+
+                for (int i = 0; i < datosLCext.Length; i++)
+                {
+                    uint pos = ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).PosHMI;
+                    //20201019
+                    if (pos >= prefijosPosicionesLC.Length)
+                    {
+                        cMsg.alert((string)GetGlobalResourceObject("Espaniol", "PanelLcErrorParamCNF"));
+                        continue;
+                    }
+                    LBLCExistentes.Items.Add(((ServiciosCD40.DestinosExternosSector)datosLCext[idlbl]).Literal);
+                    LBLCExistentes.Items[i].Value = ((ServiciosCD40.DestinosExternosSector)datosLCext[idlbl]).PosHMI.ToString();
+                    idlbl++;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logDebugView.Error("(Misiones_MostrarLCLB): ", ex);
+        }
+    }
+
+    private void CargaLCExistentes()
+    {
+        try
+        {
+            ServiciosCD40.Tablas[] d1lc = ServicioCD40.DestinosTelefoniaAsignadosAlSector((string)Session["idsistema"], Misiones.SectoresSirtap[0], false, false);
+            datosLCext = d1lc;
+        }
+        catch (Exception ex)
+        {
+            logDebugView.Error("(TFTLC-CargaLCExistentes): ", ex);
+        }
+    }
+
+    protected void BtLiberarLC_Click(object sender, EventArgs e)
+    {
+
+        LiberarDestinoLC((string)ViewState["IdBoton"]);
+        ActualizaLCExistentes();
+        PanelSelLC.Visible = false;
+        TEnlacesLC.Enabled = true;
+        
+    }
+
+    private void LiberarDestinoLC(string id)
+    {
+        Button ibut = (Button)TEnlacesLC.FindControl(id);
+        ibut.CssClass = "BtnPanelRadioLibre";
+        ibut.Text = "";
+        ibut.AccessKey = "";
+    }
+
+    protected void BtCancelarLC_Click(object sender, EventArgs e)
+    {
+        PanelSelLC.Visible = false;
+        TEnlacesLC.Enabled = true;
+        
+    }
+
+    protected void BtAsignarLC_Click(object sender, EventArgs e)
+    {
+        AsignarDestinoLC((string)ViewState["IdBoton"]);
+        ActualizaLCExistentes();
+        PanelSelLC.Visible = false;
+        TEnlacesLC.Enabled = true;
+    }
+
+    private void AsignarDestinoLC(string id)
+    {
+        Button ibut = (Button)TEnlacesLC.FindControl(id);
+        ibut.CssClass = "BtnPanelTfAsignado";
+        ibut.Text = (string)ViewState["IdDestino"];
+        ibut.AccessKey = ViewState["PosHMI"].ToString();
+
+    }
+
+    private void LimpiarPanelLC()
+    {
+        TEnlacesLC.Height = 40;
+
+        for (int i = 1; i <= NumPosicionesPag; i++)
+        {
+            TableCell tCell = (TableCell)TEnlacesLC.FindControl("TableCellLC" + i.ToString());
+            if (tCell != null)
+            {
+                tCell.Visible = i <= NumPosicionesPag;
+                Button ibut = (Button)TEnlacesLC.FindControl("ButtonLC" + i.ToString());
+                ibut.CssClass = "BtnPanelRadioLibre";
+                ibut.Text = "";
+            }
+        }
+    }
+
+    private void PanelLineaCalienteActivaSeleccion(bool activa)
+    {
+        PanelLCEN.Enabled = activa;
+    }
+
+    private void ActivaSeleccionTeclasLC(bool activa)
+    {
+        for (int i = 1; i <= NumPosicionesPag; i++)
+        {
+            TableCell tCell = (TableCell)TEnlacesLC.FindControl("TableCellLC" + i.ToString());
+            if (tCell != null)
+            {
+                tCell.Visible = i <= NumPosicionesPag;
+                Button ibut = (Button)TEnlacesLC.FindControl("ButtonLC" + i.ToString());
+                ibut.Enabled = activa;
+            }
+        }
+    }
+
+    private string DameLiteralLC(uint PosHMI)
+    {
+        string strEtiLCEN =  "*ERROR*";
+        try
+        {
+            if (datosLCext != null)
+            {
+                
+                for (int i = 0; i < datosLCext.Length; i++)
+                {
+                    if (PosHMI == ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).PosHMI)
+                    {
+                        strEtiLCEN = ((ServiciosCD40.DestinosExternosSector)datosLCext[i]).Literal;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logDebugView.Error("(Misiones_DameLiteralLC): ", ex);
+        }
+        return strEtiLCEN;
+    }
+
+    private void ActualizaMisionLCENSeleccionadas()
+    {
+        try
+        {
+            if (_IdMision == 0)
+                return;
+            ServiciosCD40.Misiones_LCEN mlc = new ServiciosCD40.Misiones_LCEN();
+            mlc.IdMision = _IdMision;
+            ServicioCD40.DeleteSQL(mlc);
+            for (uint posms = 1; posms <= NumPosicionesPag; posms++)
+            {
+                TableCell tCell = (TableCell)TEnlacesLC.FindControl("TableCellLC" + posms.ToString());
+                if (tCell != null)
+                {                  
+                    Button ibut = (Button)TEnlacesLC.FindControl("ButtonLC" + posms.ToString());
+                    if (ibut.CssClass == "BtnPanelTfAsignado")
+                    {
+                        mlc = new ServiciosCD40.Misiones_LCEN();
+                        mlc.IdMision = _IdMision;
+                        mlc.PosMision = posms;
+                        mlc.PosHMI = Convert.ToUInt32(ibut.AccessKey);
+                        ServicioCD40.InsertSQL(mlc);                    
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logDebugView.Error("(Misiones-ActualizaMisionLCENSeleccionadas):", e);
+        }
+    }
+
+    private void InicializaLCEN()
+    {
+        LimpiarPanelLC();
+        CargaLCExistentes();
+        MuestraLCExistentes();
     }
     #endregion
 

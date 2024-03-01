@@ -554,7 +554,7 @@ namespace ConfiguracionElementosHw
     public class MisionAlarmasAcusticas
     {
         public string IdAlarma;
-        public string Tipo;
+        public string Categoria;
     }
     public class Mision
     {
